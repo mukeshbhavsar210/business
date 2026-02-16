@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 15, 2023 at 07:43 AM
--- Server version: 10.4.24-MariaDB
--- PHP Version: 8.1.6
+-- Generation Time: Feb 16, 2026 at 01:44 PM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `ecommerce`
+-- Database: `business`
 --
 
 -- --------------------------------------------------------
@@ -29,8 +29,8 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `brands` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `slug` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `slug` varchar(255) NOT NULL,
   `status` int(11) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -56,11 +56,11 @@ INSERT INTO `brands` (`id`, `name`, `slug`, `status`, `created_at`, `updated_at`
 
 CREATE TABLE `categories` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `slug` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `image` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(255) NOT NULL,
+  `slug` varchar(255) NOT NULL,
+  `image` varchar(255) DEFAULT NULL,
   `status` int(11) NOT NULL DEFAULT 1,
-  `showHome` enum('Yes','No') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'No',
+  `showHome` enum('Yes','No') NOT NULL DEFAULT 'No',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -72,13 +72,7 @@ CREATE TABLE `categories` (
 INSERT INTO `categories` (`id`, `name`, `slug`, `image`, `status`, `showHome`, `created_at`, `updated_at`) VALUES
 (82, 'Men', 'men', '82-1700806476.jpg', 1, 'Yes', '2023-11-23 23:55:20', '2023-11-24 00:44:36'),
 (83, 'Women', 'women', '83-1700806507.jpg', 1, 'Yes', '2023-11-23 23:55:28', '2023-11-24 00:45:07'),
-(84, 'Kids', 'kids', '84-1700806492.jpg', 1, 'Yes', '2023-11-23 23:55:42', '2023-11-24 00:44:52'),
-(85, 'Home & Living', 'home-living', '85-1700806543.jpg', 1, 'Yes', '2023-11-23 23:55:52', '2023-11-24 00:45:43'),
-(86, 'Beauty', 'beauty', '86-1700806526.jpg', 1, 'Yes', '2023-11-23 23:56:05', '2023-11-24 00:45:26'),
-(87, 'Studio', 'studio', '87-1700806561.jpg', 1, 'Yes', '2023-11-23 23:56:14', '2023-11-24 00:46:01'),
-(145, 'Ms. Helen Luettgen IV', 'Frida Gislason', NULL, 1, 'No', '2023-11-24 00:34:25', '2023-11-24 00:34:25'),
-(146, 'Carleton Dietrich', 'Christine Hodkiewicz', NULL, 0, 'No', '2023-11-24 00:34:25', '2023-11-24 00:34:25'),
-(147, 'Naomie Kuphal I', 'Mrs. Kyra Treutel', NULL, 0, 'No', '2023-11-24 00:34:25', '2023-11-24 00:34:25');
+(148, 'Mobile Covers', 'mobile-covers', NULL, 1, 'Yes', '2026-02-16 00:28:17', '2026-02-16 00:28:17');
 
 -- --------------------------------------------------------
 
@@ -88,8 +82,8 @@ INSERT INTO `categories` (`id`, `name`, `slug`, `image`, `status`, `showHome`, `
 
 CREATE TABLE `countries` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `code` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `code` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -351,16 +345,16 @@ INSERT INTO `countries` (`id`, `name`, `code`, `created_at`, `updated_at`) VALUE
 CREATE TABLE `customer_addresses` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `user_id` bigint(20) UNSIGNED NOT NULL,
-  `first_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `last_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `mobile` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `first_name` varchar(255) NOT NULL,
+  `last_name` varchar(255) NOT NULL,
+  `mobile` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
   `country_id` bigint(20) UNSIGNED NOT NULL,
-  `address` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `apartment` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `city` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `state` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `zip` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `address` text NOT NULL,
+  `apartment` varchar(255) DEFAULT NULL,
+  `city` varchar(255) NOT NULL,
+  `state` varchar(255) NOT NULL,
+  `zip` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -381,12 +375,12 @@ INSERT INTO `customer_addresses` (`id`, `user_id`, `first_name`, `last_name`, `m
 
 CREATE TABLE `discount_coupons` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `code` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `max_uses` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `max_uses_user` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `type` enum('percent','fixed') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'fixed',
+  `code` varchar(255) NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `max_uses` varchar(255) DEFAULT NULL,
+  `max_uses_user` varchar(255) DEFAULT NULL,
+  `type` enum('percent','fixed') NOT NULL DEFAULT 'fixed',
   `discount_amount` double(10,2) NOT NULL,
   `min_amount` double(10,2) DEFAULT NULL,
   `status` int(11) NOT NULL DEFAULT 1,
@@ -412,11 +406,11 @@ INSERT INTO `discount_coupons` (`id`, `code`, `name`, `description`, `max_uses`,
 
 CREATE TABLE `failed_jobs` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `uuid` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `connection` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `queue` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `exception` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `uuid` varchar(255) NOT NULL,
+  `connection` text NOT NULL,
+  `queue` text NOT NULL,
+  `payload` longtext NOT NULL,
+  `exception` longtext NOT NULL,
   `failed_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -428,7 +422,7 @@ CREATE TABLE `failed_jobs` (
 
 CREATE TABLE `migrations` (
   `id` int(10) UNSIGNED NOT NULL,
-  `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `migration` varchar(255) NOT NULL,
   `batch` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -468,7 +462,11 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (29, '2023_11_30_051729_create_wishlists_table', 23),
 (30, '2023_12_01_060717_alter_users_table', 24),
 (31, '2023_12_01_072404_create_pages_table', 25),
-(32, '2023_12_02_111056_create_product_ratings_table', 26);
+(32, '2023_12_02_111056_create_product_ratings_table', 26),
+(33, '2023_12_29_074318_create_payments_table', 27),
+(34, '2025_01_15_105251_create_sessions_table', 27),
+(35, '2026_02_16_073802_create_sub_sub_categories_table', 27),
+(36, '2026_02_16_085459_create_sub_sub_categories_table', 28);
 
 -- --------------------------------------------------------
 
@@ -481,24 +479,24 @@ CREATE TABLE `orders` (
   `user_id` bigint(20) UNSIGNED NOT NULL,
   `subtotal` double(10,2) NOT NULL,
   `shipping` double(10,2) NOT NULL,
-  `coupon_code` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `coupon_code` varchar(100) DEFAULT NULL,
   `coupon_code_id` int(11) DEFAULT NULL,
   `discount` double(10,2) DEFAULT NULL,
   `grandtotal` double(10,2) NOT NULL,
-  `payment_status` enum('paid','not paid') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'not paid',
-  `status` enum('pending','shipped','delivered','cancelled') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
+  `payment_status` enum('paid','not paid') NOT NULL DEFAULT 'not paid',
+  `status` enum('pending','shipped','delivered','cancelled') NOT NULL DEFAULT 'pending',
   `shipped_date` timestamp NULL DEFAULT NULL,
-  `first_name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `last_name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `mobile` varchar(15) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `first_name` varchar(100) NOT NULL,
+  `last_name` varchar(100) NOT NULL,
+  `mobile` varchar(15) NOT NULL,
+  `email` varchar(100) NOT NULL,
   `country_id` bigint(20) UNSIGNED NOT NULL,
-  `address` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `apartment` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `city` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `state` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `zip` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `notes` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `address` text NOT NULL,
+  `apartment` varchar(100) DEFAULT NULL,
+  `city` varchar(100) NOT NULL,
+  `state` varchar(100) NOT NULL,
+  `zip` varchar(10) NOT NULL,
+  `notes` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -527,7 +525,7 @@ CREATE TABLE `order_items` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `order_id` bigint(20) UNSIGNED NOT NULL,
   `product_id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) NOT NULL,
   `qty` int(11) NOT NULL,
   `price` double(10,2) NOT NULL,
   `total` double(10,2) NOT NULL,
@@ -542,14 +540,10 @@ CREATE TABLE `order_items` (
 INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `name`, `qty`, `price`, `total`, `created_at`, `updated_at`) VALUES
 (26, 19, 14, 'Men Yellow Printed Cotton Pure Cotton T-shirt', 1, 314.00, 314.00, '2023-11-29 00:51:51', '2023-11-29 00:51:51'),
 (37, 26, 14, 'Men Yellow Printed Cotton Pure Cotton T-shirt', 1, 314.00, 314.00, '2023-11-29 02:17:59', '2023-11-29 02:17:59'),
-(38, 26, 16, 'Boys Printed Jersey Top', 2, 279.00, 558.00, '2023-11-29 02:17:59', '2023-11-29 02:17:59'),
 (39, 26, 13, 'Men Black Cotton Pure Cotton T-shirt', 1, 279.00, 279.00, '2023-11-29 02:17:59', '2023-11-29 02:17:59'),
 (40, 27, 14, 'Men Yellow Printed Cotton Pure Cotton T-shirt', 1, 314.00, 314.00, '2023-11-29 03:06:56', '2023-11-29 03:06:56'),
 (41, 28, 14, 'Men Yellow Printed Cotton Pure Cotton T-shirt', 1, 314.00, 314.00, '2023-11-29 03:50:43', '2023-11-29 03:50:43'),
-(42, 29, 13, 'Men Black Cotton Pure Cotton T-shirt', 1, 279.00, 279.00, '2023-11-29 07:12:26', '2023-11-29 07:12:26'),
-(43, 30, 15, 'anayna', 1, 971.00, 971.00, '2023-11-29 07:18:57', '2023-11-29 07:18:57'),
-(44, 31, 15, 'anayna', 2, 971.00, 1942.00, '2023-11-30 05:00:31', '2023-11-30 05:00:31'),
-(45, 32, 15, 'anayna', 1, 971.00, 971.00, '2023-11-30 05:09:40', '2023-11-30 05:09:40');
+(42, 29, 13, 'Men Black Cotton Pure Cotton T-shirt', 1, 279.00, 279.00, '2023-11-29 07:12:26', '2023-11-29 07:12:26');
 
 -- --------------------------------------------------------
 
@@ -559,9 +553,9 @@ INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `name`, `qty`, `price
 
 CREATE TABLE `pages` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `slug` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `content` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(255) NOT NULL,
+  `slug` varchar(255) NOT NULL,
+  `content` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -581,9 +575,30 @@ INSERT INTO `pages` (`id`, `name`, `slug`, `content`, `created_at`, `updated_at`
 --
 
 CREATE TABLE `password_reset_tokens` (
-  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `token` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `token` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `payments`
+--
+
+CREATE TABLE `payments` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `payment_id` varchar(255) NOT NULL,
+  `product_name` varchar(255) NOT NULL,
+  `quantity` varchar(255) NOT NULL,
+  `amount` varchar(255) NOT NULL,
+  `currency` varchar(255) NOT NULL,
+  `customer_name` varchar(255) NOT NULL,
+  `customer_email` varchar(255) NOT NULL,
+  `payment_status` varchar(255) NOT NULL,
+  `payment_method` varchar(255) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -594,11 +609,11 @@ CREATE TABLE `password_reset_tokens` (
 
 CREATE TABLE `personal_access_tokens` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `tokenable_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tokenable_type` varchar(255) NOT NULL,
   `tokenable_id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `token` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `abilities` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(255) NOT NULL,
+  `token` varchar(64) NOT NULL,
+  `abilities` text DEFAULT NULL,
   `last_used_at` timestamp NULL DEFAULT NULL,
   `expires_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -613,21 +628,21 @@ CREATE TABLE `personal_access_tokens` (
 
 CREATE TABLE `products` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `slug` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `short_description` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `shipping_returns` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `related_products` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `title` varchar(255) NOT NULL,
+  `slug` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `short_description` text DEFAULT NULL,
+  `shipping_returns` text DEFAULT NULL,
+  `related_products` text DEFAULT NULL,
   `price` double(10,2) NOT NULL,
   `compare_price` double(10,2) DEFAULT NULL,
   `category_id` bigint(20) UNSIGNED NOT NULL,
   `sub_category_id` bigint(20) UNSIGNED DEFAULT NULL,
   `brand_id` bigint(20) UNSIGNED DEFAULT NULL,
-  `is_featured` enum('Yes','No') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'No',
-  `sku` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `barcode` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `track_qty` enum('Yes','No') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Yes',
+  `is_featured` enum('Yes','No') NOT NULL DEFAULT 'No',
+  `sku` varchar(255) NOT NULL,
+  `barcode` varchar(255) DEFAULT NULL,
+  `track_qty` enum('Yes','No') NOT NULL DEFAULT 'Yes',
   `qty` int(11) DEFAULT NULL,
   `status` int(11) NOT NULL DEFAULT 1,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -641,8 +656,6 @@ CREATE TABLE `products` (
 INSERT INTO `products` (`id`, `title`, `slug`, `description`, `short_description`, `shipping_returns`, `related_products`, `price`, `compare_price`, `category_id`, `sub_category_id`, `brand_id`, `is_featured`, `sku`, `barcode`, `track_qty`, `qty`, `status`, `created_at`, `updated_at`) VALUES
 (13, 'Men Black Cotton Pure Cotton T-shirt', 'men-black-cotton-pure-cotton-t-shirt', '<p><span style=\"color: rgb(40, 44, 63); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;\">Black solid T-shirt, has a round neck, short sleeves</span></p><div class=\"pdp-sizeFitDesc\" style=\"box-sizing: inherit; border: none; margin-top: 12px; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><h4 class=\"pdp-sizeFitDescTitle pdp-product-description-title\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; font-weight: 700; text-transform: capitalize; border: none; padding-bottom: 5px;\">Size &amp; Fit</h4><p class=\"pdp-sizeFitDescContent pdp-product-description-content\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); line-height: 1.4; font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; width: 461.734px;\">The model (height 6\') is wearing a size M</p></div><div class=\"pdp-sizeFitDesc\" style=\"box-sizing: inherit; border: none; margin-top: 12px; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><h4 class=\"pdp-sizeFitDescTitle pdp-product-description-title\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; font-weight: 700; text-transform: capitalize; border: none; padding-bottom: 5px;\">Material &amp; Care</h4><p class=\"pdp-sizeFitDescContent pdp-product-description-content\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); line-height: 1.4; font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; width: 461.734px;\">100% cotton<br style=\"box-sizing: inherit;\">Machine-wash</p></div><div class=\"index-sizeFitDesc\" style=\"box-sizing: inherit; border: none; margin-top: 12px; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><h4 class=\"index-sizeFitDescTitle index-product-description-title\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; font-weight: 700; padding-bottom: 12px; border: none; text-transform: capitalize;\">Specifications</h4></div>', NULL, NULL, NULL, 279.00, 399.00, 82, 6, 17, 'Yes', 'tshirt_01', 'tshirt_000001', 'Yes', 5, 1, '2023-11-24 00:08:01', '2023-11-24 00:08:01'),
 (14, 'Men Yellow Printed Cotton Pure Cotton T-shirt', 'men-yellow-printed-cotton-pure-cotton-t-shirt', '<div style=\"box-sizing: inherit; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><p class=\"pdp-product-description-content\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); line-height: 1.4; font-size: 16px; margin-top: 12px; width: 430.953px;\">Keep this hip this season with the HRX Men\'s Athleisure T-shirt. This versatile T-shirt can be styled any way you like for the ultimate gym-to-street look.<br style=\"box-sizing: inherit;\"><br style=\"box-sizing: inherit;\"><span style=\"box-sizing: inherit; font-weight: 700; display: inline-block; margin-top: 16px;\">Features</span></p><ul style=\"box-sizing: inherit; list-style: none; padding: 0px; margin-right: 0px; margin-bottom: 10px; margin-left: 0px;\"><li style=\"box-sizing: inherit;\">Athleisure T-shirt can be paired with tracks, khakis or jeans</li><li style=\"box-sizing: inherit;\">Style: Round Neck</li><li style=\"box-sizing: inherit;\">Sleeve: Short Sleeves</li><li style=\"box-sizing: inherit;\">Colour: Yellow</li><li style=\"box-sizing: inherit;\">Print: Typography</li><li style=\"box-sizing: inherit;\">Fit: Regular</li></ul><p></p></div><div class=\"pdp-sizeFitDesc\" style=\"box-sizing: inherit; border: none; margin-top: 12px; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><h4 class=\"pdp-sizeFitDescTitle pdp-product-description-title\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; font-weight: 700; text-transform: capitalize; border: none; padding-bottom: 5px;\">Size &amp; Fit</h4><p class=\"pdp-sizeFitDescContent pdp-product-description-content\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); line-height: 1.4; font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; width: 461.734px;\">The model height 6\' is wearing a size M</p></div><div class=\"pdp-sizeFitDesc\" style=\"box-sizing: inherit; border: none; margin-top: 12px; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><h4 class=\"pdp-sizeFitDescTitle pdp-product-description-title\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; font-weight: 700; text-transform: capitalize; border: none; padding-bottom: 5px;\">Material &amp; Care</h4><p class=\"pdp-sizeFitDescContent pdp-product-description-content\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); line-height: 1.4; font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; width: 461.734px;\">100% cotton<br style=\"box-sizing: inherit;\">Machine-wash</p></div>', NULL, NULL, '33', 314.00, 699.00, 82, 6, 18, 'Yes', 'tshirt_02', 'tshirt_000002', 'Yes', 99, 1, '2023-11-24 00:11:49', '2023-11-24 23:04:33'),
-(15, 'anayna', 'anayna', '<div style=\"box-sizing: inherit; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><p class=\"pdp-product-description-content\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); line-height: 1.4; font-size: 16px; margin-top: 12px; width: 430.953px;\"></p><ul style=\"box-sizing: inherit; list-style: none; padding: 0px; margin-right: 0px; margin-bottom: 10px; margin-left: 0px;\"><li style=\"box-sizing: inherit;\">Green and pink ethnic motifs print a-line dress</li><li style=\"box-sizing: inherit;\">Mandarin collar</li><li style=\"box-sizing: inherit;\">Short, puff sleeve</li><li style=\"box-sizing: inherit;\">Waist tie-up detail</li><li style=\"box-sizing: inherit;\">Tiered</li><li style=\"box-sizing: inherit;\">Gathered or pleated detail</li><li style=\"box-sizing: inherit;\">Midi length in flounce hem</li><li style=\"box-sizing: inherit;\">Cotton fabric</li></ul><p></p></div><div class=\"pdp-sizeFitDesc\" style=\"box-sizing: inherit; border: none; margin-top: 12px; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><h4 class=\"pdp-sizeFitDescTitle pdp-product-description-title\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; font-weight: 700; text-transform: capitalize; border: none; padding-bottom: 5px;\">Size &amp; Fit</h4><p class=\"pdp-sizeFitDescContent pdp-product-description-content\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); line-height: 1.4; font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; width: 461.734px;\">The model (height 5\'8) is wearing a size S</p></div><div class=\"pdp-sizeFitDesc\" style=\"box-sizing: inherit; border: none; margin-top: 12px; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><h4 class=\"pdp-sizeFitDescTitle pdp-product-description-title\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; font-weight: 700; text-transform: capitalize; border: none; padding-bottom: 5px;\">Material &amp; Care</h4><p class=\"pdp-sizeFitDescContent pdp-product-description-content\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); line-height: 1.4; font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; width: 461.734px;\">100% Cotton&nbsp;<br style=\"box-sizing: inherit;\">Machine wash</p></div>', '<p>Short Description</p>', '<p>Shipping</p>', '17,19', 971.00, 2698.00, 83, 10, 22, 'Yes', 'western_wear1', 'western_wear_000001', 'Yes', 0, 1, '2023-11-24 00:18:53', '2023-11-30 05:09:40'),
-(16, 'Boys Printed Jersey Top', 'boys-printed-jersey-top', '<div style=\"box-sizing: inherit; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><p class=\"pdp-product-description-content\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); line-height: 1.4; font-size: 16px; margin-top: 12px; width: 430.953px;\"></p><p style=\"box-sizing: inherit; margin-right: 0px; margin-bottom: 0px; margin-left: 0px;\">Top in soft cotton jersey with a print motif on the front. Round, rib-trimmed neckline and long sleeves.</p><p></p></div><div class=\"pdp-sizeFitDesc\" style=\"box-sizing: inherit; border: none; margin-top: 12px; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><h4 class=\"pdp-sizeFitDescTitle pdp-product-description-title\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; font-weight: 700; text-transform: capitalize; border: none; padding-bottom: 5px;\">Material &amp; Care</h4><p class=\"pdp-sizeFitDescContent pdp-product-description-content\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); line-height: 1.4; font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; width: 461.734px;\">100% Cotton<br style=\"box-sizing: inherit;\">Machine Wash</p></div><div class=\"index-sizeFitDesc\" style=\"box-sizing: inherit; border: none; margin-top: 12px; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><h4 class=\"index-sizeFitDescTitle index-product-description-title\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; font-weight: 700; padding-bottom: 12px; border: none; text-transform: capitalize;\">Specifications</h4></div>', NULL, NULL, NULL, 279.00, 399.00, 84, 14, 22, 'Yes', 'boys', 'boys_000001', 'Yes', 5, 1, '2023-11-24 00:22:13', '2023-11-24 00:22:13'),
 (32, 'Elenora Hegmann', 'elenora-hegmann', NULL, NULL, NULL, '', 613.00, NULL, 82, 7, 22, 'No', '33650', NULL, 'Yes', 10, 1, '2023-11-24 00:31:18', '2023-11-24 07:07:31'),
 (33, 'Kaci Dooley', 'kaci-dooley', NULL, NULL, NULL, '', 665.00, NULL, 82, 6, 17, 'No', '80770', NULL, 'Yes', 10, 1, '2023-11-24 00:31:18', '2023-11-30 05:22:28'),
 (41, 'Terrence Howell', 'terrence-howell', '<p>Coming soon...</p>', '<p>Short Description</p>', '<p>Shipping Corrected2</p>', '14,15,16', 160.00, 100.00, 82, 6, 20, 'No', '54820', NULL, 'Yes', 10, 1, '2023-11-24 00:31:18', '2023-11-24 07:06:59');
@@ -656,7 +669,7 @@ INSERT INTO `products` (`id`, `title`, `slug`, `description`, `short_description
 CREATE TABLE `product_images` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `product_id` bigint(20) UNSIGNED NOT NULL,
-  `image` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `image` varchar(255) NOT NULL,
   `sort_order` int(11) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -671,8 +684,6 @@ INSERT INTO `product_images` (`id`, `product_id`, `image`, `sort_order`, `create
 (20, 13, '13-20-1700804281.jpg', NULL, '2023-11-24 00:08:01', '2023-11-24 00:08:01'),
 (21, 14, '14-21-1700804509.jpg', NULL, '2023-11-24 00:11:49', '2023-11-24 00:11:49'),
 (22, 14, '14-22-1700804510.jpg', NULL, '2023-11-24 00:11:50', '2023-11-24 00:11:50'),
-(25, 15, '15-25-1700804960.jpg', NULL, '2023-11-24 00:19:20', '2023-11-24 00:19:20'),
-(26, 16, '16-26-1700805133.jpg', NULL, '2023-11-24 00:22:13', '2023-11-24 00:22:13'),
 (27, 41, '41-27-1700807520.jpg', NULL, '2023-11-24 01:02:00', '2023-11-24 01:02:00'),
 (28, 41, '41-28-1700807520.jpg', NULL, '2023-11-24 01:02:00', '2023-11-24 01:02:00'),
 (29, 41, '41-29-1700807521.jpg', NULL, '2023-11-24 01:02:01', '2023-11-24 01:02:01'),
@@ -687,22 +698,29 @@ INSERT INTO `product_images` (`id`, `product_id`, `image`, `sort_order`, `create
 CREATE TABLE `product_ratings` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `product_id` bigint(20) UNSIGNED NOT NULL,
-  `username` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `comment` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `username` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `comment` varchar(255) NOT NULL,
   `rating` double(3,2) NOT NULL,
   `status` int(11) NOT NULL DEFAULT 0,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- --------------------------------------------------------
+
 --
--- Dumping data for table `product_ratings`
+-- Table structure for table `sessions`
 --
 
-INSERT INTO `product_ratings` (`id`, `product_id`, `username`, `email`, `comment`, `rating`, `status`, `created_at`, `updated_at`) VALUES
-(1, 15, 'Sona Bhavsar', 'sonabhavsar@gmail.com', 'Good Product', 5.00, 1, NULL, '2023-12-03 01:01:41'),
-(2, 15, 'Dhruv Bhavsar', 'dhruv@gmail.com', 'Worst product.', 4.00, 1, NULL, '2023-12-02 07:57:28');
+CREATE TABLE `sessions` (
+  `id` varchar(255) NOT NULL,
+  `user_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `ip_address` varchar(45) DEFAULT NULL,
+  `user_agent` text DEFAULT NULL,
+  `payload` longtext NOT NULL,
+  `last_activity` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -712,7 +730,7 @@ INSERT INTO `product_ratings` (`id`, `product_id`, `username`, `email`, `comment
 
 CREATE TABLE `shipping_charges` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `country_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `country_id` varchar(255) NOT NULL,
   `amount` double(10,2) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -736,10 +754,10 @@ INSERT INTO `shipping_charges` (`id`, `country_id`, `amount`, `created_at`, `upd
 
 CREATE TABLE `sub_categories` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `slug` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `slug` varchar(255) NOT NULL,
   `status` int(11) NOT NULL,
-  `showHome` enum('Yes','No') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'No',
+  `showHome` enum('Yes','No') NOT NULL DEFAULT 'No',
   `category_id` bigint(20) UNSIGNED NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -752,18 +770,35 @@ CREATE TABLE `sub_categories` (
 INSERT INTO `sub_categories` (`id`, `name`, `slug`, `status`, `showHome`, `category_id`, `created_at`, `updated_at`) VALUES
 (6, 'Top Wear', 'top-wear', 1, 'Yes', 82, '2023-11-23 23:56:48', '2023-11-23 23:56:48'),
 (7, 'Bottom  Wear', 'bottom-wear', 1, 'Yes', 82, '2023-11-23 23:57:22', '2023-11-23 23:57:22'),
-(8, 'Footwear', 'footwear', 1, 'Yes', 82, '2023-11-23 23:57:35', '2023-11-23 23:57:35'),
-(9, 'Gadgets', 'gadgets', 1, 'Yes', 82, '2023-11-23 23:57:52', '2023-11-23 23:57:52'),
-(10, 'Western Wear', 'western-wear', 1, 'Yes', 83, '2023-11-23 23:58:11', '2023-11-23 23:58:11'),
-(11, 'Maternity', 'maternity', 1, 'Yes', 83, '2023-11-23 23:58:33', '2023-11-23 23:58:33'),
-(12, 'Jewellery', 'jewellery', 1, 'Yes', 83, '2023-11-23 23:58:54', '2023-11-23 23:58:54'),
-(13, 'Sunglass & Frames', 'sunglass-frames', 1, 'Yes', 83, '2023-11-23 23:59:09', '2023-11-23 23:59:09'),
-(14, 'Boys clothing', 'boys-clothing', 1, 'Yes', 84, '2023-11-23 23:59:22', '2023-11-23 23:59:22'),
-(15, 'Girls clothing', 'girls-clothing', 1, 'Yes', 84, '2023-11-23 23:59:36', '2023-11-23 23:59:36'),
-(16, 'Flooring', 'flooring', 1, 'Yes', 85, '2023-11-24 00:00:13', '2023-11-24 00:00:13'),
-(17, 'Bath', 'bath', 1, 'Yes', 85, '2023-11-24 00:00:22', '2023-11-24 00:00:22'),
-(18, 'Home Decor', 'home-decor', 1, 'Yes', 85, '2023-11-24 00:00:35', '2023-11-24 00:00:35'),
-(19, 'Makeup', 'makeup', 1, 'Yes', 86, '2023-11-24 00:00:51', '2023-11-24 00:00:51');
+(21, 'Bottom  Wear', 'bottom-wear', 1, 'Yes', 83, '2023-11-23 23:57:22', '2023-11-23 23:57:22'),
+(22, 'Top Wear', 'top-wear', 1, 'Yes', 83, '2023-11-23 23:56:48', '2023-11-23 23:56:48'),
+(25, 'Jewellery', 'jewellery', 1, 'Yes', 83, '2026-02-16 07:01:49', '2026-02-16 07:01:49');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `sub_sub_categories`
+--
+
+CREATE TABLE `sub_sub_categories` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `category_id` bigint(20) UNSIGNED NOT NULL,
+  `sub_category_id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `slug` varchar(255) NOT NULL,
+  `status` int(11) NOT NULL DEFAULT 1,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `sub_sub_categories`
+--
+
+INSERT INTO `sub_sub_categories` (`id`, `category_id`, `sub_category_id`, `name`, `slug`, `status`, `created_at`, `updated_at`) VALUES
+(1, 82, 6, 'T-shirt', 't-shirt', 1, '2026-02-16 03:28:51', '2026-02-16 03:28:51'),
+(8, 83, 22, 'Tops', 'tops', 1, '2026-02-16 06:59:55', '2026-02-16 06:59:55'),
+(9, 83, 25, 'Earrings', 'earrings', 1, '2026-02-16 07:02:29', '2026-02-16 07:02:29');
 
 -- --------------------------------------------------------
 
@@ -773,7 +808,7 @@ INSERT INTO `sub_categories` (`id`, `name`, `slug`, `status`, `showHome`, `categ
 
 CREATE TABLE `temp_images` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -786,14 +821,14 @@ CREATE TABLE `temp_images` (
 
 CREATE TABLE `users` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `phone` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `phone` varchar(20) DEFAULT NULL,
   `role` int(11) NOT NULL DEFAULT 1,
   `status` int(11) NOT NULL DEFAULT 1,
   `email_verified_at` timestamp NULL DEFAULT NULL,
-  `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `remember_token` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `password` varchar(255) NOT NULL,
+  `remember_token` varchar(100) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -803,8 +838,8 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `phone`, `role`, `status`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`) VALUES
-(1, 'Admin', 'mukeshbhavsar210@gmail.com', '', 2, 1, NULL, '$2y$10$rpkpp6yhQN5poY2pbWKUEOtqSw.FB1tVTaA.Pqfj4Ilz1LNftFfxa', NULL, '2023-11-17 23:52:06', '2023-12-01 05:59:34'),
-(3, 'Priyanka', 'p.bhavsar2610@gmail.com', '9538135005', 1, 1, NULL, '$2y$10$rpkpp6yhQN5poY2pbWKUEOtqSw.FB1tVTaA.Pqfj4Ilz1LNftFfxa', NULL, '2023-11-25 00:32:42', '2023-12-02 04:52:49');
+(1, 'Admin', 'mukeshbhavsar210@gmail.com', '', 2, 1, NULL, '$2y$12$Iy5Wh1TVAkCYAvaefrR71OEKD4QDjhnnWBxknqjwnioSSM6sAJMnO', NULL, '2023-11-17 23:52:06', '2023-12-01 05:59:34'),
+(3, 'Priyanka', 'p.bhavsar2610@gmail.com', '9538135005', 1, 1, NULL, '$2y$12$Iy5Wh1TVAkCYAvaefrR71OEKD4QDjhnnWBxknqjwnioSSM6sAJMnO', NULL, '2023-11-25 00:32:42', '2023-12-02 04:52:49');
 
 -- --------------------------------------------------------
 
@@ -906,6 +941,12 @@ ALTER TABLE `password_reset_tokens`
   ADD PRIMARY KEY (`email`);
 
 --
+-- Indexes for table `payments`
+--
+ALTER TABLE `payments`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `personal_access_tokens`
 --
 ALTER TABLE `personal_access_tokens`
@@ -937,6 +978,14 @@ ALTER TABLE `product_ratings`
   ADD KEY `product_ratings_product_id_foreign` (`product_id`);
 
 --
+-- Indexes for table `sessions`
+--
+ALTER TABLE `sessions`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `sessions_user_id_index` (`user_id`),
+  ADD KEY `sessions_last_activity_index` (`last_activity`);
+
+--
 -- Indexes for table `shipping_charges`
 --
 ALTER TABLE `shipping_charges`
@@ -948,6 +997,15 @@ ALTER TABLE `shipping_charges`
 ALTER TABLE `sub_categories`
   ADD PRIMARY KEY (`id`),
   ADD KEY `sub_categories_category_id_foreign` (`category_id`);
+
+--
+-- Indexes for table `sub_sub_categories`
+--
+ALTER TABLE `sub_sub_categories`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `sub_sub_categories_slug_unique` (`slug`),
+  ADD KEY `sub_sub_categories_category_id_foreign` (`category_id`),
+  ADD KEY `sub_sub_categories_sub_category_id_foreign` (`sub_category_id`);
 
 --
 -- Indexes for table `temp_images`
@@ -984,7 +1042,7 @@ ALTER TABLE `brands`
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=148;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=149;
 
 --
 -- AUTO_INCREMENT for table `countries`
@@ -1014,7 +1072,7 @@ ALTER TABLE `failed_jobs`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT for table `orders`
@@ -1033,6 +1091,12 @@ ALTER TABLE `order_items`
 --
 ALTER TABLE `pages`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `payments`
+--
+ALTER TABLE `payments`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `personal_access_tokens`
@@ -1068,7 +1132,13 @@ ALTER TABLE `shipping_charges`
 -- AUTO_INCREMENT for table `sub_categories`
 --
 ALTER TABLE `sub_categories`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+
+--
+-- AUTO_INCREMENT for table `sub_sub_categories`
+--
+ALTER TABLE `sub_sub_categories`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `temp_images`
@@ -1138,6 +1208,13 @@ ALTER TABLE `product_ratings`
 --
 ALTER TABLE `sub_categories`
   ADD CONSTRAINT `sub_categories_category_id_foreign` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `sub_sub_categories`
+--
+ALTER TABLE `sub_sub_categories`
+  ADD CONSTRAINT `sub_sub_categories_category_id_foreign` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `sub_sub_categories_sub_category_id_foreign` FOREIGN KEY (`sub_category_id`) REFERENCES `sub_categories` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `wishlists`

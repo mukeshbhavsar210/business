@@ -48,9 +48,8 @@
                     <thead>
                         <tr>
                             <th width="60">ID</th>
-                            <th>Name</th>
-                            <th>Slug</th>
-                            <th>Parent Category</th>
+                            <th>Name</th>                            
+                            <th>Category</th>
                             <th width="100">Status</th>
                             <th width="100">Action</th>
                         </tr>
@@ -61,7 +60,6 @@
                                 <tr>
                                     <td>{{ $subCategory->id }}</td>
                                     <td>{{ $subCategory->name }}</td>
-                                    <td>{{ $subCategory->slug }}</td>
                                     <td>{{ $subCategory->categoryName }}</td>
                                     <td>
                                         @if($subCategory->status == 1)

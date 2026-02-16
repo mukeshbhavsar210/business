@@ -12,8 +12,7 @@ use Illuminate\Support\Facades\File;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 
-class CategoryController extends Controller
-{
+class CategoryController extends Controller {
     public function index(Request $request){
         $categories = Category::latest();
 
@@ -22,11 +21,11 @@ class CategoryController extends Controller
         }
 
         $categories = $categories->paginate(10);
-        return view('admin.category.list', compact('categories'));
+        return view('admin.categories.category.list', compact('categories'));
     }
 
     public function create(){
-        return view('admin.category.create');
+        return view('admin.categories.category.create');
     }
 
 
@@ -34,7 +33,7 @@ class CategoryController extends Controller
     public function store(Request $request){
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'slug' => 'required|unique:categories',
+            'slug' => 'required|unique:sub_categories,slug'
         ]);
 
         if ($validator->passes()) {
@@ -91,7 +90,7 @@ class CategoryController extends Controller
             return redirect()->route('categories.index');
         }
 
-        return view('admin.category.edit', compact('category'));
+        return view('admin.categories.category.edit', compact('category'));
     }
 
 
