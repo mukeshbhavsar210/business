@@ -7,9 +7,9 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\Category;
 use App\Models\SubCategory;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
-class SubCategoryController extends Controller
-{
+class SubCategoryController extends Controller {
     public function index(Request $request){
         $subCategories = SubCategory::select('sub_categories.*','categories.name as categoryName')
             ->latest('sub_categories.id')
@@ -21,21 +21,28 @@ class SubCategoryController extends Controller
         }
 
         $subCategories = $subCategories->paginate(10);
-        return view('admin.sub_category.list', compact('subCategories'));
+        return view('admin.categories.sub_category.list', compact('subCategories'));
     }
 
 
     public function create(){
         $categories = Category::orderBy('name','ASC')->get();
         $data['categories'] = $categories;
-        return view("admin.sub_category.create", $data);
+        return view("admin.categories.sub_category.create", $data);
     }
 
 
     public function store(Request $request){
         $validator = Validator::make($request->all(), [
-            'name' => 'required',
-            'slug' => 'required|unique:sub_categories',
+            'name' => 'required',             
+            // 'slug' => 'required|unique:sub_categories',
+            'slug' => [
+                    'required',
+                    Rule::unique('sub_categories')
+                        ->where(function ($query) use ($request) {
+                            return $query->where('category_id', $request->category_id);
+                        }),
+                ],
             'category' => 'required',
             'status' => 'required',
         ]);
@@ -76,7 +83,7 @@ class SubCategoryController extends Controller
         $categories = Category::orderBy('name','ASC')->get();
         $data['categories'] = $categories;
         $data['subCategory'] = $subCategory;
-        return view("admin.sub_category.edit", $data);
+        return view("admin.categories.sub_category.edit", $data);
     }
 
     public function update($id, Request $request){

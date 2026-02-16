@@ -14,6 +14,7 @@ use App\Http\Controllers\admin\ProductSubCategoryController;
 use App\Http\Controllers\admin\SettingController;
 use App\Http\Controllers\admin\ShippingController;
 use App\Http\Controllers\admin\SubCategoryController;
+use App\Http\Controllers\admin\Sub2CategoryController;
 use App\Http\Controllers\admin\TempImagesController;
 use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\AuthController;
@@ -89,22 +90,33 @@ Route::group(['prefix' => 'admin'], function(){
 
         //Category Routes
         Route::controller(CategoryController::class)->group(function() {
-            Route::get('/categories', 'index')->name('categories.index');
-            Route::get('/categories/create', 'create')->name('categories.create');
-            Route::post('/categories', 'store')->name('categories.store');
-            Route::get('/categories/{category}/edit', 'edit')->name('categories.edit');
-            Route::put('/categories/{category}', 'update')->name('categories.update');
-            Route::delete('/categories/{category}', 'destroy')->name('categories.delete');
+            Route::get('/categories/category', 'index')->name('categories.index');
+            Route::get('/categories/category/create', 'create')->name('categories.create');
+            Route::post('/categories/category/', 'store')->name('categories.store');
+            Route::get('/categories/category/{category}/edit', 'edit')->name('categories.edit');
+            Route::put('/categories/category/{category}', 'update')->name('categories.update');
+            Route::delete('/categories/category/{category}', 'destroy')->name('categories.delete');
         });
 
         //Sub Category Routes
         Route::controller(SubCategoryController::class)->group(function() {
-            Route::get('/sub-categories', 'index')->name('sub-categories.index');
-            Route::get('/sub-categories/create', 'create')->name('sub-categories.create');
-            Route::post('/sub-categories', 'store')->name('sub-categories.store');
-            Route::get('/sub-categories/{subCategory}/edit', 'edit')->name('sub-categories.edit');
-            Route::put('/sub-categories/{subCategory}', 'update')->name('sub-categories.update');
-            Route::delete('/sub-categories/{subCategory}', 'destroy')->name('sub-categories.delete');
+            Route::get('/categories/sub', 'index')->name('sub-categories.index');
+            Route::get('/categories/sub/create', 'create')->name('sub-categories.create');
+            Route::post('/categories/sub', 'store')->name('sub-categories.store');
+            Route::get('/categories/sub/{subCategory}/edit', 'edit')->name('sub-categories.edit');
+            Route::put('/categories/sub/{subCategory}', 'update')->name('sub-categories.update');
+            Route::delete('/categories/sub/{subCategory}', 'destroy')->name('sub-categories.delete');            
+        });
+
+        //Sub Category Routes
+        Route::controller(Sub2CategoryController::class)->group(function() {
+            Route::get('/categories/sub2', 'index')->name('sub2-categories.index');
+            Route::get('/categories/sub2/create', 'create')->name('sub2-categories.create');
+            Route::post('/categories/sub2', 'store')->name('sub2-categories.store');
+            Route::get('/categories/sub2/{subCategory}/edit', 'edit')->name('sub2-categories.edit');
+            Route::put('/categories/sub2/{subCategory}', 'update')->name('sub2-categories.update');
+            Route::delete('/categories/sub2/{subCategory}', 'destroy')->name('sub2-categories.delete');
+            Route::get('/categories/get-subcategories/{id}', 'getSubCategories')->name('get.subcategories');
         });
 
         //Brands

@@ -13,7 +13,7 @@
         </div>
     </section>
 
-    <section class="section-6 pt-5">
+    <section class="section-6">
         <div class="container">
             <div class="row">
                 <div class="col-md-3 sidebar">

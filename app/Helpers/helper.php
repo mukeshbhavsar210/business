@@ -8,9 +8,21 @@ use App\Models\Page;
 use App\Models\ProductImage;
 use Illuminate\Support\Facades\Mail;
 
-    function getCategories(){
-        return Category::orderBy('name','ASC')->with('sub_category')->take(4)->orderBy('id','DESC')->where('status',1)->where('showHome','Yes')->get();
+    // function getCategories(){
+    //     return Category::orderBy('name','ASC')->with('sub_category')->take(4)->orderBy('id','DESC')->where('status',1)->where('showHome','Yes')->get();
+    // }
+
+    function getCategories() {
+        return Category::with([
+                'subCategories.subSubCategories'
+            ])
+            ->where('status', 1)
+            ->where('showHome', 'Yes')
+            ->orderBy('id', 'DESC')
+            ->take(4)
+            ->get();
     }
+
 
     function getProductImage($productId){
         return ProductImage::where('product_id',$productId)->first();
