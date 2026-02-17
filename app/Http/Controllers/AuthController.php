@@ -82,17 +82,52 @@ class AuthController extends Controller
         }
     }
 
-    public function profile(){
-
+    public function dashboard(){
         $userId = Auth::user()->id;
-
         $countries = Country::orderBy('name','ASC')->get();
-
         $user = User::where('id',$userId)->first();
+        $address = CustomerAddress::where('user_id',$userId)->first();
 
+        return view('front.account.dashboard',[
+            'user' => $user,
+            'countries' => $countries,
+            'address' => $address
+        ]);
+    }
+
+    public function profile(){
+        $userId = Auth::user()->id;
+        $countries = Country::orderBy('name','ASC')->get();
+        $user = User::where('id',$userId)->first();
         $address = CustomerAddress::where('user_id',$userId)->first();
 
         return view('front.account.profile',[
+            'user' => $user,
+            'countries' => $countries,
+            'address' => $address
+        ]);
+    }
+
+    public function address(){
+        $userId = Auth::user()->id;
+        $countries = Country::orderBy('name','ASC')->get();
+        $user = User::where('id',$userId)->first();
+        $address = CustomerAddress::where('user_id',$userId)->first();
+
+        return view('front.account.address',[
+            'user' => $user,
+            'countries' => $countries,
+            'address' => $address
+        ]);
+    }
+
+     public function cards(){
+        $userId = Auth::user()->id;
+        $countries = Country::orderBy('name','ASC')->get();
+        $user = User::where('id',$userId)->first();
+        $address = CustomerAddress::where('user_id',$userId)->first();
+
+        return view('front.account.cards',[
             'user' => $user,
             'countries' => $countries,
             'address' => $address
@@ -185,13 +220,22 @@ class AuthController extends Controller
 
     public function orders(){
         $user = Auth::user();
-        $orders = Order::with('items.product')->where('user_id', $user->id)->orderBy('created_at','DESC')->get();
+        $userId = Auth::user()->id;
+        $orders = Order::with('items.product', 'items.product.color', 'items.product.size')
+                    ->where('user_id', $user->id)
+                    ->latest()
+                    ->get();
+        $userDetails = CustomerAddress::where('user_id',$userId)->first();
+
         $data['orders'] = $orders;
+        $data['userDetails'] = $userDetails;
+
         return view('front.account.order', $data);
     }
 
     public function orderDetail($id){
         $user = Auth::user();
+        $userId = Auth::user()->id;
         $order = Order::where('user_id',$user->id)->where('id',$id)->first();
         $data['order'] = $order;
 
@@ -199,7 +243,10 @@ class AuthController extends Controller
         $data['orderItems'] = $orderItems;
 
         $orderItemsCount = OrderItem::where('order_id',$id)->count();
+        $userDetails = CustomerAddress::where('user_id',$userId)->first();
+
         $data['orderItemsCount'] = $orderItemsCount;
+        $data['userDetails'] = $userDetails;
 
         return view('front.account.order-detail',$data);
     }

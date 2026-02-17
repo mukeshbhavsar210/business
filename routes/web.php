@@ -64,7 +64,10 @@ Route::group(['prefix' => 'account'], function(){
     });
 
     Route::group(['middleware' => 'auth'], function(){
+        Route::get('/dashboard',[AuthController::class,'dashboard'])->name('account.dashboard');
         Route::get('/profile',[AuthController::class,'profile'])->name('account.profile');
+        Route::get('/address',[AuthController::class,'address'])->name('account.address');
+        Route::get('/cards',[AuthController::class,'cards'])->name('account.cards');
         Route::post('/update-profile',[AuthController::class,'updateProfile'])->name('account.updateProfile');
         Route::post('/update-address',[AuthController::class,'updateAddress'])->name('account.updateAddress');
         Route::get('/change-password',[AuthController::class,'changePasswordForm'])->name('account.changePassword');
@@ -72,7 +75,7 @@ Route::group(['prefix' => 'account'], function(){
         Route::get('/orders',[AuthController::class,'orders'])->name('account.orders');
         Route::get('/wishlist',[AuthController::class,'wishlist'])->name('account.wishlist');
         Route::post('/remove-product-from-wishlist',[AuthController::class,'removeProductFromWishlist'])->name('account.removeProductFromWishlist');
-        Route::get('/order-detail/{orderId}',[AuthController::class,'orderDetail'])->name('account.orderDetail');
+        Route::get('/item/details/{orderId}',[AuthController::class,'orderDetail'])->name('account.orderDetail');
         Route::get('/logout',[AuthController::class,'logout'])->name('account.logout');
     });
 });
@@ -142,6 +145,7 @@ Route::group(['prefix' => 'admin'], function(){
 
         //Sub Categories Connect to main Categories
         Route::get('/product-subcategories', [ProductSubCategoryController::class, 'index'])->name('product-subcategories.index');
+        Route::get('/product-subsubcategories', [ProductSubCategoryController::class, 'getSubSubCategories'])->name('product-subcategories.extra');
 
         //Delete Product Images Route
         Route::post('/product-images/update', [ProductImageController::class, 'update'])->name('product-images.update');

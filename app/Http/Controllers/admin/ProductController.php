@@ -5,9 +5,12 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\Color;
 use App\Models\Product;
 use App\Models\ProductImage;
+use App\Models\Size;
 use App\Models\SubCategory;
+use App\Models\SubSubCategory;
 use App\Models\TempImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
@@ -34,8 +37,13 @@ class ProductController extends Controller {
         $data = [];
         $categories = Category::orderBy('name','ASC')->get();
         $brands = Brand::orderBy('name','ASC')->get();
+        $colors = Color::orderBy('name','ASC')->get();
+        $sizes  = Size::orderBy('name','ASC')->get();
+
         $data['categories'] = $categories;
         $data['brands'] = $brands;
+        $data['colors'] = $colors;
+        $data['sizes'] = $sizes;
 
         return view('admin.products.create', $data);
     }
@@ -71,7 +79,10 @@ class ProductController extends Controller {
             $product->status = $request->status;
             $product->category_id = $request->category;
             $product->sub_category_id = $request->sub_category;
+            $product->sub_sub_category_id = $request->sub_sub_category;
             $product->brand_id = $request->brand;
+            $product->color_id = $request->color;            
+            $product->size_id = $request->size;
             $product->is_featured = $request->is_featured;
             $product->shipping_returns = $request->shipping_returns;
             $product->short_description = $request->short_description;
@@ -138,7 +149,8 @@ class ProductController extends Controller {
 
         //Fetch Product Images
         $productImages = ProductImage::where('product_id',$product->id)->get();
-        $subCategories = SubCategory::where('category_id',$product->category_id)->get();
+        $subCategories = SubCategory::where('category_id',$product->category_id)->get();        
+        $sub2Categories = SubSubCategory::where('sub_category_id', $product->sub_category_id)->get();        
 
         //Fetch Related products
         $relatedProducts = [];
@@ -150,14 +162,18 @@ class ProductController extends Controller {
         $data = [];
         $categories = Category::orderBy('name','ASC')->get();
         $brands = Brand::orderBy('name','ASC')->get();
+        $colors = Color::orderBy('name','ASC')->get();
+        $sizes  = Size::orderBy('name','ASC')->get();
+
         $data['categories'] = $categories;
         $data['brands'] = $brands;
         $data['product'] = $product;
         $data['subCategories'] = $subCategories;
+        $data['sub2Categories'] = $sub2Categories;
         $data['productImages'] = $productImages;
         $data['relatedProducts'] = $relatedProducts;
-
-        
+        $data['colors'] = $colors;
+        $data['sizes'] = $sizes;
 
         return view('admin.products.edit',$data);
     }
@@ -196,7 +212,10 @@ class ProductController extends Controller {
             $product->status = $request->status;
             $product->category_id = $request->category;
             $product->sub_category_id = $request->sub_category;
+            $product->sub_sub_category_id = $request->sub_sub_category;
             $product->brand_id = $request->brand;
+            $product->color_id = $request->color;            
+            $product->size_id = $request->size;
             $product->is_featured = $request->is_featured;
             $product->shipping_returns = $request->shipping_returns;
             $product->short_description = $request->short_description;
