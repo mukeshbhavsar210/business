@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Mail;
         return Category::with([
                 'subCategories.subSubCategories'
             ])
+            ->orderBy('menu_order', 'asc')
             ->where('status', 1)
             ->where('showHome', 'Yes')
             ->orderBy('id', 'DESC')

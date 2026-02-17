@@ -69,8 +69,8 @@ Route::group(['prefix' => 'account'], function(){
         Route::post('/update-address',[AuthController::class,'updateAddress'])->name('account.updateAddress');
         Route::get('/change-password',[AuthController::class,'changePasswordForm'])->name('account.changePassword');
         Route::post('/process-change-password',[AuthController::class,'changePassword'])->name('account.processChangePassword');
-        Route::get('/my-orders',[AuthController::class,'orders'])->name('account.orders');
-        Route::get('/my-wishlist',[AuthController::class,'wishlist'])->name('account.wishlist');
+        Route::get('/orders',[AuthController::class,'orders'])->name('account.orders');
+        Route::get('/wishlist',[AuthController::class,'wishlist'])->name('account.wishlist');
         Route::post('/remove-product-from-wishlist',[AuthController::class,'removeProductFromWishlist'])->name('account.removeProductFromWishlist');
         Route::get('/order-detail/{orderId}',[AuthController::class,'orderDetail'])->name('account.orderDetail');
         Route::get('/logout',[AuthController::class,'logout'])->name('account.logout');

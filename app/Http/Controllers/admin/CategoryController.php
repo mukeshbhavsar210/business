@@ -14,7 +14,7 @@ use Intervention\Image\Drivers\Gd\Driver;
 
 class CategoryController extends Controller {
     public function index(Request $request){
-        $categories = Category::latest();
+        $categories = Category::orderBy('menu_order', 'asc');
 
         if(!empty($request->get('keyword'))){
             $categories = $categories->where('name', 'like', '%'.$request->get('keyword').'%');
@@ -42,6 +42,7 @@ class CategoryController extends Controller {
             $category->slug = $request->slug;
             $category->status = $request->status;
             $category->showHome = $request->showHome;
+            $category->menu_order = $request->menu_order;
             $category->save();
 
             // Save image here
@@ -94,9 +95,7 @@ class CategoryController extends Controller {
     }
 
 
-
     public function update($categoryId, Request $request){
-
         $category = Category::find($categoryId);
 
         if (empty($category)) {
@@ -118,6 +117,7 @@ class CategoryController extends Controller {
             $category->slug = $request->slug;
             $category->status = $request->status;
             $category->showHome = $request->showHome;
+            $category->menu_order = $request->menu_order;
             $category->save();
 
             $oldImage = $category->image;
