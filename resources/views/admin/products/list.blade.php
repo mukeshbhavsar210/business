@@ -64,13 +64,15 @@
                             <tr>
                                 <td>{{ $product->id }}</td>
                                 <td>
-                                    @if (!empty($productImage->image))
-                                        <img src="{{ asset('uploads/product/small/'.$productImage->image) }}" class="img-thumbnail" width="50" >
-                                        @else
-                                        <img src="{{ asset('admin-assets/img/default-150x150.png') }}" alt="" class="img-thumbnail" width="50"  />
-                                    @endif
+                                    <a href="{{ route('products.edit', $product->id) }}">
+                                        @if (!empty($productImage->image))
+                                            <img src="{{ asset('uploads/product/small/'.$productImage->image) }}" class="img-thumbnail" width="50" >
+                                            @else
+                                            <img src="{{ asset('admin-assets/img/default-150x150.png') }}" alt="" class="img-thumbnail" width="50"  />
+                                        @endif
+                                    </a>
                                 </td>
-                                <td><a href="#">{{ $product->title }}</a></td>
+                                <td><a href="{{ route('products.edit', $product->id) }}">{{ $product->title }}</a></td>
                                 <td>₹{{ $product->price }}</td>
                                 <td>{{ $product->qty }} left in Stock</td>
                                 <td>{{ $product->sku }}</td>

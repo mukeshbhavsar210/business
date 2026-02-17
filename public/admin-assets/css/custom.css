@@ -47,3 +47,11 @@
 
 .alert { position: absolute; top:-46px; left:40%; z-index:9999; width: 400px; padding:8px 13px;}
 .alert .close { padding:7px 10px;}
+
+.text-muted { font-size: 13px;}
+
+.form-group { margin-bottom: 10px;}
+.form-group label { margin-bottom: 5px; font-size: 12px; text-transform: uppercase; color: var(--gray);}
+
+.form-control, .form-select { padding: 8px 10px 10px 13px; font-size: 14px;}
+.form-control:focus, .form-select:focus { box-shadow: none; border-color: var(--black);}
