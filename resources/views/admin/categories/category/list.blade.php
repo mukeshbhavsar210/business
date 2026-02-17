@@ -50,7 +50,7 @@
                             <th width="60">ID</th>
                             <th>Image</th>
                             <th>Name</th>
-                            <th>Slug</th>
+                            <th>Menu Order</th>
                             <th width="100">Status</th>
                             <th width="100">Action</th>
                         </tr>
@@ -60,9 +60,9 @@
                             @foreach ($categories as $category)
                                 <tr>
                                     <td>{{ $category->id }}</td>
-                                    <td><img style="border-radius: 100px; width:35px; height:35px" src="{{ asset('uploads/category/thumb/'.$category->image) }}" alt="" /></td>
+                                    <td><img style="border-radius: 5px; width:50px; height:50px" src="{{ asset('uploads/category/thumb/'.$category->image) }}" alt="" /></td>
                                     <td>{{ $category->name }}</td>
-                                    <td>{{ $category->slug }}</td>
+                                    <td>{{ $category->menu_order }}</td>
                                     <td>
                                         @if($category->status == 1)
                                             <svg class="text-success-500 h-6 w-6 text-success" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">

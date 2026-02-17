@@ -1,17 +1,16 @@
-<ul id="account-panel" class="nav nav-pills flex-column" >
-    <li class="nav-item">
-        <a href="{{ route('account.profile') }}"  class="nav-link font-weight-bold" role="tab" aria-controls="tab-login" aria-expanded="false"><i class="fas fa-user-alt"></i> My Profile</a>
-    </li>
-    <li class="nav-item">
-        <a href="{{ route('account.orders') }}"  class="nav-link font-weight-bold" role="tab" aria-controls="tab-register" aria-expanded="false"><i class="fas fa-shopping-bag"></i>My Orders</a>
-    </li>
-    <li class="nav-item">
-        <a href="{{ route('account.wishlist') }}"  class="nav-link font-weight-bold" role="tab" aria-controls="tab-register" aria-expanded="false"><i class="fas fa-heart"></i> Wishlist</a>
-    </li>
-    <li class="nav-item">
-        <a href="{{ route('account.changePassword') }}"  class="nav-link font-weight-bold" role="tab" aria-controls="tab-register" aria-expanded="false"><i class="fas fa-lock"></i> Change Password</a>
-    </li>
-    <li class="nav-item">
-        <a href="{{ route('account.logout' )}}" class="nav-link font-weight-bold" role="tab" aria-controls="tab-register" aria-expanded="false"><i class="fas fa-sign-out-alt"></i> Logout</a>
-    </li>
+<ul class="admin-leftbar">
+    <li><a href="{{ route('account.profile') }}" class="{{ request()->routeIs('account.profile') ? 'active' : '' }}" >Overview</a></li>
+    <hr />
+    <li class="li-title">Orders</li>
+    <li><a href="{{ route('account.orders') }}" class="{{ request()->routeIs('account.orders') ? 'active' : '' }}">Orders & Returns</a></li>
+    <hr />
+    <li class="li-title">Account</li>
+    <li><a href="{{ route('account.profile') }}" >Profile</a></li>
+    <li><a href="{{ route('account.profile') }}" >Saved Cards</a></li>
+    <li><a href="{{ route('account.profile') }}" >Addresses</a></li>
+    <li><a href="{{ route('account.profile') }}" >Delete Account</a></li>
+    <hr />
+    <li class="li-title">Legal</li>
+    <li><a href="{{ route('account.profile') }}" >Terms of Use</a></li>
+    <li><a href="{{ route('account.profile') }}" >Privacy Center</a></li>
 </ul>

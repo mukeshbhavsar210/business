@@ -185,7 +185,7 @@ class AuthController extends Controller
 
     public function orders(){
         $user = Auth::user();
-        $orders = Order::where('user_id', $user->id)->orderBy('created_at','DESC')->get();
+        $orders = Order::with('items.product')->where('user_id', $user->id)->orderBy('created_at','DESC')->get();
         $data['orders'] = $orders;
         return view('front.account.order', $data);
     }

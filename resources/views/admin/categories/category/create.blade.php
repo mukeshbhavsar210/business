@@ -22,21 +22,46 @@
             <div class="card">
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-8">
                             <div class="mb-3">
                                 <label for="name">Name</label>
                                 <input type="text" name="name" id="name" class="form-control" placeholder="Name">
+                                <input type="hidden" readonly name="slug" id="slug" class="form-control" placeholder="">
                                 <p></p>
                             </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="slug">Slug</label>
-                                <input type="text" readonly name="slug" id="slug" class="form-control" placeholder="">
-                                <p></p>
+                            <div class="row">
+                                <div class="col-md-4">                                
+                                    <label for="status">Status</label>
+                                    <select name="status" id="status" class="form-control">
+                                        <option value="1">Active</option>
+                                        <option value="0">Block</option>
+                                    </select>                                
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="showHome">Show on Home</label>
+                                    <select name="showHome" id="showHome" class="form-control">
+                                        <option value="Yes">Yes</option>
+                                        <option value="No">No</option>
+                                    </select>                                
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="menu_order">Order</label>
+                                    <select name="menu_order" id="menu_order" class="form-control">
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                    </select>                                
+                                </div>
+                                <div class="col-md-6 mt-4">
+                                    <button type="submit" class="btn btn-primary">Create</button>
+                                    <a href="{{ route('categories.index') }}" class="btn btn-outline-dark ml-3">Cancel</a>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-6">
+                        </div>                        
+                        <div class="col-md-4">
                             <div class="mb-3">
                                 <input type="hidden" id="image_id" name="image_id" value=" ">
                                 <label for="image">Image</label>
@@ -46,35 +71,12 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="status">Status</label>
-                                <select name="status" id="status" class="form-control">
-                                    <option value="1">Active</option>
-                                    <option value="0">Block</option>
-                                </select>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="showHome">Show on Home</label>
-                                <select name="showHome" id="showHome" class="form-control">
-                                    <option value="Yes">Yes</option>
-                                    <option value="No">No</option>
-                                </select>
-                            </div>
-                        </div>
+                        </div>                        
                     </div>
                 </div>
             </div>
-
-            <div class="pb-5 pt-3">
-                <button type="submit" class="btn btn-primary">Create</button>
-                <a href="{{ route('categories.index') }}" class="btn btn-outline-dark ml-3">Cancel</a>
-            </div>
         </form>
     </div>
-    <!-- /.card -->
 </section>
 @endsection
 
