@@ -13,6 +13,10 @@ class Product extends Model {
         'track_qty', 'qty', 'status', 'sub2_category_id'
     ];
 
+    public function items(){
+        return $this->hasMany(OrderItem::class);
+    }
+
     public function product_images(){
         return $this->hasMany(ProductImage::class);
     }
@@ -24,4 +28,9 @@ class Product extends Model {
     public function size() {
         return $this->belongsTo(Size::class);
     }
+
+    public function images() {
+        return $this->hasMany(ProductImage::class);
+    }
+
 }
