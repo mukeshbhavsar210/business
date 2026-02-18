@@ -57,39 +57,48 @@ Route::controller(CartController::class)->group(function() {
 //User realted
 Route::group(['prefix' => 'account'], function(){
     Route::group(['middleware' => 'guest'], function(){
-        Route::get('/login',[AuthController::class,'login'])->name('account.login');
-        Route::post('/login',[AuthController::class,'authenticate'])->name('account.authenticate');
-        Route::get('/register',[AuthController::class,'register'])->name('account.register');
-        Route::post('/process-register',[AuthController::class,'processRegister'])->name('account.processRegister');
+        Route::controller(AuthController::class)->group(function() {
+            Route::get('/login','login')->name('account.login');
+            Route::post('/login','authenticate')->name('account.authenticate');
+            Route::get('/register','register')->name('account.register');
+            Route::post('/process-register','processRegister')->name('account.processRegister');
+        });
     });
 
     Route::group(['middleware' => 'auth'], function(){
-        Route::get('/dashboard',[AuthController::class,'dashboard'])->name('account.dashboard');
-        Route::get('/profile',[AuthController::class,'profile'])->name('account.profile');
-        Route::get('/address',[AuthController::class,'address'])->name('account.address');
-        Route::get('/cards',[AuthController::class,'cards'])->name('account.cards');
-        Route::post('/update-profile',[AuthController::class,'updateProfile'])->name('account.updateProfile');
-        Route::post('/update-address',[AuthController::class,'updateAddress'])->name('account.updateAddress');
-        Route::get('/change-password',[AuthController::class,'changePasswordForm'])->name('account.changePassword');
-        Route::post('/process-change-password',[AuthController::class,'changePassword'])->name('account.processChangePassword');
-        Route::get('/orders',[AuthController::class,'orders'])->name('account.orders');
-        Route::get('/wishlist',[AuthController::class,'wishlist'])->name('account.wishlist');
-        Route::post('/remove-product-from-wishlist',[AuthController::class,'removeProductFromWishlist'])->name('account.removeProductFromWishlist');
-        Route::get('/item/details/{orderId}',[AuthController::class,'orderDetail'])->name('account.orderDetail');
-        Route::get('/logout',[AuthController::class,'logout'])->name('account.logout');
+        Route::controller(AuthController::class)->group(function() {
+            Route::get('/dashboard','dashboard')->name('account.dashboard');
+            Route::get('/address','address')->name('account.address');
+            Route::get('/cards','cards')->name('account.cards');
+            Route::get('/profile','profile')->name('account.profile');
+            Route::get('/profile/edit','profileEdit')->name('account.profile.edit');
+            Route::post('/update-profile','updateProfile')->name('account.updateProfile');
+            Route::post('/update-address','updateAddress')->name('account.updateAddress');
+            Route::get('/change-password','changePasswordForm')->name('account.changePassword');
+            Route::post('/process-change-password','changePassword')->name('account.processChangePassword');
+            Route::get('/orders','orders')->name('account.orders');
+            Route::get('/wishlist','wishlist')->name('account.wishlist');
+            Route::post('/remove-product-from-wishlist','removeProductFromWishlist')->name('account.removeProductFromWishlist');
+            Route::get('/item/details/{orderId}','orderDetail')->name('account.orderDetail');
+            Route::get('/logout','logout')->name('account.logout');
+        });
     });
 });
 
 //Admin related
 Route::group(['prefix' => 'admin'], function(){
     Route::group(['middleware' => 'admin.guest'], function(){
-        Route::get('/login', [AdminLoginController::class, 'index'])->name('admin.login');
-        Route::post('/authenticate', [AdminLoginController::class, 'authenticate'])->name('admin.authenticate');
+        Route::controller(AdminLoginController::class)->group(function() {
+            Route::get('/login', 'index')->name('admin.login');
+            Route::post('/authenticate', 'authenticate')->name('admin.authenticate');
+        });
     });
 
     Route::group(['middleware' => 'admin.auth'], function(){
-        Route::get('/dashboard', [HomeController::class, 'index'])->name('admin.dashboard');
-        Route::get('/logout', [HomeController::class, 'logout'])->name('admin.logout');
+        Route::controller(HomeController::class)->group(function() {
+            Route::get('/dashboard', 'index')->name('admin.dashboard');
+            Route::get('/logout', 'logout')->name('admin.logout');
+        });
 
         //Category Routes
         Route::controller(CategoryController::class)->group(function() {
@@ -140,7 +149,7 @@ Route::group(['prefix' => 'admin'], function(){
             Route::get('/products/{product}/edit', 'edit')->name('products.edit');
             Route::put('/products/{product}', 'update')->name('products.update');
             Route::delete('/products/{product}', 'destroy')->name('products.delete');
-            Route::get('/get-products',[ProductController::class,'getProducts'])->name('products.getProducts');
+            Route::get('/get-products','getProducts')->name('products.getProducts');            
         });
 
         //Sub Categories Connect to main Categories
@@ -179,12 +188,14 @@ Route::group(['prefix' => 'admin'], function(){
         });
 
         //Users Routes
-        Route::get('/users', [UserController::class, 'index'])->name('users.index');
-        Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
-        Route::post('/users', [UserController::class, 'store'])->name('users.store');
-        Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
-        Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
-        Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.delete');
+        Route::controller(UserController::class)->group(function() {
+            Route::get('/users', 'index')->name('users.index');
+            Route::get('/users/create', 'create')->name('users.create');
+            Route::post('/users', 'store')->name('users.store');
+            Route::get('/users/{user}/edit', 'edit')->name('users.edit');
+            Route::put('/users/{user}', 'update')->name('users.update');
+            Route::delete('/users/{user}', 'destroy')->name('users.delete');
+        });
 
         //Pages Routes
         Route::controller(PageController::class)->group(function() {

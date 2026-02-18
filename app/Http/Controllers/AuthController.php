@@ -83,12 +83,40 @@ class AuthController extends Controller
     }
 
     public function dashboard(){
+        $userId = Auth::user()->id;        
+        $user = User::where('id',$userId)->first();
+        $userDetails = CustomerAddress::where('user_id',$userId)->first();
+
+        return view('front.account.dashboard',[
+            'user' => $user,            
+            'userDetails' => $userDetails
+        ]);
+    }
+
+    
+
+    public function address(){
+        $userId = Auth::user()->id;
+        $countries = Country::orderBy('name','ASC')->get();
+        $user = User::where('id',$userId)->first();
+        $address = CustomerAddress::with('country')->where('user_id',$userId)->first();
+        $userDetails = CustomerAddress::where('user_id',$userId)->first();
+
+        return view('front.account.address',[
+            'user' => $user,
+            'countries' => $countries,
+            'address' => $address,
+            'userDetails' => $userDetails,
+        ]);
+    }
+
+     public function cards(){
         $userId = Auth::user()->id;
         $countries = Country::orderBy('name','ASC')->get();
         $user = User::where('id',$userId)->first();
         $address = CustomerAddress::where('user_id',$userId)->first();
 
-        return view('front.account.dashboard',[
+        return view('front.account.cards',[
             'user' => $user,
             'countries' => $countries,
             'address' => $address
@@ -108,29 +136,14 @@ class AuthController extends Controller
         ]);
     }
 
-    public function address(){
+    public function profileEdit(){
         $userId = Auth::user()->id;
-        $countries = Country::orderBy('name','ASC')->get();
         $user = User::where('id',$userId)->first();
-        $address = CustomerAddress::where('user_id',$userId)->first();
+        $userDetails = CustomerAddress::where('user_id',$userId)->first();
 
-        return view('front.account.address',[
+        return view('front.account.profile_edit',[
             'user' => $user,
-            'countries' => $countries,
-            'address' => $address
-        ]);
-    }
-
-     public function cards(){
-        $userId = Auth::user()->id;
-        $countries = Country::orderBy('name','ASC')->get();
-        $user = User::where('id',$userId)->first();
-        $address = CustomerAddress::where('user_id',$userId)->first();
-
-        return view('front.account.cards',[
-            'user' => $user,
-            'countries' => $countries,
-            'address' => $address
+            'userDetails' => $userDetails
         ]);
     }
 
@@ -147,6 +160,7 @@ class AuthController extends Controller
             $user->name = $request->name;
             $user->email = $request->email;
             $user->phone = $request->phone;
+            $user->mobile = $request->mobile;
             $user->save();
 
             session()->flash('success','Profile updated successfully.');
@@ -171,12 +185,9 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(),[
             'first_name' => 'required|min:5',
             'last_name' => 'required',
-            'mobile' => 'required',
-            'email' => 'required|email',
-            'country_id' => 'required',
+            'mobile' => 'required',            
             'address' => 'required|min:30',
-            'city' => 'required',
-            'state' => 'required',
+            'city' => 'required',            
             'zip' => 'required'
         ]);
 
@@ -185,16 +196,18 @@ class AuthController extends Controller
                 ['user_id' => $userId],
                 [
                     'user_id' => $userId,
+                    'address_type' => $request->address_type,
+                    'default_address' => $request->default_address,
                     'first_name' => $request->first_name,
                     'last_name' => $request->last_name,
                     'mobile' => $request->mobile,
                     'email' => $request->email,
-                    'country_id' => $request->country_id,
                     'address' => $request->address,
-                    'apartment' => $request->apartment,
+                    'locality' => $request->locality,
                     'city' => $request->city,
                     'state' => $request->state,
-                    'zip' => $request->zip
+                    'zip' => $request->zip,
+                    'country_id' => $request->country_id
                 ]
             );
 
@@ -212,6 +225,7 @@ class AuthController extends Controller
             ]);
         }
     }
+
 
     public function logout(){
         Auth::logout();

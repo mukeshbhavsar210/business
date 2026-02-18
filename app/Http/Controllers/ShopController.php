@@ -8,18 +8,16 @@ use App\Models\Product;
 use App\Models\SubCategory;
 use Illuminate\Http\Request;
 
-class ShopController extends Controller
-{
+class ShopController extends Controller {
     public function index(Request $request, $categorySlug = null, $subCategorySlug = null) {
-
         $categorySelected = ' ';
         $subCategorySelected = ' ';
         $brandsArray = [];
 
         $categories = Category::orderBy("name","ASC")->with('sub_category')->where('status',1)->get();
         $brands = Brand::orderBy('name','ASC')->where('status',1)->get();
-
         $products = Product::where('status',1);
+        $productCount = Product::where('status', 1)->count();
 
         //Apply filters here
         if(!empty($categorySlug)) {
@@ -70,6 +68,7 @@ class ShopController extends Controller
         $data['categories'] = $categories;
         $data['brands'] = $brands;
         $data['products'] = $products;
+        $data['productCount '] = $productCount ;
         $data['categorySelected'] = $categorySelected;
         $data['subCategorySelected'] = $subCategorySelected;
         $data['brandsArray'] = $brandsArray;

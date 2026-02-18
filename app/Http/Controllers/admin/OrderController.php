@@ -5,27 +5,33 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Product;
 use Illuminate\Http\Request;
 
-class OrderController extends Controller
-{
-    public function index(Request $request){
-
-        $orders = Order::latest('orders.created_at')->select('orders.*','users.name','users.email');
-        $orders = $orders->leftJoin('users','users.id','orders.user_id');
+class OrderController extends Controller {
+    public function index(Request $request) {
+        $orders = Order::with([
+                        'user',
+                        'orderItems.product.images',
+                        'orderItems.product.size',
+                        'orderItems.product.color'
+                    ])
+                    ->latest('orders.created_at');
 
         if($request->get('keyword') != ""){
-            $orders = $orders->where('users.name','like','%'.$request->keyword.'%');
-            $orders = $orders->orWhere('users.email','like','%'.$request->keyword.'%');
-            $orders = $orders->orWhere('orders.id','like','%'.$request->keyword.'%');
+            $orders = $orders->whereHas('user', function($query) use ($request){
+                $query->where('name','like','%'.$request->keyword.'%')
+                    ->orWhere('email','like','%'.$request->keyword.'%');
+            })
+            ->orWhere('id','like','%'.$request->keyword.'%');
         }
 
         $orders = $orders->paginate(10);
 
-        return view('admin.orders.list',[
-            'orders' => $orders
-        ]);
+        return view('admin.orders.list', compact('orders'));
     }
+
+
 
     public function detail($orderId){
 

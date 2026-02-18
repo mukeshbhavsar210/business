@@ -3,10 +3,10 @@
         <li><a href="{{ route('account.dashboard') }}" class="{{ request()->routeIs('account.dashboard') ? 'active' : '' }}" >Overview</a></li>
         <hr />
         <li class="li-title">Orders</li>
-        <li><a href="{{ route('account.orders') }}" class="{{ request()->routeIs('account.orders') ? 'active' : '' }} {{ request()->routeIs('account.orderDetail') ? 'active' : '' }}">Orders & Returns</a></li>
+        <li><a href="{{ route('account.orders') }}" class="{{ request()->routeIs(['account.orders', 'account.orderDetail']) ? 'active' : '' }}">Orders & Returns</a></li>
         <hr />
         <li class="li-title">Account</li>
-        <li><a href="{{ route('account.profile') }}" class="{{ request()->routeIs('account.profile') ? 'active' : '' }}">Profile</a></li>
+        <li><a href="{{ route('account.profile') }}" class="{{ request()->routeIs(['account.profile', 'account.profile.edit']) ? 'active' : '' }}">Profile</a></li>
         <li><a href="{{ route('account.cards') }}" class="{{ request()->routeIs('account.cards') ? 'active' : '' }}">Saved Cards</a></li>
         <li><a href="{{ route('account.address') }}" class="{{ request()->routeIs('account.address') ? 'active' : '' }}" >Addresses</a></li>
         <li><a href="{{ route('account.profile') }}" >Delete Account</a></li>
