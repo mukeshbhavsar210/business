@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\OrderItem;
 use App\Models\Product;
-use App\Models\Country;
+use App\Models\State;
 use App\Models\Order;
 use App\Models\CustomerAddress;
 use App\Models\DiscountCoupon;
@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use App\Models\Payment;
+use App\Models\State;
 use Razorpay\Api\Api;
 
 class CartController extends Controller
@@ -175,12 +176,12 @@ class CartController extends Controller
 
         session()->forget('url.intended');
 
-        $countries = Country::orderBy('name','ASC')->get();
+        $states = State::orderBy('name','ASC')->get();
 
         //Calcuting shipping charges
         if($customerAddress != '' ){
-            $userCountry = $customerAddress->country_id;
-            $shippingInfo = ShippingCharge::where('country_id', $userCountry)->first();
+            $userState = $customerAddress->state_id;
+            $shippingInfo = ShippingCharge::where('state_id', $userState)->first();
 
             //echo $shippingInfo->amount;
             $totalQty = 0;
@@ -199,7 +200,7 @@ class CartController extends Controller
         }
 
         return view('front.checkout.index',[
-            'countries' => $countries,
+            'states' => $states,
             'customerAddress' => $customerAddress,
             'totalShiipingCharge' => $totalShiipingCharge,
             'discount' => $discount,
@@ -213,8 +214,7 @@ class CartController extends Controller
             'first_name' => 'required|min:5',
             'last_name' => 'required',
             'mobile' => 'required',
-            'email' => 'required|email',
-            'country' => 'required',
+            'email' => 'required|email',            
             'address' => 'required|min:30',
             'city' => 'required',
             'state' => 'required',
@@ -240,7 +240,7 @@ class CartController extends Controller
                 'last_name' => $request->last_name,
                 'mobile' => $request->mobile,
                 'email' => $request->email,
-                'country_id' => $request->country,
+                'state_id' => $request->state,
                 'address' => $request->address,
                 'apartment' => $request->apartment,
                 'city' => $request->city,
@@ -270,7 +270,7 @@ class CartController extends Controller
             }
 
             // Calculate shipping
-            $shippingInfo = ShippingCharge::where('country_id', $request->country)->first();
+            $shippingInfo = ShippingCharge::where('state_id', $request->state)->first();
 
             $totalQty = 0;
             foreach (Cart::content() as $item){
@@ -281,7 +281,7 @@ class CartController extends Controller
                 $shipping = $totalQty*$shippingInfo->amount;
                 $grandTotal = ($subTotal-$discount)+$shipping;
             } else {
-                $shippingInfo = ShippingCharge::where('country_id','rest_of_world')->first();
+                $shippingInfo = ShippingCharge::where('state_id','rest_of_state')->first();
                 $shipping = $totalQty*$shippingInfo->amount;
                 $grandTotal = ($subTotal - $discount)+$shipping;
             }
@@ -306,7 +306,7 @@ class CartController extends Controller
             $order->city = $request->city;
             $order->zip = $request->zip;
             $order->notes = $request->notes;
-            $order->country_id = $request->country;
+            $order->state_id = $request->state;
             $order->save();
 
             //Step 4: Store order items in order items table
@@ -404,9 +404,9 @@ class CartController extends Controller
         //Appy Discount end here
 
 
-        if($request->country_id > 0){
+        if($request->state_id > 0){
 
-            $shippingInfo = ShippingCharge::where('country_id', $request->country_id)->first();
+            $shippingInfo = ShippingCharge::where('state_id', $request->state_id)->first();
 
             $totalQty = 0;
             foreach (Cart::content() as $item){
@@ -427,7 +427,7 @@ class CartController extends Controller
                 ]);
             } else {
 
-                $shippingInfo = ShippingCharge::where('country_id','rest_of_world')->first();
+                $shippingInfo = ShippingCharge::where('state_id','rest_of_state')->first();
                 $shippingCharge = $totalQty*$shippingInfo->amount;
                 $grandTotal = ($subTotal-$discount)+$shippingCharge;
 

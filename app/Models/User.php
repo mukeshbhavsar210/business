@@ -17,11 +17,7 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-    ];
+    protected $fillable = [ 'name', 'email', 'phone', 'mobile', 'birthdate', 'gender', 'role', 'image', 'status', 'password' ];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -45,5 +41,14 @@ class User extends Authenticatable
     public function address() {
         return $this->hasOne(CustomerAddress::class, 'user_id');
     }
+
+    public function getImageUrlAttribute() {
+        if (!empty($this->image)) {
+            return asset('uploads/user/'.$this->image);
+        }
+
+        return asset('admin-assets/img/default-150x150.png');
+    }
+
 
 }

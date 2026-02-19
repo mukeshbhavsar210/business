@@ -8,8 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
 
-class DiscountCodeController extends Controller
-{
+class DiscountCodeController extends Controller {
     public function index(Request $request){
         $discountCoupons = DiscountCoupon::latest();
 
@@ -20,51 +19,20 @@ class DiscountCodeController extends Controller
 
         $discountCoupons = $discountCoupons->paginate(10);
 
-        return view('admin.coupon.list',compact('discountCoupons'));
+        return view('admin.coupon.index',compact('discountCoupons'));
     }
 
-    public function create(){
-        return view ('admin.coupon.create');
-    }
+
 
     public function store(Request $request){
         $validator = Validator::make(request()->all(), [
             'code' => 'required',
             'type' => 'required',
             'discount_amount' => 'required|numeric',
-            'status' => 'required',
+            'status' => 'required',            
         ]);
 
         if ($validator->passes()){
-
-            //starting date must be great than current date
-            if (!empty($request->starts_at)) {
-                $now = Carbon::now();
-                $startAt = Carbon::createFromFormat('Y-m-d H:i:s', $request->starts_at);
-
-                if ($startAt->lte($now) == true) {
-                    return response()->json([
-                        'status' => false,
-                        'errors' => ['starts_at' => 'Start date not can be less than the current date time.']
-                    ]);
-
-                }
-            }
-
-            //expiring date must be great than start date
-            if (!empty($request->starts_at) && !empty($request->expires_at)) {
-                $expiresAt = Carbon::createFromFormat('Y-m-d H:i:s', $request->expires_at);
-                $startAt = Carbon::createFromFormat('Y-m-d H:i:s', $request->starts_at);
-
-                if ($expiresAt->gt($startAt) == false) {
-                    return response()->json([
-                        'status' => false,
-                        'errors' => ['expires_at' => 'Expiry date must be greator than start date.']
-                    ]);
-
-                }
-            }
-
             $discountCode = new DiscountCoupon();
             $discountCode->code = $request->code;
             $discountCode->name = $request->name;
@@ -96,8 +64,8 @@ class DiscountCodeController extends Controller
         }
     }
 
-    public function edit(Request $request, $id){
 
+    public function edit(Request $request, $id){
         $coupon = DiscountCoupon::find($id);
 
         if($coupon == null){
@@ -108,8 +76,8 @@ class DiscountCodeController extends Controller
         return view('admin.coupon.edit', $data);
     }
 
-    public function update(Request $request, $id){
 
+    public function update(Request $request, $id){
         $discountCode = DiscountCoupon::find($id);
 
         if ($discountCode == null){

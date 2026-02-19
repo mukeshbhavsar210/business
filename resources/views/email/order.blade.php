@@ -21,7 +21,7 @@
         <span style="margin-bottom: 5px">Shipping Address:</span><br />
         <b>{{ $mailData['order']->first_name.' '.$mailData['order']->last_name.'' }}</b><br />
         {{ $mailData['order']->address }}<br>
-        {{ $mailData['order']->city }}, {{ $mailData['order']->state }}-{{ $mailData['order']->zip }}, {{ getCountryInfo($mailData['order']->country_id)->name }}.<br>
+        {{ $mailData['order']->city }}, {{ $mailData['order']->zip }}, {{ getStateInfo($mailData['order']->state_id)->name }}.<br>
         Phone: {{ $mailData['order']->mobile }}<br>
         Email: {{ $mailData['order']->email }}
     </div>

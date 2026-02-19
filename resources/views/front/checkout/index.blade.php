@@ -43,11 +43,11 @@
                                 </div>                    
                                 <div class="col-md-12">
                                     <div class="mb-3">
-                                        <select name="country" id="country" class="form-control">
-                                            <option value="">Select a Country</option>
-                                                @if ($countries->isNotEmpty())
-                                                    @foreach ($countries as $country)
-                                                        <option {{ (!empty($customerAddress) && $customerAddress->country_id == $country->id) ? 'selected' : '' }} value="{{ $country->id }}" >{{ $country->name }}</option>
+                                        <select name="state" id="state" class="form-control">
+                                            <option value="">Select a State</option>
+                                                @if ($states->isNotEmpty())
+                                                    @foreach ($states as $value)
+                                                        <option {{ (!empty($customerAddress) && $customerAddress->state_id == $value->id) ? 'selected' : '' }} value="{{ $state->id }}" >{{ $state->name }}</option>
                                                     @endforeach
                                                     <option value="rest_of_world">Rest of the world</option>
                                                 @endif
@@ -253,10 +253,10 @@
                             $("#email").removeClass('is-invalid').siblings("p").removeClass('invalid-feedback').html('')
                         }
 
-                        if(errors.country){
-                            $("#country").addClass('is-invalid').siblings("p").addClass('invalid-feedback').html(errors.country)
+                        if(errors.state){
+                            $("#state").addClass('is-invalid').siblings("p").addClass('invalid-feedback').html(errors.state)
                         } else {
-                            $("#country").removeClass('is-invalid').siblings("p").removeClass('invalid-feedback').html('')
+                            $("#state").removeClass('is-invalid').siblings("p").removeClass('invalid-feedback').html('')
                         }
 
                         if(errors.address){
@@ -296,11 +296,11 @@
             });
         });
 
-        $("#country").change(function(){
+        $("#state").change(function(){
             $.ajax({
                 url: '{{ route("front.getOrderSummary") }}',
                 type: 'post',
-                data: {country_id: $(this).val()},
+                data: {state_id: $(this).val()},
                 dataType: 'json',
                 success: function(response){
                     if(response.status == true)
@@ -314,7 +314,7 @@
             $.ajax({
                 url: '{{ route("front.applyDiscount") }}',
                 type: 'post',
-                data: {code: $("#discount_code").val(), country_id: $('#country').val()},
+                data: {code: $("#discount_code").val(), state_id: $('#state').val()},
                 dataType: 'json',
                 success: function(response){
                     if(response.status == true) {
@@ -333,7 +333,7 @@
             $.ajax({
                 url: '{{ route("front.removeCoupon") }}',
                 type: 'post',
-                data: {country_id: $('#country').val()},
+                data: {state_id: $('#state').val()},
                 dataType: 'json',
                 success: function(response){
                     if(response.status == true) {

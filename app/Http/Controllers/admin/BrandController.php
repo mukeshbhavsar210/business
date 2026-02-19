@@ -7,9 +7,7 @@ use App\Models\Brand;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 
-class BrandController extends Controller
-{
-
+class BrandController extends Controller {
     public function index(Request $request){
         $brands = Brand::latest('id');
 
@@ -19,12 +17,11 @@ class BrandController extends Controller
 
         $brands = $brands->paginate(10);
 
-        return view('admin.brands.list',compact('brands'));
-    }
-    public function create(){
-        return view("admin.brands.create");
+        return view('admin.brands.index',compact('brands'));
     }
 
+
+    
     public function store(Request $request ){
         $validator = Validator::make($request->all(), [
             'name' => 'required',
@@ -51,56 +48,6 @@ class BrandController extends Controller
         }
     }
 
-
-    public function edit($id, Request $request){
-        $brand = Brand::find($id);
-
-        if (empty($brand)) {
-            $request->session()->flash('error','Record not found.');
-            return redirect()->route('brands.index');
-        }
-
-        $data['brand'] = $brand;
-        return view('admin.brands.edit',$data);
-    }
-
-    public function update($id, Request $request){
-
-        $brand = Brand::find($id);
-
-        if (empty($brand)) {
-            $request->session()->flash('error','Record not found.');
-            return response()->json([
-                'status'=> false,
-                'notFound' => true,
-            ]);
-        }
-
-        $validator = Validator::make($request->all(), [
-            'name' => 'required',
-            'slug' => 'required|unique:brands,slug,'.$brand->id.',id',
-        ]);
-
-        if($validator->passes()){
-            $brand->name = $request->name;
-            $brand->slug = $request->slug;
-            $brand->status = $request->status;
-            $brand->save();
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Brand updated successfully',
-            ]);
-
-        } else {
-            return response()->json([
-                'status' => false,
-                'errors' => $validator->errors()
-            ]);
-        }
-    }
-
-
     public function destroy($id, Request $request){
         $brand = Brand::find($id);
 
@@ -114,11 +61,11 @@ class BrandController extends Controller
 
         $brand->delete();
 
-        $request->session()->flash('success', 'Sub Category deleted successfully');
+        $request->session()->flash('success', 'Brand deleted successfully');
 
         return response([
             'status' => true,
-            'message' => 'Sub Category deleted successfully',
+            'message' => 'Brand deleted successfully',
         ]);
     }
 }

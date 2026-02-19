@@ -2,7 +2,7 @@
 
 use App\Mail\OrderEmail;
 use App\Models\Category;
-use App\Models\Country;
+use App\Models\State;
 use App\Models\CustomerAddress;
 use App\Models\Order;
 use App\Models\Page;
@@ -47,8 +47,8 @@ use Illuminate\Support\Facades\Mail;
         //Mail::to($email)->send(new OrderEmail($mailData));
     }
 
-    function getCountryInfo($id){
-        return Country::where('id',$id)->first();
+    function getStateInfo($id){
+        return State::where('id',$id)->first();
     }
 
     function staticPages(){

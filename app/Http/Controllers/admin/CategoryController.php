@@ -7,39 +7,96 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Flash;
 use App\Models\Category;
+use App\Models\SubCategory;
+use App\Models\SubSubCategory;
 use App\Models\TempImage;
 use Illuminate\Support\Facades\File;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
+use Illuminate\Validation\Rule;
 
 class CategoryController extends Controller {
-    public function index(Request $request){
+
+    public function index(Request $request) {
+        // Categories
         $categories = Category::orderBy('menu_order', 'asc');
 
-        if(!empty($request->get('keyword'))){
-            $categories = $categories->where('name', 'like', '%'.$request->get('keyword').'%');
+        if ($request->filled('keyword')) {
+            $categories->where('category_name', 'like', '%' . $request->keyword . '%');
         }
 
         $categories = $categories->paginate(10);
-        return view('admin.categories.category.list', compact('categories'));
+
+
+
+        // Sub Categories
+        $subCategories = SubCategory::select(
+                'sub_categories.*',
+                'categories.category_name as categoryName'
+            )
+            ->leftJoin('categories', 'categories.id', 'sub_categories.category_id')
+            ->latest('sub_categories.id');
+
+        if ($request->filled('keyword2')) {
+            $keyword = $request->keyword;
+
+            $subCategories->where(function ($query) use ($keyword) {
+                $query->where('sub_categories.sub_category_name', 'like', "%$keyword%")
+                    ->orWhere('categories.sub_category_name', 'like', "%$keyword%");
+            });
+        }
+
+        $subCategories = $subCategories->paginate(10);
+
+
+
+        // Sub Sub Categories
+        $sub2Categories = SubSubCategory::select(
+                'sub_sub_categories.*',
+                'sub_categories.sub_category_name as subCategoryName',
+                'categories.category_name as categoryName'
+            )
+            ->leftJoin('sub_categories', 'sub_categories.id', '=', 'sub_sub_categories.sub_category_id')
+            ->leftJoin('categories', 'categories.id', '=', 'sub_sub_categories.category_id')
+            ->latest('sub_sub_categories.id');
+
+        if ($request->filled('keyword3')) {
+            $keyword = $request->keyword;
+
+            $sub2Categories->where(function ($query) use ($keyword) {
+                $query->where('sub_sub_categories.sub_category_name', 'like', "%$keyword%")
+                    ->orWhere('sub_categories.sub_category_name', 'like', "%$keyword%")
+                    ->orWhere('categories.sub_category_name', 'like', "%$keyword%");
+            });
+        }
+
+        $sub2Categories = $sub2Categories->paginate(10);
+
+        return view('admin.categories.category.index', compact(
+            'categories',
+            'subCategories',
+            'sub2Categories'
+        ));
     }
+
 
     public function create(){
-        return view('admin.categories.category.create');
+        return view('admin.categories.category.index');
     }
 
 
-    
-    public function store(Request $request){
+
+    public function categoryStore(Request $request){
         $validator = Validator::make($request->all(), [
-            'name' => 'required',
-            'slug' => 'required|unique:sub_categories,slug'
+            'category_name' => 'required',
+            'category_slug' => 'required|unique:sub_categories,category_slug',
+            'menu_order' => 'required|integer|unique:categories,menu_order'
         ]);
 
         if ($validator->passes()) {
             $category = new Category();
-            $category->name = $request->name;
-            $category->slug = $request->slug;
+            $category->category_name = $request->category_name;
+            $category->category_slug = $request->category_slug;
             $category->status = $request->status;
             $category->showHome = $request->showHome;
             $category->menu_order = $request->menu_order;
@@ -83,6 +140,88 @@ class CategoryController extends Controller {
     }
 
 
+    public function subCategoryStore(Request $request){
+        $validator = Validator::make($request->all(), [
+            'sub_category_name' => 'required',             
+            // 'slug' => 'required|unique:sub_categories',
+            'sub_category_slug' => [
+                    'required',
+                    Rule::unique('sub_categories')
+                        ->where(function ($query) use ($request) {
+                            return $query->where('category_id', $request->category_id);
+                        }),
+                ],
+            'category_id' => 'required',
+            'status' => 'required',
+        ]);
+
+        if ($validator->passes()) {
+            $subCategory = new SubCategory();
+            $subCategory->sub_category_name = $request->sub_category_name;
+            $subCategory->sub_category_slug = $request->sub_category_slug;
+            $subCategory->status = $request->status;
+            $subCategory->category_id = $request->category_id;
+            $subCategory->showHome = $request->showHome;
+            $subCategory->save();
+
+            $request->session()->flash('success', 'Sub Category added successfully');
+
+            return response([
+                'status' => true,
+                'message' => 'Sub Category added successfully',
+            ]);
+
+        } else {
+            return response([
+                'status' => false,
+                'errors' => $validator->errors()
+            ]);
+        }
+    }
+
+
+    public function sub2CategoryStore(Request $request){
+        $validator = Validator::make($request->all(), [
+            'sub2_category_name' => 'required',
+            // 'slug' => [
+            //     'required',
+            //     Rule::unique('sub_sub_categories')
+            //         ->where(function ($query) use ($request) {
+            //             return $query->where('sub_category_id', $request->sub_category_id);
+            //         }),
+            // ],
+            //'slug' => 'required|unique:sub_sub_categories',
+            //'category' => 'required',
+            //'sub_category' => 'required',            
+        ]);
+
+        if ($validator->passes()) {
+            $sub2Category = new SubSubCategory();
+            $sub2Category->category_id = $request->category;
+            $sub2Category->sub_category_id = $request->sub_category_id;
+            $sub2Category->sub2_category_name = $request->sub2_category_name;
+            $sub2Category->sub2_category_slug = $request->sub2_category_slug;            
+            $sub2Category->save();
+
+            $request->session()->flash('success', 'Sub2 Category added successfully');
+
+            return response([
+                'status' => true,
+                'message' => 'Sub2 Category added successfully',
+            ]);
+
+        } else {
+            return response([
+                'status' => false,
+                'errors' => $validator->errors()
+            ]);
+        }
+    }
+
+
+    public function getSubCategories($id) {
+        return SubCategory::where('category_id', $id)->get();
+    }
 
     public function edit($categoryId, Request $request){
         $category = Category::find($categoryId);
@@ -183,6 +322,50 @@ class CategoryController extends Controller {
         return response()->json([
             'status' => true,
             'message' => 'Category deleted successfully'
+        ]);
+    }
+
+
+    public function destroySubCategory ($id, Request $request){
+        $subCategory = SubCategory::find($id);
+
+        if(empty($subCategory)){
+            $request->session()->flash('error','Record not found');
+            return response([
+                'status' => false,
+                'notFound' => true,
+            ]);
+        }
+
+        $subCategory->delete();
+
+        $request->session()->flash('success', 'Sub Category deleted successfully');
+
+        return response([
+            'status' => true,
+            'message' => 'Sub Category deleted successfully',
+        ]);
+    }
+
+
+    public function destroySub2Category($id, Request $request){
+        $sub2Category = SubSubCategory::find($id);
+
+        if(empty($sub2Category)){
+            $request->session()->flash('error','Record not found');
+            return response([
+                'status' => false,
+                'notFound' => true,
+            ]);
+        }
+
+        $sub2Category->delete();
+
+        $request->session()->flash('success', 'Sub2 Category deleted successfully');
+
+        return response([
+            'status' => true,
+            'message' => 'Sub2 Category deleted successfully',
         ]);
     }
 }
