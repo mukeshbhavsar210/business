@@ -31,6 +31,8 @@
 :root{--primary:#0d6efd;--primary-light:#e7f6fd;--secondary:#6c757d;--white:#fff;--black:#212529;--gray:#6c757d; --green:rgb(3, 166, 133); --gray-light:#ccc;--success:#198754;--info:#0dcaf0;--warning:#ffc107;--danger:#dc3545;--light:#f8f9fa;--body-font:"Open Sans",sans-serif;--title-font:Manrope,Arial,Sans-serif; --bs-font-sans-serif:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans","Liberation Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";--bs-font-monospace:SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;--bs-gradient:linear-gradient(180deg,#ffffff26,#fff0);--bs-body-font-family:var(--bs-font-sans-serif);--bs-body-font-size:1rem;--bs-body-font-weight:400;--bs-body-line-height:1.5;--bs-body-color:#212529;--bs-body-bg:#fff}
 .invoice-svg { border-radius: 5px; background-color: #000; width: 100%; height: 125px; margin-top: 7px;}
 
+body { background-color: #f7f9fb; }
+
 .content-header { padding:0px;}
 .content-header h1 { font-size: 1.6rem; }
 .btn { padding:7px 13px; font-size: 12px; height: 35px; border-radius: 4px;}
@@ -38,16 +40,16 @@
 
 .table td, .table th { padding:0.5rem;}
 
-.product-title { margin-bottom: 6px;}
+.product-title { margin-bottom: 2px;}
 .product-title a { color: var(--black);}
 .product-title a:hover { color: var(--primary);}
 
 .small-fonts { font-size: 14px;}
 
+.table { font-size: 14px;}
 
 .startbar { box-shadow: 0 4px 6px 0 #0000001f; transform: translateY(0); animation: slideDown .4s ease;}
-.custom-card .card-header { padding: 0; margin-bottom: 10px; margin-top: 20px;}
-.custom-card .card-body { padding: 0;}
+.custom-card .card-header { padding: 0 0 10px 0; margin-bottom: 15px; border-bottom: 1px #e5e5e5 solid;}
 
 .main-header { position: fixed; width: 82%; top:0; left:0;}
 .main-sidebar { position: fixed !important;}
@@ -299,7 +301,7 @@ input:checked + .slider { box-shadow:0 0 0 2px #007bff,0 0 2px #007bff; }
   transition:top 0.4s ease-in-out;
 }
 
-.active { background-color: #e8f5ff;}
+
 .pull-right { float: right;}
 .counts { background-color: #0d6efd; color: #fff; padding:3px 5px; border-radius: 100px; font-size: 12px; text-align: center; display: block; margin-left: 10px;; height:24px; width: 24px; position: relative; top:3px;}
 
@@ -313,7 +315,10 @@ input:checked + .slider { box-shadow:0 0 0 2px #007bff,0 0 2px #007bff; }
 .searchMain .btn { border:1px #e2e7f1 solid; border-radius: 0 5px 5px 0; height: 38px; }
 
 .form-group { margin-bottom: 15px;}
-.form-group label { margin-bottom: 6px; text-transform: uppercase; font-size: 12px; font-weight: bold; color: var(--gray);}
+.form-group label { margin-bottom: 4px; text-transform: uppercase; font-size: 12px; color: var(--gray);}
+
+.modal-body { padding: 15px 25px 10px 25px; }
+.modal-header, .modal-footer { padding: 10px 25px;}
 
 .form-control, .form-select { font-size: 14px; border-radius: 4px; padding: 7px 15px 10px 15px;}
 .checkboxDropdown .dropdown-menu.show { padding:10px;}

@@ -20,11 +20,10 @@ return new class extends Migration
             $table->string('last_name');
             $table->string('mobile');
             $table->string('email');
-            $table->foreignId('country_id')->constrained()->onDelete('cascade');
             $table->text('address');
             $table->string('apartment')->nullable();
-            $table->string('city');
-            $table->string('state');
+            $table->string('city');            
+            $table->foreignId('state_id')->constrained()->onDelete('cascade');            
             $table->string('zip');
             $table->timestamps();
         });

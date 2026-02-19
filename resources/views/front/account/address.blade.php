@@ -39,7 +39,7 @@
                             <h6 class="mb-2 h6"><b>{{ $address->first_name }} {{ $address->last_name }}</b></h6>
                             <p class="text-muted">{{ $address->address }}</p>
                             <p  class="text-muted">{{ $address->locality }}, {{ $address->city }} - {{ $address->zip }}</p>
-                            <p class="text-muted">{{ $address->country->name }}.</p>
+                            <p class="text-muted">{{ $address->state->name }}.</p>
                             <p class="mt-2 text-muted">Mobile: {{ $address->mobile }}</p>
                         </div>
                         <div class="col-md-3 col-4">
@@ -97,12 +97,12 @@
                                         </div>
                                         <div class="col-md-6 col-6">
                                             <div class="form-group">
-                                                <label for="country">State <span class="required">*</span></label>
-                                                <select name="country_id" id="country_id" class="form-select">
-                                                    <option value="">Select a Country</option>
-                                                    @if ($countries->isNotEmpty())
-                                                        @foreach ($countries as $country)
-                                                            <option {{ (!empty($address) && $address->country_id == $country->id) ? 'selected' : '' }} value="{{ $country->id }}">{{ $country->name }}</option>
+                                                <label for="state">State <span class="required">*</span></label>
+                                                <select name="state_id" id="state_id" class="form-select">
+                                                    <option value="">Select a State</option>
+                                                    @if ($states->isNotEmpty())
+                                                        @foreach ($states as $value)
+                                                            <option {{ (!empty($address) && $address->state_id == $value->id) ? 'selected' : '' }} value="{{ $value->id }}">{{ $value->name }}</option>
                                                         @endforeach
                                                     @endif
                                                 </select>
@@ -244,12 +244,12 @@
                                                 <div class="row">
                                                     <div class="col-md-8 col-6">
                                                         <div class="form-group">
-                                                            <label for="country">Country</label>
-                                                            <select name="country_id" id="country_id" class="form-select">
-                                                                <option value="">Select a Country</option>
-                                                                @if ($countries->isNotEmpty())
-                                                                    @foreach ($countries as $country)
-                                                                        <option {{ (!empty($address) && $address->country_id == $country->id) ? 'selected' : '' }} value="{{ $country->id }}">{{ $country->name }}</option>
+                                                            <label for="state">State</label>
+                                                            <select name="state_id" id="state_id" class="form-select">
+                                                                <option value="">Select a State</option>
+                                                                @if ($states->isNotEmpty())
+                                                                    @foreach ($states as $value)
+                                                                        <option {{ (!empty($address) && $address->state_id == $value->id) ? 'selected' : '' }} value="{{ $value->id }}">{{ $value->name }}</option>
                                                                     @endforeach
                                                                 @endif
                                                             </select>

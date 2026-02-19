@@ -28,7 +28,7 @@
                                 <div class="small-fonts">
                                     <h4 class="mb-1">{{ $order->first_name.' '.$order->last_name.'' }} </h4>
                                     {{ $order->address }}<br>
-                                    {{ $order->city }}, {{ $order->state }}-{{ $order->zip }}, {{ $order->countryName }}.<br>
+                                    {{ $order->city }}, {{ $order->state }}-{{ $order->zip }}, {{ $order->stateName }}.<br>
                                     Phone: {{ $order->mobile }}<br>
                                     Email: {{ $order->email }}
                                 </div>

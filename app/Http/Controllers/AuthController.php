@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Country;
 use App\Models\CustomerAddress;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\State;
 use App\Models\User;
 use App\Models\Wishlist;
 use Illuminate\Http\Request;
@@ -97,14 +97,14 @@ class AuthController extends Controller
 
     public function address(){
         $userId = Auth::user()->id;
-        $countries = Country::orderBy('name','ASC')->get();
+        $states = State::orderBy('name','ASC')->get();
         $user = User::where('id',$userId)->first();
-        $address = CustomerAddress::with('country')->where('user_id',$userId)->first();
+        $address = CustomerAddress::with('state')->where('user_id',$userId)->first();
         $userDetails = CustomerAddress::where('user_id',$userId)->first();
 
         return view('front.account.address',[
             'user' => $user,
-            'countries' => $countries,
+            'states' => $states,
             'address' => $address,
             'userDetails' => $userDetails,
         ]);
@@ -112,7 +112,7 @@ class AuthController extends Controller
 
      public function cards(){
         $userId = Auth::user()->id;
-        $countries = Country::orderBy('name','ASC')->get();
+        $countries = State::orderBy('name','ASC')->get();
         $user = User::where('id',$userId)->first();
         $address = CustomerAddress::where('user_id',$userId)->first();
 
@@ -125,7 +125,7 @@ class AuthController extends Controller
 
     public function profile(){
         $userId = Auth::user()->id;
-        $countries = Country::orderBy('name','ASC')->get();
+        $countries = State::orderBy('name','ASC')->get();
         $user = User::where('id',$userId)->first();
         $address = CustomerAddress::where('user_id',$userId)->first();
 
@@ -207,7 +207,7 @@ class AuthController extends Controller
                     'city' => $request->city,
                     'state' => $request->state,
                     'zip' => $request->zip,
-                    'country_id' => $request->country_id
+                    'state_id' => $request->state_id
                 ]
             );
 

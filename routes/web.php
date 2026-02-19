@@ -104,40 +104,43 @@ Route::group(['prefix' => 'admin'], function(){
         Route::controller(CategoryController::class)->group(function() {
             Route::get('/categories/category', 'index')->name('categories.index');
             Route::get('/categories/category/create', 'create')->name('categories.create');
-            Route::post('/categories/category/', 'store')->name('categories.store');
+            Route::post('/categories/category/', 'categoryStore')->name('categories.category.store');
+            Route::post('/categories/sub-category/', 'subCategoryStore')->name('categories.subCategory.store');
+            Route::post('/categories/sub2-category/', 'sub2CategoryStore')->name('categories.sub2Category.store');
+
             Route::get('/categories/category/{category}/edit', 'edit')->name('categories.edit');
             Route::put('/categories/category/{category}', 'update')->name('categories.update');
             Route::delete('/categories/category/{category}', 'destroy')->name('categories.delete');
+            Route::delete('/categories/sub/category/{subCategory}', 'destroySubCategory')->name('subCategories.delete');
+            Route::delete('/categories/sub2/category/{sub2Category}', 'destroySub2Category')->name('sub2Categories.delete');
+
+            Route::get('/get-subcategories/{id}', 'getSubCategories')->name('get.subcategories');
         });
 
         //Sub Category Routes
         Route::controller(SubCategoryController::class)->group(function() {
-            Route::get('/categories/sub', 'index')->name('sub-categories.index');
+            //Route::get('/categories/sub', 'index')->name('sub-categories.index');
             Route::get('/categories/sub/create', 'create')->name('sub-categories.create');
             Route::post('/categories/sub', 'store')->name('sub-categories.store');
             Route::get('/categories/sub/{subCategory}/edit', 'edit')->name('sub-categories.edit');
             Route::put('/categories/sub/{subCategory}', 'update')->name('sub-categories.update');
-            Route::delete('/categories/sub/{subCategory}', 'destroy')->name('sub-categories.delete');            
+            //Route::delete('/categories/sub/{subCategory}', 'destroy')->name('sub-categories.delete');            
         });
 
         //Sub Category Routes
         Route::controller(Sub2CategoryController::class)->group(function() {
-            Route::get('/categories/sub2', 'index')->name('sub2-categories.index');
+            //Route::get('/categories/sub2', 'index')->name('sub2-categories.index');
             Route::get('/categories/sub2/create', 'create')->name('sub2-categories.create');
             Route::post('/categories/sub2', 'store')->name('sub2-categories.store');
             Route::get('/categories/sub2/{subCategory}/edit', 'edit')->name('sub2-categories.edit');
             Route::put('/categories/sub2/{subCategory}', 'update')->name('sub2-categories.update');
-            Route::delete('/categories/sub2/{subCategory}', 'destroy')->name('sub2-categories.delete');
-            Route::get('/categories/get-subcategories/{id}', 'getSubCategories')->name('get.subcategories');
+            //Route::delete('/categories/sub2/{subCategory}', 'destroy')->name('sub2-categories.delete');
         });
 
         //Brands
         Route::controller(BrandController::class)->group(function() {
-            Route::get('/brands', 'index')->name('brands.index');
-            Route::get('/brands/create', 'create')->name('brands.create');
-            Route::post('/brands', 'store')->name('brands.store');
-            Route::get('/brands/{brand}/edit', 'edit')->name('brands.edit');
-            Route::put('/brands/{brand}', 'update')->name('brands.update');
+            Route::get('/brands', 'index')->name('brands.index');            
+            Route::post('/brands', 'store')->name('brands.store');            
             Route::delete('/brands/{brand}', 'destroy')->name('brands.delete');
         });
 
@@ -162,17 +165,14 @@ Route::group(['prefix' => 'admin'], function(){
 
         //Shipping Routes
         Route::controller(ShippingController::class)->group(function() {
-            Route::get('/shipping/create', 'create')->name('shipping.create');
+            Route::get('/shipping/index', 'index')->name('shipping.index');
             Route::post('/shipping', 'store')->name('shipping.store');
-            Route::get('/shipping/{id}', 'edit')->name('shipping.edit');
-            Route::put('/shipping/{id}', 'update')->name('shipping.update');
             Route::delete('/shipping/{id}', 'destroy')->name('shipping.delete');
         });
 
         //Coupon Code Routes
         Route::controller(DiscountCodeController::class)->group(function() {
-            Route::get('/coupons', 'index')->name('coupons.index');
-            Route::get('/coupons/create', 'create')->name('coupons.create');
+            Route::get('/coupons', 'index')->name('coupons.index');            
             Route::post('/coupons', 'store')->name('coupons.store');
             Route::get('/coupons/{coupon}/edit', 'edit')->name('coupons.edit');
             Route::put('/coupons/{coupon}', 'update')->name('coupons.update');
@@ -189,8 +189,7 @@ Route::group(['prefix' => 'admin'], function(){
 
         //Users Routes
         Route::controller(UserController::class)->group(function() {
-            Route::get('/users', 'index')->name('users.index');
-            Route::get('/users/create', 'create')->name('users.create');
+            Route::get('/users', 'index')->name('users.index');            
             Route::post('/users', 'store')->name('users.store');
             Route::get('/users/{user}/edit', 'edit')->name('users.edit');
             Route::put('/users/{user}', 'update')->name('users.update');
@@ -212,7 +211,7 @@ Route::group(['prefix' => 'admin'], function(){
 
         //Setting Route
         Route::get('/change-password', [SettingController::class, 'showChangePasswordForm'])->name('admin.showChangePasswordForm');
-        Route::post('/process-change-password', [SettingController::class, 'processChangePassword'])->name('admin.processChangePassword');
+        Route::post('/process-change-password', [SettingController::class, 'processChangePassword'])->name('admin.processChangePassword');        
 
         Route::get('/getSlug', function(Request $request){
             $slug = '';

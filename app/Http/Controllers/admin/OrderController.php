@@ -35,9 +35,9 @@ class OrderController extends Controller {
 
     public function detail($orderId){
 
-        $order = Order::select('orders.*','countries.name as countryName' )
+        $order = Order::select('orders.*','states.name as stateName' )
             ->where('orders.id',$orderId)
-            ->leftJoin('countries','countries.id','orders.country_id')
+            ->leftJoin('states','states.id','orders.state_id')
             ->first();
 
         $orderItems = OrderItem::where('order_id',$orderId)->get();

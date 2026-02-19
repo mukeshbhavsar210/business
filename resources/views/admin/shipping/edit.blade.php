@@ -4,36 +4,34 @@
 <section class="content-header">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-sm-6">
+            <div class="col-sm-10">
                 <h1>Edit Shipping Management</h1>
             </div>
-            <div class="col-sm-6 text-right">
-                <a href="{{ route('categories.index') }}" class="btn btn-primary">Back</a>
+            <div class="col-sm-2">
+                <a href="{{ route('shipping.create') }}" class="btn btn-primary float-end">Back</a>
             </div>
         </div>
     </div>
-    <!-- /.container-fluid -->
 </section>
-<!-- Main content -->
+
 <section class="content">
-    <!-- Default box -->
     <div class="container-fluid">
 
         @include('admin.message')
 
-        <form action="" method="post" id="shippingForm" name="shippingForm">
+        <form action="" method="post" id="editShippingForm" name="editShippingForm">
             <div class="card">
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-5">
                             <div class="mb-3">
-                                <select name="country" id="country" class="form-control">
-                                    <option value="">Select a country</option>
-                                    @if ($countries->isNotEmpty())
-                                        @foreach ($countries as $country)
-                                            <option {{ ($shippingCharge->country_id == $country->id) ? 'selected' : '' }} value="{{ $country->id }}">{{ $country->name }}</option>
+                                <select name="state_id" id="state_id" class="form-select">
+                                    <option value="">Select a State</option>
+                                    @if ($states->isNotEmpty())
+                                        @foreach ($states as $value)
+                                            <option {{ ($shippingCharge->state_id == $value->id) ? 'selected' : '' }} value="{{ $value->id }}">{{ $value->name }}</option>
                                         @endforeach
-                                        <option {{ ($shippingCharge->country_id == 'rest_of_world') ? 'selected' : '' }} value="rest_of_world">Rest of the world</option>
+                                        <option {{ ($shippingCharge->state_id == 'rest_of_state') ? 'selected' : '' }} value="rest_of_world">Rest of the world</option>
                                     @endif
                                 </select>
                                 <p></p>
@@ -62,7 +60,7 @@
 
 @section('customJs')
     <script>
-        $("#shippingForm").submit(function(event){
+        $("#editShippingForm").submit(function(event){
             event.preventDefault();
             var element = $(this);
             $("button[type=submit]").prop('disabled', true);
@@ -80,12 +78,12 @@
 
                     } else {
                         var errors = response['errors']
-                        if(errors['country']){
-                            $('#country').addClass('is-invalid')
+                        if(errors['state']){
+                            $('#state').addClass('is-invalid')
                             .siblings('p')
-                            .addClass('invalid-feedback').html(errors['country']);
+                            .addClass('invalid-feedback').html(errors['state']);
                         } else {
-                            $('#country').removeClass('is-invalid')
+                            $('#state').removeClass('is-invalid')
                             .siblings('p')
                             .removeClass('invalid-feedback').html("");
                         }

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 17, 2026 at 04:02 PM
+-- Generation Time: Feb 19, 2026 at 03:29 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -46,7 +46,8 @@ INSERT INTO `brands` (`id`, `name`, `slug`, `status`, `created_at`, `updated_at`
 (19, 'Tommy Hilfiger', 'tommy-hilfiger', 1, '2023-11-24 00:02:40', '2023-11-24 00:02:40'),
 (20, 'U.S. Polo Assn.', 'us-polo-assn', 1, '2023-11-24 00:03:01', '2023-11-24 00:03:01'),
 (21, 'Jack & Jones', 'jack-jones', 1, '2023-11-24 00:03:16', '2023-11-24 00:03:16'),
-(22, 'H&M', 'hm', 1, '2023-11-24 00:16:13', '2023-11-24 00:16:13');
+(22, 'H&M', 'hm', 1, '2023-11-24 00:16:13', '2023-11-24 00:16:13'),
+(24, 'Bhavsar', 'bhavsar', 1, '2026-02-19 01:22:35', '2026-02-19 01:22:35');
 
 -- --------------------------------------------------------
 
@@ -56,8 +57,8 @@ INSERT INTO `brands` (`id`, `name`, `slug`, `status`, `created_at`, `updated_at`
 
 CREATE TABLE `categories` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `slug` varchar(255) NOT NULL,
+  `category_name` varchar(255) NOT NULL,
+  `category_slug` varchar(255) NOT NULL,
   `image` varchar(255) DEFAULT NULL,
   `status` int(11) NOT NULL DEFAULT 1,
   `showHome` enum('Yes','No') NOT NULL DEFAULT 'No',
@@ -70,11 +71,10 @@ CREATE TABLE `categories` (
 -- Dumping data for table `categories`
 --
 
-INSERT INTO `categories` (`id`, `name`, `slug`, `image`, `status`, `showHome`, `menu_order`, `created_at`, `updated_at`) VALUES
+INSERT INTO `categories` (`id`, `category_name`, `category_slug`, `image`, `status`, `showHome`, `menu_order`, `created_at`, `updated_at`) VALUES
 (82, 'Men', 'men', '82-1700806476.jpg', 1, 'Yes', 1, '2023-11-23 23:55:20', '2026-02-16 23:38:31'),
 (83, 'Women', 'women', '83-1700806507.jpg', 1, 'Yes', 2, '2023-11-23 23:55:28', '2023-11-24 00:45:07'),
-(149, 'Kids', 'kids', NULL, 1, 'Yes', 3, '2026-02-16 23:27:00', '2026-02-16 23:37:35'),
-(150, 'Home', 'home', NULL, 1, 'Yes', 4, '2026-02-16 23:40:43', '2026-02-16 23:40:43');
+(149, 'Kids', 'kids', NULL, 1, 'Yes', 3, '2026-02-16 23:27:00', '2026-02-16 23:37:35');
 
 -- --------------------------------------------------------
 
@@ -103,284 +103,22 @@ INSERT INTO `colors` (`id`, `name`, `code`, `created_at`, `updated_at`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `countries`
---
-
-CREATE TABLE `countries` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `code` varchar(255) NOT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `countries`
---
-
-INSERT INTO `countries` (`id`, `name`, `code`, `created_at`, `updated_at`) VALUES
-(1, 'United States', 'US', NULL, NULL),
-(2, 'Canada', 'CA', NULL, NULL),
-(3, 'Afghanistan', 'AF', NULL, NULL),
-(4, 'Albania', 'AL', NULL, NULL),
-(5, 'Algeria', 'DZ', NULL, NULL),
-(6, 'American Samoa', 'AS', NULL, NULL),
-(7, 'Andorra', 'AD', NULL, NULL),
-(8, 'Angola', 'AO', NULL, NULL),
-(9, 'Anguilla', 'AI', NULL, NULL),
-(10, 'Antarctica', 'AQ', NULL, NULL),
-(11, 'Antigua and/or Barbuda', 'AG', NULL, NULL),
-(12, 'Argentina', 'AR', NULL, NULL),
-(13, 'Armenia', 'AM', NULL, NULL),
-(14, 'Aruba', 'AW', NULL, NULL),
-(15, 'Australia', 'AU', NULL, NULL),
-(16, 'Austria', 'AT', NULL, NULL),
-(17, 'Azerbaijan', 'AZ', NULL, NULL),
-(18, 'Bahamas', 'BS', NULL, NULL),
-(19, 'Bahrain', 'BH', NULL, NULL),
-(20, 'Bangladesh', 'BD', NULL, NULL),
-(21, 'Barbados', 'BB', NULL, NULL),
-(22, 'Belarus', 'BY', NULL, NULL),
-(23, 'Belgium', 'BE', NULL, NULL),
-(24, 'Belize', 'BZ', NULL, NULL),
-(25, 'Benin', 'BJ', NULL, NULL),
-(26, 'Bermuda', 'BM', NULL, NULL),
-(27, 'Bhutan', 'BT', NULL, NULL),
-(28, 'Bolivia', 'BO', NULL, NULL),
-(29, 'Bosnia and Herzegovina', 'BA', NULL, NULL),
-(30, 'Botswana', 'BW', NULL, NULL),
-(31, 'Bouvet Island', 'BV', NULL, NULL),
-(32, 'Brazil', 'BR', NULL, NULL),
-(33, 'British lndian Ocean Territory', 'IO', NULL, NULL),
-(34, 'Brunei Darussalam', 'BN', NULL, NULL),
-(35, 'Bulgaria', 'BG', NULL, NULL),
-(36, 'Burkina Faso', 'BF', NULL, NULL),
-(37, 'Burundi', 'BI', NULL, NULL),
-(38, 'Cambodia', 'KH', NULL, NULL),
-(39, 'Cameroon', 'CM', NULL, NULL),
-(40, 'Cape Verde', 'CV', NULL, NULL),
-(41, 'Cayman Islands', 'KY', NULL, NULL),
-(42, 'Central African Republic', 'CF', NULL, NULL),
-(43, 'Chad', 'TD', NULL, NULL),
-(44, 'Chile', 'CL', NULL, NULL),
-(45, 'China', 'CN', NULL, NULL),
-(46, 'Christmas Island', 'CX', NULL, NULL),
-(47, 'Cocos (Keeling) Islands', 'CC', NULL, NULL),
-(48, 'Colombia', 'CO', NULL, NULL),
-(49, 'Comoros', 'KM', NULL, NULL),
-(50, 'Congo', 'CG', NULL, NULL),
-(51, 'Cook Islands', 'CK', NULL, NULL),
-(52, 'Costa Rica', 'CR', NULL, NULL),
-(53, 'Croatia (Hrvatska)', 'HR', NULL, NULL),
-(54, 'Cuba', 'CU', NULL, NULL),
-(55, 'Cyprus', 'CY', NULL, NULL),
-(56, 'Czech Republic', 'CZ', NULL, NULL),
-(57, 'Democratic Republic of Congo', 'CD', NULL, NULL),
-(58, 'Denmark', 'DK', NULL, NULL),
-(59, 'Djibouti', 'DJ', NULL, NULL),
-(60, 'Dominica', 'DM', NULL, NULL),
-(61, 'Dominican Republic', 'DO', NULL, NULL),
-(62, 'East Timor', 'TP', NULL, NULL),
-(63, 'Ecudaor', 'EC', NULL, NULL),
-(64, 'Egypt', 'EG', NULL, NULL),
-(65, 'El Salvador', 'SV', NULL, NULL),
-(66, 'Equatorial Guinea', 'GQ', NULL, NULL),
-(67, 'Eritrea', 'ER', NULL, NULL),
-(68, 'Estonia', 'EE', NULL, NULL),
-(69, 'Ethiopia', 'ET', NULL, NULL),
-(70, 'Falkland Islands (Malvinas)', 'FK', NULL, NULL),
-(71, 'Faroe Islands', 'FO', NULL, NULL),
-(72, 'Fiji', 'FJ', NULL, NULL),
-(73, 'Finland', 'FI', NULL, NULL),
-(74, 'France', 'FR', NULL, NULL),
-(75, 'France, Metropolitan', 'FX', NULL, NULL),
-(76, 'French Guiana', 'GF', NULL, NULL),
-(77, 'French Polynesia', 'PF', NULL, NULL),
-(78, 'French Southern Territories', 'TF', NULL, NULL),
-(79, 'Gabon', 'GA', NULL, NULL),
-(80, 'Gambia', 'GM', NULL, NULL),
-(81, 'Georgia', 'GE', NULL, NULL),
-(82, 'Germany', 'DE', NULL, NULL),
-(83, 'Ghana', 'GH', NULL, NULL),
-(84, 'Gibraltar', 'GI', NULL, NULL),
-(85, 'Greece', 'GR', NULL, NULL),
-(86, 'Greenland', 'GL', NULL, NULL),
-(87, 'Grenada', 'GD', NULL, NULL),
-(88, 'Guadeloupe', 'GP', NULL, NULL),
-(89, 'Guam', 'GU', NULL, NULL),
-(90, 'Guatemala', 'GT', NULL, NULL),
-(91, 'Guinea', 'GN', NULL, NULL),
-(92, 'Guinea-Bissau', 'GW', NULL, NULL),
-(93, 'Guyana', 'GY', NULL, NULL),
-(94, 'Haiti', 'HT', NULL, NULL),
-(95, 'Heard and Mc Donald Islands', 'HM', NULL, NULL),
-(96, 'Honduras', 'HN', NULL, NULL),
-(97, 'Hong Kong', 'HK', NULL, NULL),
-(98, 'Hungary', 'HU', NULL, NULL),
-(99, 'Iceland', 'IS', NULL, NULL),
-(100, 'India', 'IN', NULL, NULL),
-(101, 'Indonesia', 'ID', NULL, NULL),
-(102, 'Iran (Islamic Republic of)', 'IR', NULL, NULL),
-(103, 'Iraq', 'IQ', NULL, NULL),
-(104, 'Ireland', 'IE', NULL, NULL),
-(105, 'Israel', 'IL', NULL, NULL),
-(106, 'Italy', 'IT', NULL, NULL),
-(107, 'Ivory Coast', 'CI', NULL, NULL),
-(108, 'Jamaica', 'JM', NULL, NULL),
-(109, 'Japan', 'JP', NULL, NULL),
-(110, 'Jordan', 'JO', NULL, NULL),
-(111, 'Kazakhstan', 'KZ', NULL, NULL),
-(112, 'Kenya', 'KE', NULL, NULL),
-(113, 'Kiribati', 'KI', NULL, NULL),
-(114, 'Korea, Democratic People\'s Republic of', 'KP', NULL, NULL),
-(115, 'Korea, Republic of', 'KR', NULL, NULL),
-(116, 'Kuwait', 'KW', NULL, NULL),
-(117, 'Kyrgyzstan', 'KG', NULL, NULL),
-(118, 'Lao People\'s Democratic Republic', 'LA', NULL, NULL),
-(119, 'Latvia', 'LV', NULL, NULL),
-(120, 'Lebanon', 'LB', NULL, NULL),
-(121, 'Lesotho', 'LS', NULL, NULL),
-(122, 'Liberia', 'LR', NULL, NULL),
-(123, 'Libyan Arab Jamahiriya', 'LY', NULL, NULL),
-(124, 'Liechtenstein', 'LI', NULL, NULL),
-(125, 'Lithuania', 'LT', NULL, NULL),
-(126, 'Luxembourg', 'LU', NULL, NULL),
-(127, 'Macau', 'MO', NULL, NULL),
-(128, 'Macedonia', 'MK', NULL, NULL),
-(129, 'Madagascar', 'MG', NULL, NULL),
-(130, 'Malawi', 'MW', NULL, NULL),
-(131, 'Malaysia', 'MY', NULL, NULL),
-(132, 'Maldives', 'MV', NULL, NULL),
-(133, 'Mali', 'ML', NULL, NULL),
-(134, 'Malta', 'MT', NULL, NULL),
-(135, 'Marshall Islands', 'MH', NULL, NULL),
-(136, 'Martinique', 'MQ', NULL, NULL),
-(137, 'Mauritania', 'MR', NULL, NULL),
-(138, 'Mauritius', 'MU', NULL, NULL),
-(139, 'Mayotte', 'TY', NULL, NULL),
-(140, 'Mexico', 'MX', NULL, NULL),
-(141, 'Micronesia, Federated States of', 'FM', NULL, NULL),
-(142, 'Moldova, Republic of', 'MD', NULL, NULL),
-(143, 'Monaco', 'MC', NULL, NULL),
-(144, 'Mongolia', 'MN', NULL, NULL),
-(145, 'Montserrat', 'MS', NULL, NULL),
-(146, 'Morocco', 'MA', NULL, NULL),
-(147, 'Mozambique', 'MZ', NULL, NULL),
-(148, 'Myanmar', 'MM', NULL, NULL),
-(149, 'Namibia', 'NA', NULL, NULL),
-(150, 'Nauru', 'NR', NULL, NULL),
-(151, 'Nepal', 'NP', NULL, NULL),
-(152, 'Netherlands', 'NL', NULL, NULL),
-(153, 'Netherlands Antilles', 'AN', NULL, NULL),
-(154, 'New Caledonia', 'NC', NULL, NULL),
-(155, 'New Zealand', 'NZ', NULL, NULL),
-(156, 'Nicaragua', 'NI', NULL, NULL),
-(157, 'Niger', 'NE', NULL, NULL),
-(158, 'Nigeria', 'NG', NULL, NULL),
-(159, 'Niue', 'NU', NULL, NULL),
-(160, 'Norfork Island', 'NF', NULL, NULL),
-(161, 'Northern Mariana Islands', 'MP', NULL, NULL),
-(162, 'Norway', 'NO', NULL, NULL),
-(163, 'Oman', 'OM', NULL, NULL),
-(164, 'Pakistan', 'PK', NULL, NULL),
-(165, 'Palau', 'PW', NULL, NULL),
-(166, 'Panama', 'PA', NULL, NULL),
-(167, 'Papua New Guinea', 'PG', NULL, NULL),
-(168, 'Paraguay', 'PY', NULL, NULL),
-(169, 'Peru', 'PE', NULL, NULL),
-(170, 'Philippines', 'PH', NULL, NULL),
-(171, 'Pitcairn', 'PN', NULL, NULL),
-(172, 'Poland', 'PL', NULL, NULL),
-(173, 'Portugal', 'PT', NULL, NULL),
-(174, 'Puerto Rico', 'PR', NULL, NULL),
-(175, 'Qatar', 'QA', NULL, NULL),
-(176, 'Republic of South Sudan', 'SS', NULL, NULL),
-(177, 'Reunion', 'RE', NULL, NULL),
-(178, 'Romania', 'RO', NULL, NULL),
-(179, 'Russian Federation', 'RU', NULL, NULL),
-(180, 'Rwanda', 'RW', NULL, NULL),
-(181, 'Saint Kitts and Nevis', 'KN', NULL, NULL),
-(182, 'Saint Lucia', 'LC', NULL, NULL),
-(183, 'Saint Vincent and the Grenadines', 'VC', NULL, NULL),
-(184, 'Samoa', 'WS', NULL, NULL),
-(185, 'San Marino', 'SM', NULL, NULL),
-(186, 'Sao Tome and Principe', 'ST', NULL, NULL),
-(187, 'Saudi Arabia', 'SA', NULL, NULL),
-(188, 'Senegal', 'SN', NULL, NULL),
-(189, 'Serbia', 'RS', NULL, NULL),
-(190, 'Seychelles', 'SC', NULL, NULL),
-(191, 'Sierra Leone', 'SL', NULL, NULL),
-(192, 'Singapore', 'SG', NULL, NULL),
-(193, 'Slovakia', 'SK', NULL, NULL),
-(194, 'Slovenia', 'SI', NULL, NULL),
-(195, 'Solomon Islands', 'SB', NULL, NULL),
-(196, 'Somalia', 'SO', NULL, NULL),
-(197, 'South Africa', 'ZA', NULL, NULL),
-(198, 'South Georgia South Sandwich Islands', 'GS', NULL, NULL),
-(199, 'Spain', 'ES', NULL, NULL),
-(200, 'Sri Lanka', 'LK', NULL, NULL),
-(201, 'St. Helena', 'SH', NULL, NULL),
-(202, 'St. Pierre and Miquelon', 'PM', NULL, NULL),
-(203, 'Sudan', 'SD', NULL, NULL),
-(204, 'Suriname', 'SR', NULL, NULL),
-(205, 'Svalbarn and Jan Mayen Islands', 'SJ', NULL, NULL),
-(206, 'Swaziland', 'SZ', NULL, NULL),
-(207, 'Sweden', 'SE', NULL, NULL),
-(208, 'Switzerland', 'CH', NULL, NULL),
-(209, 'Syrian Arab Republic', 'SY', NULL, NULL),
-(210, 'Taiwan', 'TW', NULL, NULL),
-(211, 'Tajikistan', 'TJ', NULL, NULL),
-(212, 'Tanzania, United Republic of', 'TZ', NULL, NULL),
-(213, 'Thailand', 'TH', NULL, NULL),
-(214, 'Togo', 'TG', NULL, NULL),
-(215, 'Tokelau', 'TK', NULL, NULL),
-(216, 'Tonga', 'TO', NULL, NULL),
-(217, 'Trinidad and Tobago', 'TT', NULL, NULL),
-(218, 'Tunisia', 'TN', NULL, NULL),
-(219, 'Turkey', 'TR', NULL, NULL),
-(220, 'Turkmenistan', 'TM', NULL, NULL),
-(221, 'Turks and Caicos Islands', 'TC', NULL, NULL),
-(222, 'Tuvalu', 'TV', NULL, NULL),
-(223, 'Uganda', 'UG', NULL, NULL),
-(224, 'Ukraine', 'UA', NULL, NULL),
-(225, 'United Arab Emirates', 'AE', NULL, NULL),
-(226, 'United Kingdom', 'GB', NULL, NULL),
-(227, 'United States minor outlying islands', 'UM', NULL, NULL),
-(228, 'Uruguay', 'UY', NULL, NULL),
-(229, 'Uzbekistan', 'UZ', NULL, NULL),
-(230, 'Vanuatu', 'VU', NULL, NULL),
-(231, 'Vatican City State', 'VA', NULL, NULL),
-(232, 'Venezuela', 'VE', NULL, NULL),
-(233, 'Vietnam', 'VN', NULL, NULL),
-(234, 'Virgin Islands (British)', 'VG', NULL, NULL),
-(235, 'Virgin Islands (U.S.)', 'VI', NULL, NULL),
-(236, 'Wallis and Futuna Islands', 'WF', NULL, NULL),
-(237, 'Western Sahara', 'EH', NULL, NULL),
-(238, 'Yemen', 'YE', NULL, NULL),
-(239, 'Yugoslavia', 'YU', NULL, NULL),
-(240, 'Zaire', 'ZR', NULL, NULL),
-(241, 'Zambia', 'ZM', NULL, NULL),
-(242, 'Zimbabwe', 'ZW', NULL, NULL);
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `customer_addresses`
 --
 
 CREATE TABLE `customer_addresses` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `user_id` bigint(20) UNSIGNED NOT NULL,
-  `first_name` varchar(255) NOT NULL,
-  `last_name` varchar(255) NOT NULL,
-  `mobile` varchar(255) NOT NULL,
-  `email` varchar(255) NOT NULL,
-  `country_id` bigint(20) UNSIGNED NOT NULL,
+  `address_type` enum('Home','Office') DEFAULT 'Home',
+  `default_address` int(10) DEFAULT NULL,
+  `first_name` varchar(50) NOT NULL,
+  `last_name` varchar(50) NOT NULL,
+  `mobile` varchar(11) NOT NULL,
   `address` text NOT NULL,
-  `apartment` varchar(255) DEFAULT NULL,
-  `city` varchar(255) NOT NULL,
-  `state` varchar(255) NOT NULL,
-  `zip` varchar(255) NOT NULL,
+  `locality` varchar(50) DEFAULT NULL,
+  `city` varchar(50) NOT NULL,
+  `state_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `zip` varchar(10) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -389,9 +127,8 @@ CREATE TABLE `customer_addresses` (
 -- Dumping data for table `customer_addresses`
 --
 
-INSERT INTO `customer_addresses` (`id`, `user_id`, `first_name`, `last_name`, `mobile`, `email`, `country_id`, `address`, `apartment`, `city`, `state`, `zip`, `created_at`, `updated_at`) VALUES
-(1, 3, 'Priyanka', 'Bhavsar', '9538135005', 'p.bhavsar2610@gmail.com', 100, 'Keerthi Royal Palms, Keerthi Royal Palms, Keerthi Royal Palms, Keerthi Royal Palms,', 'Keerthi', 'Banglore', 'Karnataka', '560100', '2023-11-25 04:10:25', '2023-12-01 05:23:26'),
-(2, 1, 'Mukesh', 'Bhavsar', '09978835005', 'mukeshbhavsar210@gmail.com', 100, 'Keerthi Royal Palms,Keerthi Royal Palms,Keerthi Royal Palms,Keerthi Royal Palms,Keerthi Royal Palms,', 'Samarthya', 'Banglore', 'Karnataka', '560100', '2023-11-28 03:21:53', '2023-11-28 03:21:53');
+INSERT INTO `customer_addresses` (`id`, `user_id`, `address_type`, `default_address`, `first_name`, `last_name`, `mobile`, `address`, `locality`, `city`, `state_id`, `zip`, `created_at`, `updated_at`) VALUES
+(1, 3, 'Home', 1, 'Priyanka', 'Bhavsar', '9978835781', 'Shlok Heights, Next to Mirada Banquet hall, Mansarovar road, New Chandkheda', 'Gandhinagar', 'Ahmedabad', 7, '382424', NULL, '2026-02-18 08:39:52');
 
 -- --------------------------------------------------------
 
@@ -422,7 +159,8 @@ CREATE TABLE `discount_coupons` (
 
 INSERT INTO `discount_coupons` (`id`, `code`, `name`, `description`, `max_uses`, `max_uses_user`, `type`, `discount_amount`, `min_amount`, `status`, `starts_at`, `expires_at`, `created_at`, `updated_at`) VALUES
 (4, 'IND30', 'Dummy name', 'Hello1', '10', '3', 'percent', 10.00, 15.00, 1, '2023-11-27 11:36:57', '2023-11-30 11:36:59', '2023-11-28 06:07:01', '2023-11-29 02:18:46'),
-(5, 'IND99', 'Independence Day', 'Hello2', '10', '2', 'fixed', 90.00, 1000.00, 1, '2023-11-28 11:39:33', '2023-12-31 11:39:35', '2023-11-28 06:09:46', '2023-11-29 02:17:51');
+(5, 'IND99', 'Independence Day', 'Hello2', '10', '2', 'fixed', 90.00, 1000.00, 1, '2023-11-28 11:39:33', '2023-12-31 11:39:35', '2023-11-28 06:09:46', '2023-11-29 02:17:51'),
+(9, 'MIRADA99', 'Mukesh Bhavsar', 'test', '100', '5', 'percent', 999.00, NULL, 1, '2026-02-18 18:30:00', '2026-02-27 18:30:00', '2026-02-19 02:25:46', '2026-02-19 02:25:46');
 
 -- --------------------------------------------------------
 
@@ -499,7 +237,8 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (40, '2026_02_17_112636_create_colors_table', 32),
 (41, '2026_02_17_112942_create_sizes_table', 33),
 (42, '2026_02_17_113153_add_color_id_to_products_table', 34),
-(43, '2026_02_17_113319_add_size_id_to_products_table', 35);
+(43, '2026_02_17_113319_add_size_id_to_products_table', 35),
+(44, '2026_02_19_050146_create_states_table', 36);
 
 -- --------------------------------------------------------
 
@@ -534,17 +273,6 @@ CREATE TABLE `orders` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `orders`
---
-
-INSERT INTO `orders` (`id`, `user_id`, `subtotal`, `shipping`, `coupon_code`, `coupon_code_id`, `discount`, `grandtotal`, `payment_status`, `status`, `shipped_date`, `first_name`, `last_name`, `mobile`, `email`, `country_id`, `address`, `apartment`, `city`, `state`, `zip`, `notes`, `created_at`, `updated_at`) VALUES
-(19, 3, 314.00, 10.00, 'IND30', 4, 31.40, 292.60, 'not paid', 'cancelled', '2023-11-28 11:24:54', 'Dhruv', 'Bhavsar', '0997883500', 'dhruvbhavsar210@gmail.com', 100, 'Keerthi Royal Palms, Keerthi Royal Palms, Keerthi Royal Palms, Keerthi Royal Palms,', NULL, 'Banglore', 'Karnataka', '560100', NULL, '2023-11-29 00:51:51', '2023-11-29 05:55:09'),
-(26, 3, 1151.00, 40.00, 'IND99', 5, 90.00, 1101.00, 'not paid', 'delivered', '2026-02-17 14:02:04', 'Dhruv', 'Bhavsar', '09978835005', 'dhruvbhavsar210@gmail.com', 100, 'Hosur Road, Electronic City', 'E-508, Keerthi Royal Palms', 'Banglore', 'Karnataka', '560100', NULL, '2023-11-29 02:17:59', '2023-11-29 02:17:59'),
-(27, 3, 314.00, 10.00, 'IND30', 4, 31.40, 292.60, 'not paid', 'pending', NULL, 'Dhruv', 'Bhavsar', '09978835005', 'dhruvbhavsar210@gmail.com', 100, 'Keerthi Royal Palms, Keerthi Royal Palms, Keerthi Royal Palms, Keerthi Royal Palms,', NULL, 'Banglore', 'Karnataka', '560100', NULL, '2023-11-29 03:06:56', '2023-11-29 03:06:56'),
-(28, 3, 314.00, 10.00, '', NULL, 0.00, 324.00, 'not paid', 'cancelled', '2023-11-28 11:13:49', 'Dhruv', 'Bhavsar', '09978835005', 'dhruvbhavsar210@gmail.com', 100, 'Keerthi Royal Palms, Keerthi Royal Palms, Keerthi Royal Palms, Keerthi Royal Palms,', NULL, 'Banglore', 'Karnataka', '560100', NULL, '2023-11-29 03:50:43', '2023-11-29 06:16:02'),
-(29, 3, 279.00, 10.00, '', NULL, 0.00, 289.00, 'not paid', 'pending', NULL, 'Dhruv', 'Bhavsar', '09978835005', 'dhruvbhavsar210@gmail.com', 100, 'Keerthi Royal Palms, Keerthi Royal Palms, Keerthi Royal Palms, Keerthi Royal Palms,', NULL, 'Banglore', 'Karnataka', '560100', NULL, '2023-11-29 07:12:26', '2023-11-29 07:12:26');
-
 -- --------------------------------------------------------
 
 --
@@ -562,18 +290,6 @@ CREATE TABLE `order_items` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `order_items`
---
-
-INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `name`, `qty`, `price`, `total`, `created_at`, `updated_at`) VALUES
-(26, 19, 14, 'Men Yellow Printed Cotton Pure Cotton T-shirt', 1, 314.00, 314.00, '2023-11-29 00:51:51', '2023-11-29 00:51:51'),
-(37, 26, 14, 'Men Yellow Printed Cotton Pure Cotton T-shirt', 1, 314.00, 314.00, '2023-11-29 02:17:59', '2023-11-29 02:17:59'),
-(39, 26, 13, 'Men Black Cotton Pure Cotton T-shirt', 1, 279.00, 279.00, '2023-11-29 02:17:59', '2023-11-29 02:17:59'),
-(40, 27, 14, 'Men Yellow Printed Cotton Pure Cotton T-shirt', 1, 314.00, 314.00, '2023-11-29 03:06:56', '2023-11-29 03:06:56'),
-(41, 28, 14, 'Men Yellow Printed Cotton Pure Cotton T-shirt', 1, 314.00, 314.00, '2023-11-29 03:50:43', '2023-11-29 03:50:43'),
-(42, 29, 13, 'Men Black Cotton Pure Cotton T-shirt', 1, 279.00, 279.00, '2023-11-29 07:12:26', '2023-11-29 07:12:26');
 
 -- --------------------------------------------------------
 
@@ -688,7 +404,7 @@ CREATE TABLE `products` (
 
 INSERT INTO `products` (`id`, `title`, `slug`, `description`, `short_description`, `shipping_returns`, `related_products`, `price`, `compare_price`, `category_id`, `sub_category_id`, `sub_sub_category_id`, `brand_id`, `color_id`, `size_id`, `is_featured`, `sku`, `barcode`, `track_qty`, `qty`, `status`, `created_at`, `updated_at`) VALUES
 (13, 'Men Black Cotton Pure Cotton T-shirt', 'men-black-cotton-pure-cotton-t-shirt', '<p><span style=\"color: rgb(40, 44, 63); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;\">Black solid T-shirt, has a round neck, short sleeves</span></p><div class=\"pdp-sizeFitDesc\" style=\"box-sizing: inherit; border: none; margin-top: 12px; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><h4 class=\"pdp-sizeFitDescTitle pdp-product-description-title\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; font-weight: 700; text-transform: capitalize; border: none; padding-bottom: 5px;\">Size &amp; Fit</h4><p class=\"pdp-sizeFitDescContent pdp-product-description-content\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); line-height: 1.4; font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; width: 461.734px;\">The model (height 6\') is wearing a size M</p></div><div class=\"pdp-sizeFitDesc\" style=\"box-sizing: inherit; border: none; margin-top: 12px; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><h4 class=\"pdp-sizeFitDescTitle pdp-product-description-title\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; font-weight: 700; text-transform: capitalize; border: none; padding-bottom: 5px;\">Material &amp; Care</h4><p class=\"pdp-sizeFitDescContent pdp-product-description-content\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); line-height: 1.4; font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; width: 461.734px;\">100% cotton<br style=\"box-sizing: inherit;\">Machine-wash</p></div><div class=\"index-sizeFitDesc\" style=\"box-sizing: inherit; border: none; margin-top: 12px; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><h4 class=\"index-sizeFitDescTitle index-product-description-title\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; font-weight: 700; padding-bottom: 12px; border: none; text-transform: capitalize;\">Specifications</h4></div>', NULL, NULL, '', 279.00, 399.00, 82, 6, 1, 17, 3, 3, 'Yes', 'tshirt_01', 'tshirt_000001', 'Yes', 5, 1, '2023-11-24 00:08:01', '2026-02-17 06:10:20'),
-(14, 'Men Yellow Printed Cotton Pure Cotton T-shirt', 'men-yellow-printed-cotton-pure-cotton-t-shirt', '<div style=\"box-sizing: inherit; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><p class=\"pdp-product-description-content\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); line-height: 1.4; font-size: 16px; margin-top: 12px; width: 430.953px;\">Keep this hip this season with the HRX Men\'s Athleisure T-shirt. This versatile T-shirt can be styled any way you like for the ultimate gym-to-street look.<br style=\"box-sizing: inherit;\"><br style=\"box-sizing: inherit;\"><span style=\"box-sizing: inherit; font-weight: 700; display: inline-block; margin-top: 16px;\">Features</span></p><ul style=\"box-sizing: inherit; list-style: none; padding: 0px; margin-right: 0px; margin-bottom: 10px; margin-left: 0px;\"><li style=\"box-sizing: inherit;\">Athleisure T-shirt can be paired with tracks, khakis or jeans</li><li style=\"box-sizing: inherit;\">Style: Round Neck</li><li style=\"box-sizing: inherit;\">Sleeve: Short Sleeves</li><li style=\"box-sizing: inherit;\">Colour: Yellow</li><li style=\"box-sizing: inherit;\">Print: Typography</li><li style=\"box-sizing: inherit;\">Fit: Regular</li></ul><p></p></div><div class=\"pdp-sizeFitDesc\" style=\"box-sizing: inherit; border: none; margin-top: 12px; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><h4 class=\"pdp-sizeFitDescTitle pdp-product-description-title\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; font-weight: 700; text-transform: capitalize; border: none; padding-bottom: 5px;\">Size &amp; Fit</h4><p class=\"pdp-sizeFitDescContent pdp-product-description-content\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); line-height: 1.4; font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; width: 461.734px;\">The model height 6\' is wearing a size M</p></div><div class=\"pdp-sizeFitDesc\" style=\"box-sizing: inherit; border: none; margin-top: 12px; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><h4 class=\"pdp-sizeFitDescTitle pdp-product-description-title\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; font-weight: 700; text-transform: capitalize; border: none; padding-bottom: 5px;\">Material &amp; Care</h4><p class=\"pdp-sizeFitDescContent pdp-product-description-content\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); line-height: 1.4; font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; width: 461.734px;\">100% cotton<br style=\"box-sizing: inherit;\">Machine-wash</p></div>', NULL, NULL, '', 314.00, 699.00, 82, 6, 13, 18, 1, 4, 'Yes', 'tshirt_02', 'tshirt_000002', 'Yes', 99, 1, '2023-11-24 00:11:49', '2026-02-17 06:10:05');
+(14, 'Men Yellow Printed Cotton Pure Cotton T-shirt', 'men-yellow-printed-cotton-pure-cotton-t-shirt', '<div style=\"box-sizing: inherit; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><p class=\"pdp-product-description-content\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); line-height: 1.4; font-size: 16px; margin-top: 12px; width: 430.953px;\">Keep this hip this season with the HRX Men\'s Athleisure T-shirt. This versatile T-shirt can be styled any way you like for the ultimate gym-to-street look.<br style=\"box-sizing: inherit;\"><br style=\"box-sizing: inherit;\"><span style=\"box-sizing: inherit; font-weight: 700; display: inline-block; margin-top: 16px;\">Features</span></p><ul style=\"box-sizing: inherit; list-style: none; padding: 0px; margin-right: 0px; margin-bottom: 10px; margin-left: 0px;\"><li style=\"box-sizing: inherit;\">Athleisure T-shirt can be paired with tracks, khakis or jeans</li><li style=\"box-sizing: inherit;\">Style: Round Neck</li><li style=\"box-sizing: inherit;\">Sleeve: Short Sleeves</li><li style=\"box-sizing: inherit;\">Colour: Yellow</li><li style=\"box-sizing: inherit;\">Print: Typography</li><li style=\"box-sizing: inherit;\">Fit: Regular</li></ul><p></p></div><div class=\"pdp-sizeFitDesc\" style=\"box-sizing: inherit; border: none; margin-top: 12px; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><h4 class=\"pdp-sizeFitDescTitle pdp-product-description-title\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; font-weight: 700; text-transform: capitalize; border: none; padding-bottom: 5px;\">Size &amp; Fit</h4><p class=\"pdp-sizeFitDescContent pdp-product-description-content\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); line-height: 1.4; font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; width: 461.734px;\">The model height 6\' is wearing a size M</p></div><div class=\"pdp-sizeFitDesc\" style=\"box-sizing: inherit; border: none; margin-top: 12px; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><h4 class=\"pdp-sizeFitDescTitle pdp-product-description-title\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; font-weight: 700; text-transform: capitalize; border: none; padding-bottom: 5px;\">Material &amp; Care</h4><p class=\"pdp-sizeFitDescContent pdp-product-description-content\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); line-height: 1.4; font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; width: 461.734px;\">100% cotton<br style=\"box-sizing: inherit;\">Machine-wash</p></div>', NULL, NULL, '', 314.00, 699.00, 82, 6, NULL, 18, 1, 4, 'Yes', 'tshirt_02', 'tshirt_000002', 'Yes', 99, 1, '2023-11-24 00:11:49', '2026-02-17 06:10:05');
 
 -- --------------------------------------------------------
 
@@ -713,7 +429,8 @@ INSERT INTO `product_images` (`id`, `product_id`, `image`, `sort_order`, `create
 (19, 13, '13-19-1700804281.jpg', NULL, '2023-11-24 00:08:01', '2023-11-24 00:08:01'),
 (20, 13, '13-20-1700804281.jpg', NULL, '2023-11-24 00:08:01', '2023-11-24 00:08:01'),
 (21, 14, '14-21-1700804509.jpg', NULL, '2023-11-24 00:11:49', '2023-11-24 00:11:49'),
-(22, 14, '14-22-1700804510.jpg', NULL, '2023-11-24 00:11:50', '2023-11-24 00:11:50');
+(22, 14, '14-22-1700804510.jpg', NULL, '2023-11-24 00:11:50', '2023-11-24 00:11:50'),
+(34, 14, '14-34-1771400807.png', NULL, '2026-02-18 02:16:47', '2026-02-18 02:16:47');
 
 -- --------------------------------------------------------
 
@@ -756,7 +473,7 @@ CREATE TABLE `sessions` (
 
 CREATE TABLE `shipping_charges` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `country_id` varchar(255) NOT NULL,
+  `state_id` bigint(20) UNSIGNED DEFAULT NULL,
   `amount` double(10,2) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -766,11 +483,10 @@ CREATE TABLE `shipping_charges` (
 -- Dumping data for table `shipping_charges`
 --
 
-INSERT INTO `shipping_charges` (`id`, `country_id`, `amount`, `created_at`, `updated_at`) VALUES
-(13, '100', 10.00, '2023-11-28 00:49:44', '2023-11-28 02:49:48'),
-(14, '1', 1000.00, '2023-11-28 00:50:12', '2023-11-28 00:50:12'),
-(16, '2', 50.00, '2023-11-28 02:47:32', '2023-11-28 02:47:32'),
-(17, 'rest_of_world', 100.00, '2023-11-28 03:11:04', '2023-11-28 03:11:04');
+INSERT INTO `shipping_charges` (`id`, `state_id`, `amount`, `created_at`, `updated_at`) VALUES
+(13, 7, 10.00, '2023-11-28 00:49:44', '2023-11-28 02:49:48'),
+(20, 22, 50.00, '2026-02-19 00:59:06', '2026-02-19 00:59:06'),
+(21, 37, 11.00, '2026-02-19 01:02:59', '2026-02-19 01:02:59');
 
 -- --------------------------------------------------------
 
@@ -799,13 +515,70 @@ INSERT INTO `sizes` (`id`, `name`, `code`, `created_at`, `updated_at`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `states`
+--
+
+CREATE TABLE `states` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `code` varchar(10) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `states`
+--
+
+INSERT INTO `states` (`id`, `name`, `code`, `created_at`, `updated_at`) VALUES
+(1, 'Andhra Pradesh', 'AP', NULL, NULL),
+(2, 'Arunachal Pradesh', 'AR', NULL, NULL),
+(3, 'Assam', 'AS', NULL, NULL),
+(4, 'Bihar', 'BR', NULL, NULL),
+(5, 'Chhattisgarh', 'CG', NULL, NULL),
+(6, 'Goa', 'GA', NULL, NULL),
+(7, 'Gujarat', 'GJ', NULL, NULL),
+(8, 'Haryana', 'HR', NULL, NULL),
+(9, 'Himachal Pradesh', 'HP', NULL, NULL),
+(10, 'Jharkhand', 'JH', NULL, NULL),
+(11, 'Karnataka', 'KA', NULL, NULL),
+(12, 'Kerala', 'KL', NULL, NULL),
+(13, 'Madhya Pradesh', 'MP', NULL, NULL),
+(14, 'Maharashtra', 'MH', NULL, NULL),
+(15, 'Manipur', 'MN', NULL, NULL),
+(16, 'Meghalaya', 'ML', NULL, NULL),
+(17, 'Mizoram', 'MZ', NULL, NULL),
+(18, 'Nagaland', 'NL', NULL, NULL),
+(19, 'Odisha', 'OD', NULL, NULL),
+(20, 'Punjab', 'PB', NULL, NULL),
+(21, 'Rajasthan', 'RJ', NULL, NULL),
+(22, 'Sikkim', 'SK', NULL, NULL),
+(23, 'Tamil Nadu', 'TN', NULL, NULL),
+(24, 'Telangana', 'TS', NULL, NULL),
+(25, 'Tripura', 'TR', NULL, NULL),
+(26, 'Uttar Pradesh', 'UP', NULL, NULL),
+(27, 'Uttarakhand', 'UK', NULL, NULL),
+(28, 'West Bengal', 'WB', NULL, NULL),
+(29, 'Andaman and Nicobar Islands', 'AN', NULL, NULL),
+(30, 'Chandigarh', 'CH', NULL, NULL),
+(31, 'Dadra and Nagar Haveli and Daman and Diu', 'DN', NULL, NULL),
+(32, 'Delhi', 'DL', NULL, NULL),
+(33, 'Jammu and Kashmir', 'JK', NULL, NULL),
+(34, 'Ladakh', 'LA', NULL, NULL),
+(35, 'Lakshadweep', 'LD', NULL, NULL),
+(36, 'Puducherry', 'PY', NULL, NULL),
+(37, 'Rest of the state', 'RS', NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `sub_categories`
 --
 
 CREATE TABLE `sub_categories` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `slug` varchar(255) NOT NULL,
+  `sub_category_name` varchar(255) NOT NULL,
+  `sub_category_slug` varchar(255) NOT NULL,
   `status` int(11) NOT NULL,
   `showHome` enum('Yes','No') NOT NULL DEFAULT 'No',
   `category_id` bigint(20) UNSIGNED NOT NULL,
@@ -817,14 +590,13 @@ CREATE TABLE `sub_categories` (
 -- Dumping data for table `sub_categories`
 --
 
-INSERT INTO `sub_categories` (`id`, `name`, `slug`, `status`, `showHome`, `category_id`, `created_at`, `updated_at`) VALUES
+INSERT INTO `sub_categories` (`id`, `sub_category_name`, `sub_category_slug`, `status`, `showHome`, `category_id`, `created_at`, `updated_at`) VALUES
 (6, 'Top Wear', 'top-wear', 1, 'Yes', 82, '2023-11-23 23:56:48', '2023-11-23 23:56:48'),
 (7, 'Bottom  Wear', 'bottom-wear', 1, 'Yes', 82, '2023-11-23 23:57:22', '2023-11-23 23:57:22'),
 (21, 'Bottom  Wear', 'bottom-wear', 1, 'Yes', 83, '2023-11-23 23:57:22', '2023-11-23 23:57:22'),
 (22, 'Top Wear', 'top-wear', 1, 'Yes', 83, '2023-11-23 23:56:48', '2023-11-23 23:56:48'),
 (25, 'Jewellery', 'jewellery', 1, 'Yes', 83, '2026-02-16 07:01:49', '2026-02-16 07:01:49'),
-(26, 'Footwear', 'footwear', 1, 'Yes', 82, '2026-02-16 23:46:21', '2026-02-16 23:46:21'),
-(27, 'Gadgets', 'gadgets', 1, 'Yes', 82, '2026-02-16 23:58:06', '2026-02-16 23:58:06');
+(26, 'Footwear', 'footwear', 1, 'Yes', 82, '2026-02-16 23:46:21', '2026-02-16 23:46:21');
 
 -- --------------------------------------------------------
 
@@ -836,9 +608,8 @@ CREATE TABLE `sub_sub_categories` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `category_id` bigint(20) UNSIGNED NOT NULL,
   `sub_category_id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `slug` varchar(255) NOT NULL,
-  `status` int(11) NOT NULL DEFAULT 1,
+  `sub2_category_name` varchar(255) NOT NULL,
+  `sub2_category_slug` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -847,14 +618,12 @@ CREATE TABLE `sub_sub_categories` (
 -- Dumping data for table `sub_sub_categories`
 --
 
-INSERT INTO `sub_sub_categories` (`id`, `category_id`, `sub_category_id`, `name`, `slug`, `status`, `created_at`, `updated_at`) VALUES
-(1, 82, 6, 'T-shirt', 't-shirt', 1, '2026-02-16 03:28:51', '2026-02-16 03:28:51'),
-(8, 83, 22, 'Tops', 'tops', 1, '2026-02-16 06:59:55', '2026-02-16 06:59:55'),
-(9, 83, 25, 'Earrings', 'earrings', 1, '2026-02-16 07:02:29', '2026-02-16 07:02:29'),
-(10, 82, 7, 'Jeans', 'jeans', 1, '2026-02-16 23:45:53', '2026-02-16 23:45:53'),
-(11, 82, 26, 'Casual Shoes', 'casual-shoes', 1, '2026-02-16 23:46:42', '2026-02-16 23:46:42'),
-(12, 82, 27, 'Smart Werables', 'smart-werables', 1, '2026-02-16 23:58:50', '2026-02-16 23:58:50'),
-(13, 82, 6, 'Casual Shirts', 'casual-shirts', 1, '2026-02-17 00:07:12', '2026-02-17 00:07:12');
+INSERT INTO `sub_sub_categories` (`id`, `category_id`, `sub_category_id`, `sub2_category_name`, `sub2_category_slug`, `created_at`, `updated_at`) VALUES
+(1, 82, 6, 'T-shirt', 't-shirt', '2026-02-16 03:28:51', '2026-02-16 03:28:51'),
+(8, 83, 22, 'Tops', 'tops', '2026-02-16 06:59:55', '2026-02-16 06:59:55'),
+(9, 83, 25, 'Earrings', 'earrings', '2026-02-16 07:02:29', '2026-02-16 07:02:29'),
+(10, 82, 7, 'Jeans', 'jeans', '2026-02-16 23:45:53', '2026-02-16 23:45:53'),
+(11, 82, 26, 'Casual Shoes', 'casual-shoes', '2026-02-16 23:46:42', '2026-02-16 23:46:42');
 
 -- --------------------------------------------------------
 
@@ -869,6 +638,13 @@ CREATE TABLE `temp_images` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `temp_images`
+--
+
+INSERT INTO `temp_images` (`id`, `name`, `created_at`, `updated_at`) VALUES
+(176, '1771507053.png', '2026-02-19 07:47:33', '2026-02-19 07:47:33');
+
 -- --------------------------------------------------------
 
 --
@@ -877,10 +653,14 @@ CREATE TABLE `temp_images` (
 
 CREATE TABLE `users` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL,
+  `name` varchar(50) NOT NULL,
   `email` varchar(255) NOT NULL,
-  `phone` varchar(20) DEFAULT NULL,
+  `phone` varchar(11) DEFAULT NULL,
+  `mobile` varchar(11) DEFAULT NULL,
+  `birthdate` date DEFAULT NULL,
+  `gender` enum('male','female') DEFAULT 'male',
   `role` int(11) NOT NULL DEFAULT 1,
+  `image` varchar(20) DEFAULT NULL,
   `status` int(11) NOT NULL DEFAULT 1,
   `email_verified_at` timestamp NULL DEFAULT NULL,
   `password` varchar(255) NOT NULL,
@@ -893,9 +673,9 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `email`, `phone`, `role`, `status`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`) VALUES
-(1, 'Admin', 'mukeshbhavsar210@gmail.com', '', 2, 1, NULL, '$2y$12$Iy5Wh1TVAkCYAvaefrR71OEKD4QDjhnnWBxknqjwnioSSM6sAJMnO', NULL, '2023-11-17 23:52:06', '2023-12-01 05:59:34'),
-(3, 'Priyanka', 'p.bhavsar2610@gmail.com', '9538135005', 1, 1, NULL, '$2y$12$Iy5Wh1TVAkCYAvaefrR71OEKD4QDjhnnWBxknqjwnioSSM6sAJMnO', NULL, '2023-11-25 00:32:42', '2023-12-02 04:52:49');
+INSERT INTO `users` (`id`, `name`, `email`, `phone`, `mobile`, `birthdate`, `gender`, `role`, `image`, `status`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`) VALUES
+(1, 'Admin', 'mukeshbhavsar210@gmail.com', '', NULL, NULL, NULL, 2, 'mukesh.webp', 1, NULL, '$2y$12$Iy5Wh1TVAkCYAvaefrR71OEKD4QDjhnnWBxknqjwnioSSM6sAJMnO', NULL, '2023-11-17 23:52:06', '2023-12-01 05:59:34'),
+(3, 'Priyanka', 'p.bhavsar2610@gmail.com', '9538135005', '9978812324', '2026-02-18', 'female', 1, 'priyanka.png', 1, NULL, '$2y$12$Iy5Wh1TVAkCYAvaefrR71OEKD4QDjhnnWBxknqjwnioSSM6sAJMnO', NULL, '2023-11-25 00:32:42', '2023-12-02 04:52:49');
 
 -- --------------------------------------------------------
 
@@ -941,18 +721,12 @@ ALTER TABLE `colors`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `countries`
---
-ALTER TABLE `countries`
-  ADD PRIMARY KEY (`id`);
-
---
 -- Indexes for table `customer_addresses`
 --
 ALTER TABLE `customer_addresses`
   ADD PRIMARY KEY (`id`),
   ADD KEY `customer_addresses_user_id_foreign` (`user_id`),
-  ADD KEY `customer_addresses_country_id_foreign` (`country_id`);
+  ADD KEY `customer_addresses_state_id_foreign` (`state_id`);
 
 --
 -- Indexes for table `discount_coupons`
@@ -1053,12 +827,19 @@ ALTER TABLE `sessions`
 -- Indexes for table `shipping_charges`
 --
 ALTER TABLE `shipping_charges`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `shipping_charges_state_id_foreign` (`state_id`);
 
 --
 -- Indexes for table `sizes`
 --
 ALTER TABLE `sizes`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `states`
+--
+ALTER TABLE `states`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -1073,7 +854,7 @@ ALTER TABLE `sub_categories`
 --
 ALTER TABLE `sub_sub_categories`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `sub_sub_categories_slug_unique` (`slug`),
+  ADD UNIQUE KEY `sub_sub_categories_slug_unique` (`sub2_category_slug`),
   ADD KEY `sub_sub_categories_category_id_foreign` (`category_id`),
   ADD KEY `sub_sub_categories_sub_category_id_foreign` (`sub_category_id`);
 
@@ -1106,25 +887,19 @@ ALTER TABLE `wishlists`
 -- AUTO_INCREMENT for table `brands`
 --
 ALTER TABLE `brands`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=151;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=153;
 
 --
 -- AUTO_INCREMENT for table `colors`
 --
 ALTER TABLE `colors`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
-
---
--- AUTO_INCREMENT for table `countries`
---
-ALTER TABLE `countries`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=243;
 
 --
 -- AUTO_INCREMENT for table `customer_addresses`
@@ -1136,7 +911,7 @@ ALTER TABLE `customer_addresses`
 -- AUTO_INCREMENT for table `discount_coupons`
 --
 ALTER TABLE `discount_coupons`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `failed_jobs`
@@ -1148,7 +923,7 @@ ALTER TABLE `failed_jobs`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
 
 --
 -- AUTO_INCREMENT for table `orders`
@@ -1190,7 +965,7 @@ ALTER TABLE `products`
 -- AUTO_INCREMENT for table `product_images`
 --
 ALTER TABLE `product_images`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT for table `product_ratings`
@@ -1202,7 +977,7 @@ ALTER TABLE `product_ratings`
 -- AUTO_INCREMENT for table `shipping_charges`
 --
 ALTER TABLE `shipping_charges`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `sizes`
@@ -1211,22 +986,28 @@ ALTER TABLE `sizes`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
+-- AUTO_INCREMENT for table `states`
+--
+ALTER TABLE `states`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+
+--
 -- AUTO_INCREMENT for table `sub_categories`
 --
 ALTER TABLE `sub_categories`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT for table `sub_sub_categories`
 --
 ALTER TABLE `sub_sub_categories`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `temp_images`
 --
 ALTER TABLE `temp_images`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=176;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=177;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -1248,7 +1029,7 @@ ALTER TABLE `wishlists`
 -- Constraints for table `customer_addresses`
 --
 ALTER TABLE `customer_addresses`
-  ADD CONSTRAINT `customer_addresses_country_id_foreign` FOREIGN KEY (`country_id`) REFERENCES `countries` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `customer_addresses_state_id_foreign` FOREIGN KEY (`state_id`) REFERENCES `states` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
   ADD CONSTRAINT `customer_addresses_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
@@ -1287,6 +1068,12 @@ ALTER TABLE `product_images`
 --
 ALTER TABLE `product_ratings`
   ADD CONSTRAINT `product_ratings_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `shipping_charges`
+--
+ALTER TABLE `shipping_charges`
+  ADD CONSTRAINT `shipping_charges_state_id_foreign` FOREIGN KEY (`state_id`) REFERENCES `states` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
 --
 -- Constraints for table `sub_categories`

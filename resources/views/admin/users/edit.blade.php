@@ -1,22 +1,21 @@
 @extends('admin.layouts.app')
 
 @section('content')
-<section class="content-header">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-sm-6">
-                <h1>Update User</h1>
-            </div>
-            <div class="col-sm-6 text-right">
-                <a href="{{ route('users.index') }}" class="btn btn-primary">Back</a>
+
+<div class="card custom-card">
+    <div class="card-header">
+        <div class="row align-items-center">
+            <div class="row">
+                <div class="col-sm-7 col-12 d-flex">
+                    <h3>Edit Users</h3>                      
+                </div>
+                <div class="col-sm-5 col-12">
+                    <a href="{{ route('users.index') }}" class="btn btn-primary float-end">Back</a>
+                </div>
             </div>
         </div>
     </div>
-    <!-- /.container-fluid -->
-</section>
-<!-- Main content -->
-<section class="content">
-    <!-- Default box -->
+
     <div class="container-fluid">
         <form action="" method="post" id="userForm" name="userForm">
             <div class="card">

@@ -9,34 +9,11 @@
         </a>   
     </li>
     <li class="nav-item">
-        <a class="nav-link" href="#category" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarApplications">
-            <i class="iconoir-compact-disc menu-icon"></i>
-            <span>Category Group</span>
+        <a href="{{ route('categories.index') }}" class="nav-link">
+            <i class="iconoir-view-grid menu-icon"></i>
+            <span>Category</span>
         </a>
-        <div class="collapse" id="category">
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a href="{{ route('categories.index') }}" class="nav-link">
-                        <i class="iconoir-view-grid menu-icon"></i>
-                        <span>Category</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('sub-categories.index') }}" class="nav-link">
-                        <i class="iconoir-table-rows menu-icon"></i>
-                        <span>Sub Category</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('sub2-categories.index') }}" class="nav-link">
-                        <i class="iconoir-table-rows menu-icon"></i>
-                        <span>Sub2 Category</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </li>
-        
+    </li>         
     <li class="nav-item">
         <a href="{{ route('products.index') }}" class="nav-link">
             <i class="iconoir-compact-disc menu-icon"></i>
@@ -56,7 +33,7 @@
         </a>
     </li>
     <li class="nav-item">
-        <a href="{{ route('shipping.create') }}" class="nav-link">
+        <a href="{{ route('shipping.index') }}" class="nav-link">
             <i class="iconoir-trophy menu-icon"></i>
             <span>Shipping</span>
         </a>

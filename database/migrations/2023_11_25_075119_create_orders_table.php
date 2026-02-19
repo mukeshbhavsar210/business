@@ -27,11 +27,10 @@ return new class extends Migration
             $table->string('last_name');
             $table->string('mobile');
             $table->string('email');
-            $table->foreignId('country_id')->constrained()->onDelete('cascade');
+            $table->foreignId('state_id')->constrained()->onDelete('cascade');
             $table->text('address');
-            $table->string('apartment')->nullable();
+            $table->string('locality')->nullable();
             $table->string('city');
-            $table->string('state');
             $table->string('zip');
             $table->text('notes');
 

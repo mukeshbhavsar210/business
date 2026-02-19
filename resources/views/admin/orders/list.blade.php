@@ -4,7 +4,7 @@
 
 @include('admin.message')
 
-    <div class="card">
+    <div class="card custom-card">
         <div class="card-header">
             <div class="row align-items-center">
                 <div class="row">
@@ -52,66 +52,72 @@
                 <thead class="table-light">
                     <tr>
                         <th class="border-top-0">Products</th>
-                        <th class="border-top-0" width="220">Customer</th>                        
+                        <th class="border-top-0" width="220">Customer details</th>                        
                         <th class="border-top-0" width="100">AWB</th>
                         <th class="border-top-0" width="100">Courier</th>                        
                         <th class="border-top-0" width="150">Purchased on</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($orders as $order)
-                        @foreach($order->orderItems as $item)
-                            @php
-                                $productImage = $item->product->images->first();
-                            @endphp
-                                <tr>
-                                    <td>          
-                                        <div class="d-flex align-items-center">                              
-                                            <a href="{{ route('front.product', $item->product->slug) }}" target="_blank">
-                                                @if($productImage && !empty($productImage->image))
-                                                    <img src="{{ asset('uploads/product/small/'.$productImage->image) }}" height="90" class="me-3 align-self-center rounded" />
-                                                @else
-                                                    <img src="{{ asset('admin-assets/img/default-150x150.png') }}" height="90" class="me-3 align-self-center rounded" />
-                                                @endif
-                                            </a>
-                                            <div class="flex-grow-1 text-truncate">
-                                                <h5 class="product-title"><a href="#">{{ Str::limit($item->product->title, 75, '...') }}</a></h5>
-                                                    <div class="small-fonts">
-                                                    <b>₹{{ number_format($order->grandtotal,2) }}</b>
-                                                {{-- <p class="mb-0"><span class="text-muted">Size:</span> {{ $item->product->size->name ?? '' }} |
-                                                    <span class="text-muted">Color:</span>{{ $item->product->color->name ?? '' }} |
-                                                </p> --}}
-                                                    <p class="mb-0"><a href="{{ route('orders.detail',$order->id) }}">Order No.: {{ $order->id }}</a></p>
+                    @if ($orders->isNotEmpty())
+                        @foreach($orders as $order)
+                            @foreach($order->orderItems as $item)
+                                @php
+                                    $productImage = $item->product->images->first();
+                                @endphp
+                                    <tr>
+                                        <td>          
+                                            <div class="d-flex align-items-center">                              
+                                                <a href="{{ route('front.product', $item->product->slug) }}" target="_blank">
+                                                    @if($productImage && !empty($productImage->image))
+                                                        <img src="{{ asset('uploads/product/small/'.$productImage->image) }}" height="90" class="me-3 align-self-center rounded" />
+                                                    @else
+                                                        <img src="{{ asset('admin-assets/img/default-150x150.png') }}" height="90" class="me-3 align-self-center rounded" />
+                                                    @endif
+                                                </a>
+                                                <div class="flex-grow-1 text-truncate">
+                                                    <h5 class="product-title"><a href="#">{{ Str::limit($item->product->title, 75, '...') }}</a></h5>
+                                                        <div class="small-fonts">
+                                                        <b>₹{{ number_format($order->grandtotal,2) }}</b>
+                                                    {{-- <p class="mb-0"><span class="text-muted">Size:</span> {{ $item->product->size->name ?? '' }} |
+                                                        <span class="text-muted">Color:</span>{{ $item->product->color->name ?? '' }} |
+                                                    </p> --}}
+                                                        <p class="mb-0"><a href="{{ route('orders.detail',$order->id) }}">Order No.: {{ $order->id }}</a></p>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </td>        
-                                    <td>
-                                        <h5 class="product-title">{{ $order->first_name }} {{ $order->last_name }}</h5>
-                                        @if ($order->status == 'pending')
-                                            <span class="badge bg-danger">Pending</span>
-                                        @elseif ($order->status == 'shipped')
-                                            <span class="badge bg-info">Shipped</span>
-                                        @elseif ($order->status == 'delivered')
-                                            <span class="badge bg-success">Delivered</span>
+                                        </td>        
+                                        <td>
+                                            <h5 class="product-title">{{ $order->first_name }} {{ $order->last_name }}</h5>
+                                            @if ($order->status == 'pending')
+                                                <span class="badge bg-danger">Pending</span>
+                                            @elseif ($order->status == 'shipped')
+                                                <span class="badge bg-info">Shipped</span>
+                                            @elseif ($order->status == 'delivered')
+                                                <span class="badge bg-success">Delivered</span>
+                                            @else
+                                                <span class="badge bg-danger">Cancelled</span>
+                                            @endif
+                                        </td>
+                                        <td>{{ $order->awb_code ?? '-' }}</td>
+                                        <td>{{ $order->courier_name ?? '-' }}</td>
+                                    
+                                        {{-- @if (!$order->awb_code)
+                                            <form action="{{ route('admin.shipOrder', $order->id) }}" method="POST">
+                                                @csrf
+                                                <button class="btn btn-primary">Ship Now</button>
+                                            </form>
                                         @else
-                                            <span class="badge bg-danger">Cancelled</span>
-                                        @endif
-                                    </td>
-                                    <td>{{ $order->awb_code ?? '-' }}</td>
-                                    <td>{{ $order->courier_name ?? '-' }}</td>
-                                
-                                    {{-- @if (!$order->awb_code)
-                                        <form action="{{ route('admin.shipOrder', $order->id) }}" method="POST">
-                                            @csrf
-                                            <button class="btn btn-primary">Ship Now</button>
-                                        </form>
-                                    @else
-                                        <a href="{{ route('admin.trackOrder', $order->awb_code) }}" class="btn btn-success">Track</a>
-                                    @endif --}}                                
-                                <td><span class="text-muted">{{ \Carbon\Carbon::parse($order->created_at)->format('d M, Y') }}</span></td>
-                        @endforeach
-                    @endforeach
+                                            <a href="{{ route('admin.trackOrder', $order->awb_code) }}" class="btn btn-success">Track</a>
+                                        @endif --}}                                
+                                    <td><span class="text-muted">{{ \Carbon\Carbon::parse($order->created_at)->format('d M, Y') }}</span></td>
+                            @endforeach                        
+                        @endforeach   
+                        @else
+                        <tr>
+                            <td>Records not found</td>
+                        </tr>
+                    @endif                 
                 </tbody>
             </table>
         </div>

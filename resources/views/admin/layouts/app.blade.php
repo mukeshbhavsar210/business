@@ -126,29 +126,31 @@
         </div>
         <div class="startbar-overlay d-print-none"></div>
 
-<div class="page-wrapper">
-    <div class="page-content">
-        <div class="container-xxl">
-            @yield('content')
-        </div>                
-        
-        <footer class="footer text-center text-sm-start d-print-none">
-            <div class="container-xxl">
-                <div class="row">
-                    <div class="col-12">
-                        <div class="card mb-0 rounded-bottom-0">
-                            <div class="card-body">
-                                <p class="text-muted mb-0"> © <script> document.write(new Date().getFullYear()) </script> Online Shopping </p>
+        <div class="page-wrapper">
+            <div class="page-content">
+                <div class="container-xxl">
+                    @yield('content')
+                </div>                
+                
+                <footer class="footer text-center text-sm-start d-print-none">
+                    <div class="container-xxl">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="card mb-0 rounded-bottom-0">
+                                    <div class="card-body">
+                                        <p class="text-muted mb-0"> © <script> document.write(new Date().getFullYear()) </script> Online Shopping </p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </footer>
             </div>
-        </footer>
-    </div>
-</div>
+        </div>
 
-		 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
 <script src="{{ asset('admin-assets/plugins/jquery/jquery.min.js') }}"></script>
 <script src="{{ asset('admin-assets/js/bootstrap.bundle.min.js.download') }}"></script>
 <script src="{{ asset('admin-assets/js/simplebar.min.js.download') }}"></script>
@@ -186,11 +188,8 @@
             header.classList.remove("sticky-header");
         }
     });
-
 </script>
 
-
-		
-        @yield('customJs')
-	</body>
+@yield('customJs')
+</body>
 </html>

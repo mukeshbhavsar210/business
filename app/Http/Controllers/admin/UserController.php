@@ -20,14 +20,11 @@ class UserController extends Controller
 
         $users = $users->paginate(10);
 
-        return view("admin.users.list", [
+        return view("admin.users.index", [
             'users' => $users
             ]);
     }
-
-    public function create(Request $request){
-        return view('admin.users.create');
-    }
+    
 
     public function store(Request $request){
         $validator = Validator::make($request->all(), [
@@ -38,11 +35,15 @@ class UserController extends Controller
         ]);
 
         if($validator->passes()){
-
             $user = new User;
             $user->name = $request->name;
             $user->email = $request->email;
             $user->phone = $request->phone;
+            $user->mobile = $request->mobile;
+            $user->birthdate = $request->birthdate;
+            $user->gender = $request->gender;
+            $user->role = $request->role;
+            $user->image = $request->image;            
             $user->status = $request->status;
             $user->password = Hash::make($request->password);
             $user->save();

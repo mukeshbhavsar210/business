@@ -3,91 +3,44 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Country;
+use App\Models\State;
 use App\Models\ShippingCharge;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class ShippingController extends Controller
 {
-    public function create(){
-        $countries = Country::get();
-        $data['countries'] = $countries;
+    public function index(){
+        $states = State::get();
+        $data['states'] = $states;
 
-        $shippingCharges = ShippingCharge::select('shipping_charges.*','countries.name')->leftJoin('countries','countries.id','shipping_charges.country_id')->get();
+        $shippings = ShippingCharge::select('shipping_charges.*','states.name')->leftJoin('states','states.id','shipping_charges.state_id')->get();
 
-        $data['shippingCharges'] = $shippingCharges;
-        return view('admin.shipping.create', $data);
+        $data['shippings'] = $shippings;
+        return view('admin.shipping.index', $data);
     }
 
     public function store(Request $request){
-
         $validator = Validator::make($request->all(), [
-            'country' => 'required',
+            'state_id' => 'required',
             'amount' => 'required|numeric',
         ]);
 
         if($validator->passes()){
-
-            $count = ShippingCharge::where('country_id',$request->country)->count();
+            $count = ShippingCharge::where('state_id',$request->state)->count();
             if($count > 0){
-                session()->flash('error','Shipping already added as you selected country.');
+                session()->flash('error','Shipping already added as you selected state.');
                 return response()->json([
                     'status' => true,
                 ]);
             }
 
             $shipping = new ShippingCharge();
-            $shipping->country_id = $request->country;
+            $shipping->state_id = $request->state_id;
             $shipping->amount = $request->amount;
             $shipping->save();
 
             session()->flash('success','Shipping added successfully');
-
-            return response()->json([
-                'status' => true,
-            ]);
-
-        } else {
-            return response()->json([
-                'status' => false,
-                'errors' => $validator->errors()
-            ]);
-        }
-    }
-
-    public function edit($id){
-
-        $shippingCharge = ShippingCharge::find($id);
-
-        $countries = Country::get();
-        $data['countries'] = $countries;
-        $data['shippingCharge'] = $shippingCharge;
-
-        return view('admin.shipping.edit',$data);
-    }
-
-    public function update($id, Request $request){
-        $shipping = ShippingCharge::find($id);
-
-        $validator = Validator::make($request->all(), [
-            'country' => 'required',
-            'amount' => 'required|numeric',
-        ]);
-
-        if($validator->passes()){
-            if ($shipping == null) {
-                session()->flash('error','Shipping not found');
-                return response()->json([
-                    'status' => true,
-                ]);
-            }
-
-            $shipping->country_id = $request->country;
-            $shipping->amount = $request->amount;
-            $shipping->save();
-
-            session()->flash('success','Shipping updated successfully');
 
             return response()->json([
                 'status' => true,
