@@ -3,28 +3,48 @@
 @section('content')
     
 <div class="container-fluid">
-    <div class="light-font">
-        <ol class="breadcrumb primary-color mb-0">
-            <li class="breadcrumb-item"><a class="white-text" href="#">Home</a></li>
-            <li class="breadcrumb-item active">Shop</li>
-        </ol>
+    <div class="row py-1">
+        <div class="col-md-10 col-12">
+            <div class="light-font">
+                <ol class="breadcrumb primary-color">
+                    <li class="breadcrumb-item"><a href="{{ route('front.home') }}">Home</a></li>
+                    <li class="breadcrumb-item active">{{ $selectedCategory->category_name }} {{ $selectedSubCategory->sub_category_name }}</li>
+                </ol>
+            </div>
+        </div>
+        <div class="col-md-2 col-12">            
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <select class="form-select" id="sortFilter">
+                    <option value="latest" {{ request('sort') == 'recommended' ? 'selected' : '' }}>Recommended</option>
+                    <option value="latest" {{ request('sort') == 'latest' ? 'selected' : '' }}>What's New</option>
+                    <option value="popularity" {{ request('sort') == 'popularity' ? 'selected' : '' }}>Popularity</option>
+                    <option value="discount" {{ request('sort') == 'discount' ? 'selected' : '' }}>Better Discount</option>
+                    <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>Price: High to Low</option>
+                    <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>Price: Low to High</option>
+                    <option value="rating" {{ request('sort') == 'rating' ? 'selected' : '' }}>Customer Rating</option>
+                </select>                    
+            </div>            
+        </div>
     </div>
 
     <div class="row">
-        <div class="col-md-2 col-12">
-            <div class="flex-end">
-                <h2>Categories</h3>
-                @if($filtersApplied)                    
-                    <a href="{{ url()->current() }}" class="btn-link">Clear All</a>                    
-                @endif
-            </div>
+        <div class="col-md-2 col-12 sticky">
+            <h6 class="h6">{{ $selectedCategory->category_name }} {{ $selectedSubCategory->sub_category_name }} -
+                <span class="text-muted">{{ $products->total() }} items</span>
+            </h6>            
 
             <div class="filter-group">
-                @if($selectedSubCategory)
-                    <h5>{{ $selectedCategory->category_name }} {{ $selectedSubCategory->sub_category_name }} -
-                        <span class="text-muted">{{ $products->total() }} items</span>
-                    </h5>
+                <h5>Filters</h5>
+            </div>
+            <div class="filter-group">
+                <div class="flex-end">
+                    <h5>Categories</h5>
+                    @if($filtersApplied)                    
+                        <a href="{{ url()->current() }}" class="btn-link">Clear All</a>                    
+                    @endif
+                </div>
 
+                @if($selectedSubCategory)                    
                     @foreach($subSubCategories as $sub2)
                         <div class="form-check">
                             <input {{ (request()->get('sub2') && in_array($sub2->sub2_category_slug, explode(',', request()->get('sub2')))) ? 'checked' : '' }}
@@ -38,7 +58,6 @@
                     @endforeach
                 @endif
             </div>
-        
             <div class="filter-group">
                 <h5>Brands</h5>            
                 @if ($brands->isNotEmpty())
@@ -84,93 +103,48 @@
         </div>
 
         <div class="col-md-10 col-12">
-            <div class="row pb-3">
-                <div class="col-12 pb-1">
-                    <div class="d-flex align-items-center justify-content-end mb-4">
-                        <div class="ml-2">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <select class="form-select" id="sortFilter">
-                                    <option value="latest" {{ request('sort') == 'recommended' ? 'selected' : '' }}>Recommended</option>
-                                    <option value="latest" {{ request('sort') == 'latest' ? 'selected' : '' }}>What's New</option>
-                                    <option value="popularity" {{ request('sort') == 'popularity' ? 'selected' : '' }}>Popularity</option>
-                                    <option value="discount" {{ request('sort') == 'discount' ? 'selected' : '' }}>Better Discount</option>
-                                    <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>Price: High to Low</option>
-                                    <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>Price: Low to High</option>
-                                    <option value="rating" {{ request('sort') == 'rating' ? 'selected' : '' }}>Customer Rating</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            
+            <div class="row">
                 @if ($products->isNotEmpty())
                     @foreach ($products as $product)
                         @php
                             $productImage = $product->product_images->first();
                         @endphp
             
-                        <div class="col-md-3">
-                            <div class="card product-card">
-                                <div class="product-image position-relative">
-            
-                                    <a href="{{ route('front.product',$product->slug) }}" class="product-img">
-                                        @if (!empty($productImage->image))
-                                            <img class="card-img-top" src="{{ asset('uploads/product/small/'.$productImage->image) }}" >
+                        <div class="col-md-3 col-6">
+                            <div class="product-card">                                
+                                <div class="product-image-wrapper">
+                                    <div class="product-slider">
+                                        @if ($product->images && $product->images->count() > 0)
+                                            @foreach($product->images as $image)
+                                                <div class="slider-item">
+                                                    <a href="{{ route('front.product',$product->slug) }}" class="product-img">
+                                                        <img src="{{ asset('uploads/product/small/'.$image->image) }}" class="img-fluid" alt="{{ $product->name }}" >
+                                                    </a>
+                                                </div>
+                                            @endforeach
                                         @else
                                             <img class="card-img-top" src="{{ asset('admin-assets/img/default-150x150.png') }}" alt="" />
                                         @endif
-                                    </a>
-            
-                                    <a onclick="addToWishlist({{ $product->id }})" class="whishlist" href="javascript:void(0)"><i class="far fa-heart"></i></a>
-            
-                                    <div class="product-action">
-                                        @if ($product->track_qty == 'Yes')
-                                            @if ($product->qty > 0)
-                                                <a class="btn btn-dark" href="javascript:void(0);" onclick="addToCart({{ $product->id }})">
-                                                    <i class="fa fa-shopping-cart"></i> Add To Cart
-                                                </a>
-                                            @else
-                                                <a class="btn btn-dark" href="javascript:void(0);">
-                                                    <i class="fa fa-shopping-cart"></i> Out of Stock
-                                                </a>
-                                            @endif
-                                        @else
-                                        <a class="btn btn-dark" href="javascript:void(0);" onclick="addToCart({{ $product->id }})">
-                                            <i class="fa fa-shopping-cart"></i> Add To Cart
+                                    </div>
+                                    <div class="wishlist-btn">                                            
+                                        <a onclick="addToWishlist({{ $product->id }})" class="btn w-100 btn-outline-dark" href="javascript:void(0)">
+                                            <i class="far fa-heart"></i> 
+                                            Wishlist
                                         </a>
-                                        @endif
-                                    </div>
-                                </div>
-                                <div class="card-body text-center mt-3">
-                                    <a class="h6 link" href="product.php">{{ $product->title }}</a>
-                                    <div class="price mt-2">
-                                        <span class="h5"><strong>₹{{ $product->price }}</strong></span>
-                                        @if ($product->compare_price > 0)
-                                            <span class="h6 text-underline"><del>₹{{ $product->compare_price }}</del></span>
-                                        @endif
-                                    </div>
-                                
-                                    <div class="row mt-3">
-                                        <div class="col-md-6 col-12">
-                                            <label for="size">Select Size:</label>
-                                            <select name="size" required>
-                                                <option value="Small">Small</option>
-                                                <option value="Medium">Medium</option>
-                                                <option value="Large">Large</option>
-                                            </select>
-                                        </div>
-
-                                        <div class="col-md-6 col-12">
-                                            <label for="color">Select Color:</label>
-                                            <select name="color" required>
-                                                <option value="Red">Red</option>
-                                                <option value="Blue">Blue</option>
-                                                <option value="Black">Black</option>
-                                            </select>
-                                        </div>
-                                    </div>
+                                        <p>Size:</p>                                        
+                                    </div>                                       
                                 </div>
                             </div>
+                            <div class="product-info">
+                                <h3>{{ Str::limit($product->title, 36, '...') }}</h3>
+                                <div class="price mt-2">
+                                    <span class="h5"><strong>₹{{ $product->price }}</strong></span>
+                                    @if ($product->compare_price > 0)
+                                        <span class="h6 text-underline"><del>₹{{ $product->compare_price }}</del></span>
+                                    @endif
+                                </div>
+                            </div>                            
+                            
                         </div>
                     @endforeach
                 @endif
@@ -178,8 +152,7 @@
                 <div class="col-md-12 pt-5">
                     {{ $products->withQueryString()->links() }}
                 </div>
-            </div>                    
-            {{-- all products end --}}
+            </div>
         </div>
     </div>
 </div>
