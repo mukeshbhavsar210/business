@@ -72,7 +72,7 @@ class CategoryController extends Controller {
 
         $sub2Categories = $sub2Categories->paginate(10);
 
-        return view('admin.categories.category.index', compact(
+        return view('admin.category.index', compact(
             'categories',
             'subCategories',
             'sub2Categories'
@@ -80,13 +80,7 @@ class CategoryController extends Controller {
     }
 
 
-    public function create(){
-        return view('admin.categories.category.index');
-    }
-
-
-
-    public function categoryStore(Request $request){
+    public function category_store(Request $request){
         $validator = Validator::make($request->all(), [
             'category_name' => 'required',
             'category_slug' => 'required|unique:sub_categories,category_slug',
@@ -140,7 +134,7 @@ class CategoryController extends Controller {
     }
 
 
-    public function subCategoryStore(Request $request){
+    public function sub_category_store(Request $request){
         $validator = Validator::make($request->all(), [
             'sub_category_name' => 'required',             
             // 'slug' => 'required|unique:sub_categories',
@@ -180,7 +174,7 @@ class CategoryController extends Controller {
     }
 
 
-    public function sub2CategoryStore(Request $request){
+    public function sub2_category_store(Request $request){
         $validator = Validator::make($request->all(), [
             'sub2_category_name' => 'required',
             // 'slug' => [
@@ -218,23 +212,22 @@ class CategoryController extends Controller {
         }
     }
 
-
     public function getSubCategories($id) {
         return SubCategory::where('category_id', $id)->get();
     }
 
-    public function edit($categoryId, Request $request){
+    public function category_edit($categoryId, Request $request){
         $category = Category::find($categoryId);
 
         if (empty($category)) {
             return redirect()->route('categories.index');
         }
 
-        return view('admin.categories.category.edit', compact('category'));
+        return view('admin.category.category_edit', compact('category'));
     }
 
 
-    public function update($categoryId, Request $request){
+    public function category_update($categoryId, Request $request){
         $category = Category::find($categoryId);
 
         if (empty($category)) {
@@ -247,13 +240,13 @@ class CategoryController extends Controller {
         }
 
         $validator = Validator::make($request->all(), [
-            'name' => 'required',
-            'slug' => 'required|unique:categories,slug,'.$category->id.',id',
+            'category_name' => 'required',
+            'category_slug' => 'required|unique:categories,category_slug,'.$category->id.',id',
         ]);
 
         if ($validator->passes()) {
-            $category->name = $request->name;
-            $category->slug = $request->slug;
+            $category->category_name = $request->category_name;
+            $category->category_slug = $request->category_slug;
             $category->status = $request->status;
             $category->showHome = $request->showHome;
             $category->menu_order = $request->menu_order;
@@ -299,7 +292,7 @@ class CategoryController extends Controller {
         }
     }
 
-    public function destroy($categoryId, Request $request){
+    public function category_destroy($categoryId, Request $request){
         $category = Category::find($categoryId);
 
         if(empty($category)){
@@ -326,7 +319,7 @@ class CategoryController extends Controller {
     }
 
 
-    public function destroySubCategory ($id, Request $request){
+    public function sub_category_destroy ($id, Request $request){
         $subCategory = SubCategory::find($id);
 
         if(empty($subCategory)){
@@ -348,7 +341,7 @@ class CategoryController extends Controller {
     }
 
 
-    public function destroySub2Category($id, Request $request){
+    public function sub2_category_destroy($id, Request $request){
         $sub2Category = SubSubCategory::find($id);
 
         if(empty($sub2Category)){
@@ -367,5 +360,119 @@ class CategoryController extends Controller {
             'status' => true,
             'message' => 'Sub2 Category deleted successfully',
         ]);
+    }
+
+
+
+     public function sub_category_edit($id, Request $request){
+        $subCategory = SubCategory::find($id);
+        if(empty($subCategory)){
+            $request->session()->flash('error','Record not found');
+            return redirect()->route('sub-categories.index');
+        }
+
+        $categories = Category::orderBy('category_name','ASC')->get();
+        $data['categories'] = $categories;
+        $data['subCategory'] = $subCategory;
+        return view("admin.category.subcategory_edit", $data);
+    }
+
+
+    public function sub_category_update($id, Request $request){
+        $subCategory = SubCategory::find($id);
+
+        if(empty($subCategory)){
+            $request->session()->flash('error','Record not found');
+            return response([
+                'status' => false,
+                'notFound' => true,
+            ]);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'sub_category_name' => 'required',
+            'sub_category_slug' => 'required|unique:sub_categories,sub_category_slug,'.$subCategory->id.',id',
+            'category' => 'required',
+            'status' => 'required',
+        ]);
+
+        if ($validator->passes()) {
+            $subCategory->sub_category_name = $request->sub_category_name;
+            $subCategory->sub_category_slug = $request->sub_category_slug;
+            $subCategory->status = $request->status;
+            $subCategory->showHome = $request->showHome;
+            $subCategory->category_id = $request->category;
+            $subCategory->save();
+
+            $request->session()->flash('success', 'Sub Category updated successfully');
+
+            return response([
+                'status' => true,
+                'message' => 'Sub Category updated successfully',
+            ]);
+
+        } else {
+            return response([
+                'status' => false,
+                'errors' => $validator->errors()
+            ]);
+        }
+    }
+
+
+
+    public function sub2_category_edit($id, Request $request) {
+        $sub2Category = SubSubCategory::findOrFail($id);
+
+        $categories = Category::orderBy('category_name','ASC')->get();
+
+        // Load subcategories of selected category
+        $subCategories = SubCategory::where('category_id', $sub2Category->category_id)->get();
+
+        return view("admin.category.sub2category_edit", compact(
+            'sub2Category',
+            'categories',
+            'subCategories'
+        ));
+    }
+
+
+    public function sub2_category_update($id, Request $request){
+        $sub2Category = SubSubCategory::find($id);
+
+        if(empty($sub2Category)){
+            $request->session()->flash('error','Record not found');
+            return response([
+                'status' => false,
+                'notFound' => true,
+            ]);
+        }
+
+        $validator = Validator::make($request->all(), [
+            //'sub2_category_name' => 'required',
+            //'slug' => 'required|unique:sub_sub_categories,slug,'.$sub2Category->id.',id',
+            //'category' => 'required',                        
+        ]);
+
+        if ($validator->passes()) {
+            $sub2Category->category_id = $request->category_id;
+            $sub2Category->sub_category_id = $request->sub_category_id;
+            $sub2Category->sub2_category_name = $request->sub2_category_name;
+            $sub2Category->sub2_category_slug = $request->sub2_category_slug;                   
+            $sub2Category->save();
+
+            $request->session()->flash('success', 'Sub2 Category updated successfully');
+
+            return response([
+                'status' => true,
+                'message' => 'Sub2 Category updated successfully',
+            ]);
+
+        } else {
+            return response([
+                'status' => false,
+                'errors' => $validator->errors()
+            ]);
+        }
     }
 }

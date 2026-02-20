@@ -19,7 +19,15 @@
                 <div class="user-details-repeate">
                     <div class="row justify-content-center">
                         <div class="col-md-8">                        
-                            <h5 class="h5 mt-3 mb-4">Profile Details</h5>                              
+                            <div class="row">
+                                <div class="col-md-6 col-6">
+                                    <h5 class="h5 mt-3 mb-4">Profile Details</h5>
+                                </div>
+                                <div class="col-md-6 col-6">
+                                    <a href="{{ route('account.changePassword') }}" class="btn mt-2 btn-outline-dark float-end">Change Password</a>
+                                </div>
+                            </div>
+
                             <div class="row">
                                 <div class="col-md-6 col-6">Full Name</div>
                                 <div class="col-md-6 col-6">{{ $user->name }}</div>

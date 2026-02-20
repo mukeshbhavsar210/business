@@ -289,7 +289,7 @@ class AuthController extends Controller
     }
 
     public function changePasswordForm (){
-        return view('front.account.change-password');
+        return view('front.account.password');
     }
 
     public function changePassword(Request $request){

@@ -80,10 +80,31 @@ main { margin-top: 75px;}
 .search-control .form-control:focus { background-color: var(--white); box-shadow: none; border-color: var(--gray-light);  }
 
 .search-controls .icon-controls { display: flex; gap: 20px; justify-content: end; width: 35%; }
-.search-controls .icon-controls li { display: inline-block; width: 100%; margin: 5px 0; }
+.search-controls .icon-controls li { display: inline-block; width: 100%; margin: 2px 0; }
 .search-controls .icon-controls li a.link { color: var(--black); font-size: 12px; font-weight: bold; }
 .search-controls .icon-controls li a.link svg { display: block; margin: 0 auto; }
 .search-controls .icon-controls li a.link span { width: 100%;}
+
+.accordion-button, .accordion-body { padding: 8px 0 10px 0;}
+
+.btn-link { text-transform: uppercase; font-size: 12px; color: var(--primary); font-weight: bold; text-decoration: none;}
+
+.filter-group .form-check { cursor: pointer; }
+.filter-group .form-check label { display: flex; column-gap: 5px;}
+.filter-group .form-check label .color-code { height:16px; width:16px; margin-top: 3px; border-radius:100px; display:block; }
+.filter-group .form-check label .text-muted { font-size: 12px; position: relative; top:2px;}
+
+.filter-group .irs--flat .irs-bar,
+.filter-group .irs--flat .irs-from, 
+.filter-group .irs--flat .irs-to,
+.filter-group .irs--flat .irs-handle > i:first-child { background-color: var(--primary);}
+.filter-group .irs--flat .irs-from::before, .irs--flat .irs-to::before, .irs--flat .irs-single::before,
+.filter-group .irs--flat .irs-from::before, .irs--flat .irs-to::before, .irs--flat .irs-single::before,
+.filter-group .irs--flat .irs-single::before { border-top-color: var(--primary);}
+
+.filter-group { margin: 10px 0; padding: 10px 0; border-bottom: 1px #e5e5e5 solid;}
+.filter-group h5 { font-weight: bold; margin-bottom: 10px; font-size: 14px; text-transform: uppercase;}
+.filter-group h5 .text-muted { text-transform:capitalize; font-weight: normal;}
 
 .container-small { width: 1000px; margin: 0 auto 0 auto; padding-top: 50px;}
 .small-title { border-bottom: 1px #ccc solid; padding:10px 0; }

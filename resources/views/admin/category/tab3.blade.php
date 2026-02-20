@@ -50,7 +50,6 @@
                     <th>Sub2 Category</th>
                     <th>Parent Sub Category</th>
                     <th>Parent Category</th>
-                    <th width="80">Status</th>
                     <th width="100">Action</th>
                 </tr>
             </thead>
@@ -60,21 +59,9 @@
                         <td>{{ $value->id }}</td>
                         <td><h5 class="product-title">{{ $value->sub2_category_name }}</h5></td>
                         <td>{{ $value->subCategoryName }}</td>
-                        <td>{{ $value->categoryName }}</td>
+                        <td>{{ $value->categoryName }}</td>                       
                         <td>
-                            @if($value->status == 1)
-                                <svg class="text-success-500 h-6 w-6 text-success" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                            @else
-
-                            <svg class="text-danger h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                            @endif
-                        </td>
-                        <td>
-                            <a href="{{ route('sub2-categories.edit', $value->id ) }}">
+                            <a href="{{ route('sub2_category.edit', $value->id ) }}">
                                 <i class="las la-pen text-secondary fs-18"></i>
                             </a>
                             <a href="#" onclick="deleteSub2Category({{ $value->id }})" class="text-danger w-4 h-4">
@@ -95,7 +82,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
-                <form action="{{ route('categories.sub2Category.store') }}" method="POST" id="createSub2CategoryForm" name="createSub2CategoryForm">
+                <form action="{{ route('sub2_category.store') }}" method="POST" id="createSub2CategoryForm" name="createSub2CategoryForm">
                     @csrf                    
                     <div class="modal-body">
                         <div class="form-group">

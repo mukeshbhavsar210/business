@@ -50,7 +50,8 @@
                 <tr>
                     <th width="60">ID</th>
                     <th>Sub Category Name</th>      
-                    <th>Parent Category</th>      
+                    <th>Parent Category</th>    
+                    <th class="border-top-0" width="150">Show</th>  
                     <th width="100">Status</th>
                     <th width="100">Action</th>
                 </tr>
@@ -65,6 +66,7 @@
                                     {{ $subCategory->categoryName }}
                                 </div> 
                             </td>
+                            <td>{{ $subCategory->showHome }}</td>
                             <td>
                                 @if($subCategory->status == 1)
                                     <svg class="text-success-500 h-6 w-6 text-success" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
@@ -78,7 +80,7 @@
                                 @endif
                             </td>
                             <td>
-                                <a href="{{ route('sub-categories.edit', $subCategory->id ) }}">
+                                <a href="{{ route('sub_category.edit', $subCategory->id ) }}">
                                     <i class="las la-pen text-secondary fs-18"></i>
                                 </a>
                                 <a href="#" onclick="deleteSubCategory({{ $subCategory->id }})" class="text-danger w-4 h-4">
@@ -100,7 +102,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
-                <form action="{{ route('categories.subCategory.store') }}" method="POST" id="createSubCategoryForm" name="createSubCategoryForm">
+                <form action="{{ route('sub_category.store') }}" method="POST" id="createSubCategoryForm" name="createSubCategoryForm">
                     @csrf                    
                     <div class="modal-body">                        
                         <div class="form-group">

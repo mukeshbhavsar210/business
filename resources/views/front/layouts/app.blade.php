@@ -47,8 +47,8 @@
 									@if (getCategories()->isNotEmpty())
 										@foreach (getCategories() as $category)
 											<li class="nav-item dropdown position-static">
-												<a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-													{{ $category->name }}
+												<a href="{{ route('front.category.shop', [$category->category_slug]) }}" class="nav-link dropdown-toggle" >
+													{{ $category->category_name }}
 												</a>
 
 												@if ($category->subCategories->isNotEmpty())														
@@ -57,11 +57,15 @@
 															@foreach ($category->subCategories as $subCategory)
 																@if ($subCategory->subSubCategories->isNotEmpty())																	
 																<div class="col-md-3 col-12">
-																	<li class="dropdown-header">{{ $subCategory->name }}</li>
+																	<li class="dropdown-header">
+																		<a href="{{ route('front.shop', [$category->category_slug, $subCategory->sub_category_slug]) }}">
+																			{{ $subCategory->sub_category_name }}
+																		</a>
+																	</li>
 																	@foreach ($subCategory->subSubCategories as $subSubCategory)
 																		<li>
-																			<a class="dropdown-item" href="{{ route('front.shop', [$category->slug, $subCategory->slug, $subSubCategory->slug]) }}">
-																				{{ $subSubCategory->name }}
+																			<a class="dropdown-item" href="{{ route('front.shop', [$category->category_slug, $subCategory->sub_category_slug, $subSubCategory->sub2_category_slug]) }}">
+																				{{ $subSubCategory->sub2_category_name }}
 																			</a>
 																		</li>
 																	@endforeach																	
@@ -103,22 +107,19 @@
 												<span>Profile</span>
 											</a>
 
-											<div class="hover-content">
-												@if(Auth::check())
-													<p><b>Hello {{ Auth::user()->name }}</b></p>
-													{{ Auth::user()->phone }}
-													<hr />
-												@endif
-
+											<div class="hover-content">												
+												<p><b>Hello {{ Auth::user()->name }}</b></p>
+												{{ Auth::user()->phone }}
+												<hr />												
 												<ul class="navbar-listings" >													
 													<li><a href="{{ route('account.orders') }}">Orders</a></li>
 													<li><a href="{{ route('account.wishlist') }}">Wishlist</a></li>
+													<li><a href="{{ route('account.changePassword') }}">Coupons</a></li>
 													<li><a href="{{ route('account.changePassword') }}">Saved Cards</a></li>
 													<li><a href="{{ route('account.changePassword') }}">Saved Address</a></li>
-													<hr />																										
-													<li><a href="{{ route('account.profile') }}">Edit Profile</a></li>
-													<li><a href="{{ route('account.changePassword') }}">Change Password</a></li>
-													<li><a href="{{ route('account.logout') }}">Logout</a></li>												
+													<hr />													
+													<li><a href="{{ route('account.profile') }}">Edit Profile</a></li>													
+													<li><a href="{{ route('account.logout') }}">Logout</a></li>													
 												</ul>
 											</div>
 										</div>
@@ -132,19 +133,16 @@
 											<div class="hover-content">
 												<p><b>Welcome</b></p>
 												<p>To access account and manage orders</p>
-												<a class="btn btn-primary" href="{{ route('account.login')}}">Login / Signup</a>
-
+												<a class="btn btn-primary mt-2" href="{{ route('account.login')}}">Login / Signup</a>
+												<hr />
 												<ul class="navbar-listings">
 													<li><a href="{{ route('account.orders') }}">Orders</a></li>
 													<li><a href="{{ route('account.wishlist') }}">Wishlist</a></li>
 													<li><a href="{{ route('account.wishlist') }}">Contact us</a></li>
-													<li><a href="{{ route('account.changePassword') }}">Change Password</a></li>
 													<hr />
+													<li><a href="{{ route('account.changePassword') }}">Coupons</a></li>
 													<li><a href="{{ route('account.changePassword') }}">Saved Cards</a></li>
-													<li><a href="{{ route('account.changePassword') }}">Saved Address</a></li>
-													<hr />
-													<li><a href="{{ route('account.profile') }}" >Edit Profile</a></li>
-													<li><a href="{{ route('account.logout') }}">Logout</a></li>												
+													<li><a href="{{ route('account.changePassword') }}">Saved Address</a></li>																										
 												</ul>
 											</div>
 										</div>

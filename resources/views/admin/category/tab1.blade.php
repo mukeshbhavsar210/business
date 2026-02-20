@@ -49,6 +49,7 @@
                 <tr>
                     <th class="border-top-0" width="50">ID</th>
                     <th class="border-top-0">Category Name</th>
+                    <th class="border-top-0" width="150">Show</th>
                     <th class="border-top-0" width="120">Menu Order</th>
                     <th class="border-top-0" width="80">Status</th>
                     <th class="border-top-0" width="120">Action</th>
@@ -71,6 +72,7 @@
                                     </div>
                                 </div>
                             </td>  
+                            <td>{{ $category->showHome }}</td>
                             <td>{{ $category->menu_order }}</td>
                             <td>
                                 @if($category->status == 1)
@@ -85,7 +87,7 @@
                                 @endif
                             </td>
                             <td>
-                                <a href="{{ route('categories.edit', $category->id ) }}">
+                                <a href="{{ route('category.edit', $category->id ) }}">
                                     <i class="las la-pen text-secondary fs-18"></i>
                                 </a>
                                 <a href="#" onclick="deleteCategory({{ $category->id }})" class="text-danger w-4 h-4">
@@ -111,13 +113,13 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
-                <form action="{{ route('categories.category.store') }}" method="POST" id="createCategoryForm" name="createCategoryForm">
+                <form action="{{ route('category.store') }}" method="POST" id="createCategoryForm" name="createCategoryForm">
                     @csrf                    
                     <div class="modal-body">                                                    
                         <div class="form-group">
                             <label for="category_name">Name</label>
                             <input type="text" name="category_name" id="category_name" class="slug-source form-control" data-target="#category_slug">
-                            <input type="hidden" readonly name="slug" id="category_slug" name="category_slug" class="form-control">
+                            <input type="hidden" readonly id="category_slug" name="category_slug" class="form-control">
                             <p></p>
                         </div>                                 
                         <div class="row">

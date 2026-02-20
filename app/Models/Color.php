@@ -10,7 +10,11 @@ class Color extends Model {
 
     protected $fillable = ['name','code'];
 
+    // public function products() {
+    //     return $this->hasMany(Product::class);
+    // }
+
     public function products() {
-        return $this->hasMany(Product::class);
+        return $this->hasMany(Product::class, 'color_id');
     }
 }
