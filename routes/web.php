@@ -32,8 +32,11 @@ Route::controller(FrontController::class)->group(function() {
     Route::post('/send-contact-email', 'sendContactEmail')->name('front.sendContactEmail');
 });
 
-Route::get('/shop/{categorySlug?}/{subCategorySlug?}',[ShopController::class,'index'])->name('front.shop');
-Route::get('/product/{slug}',[ShopController::class,'product'])->name('front.product');
+Route::controller(ShopController::class)->group(function() {
+    Route::get('/shop/{categorySlug?}/','category')->name('front.category.shop');
+    Route::get('/products/{subCategorySlug?}/{subSubCategory?}','index')->name('front.shop');
+    Route::get('/product/{slug}','product')->name('front.product');
+});
 
 Route::controller(CartController::class)->group(function() {
     Route::get('/cart','cart')->name('front.cart');
@@ -74,8 +77,8 @@ Route::group(['prefix' => 'account'], function(){
             Route::get('/profile/edit','profileEdit')->name('account.profile.edit');
             Route::post('/update-profile','updateProfile')->name('account.updateProfile');
             Route::post('/update-address','updateAddress')->name('account.updateAddress');
-            Route::get('/change-password','changePasswordForm')->name('account.changePassword');
-            Route::post('/process-change-password','changePassword')->name('account.processChangePassword');
+            Route::get('/password','changePasswordForm')->name('account.changePassword');
+            Route::post('/change-password','changePassword')->name('account.processChangePassword');
             Route::get('/orders','orders')->name('account.orders');
             Route::get('/wishlist','wishlist')->name('account.wishlist');
             Route::post('/remove-product-from-wishlist','removeProductFromWishlist')->name('account.removeProductFromWishlist');
@@ -102,40 +105,27 @@ Route::group(['prefix' => 'admin'], function(){
 
         //Category Routes
         Route::controller(CategoryController::class)->group(function() {
-            Route::get('/categories/category', 'index')->name('categories.index');
-            Route::get('/categories/category/create', 'create')->name('categories.create');
-            Route::post('/categories/category/', 'categoryStore')->name('categories.category.store');
-            Route::post('/categories/sub-category/', 'subCategoryStore')->name('categories.subCategory.store');
-            Route::post('/categories/sub2-category/', 'sub2CategoryStore')->name('categories.sub2Category.store');
-
-            Route::get('/categories/category/{category}/edit', 'edit')->name('categories.edit');
-            Route::put('/categories/category/{category}', 'update')->name('categories.update');
-            Route::delete('/categories/category/{category}', 'destroy')->name('categories.delete');
-            Route::delete('/categories/sub/category/{subCategory}', 'destroySubCategory')->name('subCategories.delete');
-            Route::delete('/categories/sub2/category/{sub2Category}', 'destroySub2Category')->name('sub2Categories.delete');
+            Route::get('/category', 'index')->name('categories.index');
+            Route::get('/category/create', 'create')->name('categories.create');
+            Route::post('/category/cat', 'category_store')->name('category.store');
+            Route::get('/category/{category}/edit', 'category_edit')->name('category.edit');
+            Route::put('/category/{category}', 'category_update')->name('categories.update');
+            Route::delete('/category/cat/{category}', 'category_destroy')->name('category.delete');
+            
+            //sub category edit and update
+            Route::post('/category/sub-category/', 'sub_category_store')->name('sub_category.store');
+            Route::get('/category/sub/{subCategory}/edit', 'sub_category_edit')->name('sub_category.edit');
+            Route::put('/category/sub/{subCategory}', 'sub_category_update')->name('sub_category.update');
+            Route::delete('/category/sub/{subCategory}', 'sub_category_destroy')->name('sub_category.delete');
+            
+            //sub2 category edit and update
+            Route::post('/category/sub2-category/', 'sub2_category_store')->name('sub2_category.store');
+            Route::get('/category/sub2/{subCategory}/edit', 'sub2_category_edit')->name('sub2_category.edit');
+            Route::put('/category/sub2/{subCategory}', 'sub2_category_update')->name('sub2_category.update');
+            Route::delete('/category/sub2/{sub2Category}', 'sub2_category_destroy')->name('sub2_category.delete');
 
             Route::get('/get-subcategories/{id}', 'getSubCategories')->name('get.subcategories');
-        });
-
-        //Sub Category Routes
-        Route::controller(SubCategoryController::class)->group(function() {
-            //Route::get('/categories/sub', 'index')->name('sub-categories.index');
-            Route::get('/categories/sub/create', 'create')->name('sub-categories.create');
-            Route::post('/categories/sub', 'store')->name('sub-categories.store');
-            Route::get('/categories/sub/{subCategory}/edit', 'edit')->name('sub-categories.edit');
-            Route::put('/categories/sub/{subCategory}', 'update')->name('sub-categories.update');
-            //Route::delete('/categories/sub/{subCategory}', 'destroy')->name('sub-categories.delete');            
-        });
-
-        //Sub Category Routes
-        Route::controller(Sub2CategoryController::class)->group(function() {
-            //Route::get('/categories/sub2', 'index')->name('sub2-categories.index');
-            Route::get('/categories/sub2/create', 'create')->name('sub2-categories.create');
-            Route::post('/categories/sub2', 'store')->name('sub2-categories.store');
-            Route::get('/categories/sub2/{subCategory}/edit', 'edit')->name('sub2-categories.edit');
-            Route::put('/categories/sub2/{subCategory}', 'update')->name('sub2-categories.update');
-            //Route::delete('/categories/sub2/{subCategory}', 'destroy')->name('sub2-categories.delete');
-        });
+        });       
 
         //Brands
         Route::controller(BrandController::class)->group(function() {
@@ -210,7 +200,7 @@ Route::group(['prefix' => 'admin'], function(){
         Route::post('/upload-temp-image', [TempImagesController::class, 'create'])->name('temp-images.create');
 
         //Setting Route
-        Route::get('/change-password', [SettingController::class, 'showChangePasswordForm'])->name('admin.showChangePasswordForm');
+        Route::get('/password', [SettingController::class, 'showChangePasswordForm'])->name('admin.showChangePasswordForm');
         Route::post('/process-change-password', [SettingController::class, 'processChangePassword'])->name('admin.processChangePassword');        
 
         Route::get('/getSlug', function(Request $request){

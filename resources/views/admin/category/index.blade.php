@@ -28,9 +28,9 @@
             <div class="card">
                 <div class="card-body">                                    
                     <div class="tab-content">
-                        @include('admin/categories/category/tab1')
-                        @include('admin/categories/category/tab2')
-                        @include('admin/categories/category/tab3')
+                        @include('admin/category/tab1')
+                        @include('admin/category/tab2')
+                        @include('admin/category/tab3')
                     </div>
                 </div>
             </div>
@@ -48,7 +48,7 @@
             e.preventDefault();
 
             $.ajax({
-                url: "{{ route('categories.category.store') }}",
+                url: "{{ route('category.store') }}",
                 type: "POST",
                 data: $(this).serialize(),
                 success: function(response) {
@@ -100,7 +100,7 @@
             e.preventDefault();
 
             $.ajax({
-                url: "{{ route('categories.subCategory.store') }}",
+                url: "{{ route('sub_category.store') }}",
                 type: "POST",
                 data: $(this).serialize(),
                 success: function(response) {
@@ -121,7 +121,7 @@
             e.preventDefault();
 
             $.ajax({
-                url: "{{ route('categories.sub2Category.store') }}",
+                url: "{{ route('sub2_category.store') }}",
                 type: "POST",
                 data: $(this).serialize(),
                 success: function(response) {
@@ -189,7 +189,7 @@
 
 
     function deleteCategory(id){
-        var url = '{{ route("categories.delete","ID") }}'
+        var url = '{{ route("category.delete","ID") }}'
         var newUrl = url.replace("ID",id)
 
         if(confirm("Are you sure you want to delete?")){
@@ -212,7 +212,7 @@
 
 
     function deleteSubCategory(id){
-        var url = '{{ route("subCategories.delete","ID") }}'
+        var url = '{{ route("sub_category.delete","ID") }}'
         var newUrl = url.replace("ID",id)
 
         if(confirm("Are you sure you want to delete?")){
@@ -235,7 +235,7 @@
 
 
     function deleteSub2Category(id){
-        var url = '{{ route("sub2Categories.delete","ID") }}'
+        var url = '{{ route("sub2_category.delete","ID") }}'
         var newUrl = url.replace("ID",id)
 
         if(confirm("Are you sure you want to delete?")){

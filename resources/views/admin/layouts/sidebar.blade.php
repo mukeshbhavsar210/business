@@ -22,7 +22,7 @@
     </li>     
     <li class="nav-item">
         <a href="{{ route('orders.index') }}" class="nav-link">
-            <i class="iconoir-trophy menu-icon"></i>
+            <i class="iconoir-journal-page menu-icon"></i>
             <span>Orders</span>
         </a>
     </li>
@@ -34,19 +34,19 @@
     </li>
     <li class="nav-item">
         <a href="{{ route('shipping.index') }}" class="nav-link">
-            <i class="iconoir-trophy menu-icon"></i>
+            <i class="iconoir-send-mail menu-icon"></i>
             <span>Shipping</span>
         </a>
     </li> 
     <li class="nav-item">
         <a href="{{ route('coupons.index') }}" class="nav-link">
-            <i class="iconoir-trophy menu-icon"></i>
+            <i class="iconoir-peace-hand menu-icon"></i>
             <span>Discount</span>
         </a>
     </li> 
     <li class="nav-item">
         <a class="nav-link" href="#extra" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarApplications">
-            <i class="iconoir-compact-disc menu-icon"></i>
+            <i class="iconoir-page-star menu-icon"></i>
             <span>Extras</span>
         </a>
         <div class="collapse " id="extra">
