@@ -102,9 +102,44 @@ main { margin-top: 75px;}
 .filter-group .irs--flat .irs-from::before, .irs--flat .irs-to::before, .irs--flat .irs-single::before,
 .filter-group .irs--flat .irs-single::before { border-top-color: var(--primary);}
 
-.filter-group { margin: 10px 0; padding: 10px 0; border-bottom: 1px #e5e5e5 solid;}
+.sticky { position: sticky; top: 100px;}
+
+.filter-group { margin: 5px 0; padding: 8px 0; border-bottom: 1px #e5e5e5 solid;}
 .filter-group h5 { font-weight: bold; margin-bottom: 10px; font-size: 14px; text-transform: uppercase;}
 .filter-group h5 .text-muted { text-transform:capitalize; font-weight: normal;}
+
+.product-card { position: relative; overflow: hidden; transition: 0.3s ease; margin: 0 10px; }
+.product-info { margin: 5px 10px; }
+
+.product-image-wrapper { position: relative; }
+.wishlist-btn {
+    position: absolute; padding: 10px;
+    bottom: -50px;
+    left: 0px;
+    background: #fff;
+    width: 100%;    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+/* Slick dots hidden initially */
+.product-card .slick-dots {
+    z-index: 9; bottom: 50px;
+    transform: translateY(0px);
+    opacity: 0;
+    transition: all 0.85s ease;
+}
+
+.product-card:hover .slick-dots {    
+    opacity: 1;
+}
+
+/* On Hover */
+.product-card:hover .wishlist-btn { bottom: 0; }
+.slick-dotted.slick-slider { margin-bottom: 0;}
+.slick-slide img { border-radius: 7px;}
 
 .container-small { width: 1000px; margin: 0 auto 0 auto; padding-top: 50px;}
 .small-title { border-bottom: 1px #ccc solid; padding:10px 0; }
@@ -176,10 +211,13 @@ main { margin-top: 75px;}
 .flex { display: flex; column-gap: 10px;}
 .flex-end { display: flex; justify-content:space-between;}
 .sticky { position: sticky; top:80px;}
-.breadcrumb {padding: 20px 0 25px 0; margin-bottom: 0;}
+
+.breadcrumb {padding: 15px 0 10px 0; margin-bottom: 0; font-size: 13px;}
+.breadcrumb .breadcrumb-item a { color: var(--gray);}
+.breadcrumb .breadcrumb-item.active { font-weight: bold; color: var(--black);}
 
 .navbar-listings { margin-top: 10px; display: block;}
-.navbar-listings li a { padding: 5px; font-size: 14px; color: var(--gray);}
+.navbar-listings li a { padding: 5px; font-size: 14px; color: var(--gray); }
 .navbar-listings li a:hover { color: var(--black); font-weight: bold;}
 
 .form-control, .form-select { padding: 8px 10px 10px 10px; font-size: 14px; display: block; width: 100%;}

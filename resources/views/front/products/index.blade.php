@@ -18,6 +18,7 @@
         <div class="container">
             <div class="row ">
                 <div class="col-md-4">
+                    
                     <div id="product-carousel" class="carousel slide" data-bs-ride="carousel">
                         <div class="carousel-inner bg-light">                    
                             @if ($product->product_images)
