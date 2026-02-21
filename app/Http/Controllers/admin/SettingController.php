@@ -3,14 +3,221 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Brand;
+use App\Models\Color;
+use App\Models\DiscountCoupon;
+use App\Models\Page;
 use App\Models\User;
+use App\Models\State;
+use App\Models\ShippingCharge;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
-class SettingController extends Controller
-{
+class SettingController extends Controller {
+    public function brand_index(Request $request){
+        $brands = Brand::latest('id');
+        if ($request->get('keyword')){
+            $brands = $brands->where('name', 'like', '%'.$request->keyword.'%');
+        }
+
+        $brandTotal = Brand::count();
+        $brands = $brands->paginate(10);
+
+        $data = [
+            'title'         => 'Brands',
+            'button_name'   => 'Create Brand',
+            'modal_id'      => 'createBrandModal',
+            'refresh'       => route('brands.index'),
+            'button_route'  => null,
+            'brands'        => $brands,
+            'total'         => $brandTotal,
+
+            'formConfig' => [
+                'action' => route('brands.store'),
+                'modal_size' => null,
+                'method' => 'POST',
+                'button' => 'Create Brand',
+                'fields' => [
+                    [
+                        'type' => 'text',
+                        'name' => 'name',
+                        'label' => 'Brand Name',
+                        'placeholder' => 'Enter Brand name',
+                        'slug_create' => 'slug-source',
+                        'class' => 'slug-source',
+                        'data'  => [
+                            'target' => '#slug'
+                        ],
+                        'col' => 'col-md-12 col-12'
+                    ],
+                    [
+                        'type' => 'text',
+                        'name' => 'slug',
+                        'label' => 'Brand Slug',
+                        'placeholder' => 'Enter Brand slug',
+                        'id'    => 'slug',
+                        'col' => 'col-md-12 col-12 d-none'
+                    ],
+                    [
+                        'type' => 'select',
+                        'name' => 'status',
+                        'label' => 'Status',
+                        'options' => [
+                            1 => 'Active',
+                            0 => 'Block',
+                        ],
+                        'col' => 'col-md-12 col-12'
+                    ],
+                    // [
+                    //     'type' => 'file',
+                    //     'name' => 'image',
+                    //     'label' => 'Brand Image'
+                    // ]
+                ]
+            ]
+        ];       
+
+        return view('admin.settings.brands', $data);
+    }
+
+    
+    public function brand_store(Request $request ){
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'slug' => 'required|unique:brands',
+        ]);
+
+        if($validator->passes()){
+            $brand = new Brand();
+            $brand->name = $request->name;
+            $brand->slug = $request->slug;
+            $brand->status = $request->status;
+            $brand->save();            
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Brand added successfully',
+            ]);
+
+        } else {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ]);
+        }
+    }
+
+    public function brand_destroy($id, Request $request){
+        $brand = Brand::find($id);
+        if(empty($brand)){
+            $request->session()->flash('error','Record not found');
+            return response([
+                'status' => false,
+                'notFound' => true,
+            ]);
+        }
+        $brand->delete();
+        $request->session()->flash('success', 'Brand deleted successfully');
+
+        return response([
+            'status' => true,
+            'message' => 'Brand deleted successfully',
+        ]);
+    }
+
+
+    //Colors
+    public function color_index(Request $request){
+        $colors = Color::latest('id');
+      
+        $colorsTotal = Color::count();
+        $colors = $colors->paginate(10);
+
+        $data = [
+            'title'         => 'Colors',
+            'button_name'   => 'Create Color',
+            'modal_id'      => 'createColorModal',
+            'refresh'       => route('colors.index'),
+            'button_route'  => null,
+            'colors'        => $colors,
+            'total'         => $colorsTotal,
+
+            'formConfig' => [
+                'action' => route('colors.store'),
+                'modal_size' => null,
+                'method' => 'POST',
+                'button' => 'Create Color',
+                'fields' => [
+                    [
+                        'type' => 'text',
+                        'name' => 'name',
+                        'label' => 'Color Name',
+                        'placeholder' => 'Enter Color name',
+                        'col' => 'col-md-8 col-8'
+                    ],
+                    [
+                        'type' => 'color',
+                        'name' => 'code',
+                        'label' => 'Code',
+                        'placeholder' => 'Drag Color code',
+                        'col' => 'col-md-4 col-4'
+                    ]
+                ]
+            ]
+        ];       
+
+        return view('admin.settings.colors', $data);
+    }
+
+    public function color_store(Request $request ){
+        $validator = Validator::make($request->all(), [
+            // 'name' => 'required',
+            // 'code' => 'required|unique:code',
+        ]);
+
+        if($validator->passes()){
+            $color = new Color();
+            $color->name = $request->name;
+            $color->code = $request->code;
+            $color->save();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Color added successfully',
+            ]);
+
+        } else {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ]);
+        }
+    }
+
+    public function color_destroy($id, Request $request){
+        $color = Color::find($id);
+        if(empty($color)){
+            $request->session()->flash('error','Record not found');
+            return response([
+                'status' => false,
+                'notFound' => true,
+            ]);
+        }
+        $color->delete();
+        $request->session()->flash('success', 'Color deleted successfully');
+
+        return response([
+            'status' => true,
+            'message' => 'Color deleted successfully',
+        ]);
+    }
+
+
+
+
     public function showChangePasswordForm(){
         return view("admin.change-password");
     }
@@ -50,5 +257,616 @@ class SettingController extends Controller
                 'errors' => $validator->errors(),
             ]);
         }
+    }
+
+
+    //Discount
+     public function coupon_index(Request $request){
+        $discountCoupons = DiscountCoupon::latest();
+
+        if(!empty($request->get('keyword'))){
+            $discountCoupons = $discountCoupons->where('name', 'like', '%'.$request->get('keyword').'%');
+            $discountCoupons = $discountCoupons->orWhere('code', 'like', '%'.$request->get('keyword').'%');
+        }
+
+        $discountCoupons = $discountCoupons->paginate(10);
+
+        return view('admin.settings.coupon.index',compact('discountCoupons'));
+    }
+
+
+
+    public function coupon_store(Request $request){
+        $validator = Validator::make(request()->all(), [
+            'code' => 'required',
+            'type' => 'required',
+            'discount_amount' => 'required|numeric',
+            'status' => 'required',            
+        ]);
+
+        if ($validator->passes()){
+            $discountCode = new DiscountCoupon();
+            $discountCode->code = $request->code;
+            $discountCode->name = $request->name;
+            $discountCode->description = $request->description;
+            $discountCode->max_uses = $request->max_uses;
+            $discountCode->max_uses_user = $request->max_uses_user;
+            $discountCode->type = $request->type;
+            $discountCode->discount_amount = $request->discount_amount;
+            $discountCode->min_amount = $request->min_amount;
+            $discountCode->status = $request->status;
+            $discountCode->starts_at = $request->starts_at;
+            $discountCode->expires_at = $request->expires_at;
+            $discountCode->save();
+
+            $message = 'Discount coupon added successfully.';
+
+            session()->flash('success', $message);
+
+            return response()->json([
+                'status' => true,
+                'message' => $message,
+            ]);
+
+        } else {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors(),
+            ]);
+        }
+    }
+
+
+    public function coupon_edit(Request $request, $id){
+        $coupon = DiscountCoupon::find($id);
+
+        if($coupon == null){
+            session()->flash('error','Records not found');
+            return redirect()->route('coupons.index');
+        }
+        $data['coupon'] = $coupon;
+        return view('admin.settings.coupon.edit', $data);
+    }
+
+
+    public function coupon_update(Request $request, $id){
+        $discountCode = DiscountCoupon::find($id);
+
+        if ($discountCode == null){
+            session()->flash('error', 'Record not found');
+            return response()->json([
+                'status' => true,
+            ]);
+        }
+
+        $validator = Validator::make(request()->all(), [
+            'code' => 'required',
+            'type' => 'required',
+            'discount_amount' => 'required|numeric',
+            'status' => 'required',
+        ]);
+
+        if ($validator->passes()){
+            //expiring date must be great than start date
+            if (!empty($request->starts_at) && !empty($request->expires_at)) {
+                $expiresAt = Carbon::createFromFormat('Y-m-d H:i:s', $request->expires_at);
+                $startAt = Carbon::createFromFormat('Y-m-d H:i:s', $request->starts_at);
+
+                if ($expiresAt->gt($startAt) == false) {
+                    return response()->json([
+                        'status' => false,
+                        'errors' => ['expires_at' => 'Expiry date must be greator than start date.']
+                    ]);
+
+                }
+            }
+
+            $discountCode->code = $request->code;
+            $discountCode->name = $request->name;
+            $discountCode->description = $request->description;
+            $discountCode->max_uses = $request->max_uses;
+            $discountCode->max_uses_user = $request->max_uses_user;
+            $discountCode->type = $request->type;
+            $discountCode->discount_amount = $request->discount_amount;
+            $discountCode->min_amount = $request->min_amount;
+            $discountCode->status = $request->status;
+            $discountCode->starts_at = $request->starts_at;
+            $discountCode->expires_at = $request->expires_at;
+            $discountCode->save();
+
+            $message = 'Discount coupon update successfully.';
+
+            session()->flash('success', $message);
+
+            return response()->json([
+                'status' => true,
+                'message' => $message,
+            ]);
+
+        } else {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors(),
+            ]);
+        }
+    }
+
+
+    public function coupon_destroy(Request $request, $id){
+        $discountCode = DiscountCoupon::find($id);
+
+        if ($discountCode == null){
+            session()->flash('error', 'Record not found');
+            return response()->json([
+                'status' => true,
+            ]);
+        }
+
+        $discountCode->delete();
+
+        session()->flash('success', 'Discount coupon deleted successfully');
+        return response()->json([
+            'status' => true,
+        ]);
+    }
+
+
+
+    public function page_index(Request $request){
+        $pages = Page::latest('id');
+        if($request->keyword != ''){
+            $pages = $pages->where('name','like','%'.$request->keyword.'%');
+        }
+
+        $pageTotal = Page::count();
+        $pages = $pages->paginate(10);
+
+        $data = [
+            'title'         => 'Pages',
+            'button_name'   => 'Create Page',
+            'modal_id'      => 'createPageModal',
+            'refresh'       => route('pages.index'),
+            'button_route'  => null,
+            'pages'         => $pages,
+            'total'         => $pageTotal,
+
+            'formConfig' => [
+                'action' => route('pages.store'),
+                'modal_size' => 'modal-xl',
+                'method' => 'POST',
+                'button' => 'Create Page',
+                'fields' => [
+                    [
+                        'type' => 'text',
+                        'name' => 'name',
+                        'label' => 'Page Name',
+                        'placeholder' => 'Enter Brand name',
+                        'slug_create' => 'slug-source',
+                        'class' => 'slug-source',
+                        'data'  => [
+                            'target' => '#slug'
+                        ],
+                        'col' => 'col-md-12 col-12'
+                    ],
+                    [
+                        'type' => 'text',
+                        'name' => 'slug',
+                        'label' => 'Page Slug',
+                        'placeholder' => 'Enter Page slug',
+                        'id'    => 'slug',
+                        'col' => 'col-md-12 col-12'
+                    ],
+                    [
+                        'type' => 'textarea',
+                        'name' => 'content',
+                        'summer_class' => 'summernote',
+                        'label' => 'Content',
+                        'placeholder' => '',
+                        'id'    => 'slug',
+                        'col' => 'col-md-12 col-12'
+                    ]                    
+                ]
+            ]
+        ];       
+
+        return view('admin.settings.pages.index', $data);
+    }
+
+
+    public function page_index2(Request $request){
+        $pages = Page::latest();
+        if($request->keyword != ''){
+            $pages = $pages->where('name','like','%'.$request->keyword.'%');
+        }
+        $pages = $pages->paginate(10);
+        return view('admin.settings.pages.index',[
+            'pages' => $pages
+        ]);
+    }
+
+    public function page_create(){
+        return view("admin.settings.pages.create");
+    }
+
+    public function page_store(Request $request){
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'slug' => 'required',
+        ]);
+        if ($validator->fails()){
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ]);
+        }
+        $page = new Page;
+        $page->name = $request->name;
+        $page->slug = $request->slug;
+        $page->content = $request->content;
+        $page->save();
+
+        $message = 'Page added successfully.';
+        session()->flash('success',$message);
+
+        return response()->json([
+            'status' => true,
+            'message' => $message
+        ]);
+    }
+
+    public function page_edit($id){
+        $page = Page::find($id);
+        if ($page == null){
+            session()->flash('error','Page not found');
+            return redirect()->route('pages.index');
+        }
+
+        return view('admin.settings.pages.edit',[
+            'page' => $page
+        ]);
+    }
+
+    public function page_update(Request $request, $id){
+        $page = Page::find($id);
+
+        if($page == null) {
+            session()->flash('error','Page not found');
+            return response()->json([
+                'status' => true,
+            ]);
+        };
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'slug' => 'required',
+        ]);
+        if ($validator->fails()){
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ]);
+        }
+
+        $page->name = $request->name;
+        $page->slug = $request->slug;
+        $page->content = $request->content;
+        $page->save();
+
+        $message = 'Page updated successfully.';
+        session()->flash('success',$message);
+        return response()->json([
+            'status' => true,
+            'message' => $message
+        ]);
+    }
+
+
+    public function page_destroy($id){
+        $page = Page::find($id);
+        if($page == null) {
+            session()->flash('error','Page not found');
+            return response()->json([
+                'status' => true,
+            ]);
+        };
+        $page->delete();
+        $message = 'Page deleted successfully.';
+        session()->flash('success',$message);
+
+        return response()->json([
+            'status' => true,
+            'message' => $message
+        ]);
+    }
+
+    
+    //User
+    public function users_index(Request $request){
+        $users = User::latest('id');
+        //$brands = Brand::latest('id');
+
+        if(!empty($request->get('keyword'))){
+            $users = $users->where('name','like','%'.$request->get('keyword').'%');
+            $users = $users->orWhere('email','like','%'.$request->get('keyword').'%');
+        }
+        
+        $usersTotal = User::count();
+        $users = $users->paginate(10);
+
+        $data = [
+            'title'         => 'Users',
+            'button_name'   => 'Create User',
+            'modal_id'      => 'createUserModal',
+            'refresh'       => route('users.index'),
+            'button_route'  => null,
+            'users'         => $users,
+            'total'    => $usersTotal,
+
+            'formConfig' => [
+                'action' => route('users.store'),
+                'modal_size' => 'modal-lg',
+                'method' => 'POST',
+                'button' => 'Create User',
+                'fields' => [
+                    [
+                        'type' => 'text',
+                        'name' => 'name',
+                        'label' => 'User Name',
+                        'placeholder' => 'Enter User name',
+                        'col' => 'col-md-6 col-6'
+                    ],
+                    [
+                        'type' => 'email',
+                        'name' => 'email',
+                        'label' => 'Email',
+                        'placeholder' => 'Enter Email',
+                        'col' => 'col-md-6 col-6'
+                    ],
+                    [
+                        'type' => 'text',
+                        'name' => 'password',
+                        'label' => 'Password',
+                        'placeholder' => 'Enter Password',
+                        'col' => 'col-md-6 col-6'
+                    ],
+                    [
+                        'type' => 'text',
+                        'name' => 'phone',
+                        'label' => 'phone',
+                        'placeholder' => 'Enter Phone',
+                        'col' => 'col-md-6 col-6'
+                    ],
+                    [
+                        'type' => 'text',
+                        'name' => 'mobile',
+                        'label' => 'mobile',
+                        'placeholder' => 'Enter Mobile',
+                        'col' => 'col-md-6 col-6'
+                    ],
+                    [
+                        'type' => 'file',
+                        'name' => 'image',
+                        'label' => 'User Photo',
+                        'col' => 'col-md-6 col-6'
+                    ],   
+                    [
+                        'type' => 'date',
+                        'name' => 'birthdate',
+                        'label' => 'birthdate',
+                        'placeholder' => 'Enter birthdate',
+                        'col' => 'col-md-3 col-6'
+                    ],
+                    [
+                        'type' => 'select',
+                        'name' => 'gender',
+                        'label' => 'gender',
+                        'options' => [
+                            'Male' => 'Male',
+                            'Female' => 'Female',
+                        ],
+                        'col' => 'col-md-3 col-6'
+                    ],                                    
+                    [
+                        'type' => 'select',
+                        'name' => 'role',
+                        'label' => 'role',
+                        'options' => [
+                            1 => 'User',
+                            0 => 'Admin',
+                        ],
+                        'col' => 'col-md-3 col-6'
+                    ],
+                    [
+                        'type' => 'select',
+                        'name' => 'status',
+                        'label' => 'Status',
+                        'options' => [
+                            1 => 'Active',
+                            0 => 'Block',
+                        ],
+                        'col' => 'col-md-3 col-6'
+                    ]
+                ]
+            ]
+        ];       
+
+        return view('admin.settings.users.index', $data);
+    }   
+    
+
+    public function users_store(Request $request){
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'password' => 'required|min:5',
+            'email' => 'required|email|unique:users',
+            'phone' => 'required',
+        ]);
+
+        if($validator->passes()){
+            $user = new User;
+            $user->name = $request->name;
+            $user->email = $request->email;
+            $user->phone = $request->phone;
+            $user->mobile = $request->mobile;
+            $user->birthdate = $request->birthdate;
+            $user->gender = $request->gender;
+            $user->role = $request->role;
+            $user->image = $request->image;            
+            $user->status = $request->status;
+            $user->password = Hash::make($request->password);
+            $user->save();
+
+            $message = 'User added successfully';
+
+            session()->flash('success',$message);
+
+            return response()->json([
+                'status' => true,
+                'message' => $message
+            ]);
+
+        } else {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ]);
+        }
+    }
+
+    public function users_edit(Request $request, $id){
+        $user = User::find($id);
+        if($user == null){
+            $message = 'User not found';
+            session()->flash('error',$message);
+            return redirect()->route('users.index');
+        }
+
+        return view('admin.settings.users.edit', [
+            'user' => $user
+        ]);
+    }
+
+
+    public function users_update(Request $request, $id){
+        $user = User::find($id);
+        if($user == null){
+            $message = 'User not found';
+            session()->flash('error',$message);
+
+            return response()->json([
+                'status' => true,
+                'message' => $message
+            ]);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'email' => 'required|email|unique:users,email,'.$id.',id',
+            'phone' => 'required',
+        ]);
+
+        if($validator->passes()){
+            $user->name = $request->name;
+            $user->email = $request->email;
+            $user->phone = $request->phone;
+            $user->status = $request->status;
+            if($request->password != ''){
+                $user->password = Hash::make($request->password);
+            }
+
+            $user->save();
+            $message = 'User added successfully';
+            session()->flash('success',$message);
+
+            return response()->json([
+                'status' => true,
+                'message' => $message
+            ]);
+
+        } else {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ]);
+        }
+    }
+
+
+    public function users_destroy($id){
+        $user = User::find($id);
+        if($user == null){
+            $message = 'User not found';
+            session()->flash('error',$message);
+
+            return response()->json([
+                'status' => true,
+                'message' => $message
+            ]);
+        }
+        $user->delete();
+        $message = 'User deleted successfully';
+            session()->flash('error',$message);
+
+            return response()->json([
+                'status' => true,
+                'message' => $message
+            ]);
+    }
+
+    //Shipping
+    public function shipping_index(){
+        $states = State::get();
+        $data['states'] = $states;
+        $shippings = ShippingCharge::select('shipping_charges.*','states.name')->leftJoin('states','states.id','shipping_charges.state_id')->get();
+        $data['shippings'] = $shippings;
+        return view('admin.settings.shipping.index', $data);
+    }
+
+    public function shipping_store(Request $request){
+        $validator = Validator::make($request->all(), [
+            'state_id' => 'required',
+            'amount' => 'required|numeric',
+        ]);
+
+        if($validator->passes()){
+            $count = ShippingCharge::where('state_id',$request->state)->count();
+            if($count > 0){
+                session()->flash('error','Shipping already added as you selected state.');
+                return response()->json([
+                    'status' => true,
+                ]);
+            }
+
+            $shipping = new ShippingCharge();
+            $shipping->state_id = $request->state_id;
+            $shipping->amount = $request->amount;
+            $shipping->save();
+            session()->flash('success','Shipping added successfully');
+            return response()->json([
+                'status' => true,
+            ]);
+        } else {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ]);
+        }
+    }
+
+    public function shipping_destroy($id){
+        $shippingCharge = ShippingCharge::find($id);
+        if ($shippingCharge == null) {
+            session()->flash('error','Shipping not found');
+
+            return response()->json([
+                'status' => true,
+            ]);
+        }
+        $shippingCharge->delete();
+        session()->flash('success','Shipping deleted successfully');
+        return response()->json([
+            'status' => true,
+        ]);
+
     }
 }

@@ -1,20 +1,7 @@
 @extends('admin.layouts.app')
 
 @section('content')
-<section class="content-header">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-sm-6">
-                <h1>Create Page</h1>
-            </div>
-            <div class="col-sm-6 text-right">
-                <a href="{{ route('pages.index') }}" class="btn btn-primary">Back</a>
-            </div>
-        </div>
-    </div>
-    <!-- /.container-fluid -->
-</section>
-<!-- Main content -->
+
 <section class="content">
     <!-- Default box -->
     <div class="container-fluid">
