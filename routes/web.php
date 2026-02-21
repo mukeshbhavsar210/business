@@ -2,21 +2,14 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\admin\AdminLoginController;
-use App\Http\Controllers\admin\BrandController;
 use App\Http\Controllers\admin\HomeController;
 use App\Http\Controllers\admin\CategoryController;
-use App\Http\Controllers\admin\DiscountCodeController;
 use App\Http\Controllers\admin\OrderController;
-use App\Http\Controllers\admin\PageController;
 use App\Http\Controllers\admin\ProductController;
 use App\Http\Controllers\admin\ProductImageController;
 use App\Http\Controllers\admin\ProductSubCategoryController;
 use App\Http\Controllers\admin\SettingController;
-use App\Http\Controllers\admin\ShippingController;
-use App\Http\Controllers\admin\SubCategoryController;
-use App\Http\Controllers\admin\Sub2CategoryController;
 use App\Http\Controllers\admin\TempImagesController;
-use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\FrontController;
@@ -126,14 +119,7 @@ Route::group(['prefix' => 'admin'], function(){
 
             Route::get('/get-subcategories/{id}', 'getSubCategories')->name('get.subcategories');
         });       
-
-        //Brands
-        Route::controller(BrandController::class)->group(function() {
-            Route::get('/brands', 'index')->name('brands.index');            
-            Route::post('/brands', 'store')->name('brands.store');            
-            Route::delete('/brands/{brand}', 'destroy')->name('brands.delete');
-        });
-
+        
         //Product Route
         Route::controller(ProductController::class)->group(function() {
             Route::get('/products', 'index')->name('products.index');
@@ -146,62 +132,72 @@ Route::group(['prefix' => 'admin'], function(){
         });
 
         //Sub Categories Connect to main Categories
-        Route::get('/product-subcategories', [ProductSubCategoryController::class, 'index'])->name('product-subcategories.index');
-        Route::get('/product-subsubcategories', [ProductSubCategoryController::class, 'getSubSubCategories'])->name('product-subcategories.extra');
+        Route::controller(ProductSubCategoryController::class)->group(function() {
+            Route::get('/product-subcategories', 'index')->name('product-subcategories.index');
+            Route::get('/product-subsubcategories', 'getSubSubCategories')->name('product-subcategories.extra');
+        });
 
         //Delete Product Images Route
-        Route::post('/product-images/update', [ProductImageController::class, 'update'])->name('product-images.update');
-        Route::delete('/product-images', [ProductImageController::class, 'destroy'])->name('product-images.destroy');
-
-        //Shipping Routes
-        Route::controller(ShippingController::class)->group(function() {
-            Route::get('/shipping/index', 'index')->name('shipping.index');
-            Route::post('/shipping', 'store')->name('shipping.store');
-            Route::delete('/shipping/{id}', 'destroy')->name('shipping.delete');
+        Route::controller(ProductImageController::class)->group(function() {
+            Route::post('/product-images/update', 'update')->name('product-images.update');
+            Route::delete('/product-images', 'destroy')->name('product-images.destroy');
         });
-
-        //Coupon Code Routes
-        Route::controller(DiscountCodeController::class)->group(function() {
-            Route::get('/coupons', 'index')->name('coupons.index');            
-            Route::post('/coupons', 'store')->name('coupons.store');
-            Route::get('/coupons/{coupon}/edit', 'edit')->name('coupons.edit');
-            Route::put('/coupons/{coupon}', 'update')->name('coupons.update');
-            Route::delete('/coupons/{coupon}', 'destroy')->name('coupons.delete');
-        });
-
+        
         //Orders Routes
         Route::controller(OrderController::class)->group(function() {
             Route::get('/orders', 'index')->name('orders.index');
             Route::get('/orders/{id}', 'detail')->name('orders.detail');
             Route::post('/order/change-status/{id}', 'changeOrderStatus')->name('orders.changeOrderStatus');
             Route::post('/order/send-email/{id}', 'sendInvoiceEmail')->name('orders.sendInvoiceEmail');
-        });
-
-        //Users Routes
-        Route::controller(UserController::class)->group(function() {
-            Route::get('/users', 'index')->name('users.index');            
-            Route::post('/users', 'store')->name('users.store');
-            Route::get('/users/{user}/edit', 'edit')->name('users.edit');
-            Route::put('/users/{user}', 'update')->name('users.update');
-            Route::delete('/users/{user}', 'destroy')->name('users.delete');
-        });
-
-        //Pages Routes
-        Route::controller(PageController::class)->group(function() {
-            Route::get('/pages', 'index')->name('pages.index');
-            Route::get('/pages/create', 'create')->name('pages.create');
-            Route::post('/pages', 'store')->name('pages.store');
-            Route::get('/pages/{page}/edit', 'edit')->name('pages.edit');
-            Route::put('/pages/{page}', 'update')->name('pages.update');
-            Route::delete('/pages/{page}', 'destroy')->name('pages.delete');
-        });
+        });          
 
         //Temp image controller
         Route::post('/upload-temp-image', [TempImagesController::class, 'create'])->name('temp-images.create');
 
-        //Setting Route
-        Route::get('/password', [SettingController::class, 'showChangePasswordForm'])->name('admin.showChangePasswordForm');
-        Route::post('/process-change-password', [SettingController::class, 'processChangePassword'])->name('admin.processChangePassword');        
+        //Settings
+        
+        Route::controller(SettingController::class)->group(function() {
+            Route::get('/password', 'showChangePasswordForm')->name('admin.showChangePasswordForm');
+            Route::post('/process-change-password', 'processChangePassword')->name('admin.processChangePassword');        
+
+            //Brands
+            Route::get('/settings/brands', 'brand_index')->name('brands.index');            
+            Route::post('/settings/brands', 'brand_store')->name('brands.store');            
+            Route::delete('/settings/brands/{brand}', 'brand_destroy')->name('brands.delete');
+
+            //Colors
+            Route::get('/settings/colors', 'color_index')->name('colors.index');            
+            Route::post('/settings/colors', 'color_store')->name('colors.store');            
+            Route::delete('/settings/colors/{color}', 'color_destroy')->name('colors.delete');
+
+            //Discount coupon
+            Route::get('/settings/coupons', 'coupon_index')->name('coupons.index');            
+            Route::post('/settings/coupons', 'coupon_store')->name('coupons.store');
+            Route::get('/settings/coupons/{coupon}/edit', 'coupon_edit')->name('coupons.edit');
+            Route::put('/settings/coupons/{coupon}', 'coupon_update')->name('coupons.update');
+            Route::delete('/settings/coupons/{coupon}', 'coupon_destroy')->name('coupons.delete');
+
+            //Pages
+            Route::get('/settings/pages', 'page_index')->name('pages.index');
+            Route::get('/settings/pages/create', 'page_create')->name('pages.create');
+            Route::post('/settings/pages', 'page_store')->name('pages.store');
+            Route::get('/settings/pages/{page}/edit', 'page_edit')->name('pages.edit');
+            Route::put('/settings/pages/{page}', 'page_update')->name('pages.update');
+            Route::delete('/settings/pages/{page}', 'page_destroy')->name('pages.delete');
+
+            //Users
+            Route::get('/settings/users', 'users_index')->name('users.index');            
+            Route::post('/settings/users', 'users_store')->name('users.store');
+            Route::get('/settings/users/{user}/edit', 'users_edit')->name('users.edit');
+            Route::put('/settings/users/{user}', 'users_update')->name('users.update');
+            Route::delete('/settings/users/{user}', 'users_destroy')->name('users.delete');
+
+            //Shipping
+            Route::get('/settings/shipping/index', 'shipping_index')->name('shipping.index');
+            Route::post('/settings/shipping', 'shipping_store')->name('shipping.store');
+            Route::delete('/settings/shipping/{id}', 'shipping_destroy')->name('shipping.delete');
+        });  
+           
 
         Route::get('/getSlug', function(Request $request){
             $slug = '';

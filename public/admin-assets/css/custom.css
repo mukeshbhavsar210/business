@@ -48,6 +48,11 @@ body { background-color: #f7f9fb; }
 
 .table { font-size: 14px;}
 
+.chip-wrapper { display: flex; column-gap: 10px; flex-wrap: wrap; }
+.chip-wrapper .color-chip { border: 1px #e5e5e5 solid; padding:8px 10px 6px 10px; display: flex; margin-bottom: 10px; border-radius: 6px; justify-content: space-between;}
+.chip-wrapper .color-chip .badge { border-radius: 100px; display: block; margin-right: 8px; height: 20px; width: 20px;}
+.chip-wrapper .color-chip .color-title { position: relative; top:-1px; font-size: 14px; margin-right: 10px;}
+
 .startbar { box-shadow: 0 4px 6px 0 #0000001f; transform: translateY(0); animation: slideDown .4s ease;}
 .custom-card .card-header { padding: 0 0 10px 0; margin-bottom: 15px; border-bottom: 1px #e5e5e5 solid;}
 
@@ -288,8 +293,6 @@ input:checked + .slider { box-shadow:0 0 0 2px #007bff,0 0 2px #007bff; }
 .relative { position: relative;}
 .product_status { position: absolute; top:33%; left:21%; background-color: #fff; border-radius: 100px; padding: 0; display: none; }
 .productTable tr:hover .product_status { display: block; }
-
-.float-end { float: right;}
 
 .sticky-header {
   position: fixed;

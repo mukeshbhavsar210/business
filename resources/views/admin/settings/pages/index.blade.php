@@ -2,54 +2,19 @@
 
 @section('content')
 
-<section class="content-header">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-sm-6">
-                <h1>Pages</h1>
-            </div>
-            <div class="col-sm-6 text-right">
-                <a href="{{ route('pages.create') }}" class="btn btn-primary">New Page</a>
-            </div>
-        </div>
-    </div>
-    <!-- /.container-fluid -->
-</section>
-<!-- Main content -->
-<section class="content">
-    <!-- Default box -->
-    <div class="container-fluid">
+@include('admin.message')
 
-        @include('admin.message')
-
+<div class="card custom-card">
+    @include('admin.layouts.common')       
+    
+    <div class="container-fluid">        
         <div class="card">
-            <form action="" method="get" >
-                <div class="card-header">
-                    <div class="card-title">
-                        <button type="button" onclick="window.location.href='{{ route('pages.index') }}'" class="btn btn-default btn-sm">Reset</button>
-                    </div>
-
-                    <div class="card-tools">
-                        <div class="input-group input-group" style="width: 250px;">
-                            <input value="{{ Request::get('keyword') }}" type="text" name="keyword" class="form-control float-right" placeholder="Search">
-
-                            <div class="input-group-append">
-                            <button type="submit" class="btn btn-default">
-                                <i class="fas fa-search"></i>
-                            </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </form>
-
             <div class="card-body table-responsive p-0">
                 <table class="table table-hover text-nowrap">
                     <thead>
                         <tr>
                             <th width="60">ID</th>
-                            <th>Name</th>
-                            <th>Slug</th>
+                            <th>Name</th>                            
                             <th width="100">Action</th>
                         </tr>
                     </thead>
@@ -59,7 +24,6 @@
                                 <tr>
                                     <td>{{ $page->id }}</td>
                                     <td>{{ $page->name }}</td>
-                                    <td>{{ $page->slug }}</td>
                                     <td>
                                         <a href="{{ route('pages.edit', $page->id ) }}">
                                             <svg class="filament-link-icon w-4 h-4 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -88,9 +52,6 @@
             </div>
         </div>
     </div>
-    <!-- /.card -->
-</section>
-<!-- /.content -->
 @endsection
 
 @section('customJs')
