@@ -188,6 +188,31 @@
             header.classList.remove("sticky-header");
         }
     });
+
+    $(document).on('input', '.slug-source', function () {
+        let element = $(this);
+        let form = element.closest('form');
+        let target = element.data('target');
+        let submitBtn = form.find("button[type=submit]");
+
+        submitBtn.prop('disabled', true);
+
+        $.ajax({
+            url: '{{ route("getSlug") }}',
+            type: 'GET',
+            data: { title: element.val() },
+            dataType: 'json',
+            success: function (response) {
+
+                submitBtn.prop('disabled', false);
+
+                if (response.status === true) {
+                    form.find(target).val(response.slug); // ✅ use slug
+                }
+            }
+        });
+    });
+
 </script>
 
 @yield('customJs')

@@ -50,7 +50,6 @@
                         </div>
                     </form>
                     <button type="button" class="btn btn-primary float-end" data-bs-toggle="modal" data-bs-target="#{{ $modal_id }}">{{ $button_name }}</button>                            
-                    {{-- <a href="{{ $button_route }}" class="btn btn-primary">{{ $button_name }}</a> --}}
                 </div>
             </div>
         </div>                        

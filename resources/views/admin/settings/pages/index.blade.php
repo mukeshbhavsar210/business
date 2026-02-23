@@ -5,7 +5,7 @@
 @include('admin.message')
 
 <div class="card custom-card">
-    @include('admin.layouts.common')       
+    @include('admin.layouts.common')
     
     <div class="container-fluid">        
         <div class="card">

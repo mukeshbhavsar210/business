@@ -145,8 +145,7 @@
                     </tbody>
                 </table>
             </div>
-        </div>
-        
+        </div>        
         <div class="card-body pb-0 clearfix">
             {{ $products->links() }}
         </div>          
