@@ -1,23 +1,24 @@
-
-
 @extends('admin.layouts.app')
 
-@section('content')
-    <section class="content-header">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-sm-10 col-12 d-flex">
-                    <h1>Edit Product</h1>
-                </div>
-                <div class="col-sm-2 col-12 ">
-                    <a href="{{ route('products.index') }}" class="btn btn-primary float-end">Back to Products</a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="content mt-2">
-        <form action="" method="post" name="productFormEdit" id="productFormEdit" class="ajax-form">
+@section('content')           
+   
+    <x-product-form 
+        :product="$product"
+        :categories="$categories"            
+        :subcategories="$subcategories"
+        :subsubcategories="$subsubcategories"
+        :brands="$brands"
+        :colors="$colors"
+        :sizes="$sizes"
+        :productimages="$productimages"
+        :route="route('products.update', $product->id)"
+        method="PUT"
+        buttonText="Update Product"
+        title="Edit Product"
+        formname="productFormEdit"
+    />      
+           
+        {{-- <form action="" method="post" name="productFormEdit" id="productFormEdit" class="ajax-form">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-9 col-12">
@@ -59,10 +60,10 @@
                         </div>
 
                         <div id="product-gallery">
-                            @if ($productImages->isNotEmpty())
+                            @if ($productimages->isNotEmpty())
                             <h5>Uploaded images</h5>
                             <div class="row">
-                                @foreach ( $productImages as $image)
+                                @foreach ( $productimages as $image)
                                     <div class="col-md-2" id="image-row-{{ $image->id }}">
                                         <div class="uploaded-images">
                                             <input type="hidden" name="image_array[]" value="{{ $image->id }}" >
@@ -196,8 +197,8 @@
                             <label for="category">Sub Category</label>
                             <select name="sub_category" id="sub_category" class="form-select">
                                 <option value="">Sub category</option>
-                                @if ($subCategories->isNotEmpty())
-                                    @foreach ($subCategories as $value)
+                                @if ($subcategories->isNotEmpty())
+                                    @foreach ($subcategories as $value)
                                         <option {{ ($product->sub_category_id == $value->id) ? 'selected' : '' }} value="{{ $value->id }}">{{ $value->sub_category_name }}</option>
                                     @endforeach
                                 @endif
@@ -208,8 +209,8 @@
                             <label for="category">Sub2 Category</label>
                             <select name="sub_sub_category" id="sub_sub_category" class="form-select">
                                 <option value="">Sub2 category</option>
-                                @if ($sub2Categories->isNotEmpty())
-                                    @foreach ($sub2Categories as $value)
+                                @if ($subsubcategories->isNotEmpty())
+                                    @foreach ($subsubcategories as $value)
                                         <option {{ ($product->sub_sub_category_id == $value->id) ? 'selected' : '' }} value="{{ $value->id }}">{{ $value->sub2_category_name }}</option>
                                     @endforeach
                                 @endif
@@ -278,28 +279,11 @@
                     <a href="{{ route('products.index') }}" class="btn btn-outline-dark ml-3">Cancel</a>
                 </div>
             </div>
-        </form>
-    </section>
+        </form> --}}    
 @endsection
 
 @section('customJs')
 <script>
-    $('.related-product').select2({
-        ajax: {
-            url: '{{ route('products.getProducts') }}',
-            dataType: 'json',
-            tags: true,
-            multiple: true,
-            minimumInputLength: 3,
-            processResults: function (data) {
-                return {
-                    results: data.tags
-                };
-            }
-        }
-    });
-
-    
     //Product form add details in database
     $("#productFormEdit").submit(function(event){
         event.preventDefault();
@@ -344,26 +328,7 @@
         });
     });
 
-    $("#category").change(function(){
-        var category_id = $(this).val();
-        $.ajax({
-            url: '{{ route("product-subcategories.index") }}',
-            type: 'get',
-            data: {category_id:category_id},
-            dataType: 'json',
-            success: function(response) {
-                $("#sub_category").find("option").not(":first").remove();
-                $.each(response["subCategories"],function(key,item){
-                    $("#sub_category").append(`<option value='${item.id}' >${item.name}</option>`)
-                })
-            },
-            error: function(){
-                console.log("Something went wrong")
-            }
-        });
-    })
-
-    //File image uplaod
+     //File image uplaod
     Dropzone.autoDiscover = false;
         const dropzone = $("#image").dropzone({
             url:  "{{ route('product-images.update') }}",
@@ -392,64 +357,5 @@
                 this.removeFile(file);
             }
         });
-
-
-
-        function deleteImage(id){
-            $("#image-row-"+id).remove();
-
-            if (confirm("Are you sure you want to delete image?")) {
-                $.ajax({
-                    url: '{{ route("product-images.destroy") }}',
-                    type: 'delete',
-                    data: {id:id},
-                        success: function(response) {
-                            if(response.status == true){
-                                alert(response.message);
-                            } else {
-                                alert(response.message);
-                            }
-                        }
-                })
-            }
-        }
-
-
-    let index = 1;
-    function addVariant() {
-        let wrapper = document.getElementById('variants-wrapper');
-        wrapper.insertAdjacentHTML('beforeend', `
-            <div class="variant-item">
-                <div class="row">
-                    <div class="col-md-2 col-6">
-                        <div class="form-group">
-                            <label for="color">Price</label>
-                            <input type="number" name="variants[${index}][price]" placeholder="Price" class="form-control">
-                        </div>
-                    </div>
-                    <div class="col-md-2 col-6">
-                        <div class="form-group">
-                            <label for="color">Price</label>
-                            <input type="text" name="variants[${index}][color]" placeholder="Color" class="form-control">
-                        </div>
-                    </div>
-                    <div class="col-md-2 col-6">
-                        <div class="form-group">
-                            <label for="color">Price</label>
-                            <input type="number" name="variants[${index}][stock]" placeholder="Stock" class="form-control">
-                        </div>
-                    </div>
-                    <div class="col-md-2 col-6">
-                        <div class="form-group">
-                            <label for="color">Price</label>
-                            <input type="file" name="variant_images[${index}]" class="form-control">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `);
-        index++;
-    }
 </script>
-
 @endsection
