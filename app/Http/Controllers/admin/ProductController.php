@@ -36,12 +36,14 @@ class ProductController extends Controller {
 
     public function create(){
         $data = [];
-        $categories = Category::orderBy('name','ASC')->get();
+        $categories = Category::orderBy('category_name','ASC')->get();        
+        $subcategories = collect();
         $brands = Brand::orderBy('name','ASC')->get();
         $colors = Color::orderBy('name','ASC')->get();
         $sizes  = Size::orderBy('name','ASC')->get();
 
-        $data['categories'] = $categories;
+        $data['categories'] = $categories;        
+        $data['subcategories'] = $subcategories;
         $data['brands'] = $brands;
         $data['colors'] = $colors;
         $data['sizes'] = $sizes;
@@ -168,15 +170,16 @@ class ProductController extends Controller {
 
     public function edit($id, Request $request){
         $product = Product::find($id);
-
+        $product->load('variants');
+        
         if (empty($product)) {
             return redirect()->route('products.index')->with('error','Product not found');
         }
 
         //Fetch Product Images
-        $productImages = ProductImage::where('product_id',$product->id)->get();
-        $subCategories = SubCategory::where('category_id',$product->category_id)->get();        
-        $sub2Categories = SubSubCategory::where('sub_category_id', $product->sub_category_id)->get();        
+        $productimages = ProductImage::where('product_id',$product->id)->get();
+        $subcategories = SubCategory::where('category_id',$product->category_id)->get();        
+        $subsubcategories = SubSubCategory::where('sub_category_id', $product->sub_category_id)->get();        
 
         //Fetch Related products
         $relatedProducts = [];
@@ -193,13 +196,13 @@ class ProductController extends Controller {
 
         $data['categories'] = $categories;
         $data['brands'] = $brands;
-        $data['product'] = $product;
-        $data['subCategories'] = $subCategories;
-        $data['sub2Categories'] = $sub2Categories;
-        $data['productImages'] = $productImages;
-        $data['relatedProducts'] = $relatedProducts;
         $data['colors'] = $colors;
         $data['sizes'] = $sizes;
+        $data['product'] = $product;
+        $data['subcategories'] = $subcategories;
+        $data['subsubcategories'] = $subsubcategories;
+        $data['productimages'] = $productimages;
+        $data['relatedProducts'] = $relatedProducts;        
 
         return view('admin.products.edit',$data);
     }

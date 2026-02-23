@@ -1,21 +1,23 @@
 @extends('admin.layouts.app')
 
 @section('content')
-    <section class="content-header">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-sm-6">
-                    <h1>Create Product</h1>
-                </div>
-                <div class="col-sm-6 text-right">
-                    <a href="{{ route('products.index') }}" class="btn btn-primary">Back</a>
-                </div>
-            </div>
-        </div>
-    </section>    
-
     <section class="content mt-2">
-        <form action="" method="post" name="productForm" id="productForm">
+        <x-product-form 
+            :route="route('products.store')"
+            :product="$product ?? null"
+            :categories="$categories"
+            :brands="$brands"
+            :colors="$colors"
+            :sizes="$sizes"
+            :subcategories="$subcategories"
+            :productimages="$productimages ?? null"            
+            method="POST"
+            buttonText="Create Product"
+            title="Create Product"
+            formname="productFormCreate"
+        />
+
+        {{-- <form action="" method="post" name="productForm" id="productForm">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-9 col-12">                        
@@ -202,13 +204,11 @@
                     <a href="{{ route('products.index') }}" class="btn btn-outline-dark ml-3">Cancel</a>
                 </div>
             </div>
-        </form>
-    </section>
+        </form> --}}    
 @endsection
 
 @section('customJs')
 <script>
-
     $('.related-product').select2({
         ajax: {
             url: '{{ route('products.getProducts') }}',
@@ -224,27 +224,11 @@
         }
     });  
 
-    $('#title').change(function(){
-        element = $(this);
-        $("button[type=submit]").prop('disabled', true);
-        $.ajax({
-            url: '{{ route("getSlug") }}',
-            type: 'get',
-            data: {title: element.val()},
-            dataType: 'json',
-            success: function(response){
-                $("button[type=submit]").prop('disabled', false);
-                if(response["status"] == true){
-                    $("#slug").val(response["slug"]);
-                }
-            }
-        });
-    })
-
+   
 
 
     //Product form add details in database
-    $("#productForm").submit(function(event){
+    $("#productFormCreate").submit(function(event){
         event.preventDefault();
 
         var formArray = $(this).serializeArray();
@@ -288,7 +272,7 @@
     });
 
 
-    $("#category").change(function(){
+    $("#category2").change(function(){        
         var category_id = $(this).val();
         $.ajax({
             url: '{{ route("product-subcategories.index") }}',
@@ -306,6 +290,32 @@
             }
         });
     })
+
+
+    $("#category").change(function(){
+    var category_id = $(this).val();
+
+    $("#sub_category").find("option").not(":first").remove();
+
+    if(category_id) {
+        $.ajax({
+            url: '{{ route("product-subcategories.index") }}',
+            type: 'GET',
+            data: { category_id: category_id },
+            dataType: 'json',
+            success: function(response) {
+                $.each(response.subCategories, function(key, item){
+                    $("#sub_category").append(
+                        `<option value="${item.id}">${item.name}</option>`
+                    );
+                });
+            },
+            error: function(){
+                console.log("Something went wrong");
+            }
+        });
+    }
+});
 
     $("#sub_category").change(function(){
         var sub_category_id = $(this).val();
@@ -364,5 +374,4 @@
         }
 
 </script>
-
 @endsection
