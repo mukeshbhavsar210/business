@@ -261,7 +261,133 @@ class SettingController extends Controller {
 
 
     //Discount
-     public function coupon_index(Request $request){
+    public function coupon_index(Request $request){
+        $discountCoupons = DiscountCoupon::latest('id');
+
+        if(!empty($request->get('keyword'))){
+            $discountCoupons = $discountCoupons->where('name', 'like', '%'.$request->get('keyword').'%');
+            $discountCoupons = $discountCoupons->orWhere('code', 'like', '%'.$request->get('keyword').'%');
+        }        
+       
+        $discountTotal = DiscountCoupon::count();
+        $discountCoupons = $discountCoupons->paginate(10);
+
+        $data = [
+            'title'         => 'Discount',
+            'button_name'   => 'Create Discount',
+            'modal_id'      => 'createPageModal',
+            'refresh'       => route('coupons.index'),
+            'button_route'  => null,
+            'discountCoupons' => $discountCoupons,
+            'total'         => $discountTotal,
+
+            'formConfig' => [
+                'action' => route('coupons.store'),
+                'modal_size' => 'modal-lg',
+                'method' => 'POST',
+                'button' => 'Create Page',
+                'fields' => [
+                    [
+                        'type' => 'text',
+                        'name' => 'code',
+                        'label' => 'Coupon Code',
+                        'placeholder' => 'Enter Code',                                                                    
+                        'col' => 'col-md-3 col-6'
+                    ],
+                    [
+                        'type' => 'text',
+                        'name' => 'name',
+                        'id' => 'name',
+                        'label' => 'Coupon Name',
+                        'placeholder' => 'Enter Name',
+                        'col' => 'col-md-3 col-6'
+                    ],
+                    [
+                        'type' => 'text',
+                        'name' => 'max_uses',
+                        'id' => 'max_uses',
+                        'label' => 'Max Uses',
+                        'placeholder' => 'Max Uses',
+                        'col' => 'col-md-3 col-6'
+                    ],
+                    [
+                        'type' => 'text',
+                        'name' => 'max_uses_user',
+                        'id' => 'max_uses_user',
+                        'label' => 'Max uses User',
+                        'placeholder' => 'Max uses User',
+                        'col' => 'col-md-3 col-6'
+                    ],
+                    [
+                        'type' => 'text',
+                        'name' => 'discount_amount',
+                        'id' => 'discount_amount',
+                        'label' => 'Discount amount',
+                        'placeholder' => 'Discount amount',
+                        'col' => 'col-md-3 col-6'
+                    ],
+                    [
+                        'type' => 'text',
+                        'name' => 'min_amount',
+                        'id' => 'min_amount',
+                        'label' => 'Min Amount',
+                        'placeholder' => 'Min Amount',
+                        'col' => 'col-md-3 col-6'
+                    ],
+                    [
+                        'type' => 'select',
+                        'name' => 'type',
+                        'label' => 'type',
+                        'options' => [
+                            'Percent' => 'Percent',
+                            'Fixed' => 'Fixed',
+                        ],
+                        'col' => 'col-md-3 col-6'
+                    ],
+                    [
+                        'type' => 'date',
+                        'name' => 'starts_at',
+                        'label' => 'starts_at',
+                        'placeholder' => 'Min Amount',
+                        'col' => 'col-md-3 col-6'
+                    ],
+                    [
+                        'type' => 'date',
+                        'name' => 'expires_at',
+                        'label' => 'expires_at',
+                        'placeholder' => 'Min Amount',
+                        'col' => 'col-md-3 col-6'
+                    ],
+                    [
+                        'type' => 'select',
+                        'name' => 'status',
+                        'label' => 'Status',
+                        'options' => [
+                            1 => 'Active',
+                            0 => 'Block',
+                        ],
+                        'col' => 'col-md-3 col-12'
+                    ],
+                    [
+                        'type' => 'textarea',
+                        'name' => 'description',
+                        'summer_class' => '',
+                        'label' => 'description',
+                        'placeholder' => 'description',
+                        'id'    => 'description',
+                        'col' => 'col-md-6 col-12'
+                    ],
+                    
+                ]
+            ]
+        ];       
+
+        return view('admin.settings.coupon.index', $data);
+    }  
+
+
+
+     public function coupon_index2(Request $request){
         $discountCoupons = DiscountCoupon::latest();
 
         if(!empty($request->get('keyword'))){
@@ -470,19 +596,7 @@ class SettingController extends Controller {
         ];       
 
         return view('admin.settings.pages.index', $data);
-    }
-
-
-    public function page_index2(Request $request){
-        $pages = Page::latest();
-        if($request->keyword != ''){
-            $pages = $pages->where('name','like','%'.$request->keyword.'%');
-        }
-        $pages = $pages->paginate(10);
-        return view('admin.settings.pages.index',[
-            'pages' => $pages
-        ]);
-    }
+    }  
 
     public function page_create(){
         return view("admin.settings.pages.create");

@@ -6,20 +6,20 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Color;
 use App\Models\Product;
+use App\Models\Rating;
+use App\Models\Review;
+use App\Models\Size;
 use App\Models\SubCategory;
 use App\Models\SubSubCategory;
 use Illuminate\Http\Request;
 
 class ShopController extends Controller {
     public function index(Request $request, $categorySlug = null, $subCategorySlug = null, $subSubCategory = null) {
-        // $categorySelected = ' ';
-        // $subCategorySelected = ' ';
-        // $subSubCategorySelected = ' ';
         $brandsArray = [];
         $colorsArray = [];
 
         $categories = Category::orderBy("category_name","ASC")->with('sub_category')->where('status',1)->get();               
-        $products = Product::where('status',1);
+        $products = Product::with('ratings')->where('status',1);
         $productCount = Product::where('status', 1)->count();
         $totalProducts = $products->count();
 
@@ -203,6 +203,106 @@ class ShopController extends Controller {
 
     
 
+
+    public function product($slug){
+        $product = Product::where('slug',$slug)->with(['product_images', 'variants'])->first();
+        $colors = Color::get();
+        $sizes = Size::get();
+
+        if($product == null){
+            abort(404);
+        }
+
+        $selectedCategory = null;
+        $selectedSubCategory = null;
+        $selectedSubSubCategory = null;
+
+        if (!empty($categorySlug)) {
+            $selectedCategory = Category::where('category_slug', $categorySlug)->first();
+            if ($selectedCategory) {
+                $products = $product->where('category_id', $selectedCategory->id);
+            }
+        }
+
+        if (!empty($subCategorySlug)) {
+            $selectedSubCategory = SubCategory::where('sub_category_slug', $subCategorySlug)->first();
+            if ($selectedSubCategory) {
+                $products = $products->where('sub_category_id', $selectedSubCategory->id);
+            }
+        }
+
+        if (!empty($subSubCategory)) {
+            $selectedSubSubCategory = SubSubCategory::where('sub2_category_slug', $subSubCategory)->first();
+            if ($selectedSubSubCategory) {
+                $products = $products->where('sub_sub_category_id', $selectedSubSubCategory->id);
+            }
+        }
+
+        //Fetch Related products
+        $relatedProducts = [];
+        if ($product->related_products != '') {
+            $productArray = explode(',',$product->related_products);
+            $relatedProducts = Product::whereIn('id',$productArray)->where('status',1)->with('product_images')->get();
+        }
+
+        $ratings = Review::where('product_id', $product->id)
+            ->selectRaw('rating, COUNT(*) as count')
+            ->groupBy('rating')
+            ->pluck('count','rating')
+            ->toArray();
+
+        for ($i = 1; $i <= 5; $i++) {
+            $ratings[$i] = $ratings[$i] ?? 0;
+        }
+
+        krsort($ratings);                    
+        
+        $totalRatings = Review::where('product_id', $product->id)->count();
+        $averageRating = Review::avg('rating');
+        $reviews = Review::with('user')->where('product_id', $product->id)->latest()->take(3)->get();      
+        $totalReviews = Review::where('product_id', $product->id)->count(); 
+       
+        $data['product'] = $product;
+        $data['ratings'] = $ratings;
+        $data['totalRatings'] = $totalRatings;
+        $data['averageRating'] = $averageRating;
+        $data['reviews'] = $reviews;
+        $data['totalReviews'] = $totalReviews;
+        $data['colors'] = $colors;        
+        $data['sizes'] = $sizes;
+        $data['relatedProducts'] = $relatedProducts;
+        $data['selectedCategory'] = $selectedCategory;
+        $data['selectedSubCategory'] = $selectedSubCategory;
+        $data['selectedSubSubCategory'] = $selectedSubSubCategory;
+
+        return view('front.products.index',$data);
+    }
+
+
+    public function allReviews($id) {
+        $product = Product::findOrFail($id);
+        $reviews = Review::where('product_id', $id)
+                    ->latest()
+                    ->paginate(10); // pagination
+
+        $averageRating = Review::avg('rating');        
+        $ratings = Review::where('product_id', $product->id)
+            ->selectRaw('rating, COUNT(*) as count')
+            ->groupBy('rating')
+            ->pluck('count','rating')
+            ->toArray();
+
+        for ($i = 1; $i <= 5; $i++) {
+            $ratings[$i] = $ratings[$i] ?? 0;
+        }
+
+        krsort($ratings);
+        $totalRatings = Review::where('product_id', $product->id)->count();
+
+        return view('front.products.reviews', compact('product','reviews','averageRating', 'ratings', 'totalRatings'));
+    }
+
+
     public function category(Request $request, $categorySlug = null) {
         $categorySelected = ' ';        
 
@@ -228,24 +328,17 @@ class ShopController extends Controller {
     }
 
 
-    public function product($slug){
-        $product = Product::where('slug',$slug)->with('product_images')->first();
+    public function store(Request $request) {
+        Rating::create([
+            'product_id' => $request->product_id,
+            'user_id' => auth()->id(),
+            'rating' => $request->rating,
+            'review' => $request->review
+        ]);
 
-        if($product == null){
-            abort(404);
-        }
-
-        //Fetch Related products
-        $relatedProducts = [];
-        if ($product->related_products != '') {
-            $productArray = explode(',',$product->related_products);
-            $relatedProducts = Product::whereIn('id',$productArray)->where('status',1)->with('product_images')->get();
-        }
-
-        $data['product'] = $product;
-        $data['relatedProducts'] = $relatedProducts;
-
-
-        return view('front.products.index',$data);
+        return response()->json([
+            'status' => true,
+            'message' => 'Thanks for your rating!'
+        ]);
     }
 }

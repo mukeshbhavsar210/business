@@ -96,7 +96,6 @@
                     @endforeach
                 @endif
             </div>
-
             <div class="filter-group">
                 <h5>Discount Range</h5>
             </div>
@@ -104,54 +103,14 @@
 
         <div class="col-md-10 col-12">
             <div class="row">
-                @if ($products->isNotEmpty())
-                    @foreach ($products as $product)
-                        @php
-                            $productImage = $product->product_images->first();
-                        @endphp
-            
-                        <div class="col-md-3 col-6">
-                            <div class="product-card">                                
-                                <div class="product-image-wrapper">
-                                    <div class="product-slider">
-                                        @if ($product->images && $product->images->count() > 0)
-                                            @foreach($product->images as $image)
-                                                <div class="slider-item">
-                                                    <a href="{{ route('front.product',$product->slug) }}" class="product-img">
-                                                        <img src="{{ asset('uploads/product/small/'.$image->image) }}" class="img-fluid" alt="{{ $product->name }}" >
-                                                    </a>
-                                                </div>
-                                            @endforeach
-                                        @else
-                                            <img class="card-img-top" src="{{ asset('admin-assets/img/default-150x150.png') }}" alt="" />
-                                        @endif
-                                    </div>
-                                    <div class="wishlist-btn">                                            
-                                        <a onclick="addToWishlist({{ $product->id }})" class="btn w-100 btn-outline-dark" href="javascript:void(0)">
-                                            <i class="far fa-heart"></i> 
-                                            Wishlist
-                                        </a>
-                                        <p>Size:</p>                                        
-                                    </div>                                       
-                                </div>
-                            </div>
-                            <div class="product-info">
-                                <h3>{{ Str::limit($product->title, 36, '...') }}</h3>
-                                <div class="price mt-2">
-                                    <span class="h5"><strong>₹{{ $product->price }}</strong></span>
-                                    @if ($product->compare_price > 0)
-                                        <span class="h6 text-underline"><del>₹{{ $product->compare_price }}</del></span>
-                                    @endif
-                                </div>
-                            </div>                            
-                            
-                        </div>
-                    @endforeach
-                @endif
-            
-                <div class="col-md-12 pt-5">
-                    {{ $products->withQueryString()->links() }}
-                </div>
+                @foreach($products as $product)         
+                    <div class="col-md-3 col-6">
+                        <x-product-card :product="$product" />                    
+                    </div>
+                @endforeach
+            </div>
+            <div class="col-md-12 pt-5">
+                {{ $products->withQueryString()->links() }}
             </div>
         </div>
     </div>

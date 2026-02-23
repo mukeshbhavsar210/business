@@ -17,7 +17,7 @@
     </section>
 
     <section class="content mt-2">
-        <form action="" method="post" name="productForm" id="productForm">
+        <form action="" method="post" name="productFormEdit" id="productFormEdit" class="ajax-form">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-9 col-12">
@@ -25,7 +25,7 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="title">Product Title</label>
-                                    <input type="text" name="title" id="title" class="form-control" placeholder="Title" value="{{ $product->title }}">
+                                    <input type="text" name="title" id="title" class="form-control slug-source" placeholder="Title" value="{{ $product->title }}" data-target="#slug">
                                     <p class="error"></p>
                                     <input type="hidden" readonly name="slug" id="slug" class="form-control" placeholder="Slug" value="{{ $product->slug }}">
                                 </div>
@@ -124,6 +124,49 @@
                         <p class="text-muted">To show a reduced price, move the product’s original price into Compare at price. Enter a lower value into Price.</p>
                         <hr />
 
+                        <h4 class="mb-2">Product Variants</h4>
+                        <div id="variants-wrapper">
+                            <div class="variant-item">
+                                <div class="row">
+                                    <div class="col-md-2 col-6">
+                                        <div class="form-group">
+                                            <label for="color">Price</label>
+                                            <input type="number" name="variants[0][price]" placeholder="Price" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 col-6">
+                                        <div class="form-group">
+                                            <label for="color">Color</label>
+                                            <select name="variants[0][color]" id="color_variants" class="form-select">
+                                                <option value="">Select a Color</option>
+                                                @if ($colors->isNotEmpty())
+                                                    @foreach ($colors as $value)
+                                                        <option {{ ($product->color_id == $value->id) ? 'selected' : '' }} value="{{ $value->id }}">{{ $value->name }}</option>
+                                                    @endforeach
+                                                @endif
+                                            </select>
+                                            <p class="error"></p>
+                                        </div>
+                                    </div>                                    
+                                    <div class="col-md-2 col-6">
+                                        <div class="form-group">
+                                            <label for="color">Stock</label>
+                                            <input type="number" name="variants[0][stock]" placeholder="Stock" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-6">
+                                        <div class="form-group">
+                                            <label for="color">Product Photo</label>
+                                            <input type="file" name="variant_images[0]" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-6">
+                                        <button type="button" class="btn btn-dark" onclick="addVariant()">Add Variant</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>                        
+
                         <h4 class="mb-2">Related products</h4>
                         <select multiple class="related-product " name="related_products[]" id="related_products">
                             @if (!empty($relatedProducts))
@@ -142,7 +185,7 @@
                                 <option value="">Select a category</option>
                                 @if ($categories->isNotEmpty())
                                     @foreach ($categories as $value)
-                                        <option {{ ($product->category_id == $value->id) ? 'selected' : '' }} value="{{ $value->id }}">{{ $value->name }}</option>
+                                        <option {{ ($product->category_id == $value->id) ? 'selected' : '' }} value="{{ $value->id }}">{{ $value->category_name }}</option>
                                     @endforeach
                                 @endif
                             </select>
@@ -155,7 +198,7 @@
                                 <option value="">Sub category</option>
                                 @if ($subCategories->isNotEmpty())
                                     @foreach ($subCategories as $value)
-                                        <option {{ ($product->sub_category_id == $value->id) ? 'selected' : '' }} value="{{ $value->id }}">{{ $value->name }}</option>
+                                        <option {{ ($product->sub_category_id == $value->id) ? 'selected' : '' }} value="{{ $value->id }}">{{ $value->sub_category_name }}</option>
                                     @endforeach
                                 @endif
                             </select>
@@ -167,7 +210,7 @@
                                 <option value="">Sub2 category</option>
                                 @if ($sub2Categories->isNotEmpty())
                                     @foreach ($sub2Categories as $value)
-                                        <option {{ ($product->sub_sub_category_id == $value->id) ? 'selected' : '' }} value="{{ $value->id }}">{{ $value->name }}</option>
+                                        <option {{ ($product->sub_sub_category_id == $value->id) ? 'selected' : '' }} value="{{ $value->id }}">{{ $value->sub2_category_name }}</option>
                                     @endforeach
                                 @endif
                             </select>    
@@ -236,7 +279,6 @@
                 </div>
             </div>
         </form>
-        <!-- /.card -->
     </section>
 @endsection
 
@@ -257,27 +299,9 @@
         }
     });
 
-    $('#title').change(function(){
-        element = $(this);
-        $("button[type=submit]").prop('disabled', true);
-        $.ajax({
-            url: '{{ route("getSlug") }}',
-            type: 'get',
-            data: {title: element.val()},
-            dataType: 'json',
-            success: function(response){
-                $("button[type=submit]").prop('disabled', false);
-                if(response["status"] == true){
-                    $("#slug").val(response["slug"]);
-                }
-            }
-        });
-    })
-
-
-
+    
     //Product form add details in database
-    $("#productForm").submit(function(event){
+    $("#productFormEdit").submit(function(event){
         event.preventDefault();
 
         var formArray = $(this).serializeArray();
@@ -369,6 +393,8 @@
             }
         });
 
+
+
         function deleteImage(id){
             $("#image-row-"+id).remove();
 
@@ -387,6 +413,43 @@
                 })
             }
         }
+
+
+    let index = 1;
+    function addVariant() {
+        let wrapper = document.getElementById('variants-wrapper');
+        wrapper.insertAdjacentHTML('beforeend', `
+            <div class="variant-item">
+                <div class="row">
+                    <div class="col-md-2 col-6">
+                        <div class="form-group">
+                            <label for="color">Price</label>
+                            <input type="number" name="variants[${index}][price]" placeholder="Price" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-6">
+                        <div class="form-group">
+                            <label for="color">Price</label>
+                            <input type="text" name="variants[${index}][color]" placeholder="Color" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-6">
+                        <div class="form-group">
+                            <label for="color">Price</label>
+                            <input type="number" name="variants[${index}][stock]" placeholder="Stock" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-6">
+                        <div class="form-group">
+                            <label for="color">Price</label>
+                            <input type="file" name="variant_images[${index}]" class="form-control">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `);
+        index++;
+    }
 </script>
 
 @endsection

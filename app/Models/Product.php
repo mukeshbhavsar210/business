@@ -13,6 +13,8 @@ class Product extends Model {
         'track_qty', 'qty', 'status', 'sub2_category_id'
     ];
 
+    protected $appends = ['average_rating', 'rating_count'];
+
     public function items(){
         return $this->hasMany(OrderItem::class);
     }
@@ -32,5 +34,21 @@ class Product extends Model {
     public function images() {
         return $this->hasMany(ProductImage::class);
     }    
+
+    public function ratings() {
+        return $this->hasMany(Rating::class);
+    }
+
+    public function getAverageRatingAttribute() {
+        return round($this->ratings()->avg('rating'), 1);
+    }
+
+    public function getRatingCountAttribute() {
+        return $this->ratings()->count();
+    }
+
+    public function variants() {
+        return $this->hasMany(ProductVariant::class);
+    }
 
 }
