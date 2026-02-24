@@ -8,11 +8,13 @@
                     </a>
                 </div>
                 <div class="col-md-8 col-8">                    
-                    <ul class="navbar-cart-nav">
-                        <li class="{{ request()->routeIs('front.cart') ? 'active' : '' }}" >Bag</li>
-                        <li>Address</li>
-                        <li>Payment</li>
-                    </ul>
+                    <ol class="checkout-steps">
+                        <li class="{{ request()->routeIs('front.cart') ? 'active' : '' }}" >BAG</li>
+                        <li class="divider"></li>
+                        <li class="{{ request()->routeIs('front.checkout') ? 'active' : '' }}">ADDRESS</li>
+                        <li class="divider"></li>
+                        <li>PAYMENT</li>
+                    </ol>
                 </div>
                 <div class="col-md-2 col-12">
                     <p class="float-end">100% Secure</p>

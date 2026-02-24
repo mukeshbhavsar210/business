@@ -1,8 +1,6 @@
 @extends('front.layouts.app')
 
 @section('content')    
-
-
     <div class="container">        
         <div class="row">
             <div class="col-md-8 col-12 left-border">
@@ -30,7 +28,7 @@
 
                             <div class="manuplate">
                                 <div class="select">                                    
-                                    <a href="javascript:void(0);" class="open-option-modal" data-type="color" data-rowid="{{ $item->rowId }}" data-selected="{{ $item->options->color }}">
+                                    <a href="javascript:void(0);" class="open-color-modal" data-type="color" data-rowid="{{ $item->rowId }}" data-selected="{{ $item->options->color }}">
                                     Color: <b>{{ $item->options->color ?? '' }}</b> 
                                 </a>                                    
                                 </div>
@@ -231,7 +229,8 @@
         let currentRowId = '';
         let currentType = '';
 
-        $(document).on('click', '.open-option-modal', function(){
+
+        $(document).on('click', '.open-color-modal', function(){
             currentRowId = $(this).data('rowid');
             currentType = $(this).data('type');
             let selected = $(this).data('selected');
@@ -247,13 +246,37 @@
             let html = '';
             options.forEach(function(option){
                 let active = (option == selected) ? 'selected' : '';
-                html += `<li><a href="#" class="select-option ${active}" data-value="${option}">${option}</a></li>`;
+                html += `<li><a href="#" class="select-color-option ${active}" data-value="${option}">${option}</a></li>`;
             });
 
             $('#modalOptionsList').html(html);
 
             new bootstrap.Modal('#commonOptionModal').show();
         });
+
+
+        $(document).on('click', '.select-color-option', function(e){
+            e.preventDefault();
+
+            let value = $(this).data('value');
+
+            let data = {
+                rowId: currentRowId,
+                _token: '{{ csrf_token() }}'
+            };
+       
+            if(currentType === 'color'){
+                data.color = value;
+            }          
+
+            $.post('{{ route("front.updateCartColor") }}', data, function(res){
+                if(res.status){
+                    location.reload();
+                }
+            });
+        });
+
+
 
 
         $(document).on('click', '.open-size-modal', function(){
@@ -272,13 +295,36 @@
             let html = '';
             options.forEach(function(option){
                 let active = (option == selected) ? 'selected' : '';
-                html += `<li><a href="#" class="select-option ${active}" data-value="${option}">${option}</a></li>`;
+                html += `<li><a href="#" class="select-size-option ${active}" data-value="${option}">${option}</a></li>`;
             });
 
             $('#modalSizesList').html(html);
 
             new bootstrap.Modal('#commonSizesModal').show();
         });
+
+        $(document).on('click', '.select-size-option', function(e){
+            e.preventDefault();
+
+            let value = $(this).data('value');
+
+            let data = {
+                rowId: currentRowId,
+                _token: '{{ csrf_token() }}'
+            };
+       
+            if(currentType === 'size'){
+                data.size = value;
+            }          
+
+            $.post('{{ route("front.updateCartSize") }}', data, function(res){
+                if(res.status){
+                    location.reload();
+                }
+            });
+        });
+
+
 
 
         $(document).on('click', '.open-qty-modal', function(){
@@ -297,7 +343,7 @@
             let html = '';
             options.forEach(function(option){
                 let active = (option == selected) ? 'selected' : '';
-                html += `<li><a href="#" class="select-option ${active}" data-value="${option}">${option}</a></li>`;
+                html += `<li><a href="#" class="select-qty-option ${active}" data-value="${option}">${option}</a></li>`;
             });
 
             $('#modalQtyList').html(html);
@@ -306,8 +352,7 @@
         });
 
 
-
-        $(document).on('click', '.select-option', function(e){
+        $(document).on('click', '.select-qty-option', function(e){
             e.preventDefault();
 
             let value = $(this).data('value');
@@ -315,38 +360,31 @@
             let data = {
                 rowId: currentRowId,
                 _token: '{{ csrf_token() }}'
-            };
-
-            if(currentType === 'color'){
-                data.color = value;
-            }
-
-            if(currentType === 'size'){
-                data.size = value;
-            }
+            };           
 
             if(currentType === 'qty'){
                 data.qty = value;
             }
 
-            $.post('{{ route("front.updateCartItem") }}', data, function(res){
+            $.post('{{ route("front.updateCartQty") }}', data, function(res){
                 if(res.status){
                     location.reload();
                 }
             });
         });  
 
-        function updateCart(rowId,qty){
-            $.ajax({
-                url: '{{ route("front.updateCart") }}',
-                type: 'post',
-                data: {rowId:rowId, qty:qty},
-                dataType: 'json',
-                success: function(response){
-                    window.location.href='{{ route("front.cart") }}';
-                }
-            })
-        }
+
+        // function updateCart(rowId,qty){
+        //     $.ajax({
+        //         url: '{{ route("front.updateCart") }}',
+        //         type: 'post',
+        //         data: {rowId:rowId, qty:qty},
+        //         dataType: 'json',
+        //         success: function(response){
+        //             window.location.href='{{ route("front.cart") }}';
+        //         }
+        //     })
+        // }
 
         function deleteItem(rowId){
             if(confirm("Are you sure you want to delete?")){

@@ -93,33 +93,7 @@ class CartController extends Controller {
     }
 
 
-    public function updateOption(Request $request) {
-        $rowId = $request->rowId;
-        $value = $request->value;
-        $type = $request->type; // color or size
-
-        $cartItem = Cart::get($rowId);
-
-        if(!$cartItem){
-            return response()->json([
-                'status' => false,
-                'message' => 'Item not found'
-            ]);
-        }
-
-        $options = $cartItem->options->toArray();
-
-        // Update only selected field
-        $options[$type] = $value;
-
-        Cart::update($rowId, [
-            'options' => $options
-        ]);
-
-        return response()->json([
-            'status' => true
-        ]);
-    }
+   
 
 
 
@@ -145,7 +119,7 @@ class CartController extends Controller {
     }
 
 
-    public function updateItem(Request $request) {
+    public function updateColorItem(Request $request) {
         $rowId = $request->rowId;
         $item = Cart::get($rowId);
 
@@ -175,6 +149,60 @@ class CartController extends Controller {
         return response()->json([
             'status' => true,
             'message' => 'Cart updated successfully'
+        ]);
+    }
+
+    public function updateSizeItem(Request $request) {
+        $rowId = $request->rowId;
+        $item = Cart::get($rowId);
+
+        if(!$item){
+            return response()->json([
+                'status' => false,
+                'message' => 'Item not found'
+            ]);
+        }
+
+        // Remove old item
+        Cart::remove($rowId);
+
+        // Add again with updated data
+        Cart::add(
+            $item->id,
+            $item->name,
+            $request->qty,
+            $item->price,
+            [
+                'size' => $request->size,
+                'color' => $request->color,
+                'short_description' => $item->options->short_description,
+            ]
+        );
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Cart updated successfully'
+        ]);
+    }
+
+
+    public function updateQtyItem(Request $request) {
+        $rowId = $request->rowId;
+        $item = Cart::get($rowId);
+
+        if (!$item) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Item not found'
+            ]);
+        }
+
+        // Only update qty
+        Cart::update($rowId, $request->qty);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Cart Qty updated successfully'
         ]);
     }
 
@@ -235,10 +263,56 @@ class CartController extends Controller {
         ]);
     }
 
-    public function checkout(){
 
+    public function checkout() {
         $discount = 0;
 
+        if (Cart::count() == 0) {
+            return redirect()->route('front.cart');
+        }
+
+        if (!Auth::check()) {
+            if (!session()->has('url.intended')) {
+                session(['url.intended' => url()->current()]);
+            }
+            return redirect()->route('account.login');
+        }
+
+        $customerAddress = Auth::user()->address; // Clean way
+
+        session()->forget('url.intended');
+
+        $states = State::orderBy('name', 'ASC')->get();
+
+        $totalQty = 0;
+        $totalShippingCharge = 0;
+        $grandTotal = 0;
+
+        foreach (Cart::content() as $item) {
+            $totalQty += $item->qty;
+        }
+
+        if ($customerAddress) {
+            $shippingInfo = ShippingCharge::where('state_id', $customerAddress->state_id)->first();
+            if ($shippingInfo) {
+                $totalShippingCharge = $totalQty * $shippingInfo->amount;
+            }
+            $grandTotal = Cart::subtotal(2, '.', '') + $totalShippingCharge;
+        } else {
+            $grandTotal = Cart::subtotal(2, '.', '');
+        }
+
+        return view('front.checkout.index', [
+            'states' => $states,
+            'customerAddress' => $customerAddress,
+            'totalShiipingCharge' => $totalShippingCharge,
+            'discount' => $discount,
+            'grandTotal' => $grandTotal
+        ]);
+    }
+
+    public function checkout_old(){
+        $discount = 0;
         //if cart is empty redirect to cart page
         if (Cart::count() == 0) {
             return redirect()->route('front.cart');
@@ -246,7 +320,6 @@ class CartController extends Controller {
 
         //if user is not logged in then redirect to login page
         if (Auth::check() == false) {
-
             if (!session()->has('url.intended')) {
                 session(['url.intended' => url()->current()]);
             }
@@ -254,9 +327,9 @@ class CartController extends Controller {
             return redirect()->route('account.login');
         }
 
-
-        $customerAddress = CustomerAddress::find(Auth::user()->id);
-
+        //$customerAddress = CustomerAddress::find(Auth::user()->id);
+        $customerAddress = CustomerAddress::where('user_id', Auth::id())->first();
+        
         session()->forget('url.intended');
 
         $states = State::orderBy('name','ASC')->get();
@@ -280,7 +353,7 @@ class CartController extends Controller {
         } else {
             $grandTotal = Cart::subtotal(2,'.','');
             $totalShiipingCharge = 0;
-        }
+        }                        
 
         return view('front.checkout.index',[
             'states' => $states,
