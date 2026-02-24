@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\OrderItem;
 use App\Models\Product;
-use App\Models\State;
 use App\Models\Order;
 use App\Models\CustomerAddress;
 use App\Models\DiscountCoupon;
@@ -19,11 +18,10 @@ use App\Models\Payment;
 use App\Models\State;
 use Razorpay\Api\Api;
 
-class CartController extends Controller
-{
+class CartController extends Controller {
     public function addToCart(Request $request){
         $product = Product::with('product_images')->find($request->id);
-        $size = $request->size ?? 'Default Size'; 
+        $size = $request->size ?? 'Default Size';
 
         if ($product == null) {
             return response()->json([
@@ -50,14 +48,17 @@ class CartController extends Controller
 
             if($productAlreadyExist == false){
                 Cart::add(
-                        $product->id, 
-                        $product->title, 1, 
-                        $product->price, 
-                        [
-                            'productImage' => (!empty($product->product_images)) ? $product->product_images->first() : '',
-                            'size' => $request->size,
-                            'color' => $request->color
-                        ]
+                    $product->id, 
+                    $product->title,                         
+                    1, 
+                    $product->price, 
+                    [
+                        'short_description' => $product->short_description,
+                        'compare_price' => $product->compare_price,
+                        'productImage' => (!empty($product->product_images)) ? $product->product_images->first() : '',
+                        'size' => $request->size,
+                        'color' => $request->color
+                    ]
                 );
                 $status = true;
                 $message = '<strong>'.$product->title.'</strong> added in your cart successfully.';
@@ -69,15 +70,17 @@ class CartController extends Controller
 
         } else {
             Cart::add(
-                    $product->id, 
-                    $product->title, 
-                    1, 
-                    $product->price, 
-                    [
-                        'productImage' => (!empty($product->product_images)) ? $product->product_images->first() : '',
-                        'size' => $request->size,
-                        'color' => $request->color
-                    ]);
+                $product->id, 
+                $product->title,
+                1, 
+                $product->price, 
+                [
+                    'short_description' => $product->short_description,
+                    'compare_price' => $product->compare_price,
+                    'productImage' => (!empty($product->product_images)) ? $product->product_images->first() : '',
+                    'size' => $request->size,
+                    'color' => $request->color
+                ]);
             $status = true;
             $message = '<strong>'.$product->title.'</strong> added in your cart successfully.';
             session()->flash('success', $message);
@@ -89,12 +92,92 @@ class CartController extends Controller
         ]);
     }
 
+
+    public function updateOption(Request $request) {
+        $rowId = $request->rowId;
+        $value = $request->value;
+        $type = $request->type; // color or size
+
+        $cartItem = Cart::get($rowId);
+
+        if(!$cartItem){
+            return response()->json([
+                'status' => false,
+                'message' => 'Item not found'
+            ]);
+        }
+
+        $options = $cartItem->options->toArray();
+
+        // Update only selected field
+        $options[$type] = $value;
+
+        Cart::update($rowId, [
+            'options' => $options
+        ]);
+
+        return response()->json([
+            'status' => true
+        ]);
+    }
+
+
+
     public function cart(){
         $cartContent = Cart::content();
+
+        $coupons = DiscountCoupon::where('status', 1)
+                ->where(function ($q) {
+                    $q->whereNull('expires_at')
+                    ->orWhere('expires_at', '>=', now());
+                })
+                ->get();                    
+
+        $product = Product::with(['product_images', 'variants'])->first();
+        
+        //dd($cartContent);
+
         $data['cartContent'] = $cartContent;
+        $data['coupons'] = $coupons;
+        $data['product'] = $product;
 
         return view('front.cart.index',$data);
     }
+
+
+    public function updateItem(Request $request) {
+        $rowId = $request->rowId;
+        $item = Cart::get($rowId);
+
+        if(!$item){
+            return response()->json([
+                'status' => false,
+                'message' => 'Item not found'
+            ]);
+        }
+
+        // Remove old item
+        Cart::remove($rowId);
+
+        // Add again with updated data
+        Cart::add(
+            $item->id,
+            $item->name,
+            $request->qty,
+            $item->price,
+            [
+                'size' => $request->size,
+                'color' => $request->color,
+                'short_description' => $item->options->short_description,
+            ]
+        );
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Cart updated successfully'
+        ]);
+    }
+
 
     public function updateCart(Request $request){
         $rowId = $request->rowId;
@@ -449,6 +532,32 @@ class CartController extends Controller
             ]);
         }
     }
+
+
+    public function applyCoupon(Request $request) {
+        $coupon = DiscountCoupon::findOrFail($request->coupon_id);
+
+        $cartTotal = session('cart_total');
+
+        // Minimum amount check
+        if ($coupon->min_amount && $cartTotal < $coupon->min_amount) {
+            return back()->with('error', 'Minimum cart value not reached');
+        }
+
+        if ($coupon->type == 'percent') {
+            $discount = ($cartTotal * $coupon->value) / 100;
+        } else {
+            $discount = $coupon->value;
+        }
+
+        session([
+            'coupon' => $coupon->code,
+            'discount' => $discount
+        ]);
+
+        return back()->with('success', 'Coupon applied successfully!');
+    }
+
 
     public function applyDiscount(Request $request){
         $code = DiscountCoupon::where('code', $request->code)->first();

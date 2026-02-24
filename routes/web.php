@@ -34,15 +34,17 @@ Route::controller(ShopController::class)->group(function() {
 });
 
 Route::controller(CartController::class)->group(function() {
-    Route::get('/cart','cart')->name('front.cart');
+    Route::get('/checkout/cart','cart')->name('front.cart');
     Route::post('/update-cart','updateCart')->name('front.updateCart');
     Route::post('/add-to-cart','addToCart')->name('front.addToCart');
+    Route::post('/checkout/cart/update-item', 'updateItem')->name('front.updateCartItem');
     Route::post('/update-cart','updateCart')->name('front.updateCart');
     Route::post('/delete-item','deleteItem')->name('front.deleteItem.cart');
-    Route::get('/checkout','checkout')->name('front.checkout');
+    Route::get('/checkout/address','checkout')->name('front.checkout');
     Route::post('/process-checkout','processCheckout')->name('front.processCheckout');
     Route::get('/thanks/{orderId}','thankyou')->name('front.checkout.thankyou');
     Route::post('/get-order-summary','getOrderSummary')->name('front.getOrderSummary');
+    Route::post('/apply-coupon', 'applyCoupon')->name('coupon.apply');
     Route::post('/apply-discount','applyDiscount')->name('front.applyDiscount');
     Route::post('/remove-discount','removeCoupon')->name('front.removeCoupon');
 

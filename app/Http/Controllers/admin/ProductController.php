@@ -22,7 +22,7 @@ use Intervention\Image\Drivers\Gd\Driver;
 class ProductController extends Controller {
 
     public function index(Request $request){
-        $products = Product::latest('id')->with('product_images');
+        $products = Product::latest('id')->with(['product_images','variants']);
 
         if ($request->get('keyword') != ""){
             $products = $products->where('title', 'like', '%'.$request->keyword.'%');
@@ -38,12 +38,14 @@ class ProductController extends Controller {
         $data = [];
         $categories = Category::orderBy('category_name','ASC')->get();        
         $subcategories = collect();
+        $subsubcategories = collect();
         $brands = Brand::orderBy('name','ASC')->get();
         $colors = Color::orderBy('name','ASC')->get();
         $sizes  = Size::orderBy('name','ASC')->get();
 
         $data['categories'] = $categories;        
         $data['subcategories'] = $subcategories;
+        $data['subsubcategories'] = $subsubcategories;
         $data['brands'] = $brands;
         $data['colors'] = $colors;
         $data['sizes'] = $sizes;
@@ -153,6 +155,11 @@ class ProductController extends Controller {
 
         $request->session()->flash('success','Product added successfully');
 
+        // return redirect()
+        //     ->route('products.index')
+        //     ->with('success', 'Product updated successfully');
+        // }
+        
         return response()->json([
             'status' => true,
             'message' => 'Product added successfully'
@@ -252,9 +259,15 @@ class ProductController extends Controller {
             $product->save();
 
             // 3️⃣ Save Variants
-            if ($request->variants) {
+            if ($request->variants && is_array($request->variants)) {
                 foreach ($request->variants as $key => $variant) {
+
+                    if (!isset($variant['color'])) {
+                        continue;
+                    }
+
                     $variantImage = null;
+
                     if ($request->hasFile("variant_images.$key")) {
                         $file = $request->file("variant_images.$key");
                         $variantImage = time().'_'.$file->getClientOriginalName();
@@ -263,9 +276,9 @@ class ProductController extends Controller {
 
                     ProductVariant::create([
                         'product_id' => $product->id,
-                        'color' => $variant['color'],
-                        'price' => $variant['price'],
-                        'stock' => $variant['stock'],
+                        'color' => $variant['color'] ?? null,
+                        'price' => $variant['price'] ?? 0,
+                        'stock' => $variant['stock'] ?? 0,
                         'image' => $variantImage,
                     ]);
                 }
@@ -274,17 +287,22 @@ class ProductController extends Controller {
 
         $request->session()->flash('success','Product updated successfully');
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Product updated successfully'
-        ]);
+        return redirect()
+            ->route('products.index')
+            ->with('success', 'Product updated successfully');
+         }
 
-        } else {
-            return response()->json([
-                'status' => false,
-                'errors' => $validator->errors()
-            ]);
-        }
+        // return response()->json([
+        //     'status' => true,
+        //     'message' => 'Product updated successfully'
+        // ]);
+
+        // } else {
+        //     return response()->json([
+        //         'status' => false,
+        //         'errors' => $validator->errors()
+        //     ]);
+        // }
     }
 
     public function destroy($id, Request $request){

@@ -43,7 +43,7 @@
                                 </div>                    
                                 <div class="col-md-12">
                                     <div class="mb-3">
-                                        <select name="state" id="state" class="form-control">
+                                        {{-- <select name="state" id="state" class="form-control">
                                             <option value="">Select a State</option>
                                                 @if ($states->isNotEmpty())
                                                     @foreach ($states as $value)
@@ -51,7 +51,7 @@
                                                     @endforeach
                                                     <option value="rest_of_world">Rest of the world</option>
                                                 @endif
-                                        </select>
+                                        </select> --}}
                                         <p></p>
                                     </div>
                                 </div>                    

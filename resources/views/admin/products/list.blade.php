@@ -58,10 +58,11 @@
                     <thead class="table-light">
                         <tr>
                             <th class="border-top-0">Product</th>
-                            <th class="border-top-0" width="100">Price</th>
+                            <th class="border-top-0" width="100">Color/Size</th>
+                            <th class="border-top-0" width="120">Price</th>
                             <th class="border-top-0" width="120">Stock</th>
-                            <th class="border-top-0" width="100">Status</th>
-                            <th class="border-top-0" width="100">Action</th>
+                            <th class="border-top-0" width="60">Status</th>
+                            <th class="border-top-0" width="80">Action</th>
                         </tr>
                     </thead>                     
                     <tbody>
@@ -85,7 +86,7 @@
                                                     <a href="{{ route('products.edit', $product->id) }}">{{ Str::limit($product->title, 75, '...') }}</a>
                                                 </h5>
                                                 <div class="small-fonts">
-                                                    <p class="mb-0"><span class="text-muted">Size:</span> {{ $product->size->code ?? '' }}, <span class="text-muted">Color:</span> {{ $product->color->name ?? '' }}</p>
+                                                    
                                                     <span class="color-small" style="background:{{ $product->color->code }}; height:20px; width:20px; border-radius:100px;"></span>
                                                     <p class="mb-0">
                                                         <span class="text-muted">{{ $product->id }}</span> | 
@@ -93,10 +94,26 @@
                                                             <span class="mb-0 text-muted">SKU: {{ $product->sku }}</span>
                                                         @endif          
                                                     </p>
-                                                </div>                  
+                                                
+                                                    @if($product->variants->count())
+                                                        @foreach($product->variants as $variant)
+                                                            <p class="text-muted m-0">
+                                                                Color: {{ $variant->color }},
+                                                                Price: ₹{{ $variant->price }},
+                                                                Stock: {{ $variant->stock }}
+                                                            </p>                                                
+                                                        @endforeach
+                                                    @else
+                                                        <span class="text-muted">No Variants</span>
+                                                    @endif 
+                                                </div>                 
                                             </div>
                                         </div>
-                                    </td>                                                                                    
+                                    </td> 
+                                    <td>
+                                        <h5 class="mb-1">{{ $product->color->name ?? '' }}</h5>
+                                        <span class="text-muted">Size:</span> {{ $product->size->code ?? '' }}                                        
+                                    </td>    
                                     <td>
                                         <h5 class="mb-1">₹{{ number_format($product->price,2) }}</h5>
                                         <p class="text-muted fs-10">
@@ -106,7 +123,7 @@
                                                 <span>No Offer</span>
                                             @endif
                                         </p>   
-                                    </td>  
+                                    </td>                                                                                                             
                                     <td>
                                         <h5>{{ $product->qty }}
                                             @if ($product->qty > 0)

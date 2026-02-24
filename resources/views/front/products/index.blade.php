@@ -19,7 +19,7 @@
                 @if ($product->product_images)
                     @foreach ($product->product_images as $key => $productImage)
                         <div class="col-md-6 col-12">
-                            <img class="w-100 h-100" src="{{ asset('uploads/product/large/'.$productImage->image) }}" alt="Image">                                    
+                            <img class="w-100 h-100" src="{{ asset('uploads/product/large/'.$productImage->image) }}" alt="Image">
                         </div>
                     @endforeach
                 @endif
@@ -68,27 +68,36 @@
                         <p class="inclusive">Inclusive of all taxes</p>
                     </div>
 
-                <div class="part">
+                <div class="part mt-3">
                     <h3>More Colors</h3>
                     @if($product->variants->isNotEmpty())
-                        @foreach($product->variants as $variant)
-                            <button class="color-btn"
-                                data-image="{{ asset('uploads/product/'.$variant->image) }}"
-                                data-price="{{ $variant->price }}">
-                                {{ $variant->color }}
-                            </button>
-                        @endforeach
-                    @else
-                        <p>No variants available</p>
-                    @endif
-                </div>
+                        <ul class="size-select">
+                            @foreach($product->variants as $variant)
+                                {{-- <a href="{{ route('front.product', ['slug' => $product->slug, 'variant' => $variant->id]) }}" class="color-btn">
+                                    <img src="{{ asset('uploads/product/large/variant/'.$variant->image) }}" width="40">
+                                </a> --}}
+                                <li>
+                                    <a href="javascript:void(0);" class="color-option" data-color="{{ $variant->color }}">
+                                        {{ $variant->color }}
+                                    </a>
+                                </li>                            
+                            @endforeach
+                        @else
+                            <p>No variants available</p>
+                        @endif
+                    </ul>
+                </div>                
 
                 <div class="part">
                     <h3>Select Size</h3>
                     @if($sizes->isNotEmpty())
                         <ul class="size-select">
                             @foreach($sizes as $size)
-                                <li><a href="">{{ $size->code }}</a></li>
+                                <li>
+                                    <a href="javascript:void(0);" class="size-option" data-size="{{ $size->code }}">
+                                        {{ $size->code }}
+                                    </a>
+                                </li>
                             @endforeach
                         </ul>
                     @endif
@@ -226,4 +235,22 @@
 @endsection
 
 @section('customJs')
+<script>
+    let selectedColor = '';
+    let selectedSize = '';
+
+    $(document).on('click', '.color-option', function(){
+        $('.color-option').removeClass('active');
+        $(this).addClass('active');
+
+        selectedColor = $(this).data('color');
+    });    
+
+    $(document).on('click', '.size-option', function(){
+        $('.size-option').removeClass('active');
+        $(this).addClass('active');
+
+        selectedSize = $(this).data('size');
+    });
+</script>
 @endsection
