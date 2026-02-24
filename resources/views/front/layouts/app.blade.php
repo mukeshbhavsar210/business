@@ -24,13 +24,13 @@
 </head>
 <body data-instant-intensity="mousedown">
 
-@include(request()->routeIs('front.cart') ? 'front.layouts.cart_header' : 'front.layouts.header')
+@include(request()->routeIs(['front.cart','front.checkout']) ? 'front.layouts.cart_header' : 'front.layouts.header')
 
-<main class="{{ request()->routeIs('front.cart') ? 'main' : 'default' }}">
+<main class="{{ request()->routeIs(['front.cart','front.checkout']) ? 'main' : 'default' }}">
     @yield('content')
 </main>
 
-@include(request()->routeIs('front.cart') ? 'front.layouts.cart_footer' : 'front.layouts.footer')
+@include(request()->routeIs(['front.cart','front.checkout']) ? 'front.layouts.cart_footer' : 'front.layouts.footer')
 
 <!-- Wishlist Modal -->
 <div class="modal fade" id="wishlistModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

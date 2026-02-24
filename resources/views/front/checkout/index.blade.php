@@ -2,205 +2,237 @@
 
 @section('content')
 
-    <section class="section-5 pt-3 pb-3 mb-3 bg-white">
-        <div class="container">
-            <div class="light-font">
-                <ol class="breadcrumb primary-color mb-0">
-                    <li class="breadcrumb-item"><a class="white-text" href="#">Home</a></li>
-                    <li class="breadcrumb-item"><a class="white-text" href="#">Shop</a></li>
-                    <li class="breadcrumb-item">Checkout</li>
-                </ol>
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 col-12 left-border">
+            @include('front.layouts.message')
+
+            <div class="shpping-address">
+                <div class="row">
+                    <div class="col-md-9 col-12">
+                        <h5 class="title">Select Delivery Address</h5>
+                        <h6>Default Address</h6>
+                    </div>
+                    <div class="col-md-3 col-12">
+                        <a href="#" class="btn btn-outline-dark float-end" data-bs-toggle="modal" data-bs-target="#addAddressModal">
+                            Add New Address
+                        </a>
+                    </div>
+                </div>
+
+                <div class="default coupon-box">                         
+                    <label>
+                        <div class="left">
+                            <input type="radio" name="default_address_id" value="1">
+                        </div>
+                        <div class="right">                               
+                                <h6 class="mb-2 h6"><b>{{ $customerAddress->name }}</b> 
+                                <span class="address-type">{{ $customerAddress->address_type }}</span>
+                            </h6>
+                            <p class="text-muted">{{ $customerAddress->address }}</p>
+                            <p class="text-muted">{{ $customerAddress->locality }}, {{ $customerAddress->city }}-{{ $customerAddress->zip }},</p>
+                            <p class="text-muted">{{ $customerAddress->state->name }}.</p>
+                            <p class="mt-2 text-muted">Mobile: {{ $customerAddress->mobile }}</p>                            
+                        </div>
+                    </label>
+                </div>
+
+                <div class="add-address">
+                    <a href="#" class="link-primary" data-bs-toggle="modal" data-bs-target="#addAddressModal">
+                        Add New Address
+                    </a>
+                </div>
+            </div>            
+            
+            <div class="modal fade" id="addAddressModal" tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addAddressModalLabel">Add New Address</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form action=" " name="orderForm" id="orderForm" method="POST">
+                            <div class="modal-body"> 
+                                <h4>Contact Details</h4>
+                                <div class="row">                    
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <label>Name</label>
+                                            <input type="text" name="name" id="name" class="form-control" placeholder="Name" >
+                                            <p></p>
+                                        </div>
+                                    </div>  
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <label>Mobile</label>
+                                            <input type="text" name="mobile" id="mobile" class="form-control" placeholder="Mobile" >
+                                            <p></p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <h4>Address</h4>
+                                <div class="row">                                    
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label>Address</label>
+                                            <textarea name="address" id="address" cols="30" rows="3" placeholder="House Number/Tower/Block*" class="form-control" ></textarea>
+                                            <p></p>
+                                        </div>
+                                    </div>                    
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <label>Locality</label>
+                                            <input type="text" name="locality" id="locality" class="form-control" placeholder="Address (locality, building, street)*" >
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <label>City</label>
+                                            <input type="text" name="city" id="city" class="form-control" placeholder="City" >
+                                            <p></p>
+                                        </div>
+                                    </div>        
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <label>Pincode</label>
+                                            <input type="text" name="zip" id="zip" class="form-control" placeholder="Pincode" >
+                                            <p></p>
+                                        </div>
+                                    </div>                                                               
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <label>State</label>
+                                            <select name="state" id="state" class="form-control">
+                                                <option value="">Select a State</option>
+                                                    @if ($states->isNotEmpty())
+                                                        {{-- @foreach ($states as $value)
+                                                            <option {{ (!empty($customerAddress) && $customerAddress->state_id == $value->id) ? 'selected' : '' }} value="{{ $state->id }}" >{{ $state->name }}</option>
+                                                        @endforeach --}}
+                                                        <option value="rest_of_state">Rest of the state</option>
+                                                    @endif
+                                            </select>
+                                            <p></p>
+                                        </div>
+                                    </div>                                      
+                                    
+                                    {{-- 
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label>Order notes</label>
+                                            <textarea name="order_notes" id="order_notes" cols="30" rows="2" placeholder="Order Notes (optional)" class="form-control"></textarea>
+                                            <p></p>
+                                        </div>
+                                    </div>                     --}}
+                                </div>                
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary">Save changes</button>
+                            </div>
+                        </form>
+                    </div>                    
+                </div>
             </div>
         </div>
-    </section>
 
-<section class="section-9 pt-4">
-    <div class="container">
-        <form action=" " name="orderForm" id="orderForm" method="POST">
-            <div class="row">
-                <div class="col-md-8">
-                    <div class="sub-title"><h2>Shipping Address</h2></div>
-                    <div class="card shadow-lg border-0">
-                        <div class="card-body checkout-form">
-                            <div class="row">                    
-                                <div class="col-md-12">
-                                    <div class="mb-3">
-                                        <input type="text" name="first_name" id="first_name" class="form-control" placeholder="First Name" value={{ (!empty($customerAddress)) ? $customerAddress->first_name : '' }}>
-                                        <p></p>
-                                    </div>
-                                </div>
-                                <div class="col-md-12">
-                                    <div class="mb-3">
-                                        <input type="text" name="last_name" id="last_name" class="form-control" placeholder="Last Name" value={{ (!empty($customerAddress)) ? $customerAddress->last_name : '' }} >
-                                        <p></p>
-                                    </div>
-                                </div>                    
-                                <div class="col-md-12">
-                                    <div class="mb-3">
-                                        <input type="text" name="email" id="email" class="form-control" placeholder="Email" value={{ (!empty($customerAddress)) ? $customerAddress->email : '' }}>
-                                        <p></p>
-                                    </div>
-                                </div>                    
-                                <div class="col-md-12">
-                                    <div class="mb-3">
-                                        {{-- <select name="state" id="state" class="form-control">
-                                            <option value="">Select a State</option>
-                                                @if ($states->isNotEmpty())
-                                                    @foreach ($states as $value)
-                                                        <option {{ (!empty($customerAddress) && $customerAddress->state_id == $value->id) ? 'selected' : '' }} value="{{ $state->id }}" >{{ $state->name }}</option>
-                                                    @endforeach
-                                                    <option value="rest_of_world">Rest of the world</option>
-                                                @endif
-                                        </select> --}}
-                                        <p></p>
-                                    </div>
-                                </div>                    
-                                <div class="col-md-12">
-                                    <div class="mb-3">
-                                        <textarea name="address" id="address" cols="30" rows="3" placeholder="Address" class="form-control" >{{ (!empty($customerAddress)) ? $customerAddress->address : '' }}</textarea>
-                                        <p></p>
-                                    </div>
-                                </div>                    
-                                <div class="col-md-12">
-                                    <div class="mb-3">
-                                        <input type="text" name="apartment" id="apartment" class="form-control" placeholder="Apartment, suite, unit, etc. (optional)" value={{ (!empty($customerAddress)) ? $customerAddress->apartment : '' }}>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="mb-3">
-                                        <input type="text" name="city" id="city" class="form-control" placeholder="City" value={{ (!empty($customerAddress)) ? $customerAddress->city : '' }}>
-                                        <p></p>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="mb-3">
-                                        <input type="text" name="state" id="state" class="form-control" placeholder="State" value={{ (!empty($customerAddress)) ? $customerAddress->state : '' }}>
-                                        <p></p>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="mb-3">
-                                        <input type="text" name="zip" id="zip" class="form-control" placeholder="Zip" value={{ (!empty($customerAddress)) ? $customerAddress->zip : '' }}>
-                                        <p></p>
-                                    </div>
-                                </div>
-                                <div class="col-md-12">
-                                    <div class="mb-3">
-                                        <input type="text" name="mobile" id="mobile" class="form-control" placeholder="Mobile No." value={{ (!empty($customerAddress)) ? $customerAddress->mobile : '' }}>
-                                        <p></p>
-                                    </div>
-                                </div>
-                                <div class="col-md-12">
-                                    <div class="mb-3">
-                                        <textarea name="order_notes" id="order_notes" cols="30" rows="2" placeholder="Order Notes (optional)" class="form-control"></textarea>
-                                        <p></p>
-                                    </div>
-                                </div>                    
-                            </div>
-                        </div>
-                    </div>                    
+        <div class="col-md-4 col-12">
+            <div class="cart-summery">
+                <div class="part">
+                    <h6>Delivery Estimates</h6>
+                    <p>Estimated delivery by 2 Mar 2026</p>
                 </div>
 
-                <div class="col-md-4">
-                    <div class="sub-title"><h2>Order Summery</h3></div>
-                    <div class="card cart-summery">
-                        <div class="card-body">
-                            @foreach (Cart::content() as $item)
-                                <div class="d-flex justify-content-between pb-2">
-                                    <div class="h6">{{ $item->name }}</div>
-                                    <div class="h6">{{ $item->price*$item->qty }}</div>
-                                </div>
-                            @endforeach
-                            <div class="d-flex justify-content-between summery-end">
-                                <div class="h6"><strong>Subtotal</strong></div>
-                                <div class="h6"><strong>₹{{ Cart::subtotal() }}</strong></div>
-                            </div>
-                            <div class="d-flex justify-content-between summery-end">
-                                <div class="h6"><strong>Discount</strong></div>
-                                <div class="h6"><strong id="discount_value">₹{{ $discount }}</strong></div>
-                            </div>
-                            <div class="d-flex justify-content-between mt-2">
-                                <div class="h6"><strong>Shipping</strong></div>
-                                <div class="h6"><strong id="shippingAmount">₹ {{ number_format($totalShiipingCharge,2) }}</strong></div>
-                            </div>
-                            <div class="d-flex justify-content-between mt-2 summery-end">
-                                <div class="h5"><strong>Total</strong></div>
-                                <div class="h5"><strong id="grandTotal">₹{{ number_format($grandTotal,2) }}</strong></div>
-                            </div>
-                        </div>
+                <div class="part">
+                    @foreach (Cart::content() as $item)
+                        <h6>Price Details {{ $item->qty }}</h6>
+
+                        <div class="repeate-row">
+                            <div class="left">Total MRP</div>
+                            <div class="right">₹{{ $item->price*$item->qty }}</div>
+                        </div>                                
+                    @endforeach
+                    <div class="repeate-row">
+                        <div class="left">Discount on MRP</div>
+                        <div class="right"><span id="discount_value">₹{{ $discount }}</span></div>
                     </div>
-                    
-                    <div class="input-group apply-coupan mt-4">
-                        <input type="text" placeholder="Coupon Code" class="form-control" name="discount_code" id="discount_code">
-                        <button class="btn btn-dark" type="button" id="apply-discount">Apply Coupon</button>
+                    {{-- <div class="repeate-row">
+                        <div class="left">Subtotal</div>
+                        <div class="right">₹{{ Cart::subtotal() }}</div>
+                    </div>  --}}
+                    <div class="repeate-row">
+                        <div class="left">Platform fees</div>
+                        <div class="right"><span id="shippingAmount">₹ {{ number_format($totalShiipingCharge,2) }}</span></div>
+                    </div>                                                      
+                    <div class="repeate-row total-amount">
+                        <div class="left">Total Amount</div>
+                        <div class="right"><span id="grandTotal">₹{{ number_format($grandTotal,2) }}</span></div>
                     </div>
-                    
-                    <div id="discount-response-wrapper">
-                        @if (Session::has('code'))
-                            <div class="mt-4" id="discount-response">
-                                <strong>{{ Session::get('code')->code }}</strong>
-                                <a class="btn btn-sm btn-danger" id="remove-discount"><i class="fa fa-times"></i></a>
-                            </div>
-                        @endif
-                    </div>
-                    
-                    <div class="card payment-form">
-                        <h3 class="card-title h5 mb-3">Payment Method</h3>
-                        <div class="">
-                            <input checked type="radio" name="payment_method" value="cod" id="payment_cod" >
-                            <label for="payment_cod" class="form-check=label">COD</label>
-                        </div>
-                        <div class="">
-                            <input type="radio" name="payment_method" value="cod" id="payment_razorpay" >
-                            <label for="payment_razorpay" class="form-check=label">RazorPay</label>
-                        </div>
-                        <div class="card-body p-0 mt-3" id="cod-form">
-                            <button class="btn-dark btn btn-block w-100" type="submit">Pay Now COD</button>
-                        </div>
-                        <div class="card-body p-0 d-none mt-3" id="razorpay-form">
-                            <div class="card-body p-0" id="card-payment-form">
-                                <div class="mb-3">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <label for="card_number" class="mb-2">Card Number</label>
-                                            <input type="text" name="card_number" id="card_number" placeholder="Valid Card Number" class="form-control">
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="expiry_date" class="mb-2">Expiry Date</label>
-                                            <input type="text" name="expiry_date" id="expiry_date" placeholder="MM/YYYY" class="form-control">
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="expiry_date" class="mb-2">CVV Code</label>
-                                            <input type="text" name="expiry_date" id="expiry_date" placeholder="123" class="form-control">
-                                        </div>
-                                    </div>
-                                </div>
-                                <button class="btn-dark btn btn-block w-100" type="submit">Pay Now</button>
-                            </div>
-                        </div>
-                    </div>                    
                 </div>
+            </div>                                                          
+            
+            <div id="discount-response-wrapper">
+                @if (Session::has('code'))
+                    <div class="mt-4" id="discount-response">
+                        <strong>{{ Session::get('code')->code }}</strong>
+                        <a class="btn btn-sm btn-danger" id="remove-discount"><i class="fa fa-times"></i></a>
+                    </div>
+                @endif
             </div>
-        </form>
+                                
+            <h3 class="card-title h5 mb-3">Payment Method</h3>
+            <div class="">
+                <input checked type="radio" name="payment_method" value="cod" id="payment_cod" >
+                <label for="payment_cod" class="form-check=label">COD</label>
+            </div>
+            <div class="">
+                <input type="radio" name="payment_method" value="cod" id="payment_razorpay" >
+                <label for="payment_razorpay" class="form-check=label">RazorPay</label>
+            </div>
+            <div class="card-body p-0 mt-3" id="cod-form">
+                <button class="btn-dark btn btn-block w-100" type="submit">Pay Now COD</button>
+            </div>
+            <div class="card-body p-0 d-none mt-3" id="razorpay-form">
+                <div class="card-body p-0" id="card-payment-form">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label for="card_number" class="mb-2">Card Number</label>
+                                <input type="text" name="card_number" id="card_number" placeholder="Valid Card Number" class="form-control">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="expiry_date" class="mb-2">Expiry Date</label>
+                                <input type="text" name="expiry_date" id="expiry_date" placeholder="MM/YYYY" class="form-control">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="expiry_date" class="mb-2">CVV Code</label>
+                                <input type="text" name="expiry_date" id="expiry_date" placeholder="123" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn-dark btn btn-block w-100" type="submit">Pay Now</button>
+                </div>
+            </div>             
+        </div>                   
 
-        {{-- <form action="{{ route('checkout.razorpay') }}" method="POST">
-            @csrf
-            <script src="https://checkout.razorpay.com/v1/checkout.js"
-                data-key="{{ env('RAZORPAY_KEY_ID') }}"
-                data-amount = "{{ Cart::subtotal() }}"
-                data-buttontext = "Make Payment"
-                data-image = " "
-                data-notes.customer_name = "Mukesh Bhavsar"
-                data-notes.customer_email = "mukeshbhavsar210@gmail.com"
-                data-notes.product_name = "Laptop"
-                data-notes.quantity = "1"
-                data-prefill.name=""
-                data-prefill.contact="9978835005"
-            >
-            </script>
-        </form> --}}
-    </div>
-</section>
+    {{-- <form action="{{ route('checkout.razorpay') }}" method="POST">
+        @csrf
+        <script src="https://checkout.razorpay.com/v1/checkout.js"
+            data-key="{{ env('RAZORPAY_KEY_ID') }}"
+            data-amount = "{{ Cart::subtotal() }}"
+            data-buttontext = "Make Payment"
+            data-image = " "
+            data-notes.customer_name = "Mukesh Bhavsar"
+            data-notes.customer_email = "mukeshbhavsar210@gmail.com"
+            data-notes.product_name = "Laptop"
+            data-notes.quantity = "1"
+            data-prefill.name=""
+            data-prefill.contact="9978835005"
+        >
+        </script>
+    </form> --}}
+</div>
+
 @endsection
 
 @section('customJs')
@@ -346,5 +378,11 @@
                 }
             })
         })
+
+
+        $(document).on('change', 'input[name="default_address_id"]', function() {    
+            $('.default').removeClass('active');
+            $(this).closest('.default').addClass('active');
+        });
     </script>
 @endsection
