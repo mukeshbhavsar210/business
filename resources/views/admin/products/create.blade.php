@@ -6,10 +6,11 @@
             :route="route('products.store')"
             :product="$product ?? null"
             :categories="$categories"
+            :subcategories="$subcategories"
+            :subsubcategories="$subsubcategories"
             :brands="$brands"
             :colors="$colors"
-            :sizes="$sizes"
-            :subcategories="$subcategories"
+            :sizes="$sizes"            
             :productimages="$productimages ?? null"            
             method="POST"
             buttonText="Create Product"
@@ -224,8 +225,6 @@
         }
     });  
 
-   
-
 
     //Product form add details in database
     $("#productFormCreate").submit(function(event){
@@ -272,50 +271,30 @@
     });
 
 
-    $("#category2").change(function(){        
-        var category_id = $(this).val();
-        $.ajax({
-            url: '{{ route("product-subcategories.index") }}',
-            type: 'get',
-            data: {category_id:category_id},
-            dataType: 'json',
-            success: function(response) {
-                $("#sub_category").find("option").not(":first").remove();
-                $.each(response["subCategories"],function(key,item){
-                    $("#sub_category").append(`<option value='${item.id}' >${item.name}</option>`)
-                })
-            },
-            error: function(){
-                console.log("Something went wrong")
-            }
-        });
-    })
-
-
     $("#category").change(function(){
-    var category_id = $(this).val();
+        var category_id = $(this).val();
 
-    $("#sub_category").find("option").not(":first").remove();
+        $("#sub_category").find("option").not(":first").remove();
 
-    if(category_id) {
-        $.ajax({
-            url: '{{ route("product-subcategories.index") }}',
-            type: 'GET',
-            data: { category_id: category_id },
-            dataType: 'json',
-            success: function(response) {
-                $.each(response.subCategories, function(key, item){
-                    $("#sub_category").append(
-                        `<option value="${item.id}">${item.name}</option>`
-                    );
-                });
-            },
-            error: function(){
-                console.log("Something went wrong");
-            }
-        });
-    }
-});
+        if(category_id) {
+            $.ajax({
+                url: '{{ route("product-subcategories.index") }}',
+                type: 'GET',
+                data: { category_id: category_id },
+                dataType: 'json',
+                success: function(response) {
+                    $.each(response.subCategories, function(key, item){
+                        $("#sub_category").append(
+                            `<option value="${item.id}">${item.name}</option>`
+                        );
+                    });
+                },
+                error: function(){
+                    console.log("Something went wrong");
+                }
+            });
+        }
+    });
 
     $("#sub_category").change(function(){
         var sub_category_id = $(this).val();
@@ -340,7 +319,10 @@
     });
 
 
-    //File image uplaod
+    
+
+
+
     Dropzone.autoDiscover = false;
         const dropzone = $("#image").dropzone({
             url:  "{{ route('temp-images.create') }}",

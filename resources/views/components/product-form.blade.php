@@ -13,7 +13,7 @@
 
 <div class="card p-0">
     <div class="card-body">
-        <form method="POST" name="{{ $formname }}" id="{{ $formname }}" class="ajax-form" enctype="multipart/form-data">
+        <form action="{{ $route }}" method="POST" name="{{ $formname }}" id="{{ $formname }}" enctype="multipart/form-data" >
             @csrf
 
             @if($method !== 'POST')
@@ -61,6 +61,8 @@
                             <br>Drop files here or click to upload.<br><br>
                         </div>
                     </div>   
+
+                    <div class="row" id="product-gallery"></div>
                                     
                     @if(isset($product) && $product->images->isNotEmpty())
                         <div id="product-gallery">
@@ -193,11 +195,11 @@
                         <label for="category">Sub2 Category</label>
                         <select name="sub_sub_category" id="sub_sub_category" class="form-select">
                             <option value="">Sub2 category</option>
-                            {{-- @if ($subsubcategories->isNotEmpty())
+                            @if ($subsubcategories->isNotEmpty())
                                 @foreach ($subsubcategories as $value)
                                     <option {{ ($product->sub_sub_category_id == $value->id) ? 'selected' : '' }} value="{{ $value->id }}">{{ $value->sub2_category_name }}</option>
                                 @endforeach
-                            @endif --}}
+                            @endif
                         </select>    
                     </div>                           
 
@@ -351,6 +353,20 @@
 
 @section('customJs')
 <script>
+    $(document).ready(function () {
+
+    if ($("#category").val()) {
+        $("#category").trigger('change');
+    }
+
+    setTimeout(function () {
+        if ($("#sub_category").val()) {
+            $("#sub_category").trigger('change');
+        }
+    }, 500);
+
+});
+
      $('.related-product').select2({
         ajax: {
             url: '{{ route('products.getProducts') }}',
@@ -367,24 +383,51 @@
     });
 
     
-    $("#category").change(function(){
+    $(document).on('change', '#category', function () {
         var category_id = $(this).val();
+
         $.ajax({
             url: '{{ route("product-subcategories.index") }}',
-            type: 'get',
-            data: {category_id:category_id},
+            type: 'GET',
+            data: { category_id: category_id },
             dataType: 'json',
             success: function(response) {
                 $("#sub_category").find("option").not(":first").remove();
-                $.each(response["subCategories"],function(key,item){
-                    $("#sub_category").append(`<option value='${item.id}' >${item.name}</option>`)
-                })
-            },
-            error: function(){
-                console.log("Something went wrong")
+
+                $.each(response.subCategories, function(key, item) {
+                    $("#sub_category").append(
+                        `<option value='${item.id}'>${item.sub_category_name}</option>`
+                    );
+                });
             }
         });
-    })
+    });
+
+    $(document).on('change', '#sub_category', function () {
+        var sub_category_id = $(this).val();
+        $("#sub_sub_category").find("option").not(":first").remove();
+        if (sub_category_id) {
+            $.ajax({
+                url: '{{ route("product-subcategories.extra") }}',
+                type: 'GET',
+                data: { sub_category_id: sub_category_id },
+                dataType: 'json',
+                success: function(response) {
+
+                    $.each(response.subSubCategories, function(key, item){
+                        $("#sub_sub_category").append(
+                            `<option value="${item.id}">
+                                ${item.sub2_category_name}
+                            </option>`
+                        )
+                    });
+                },
+                error: function(){
+                    console.log("Something went wrong");
+                }
+            });
+        }
+    });
 
 
     function deleteImage(id){
@@ -423,13 +466,24 @@
                             <input type="number" name="variants[${index}][price]" placeholder="Price" class="form-control">
                         </div>
                     </div>
-                    <div class="col-md-2 col-6">
+                    <div class="col-md-3 col-6">                    
                         <div class="form-group">
                             <label for="color">Color</label>
-                            <input type="text" name="variants[${index}][color]" placeholder="Color" class="form-control">
-                        </div>
+                            <select name="variants[${index}][color]" id="color_variants" class="form-select">
+                                <option value="">Select a Color</option>
+                                @if ($colors->isNotEmpty())
+                                    @foreach ($colors as $value)
+                                        <option 
+                                            value="{{ $value->id }}"
+                                            {{ old('color_id', $product->color_id ?? '') == $value->id ? 'selected' : '' }}>
+                                            {{ $value->name }}
+                                        </option>
+                                    @endforeach
+                                @endif
+                            </select>                                                    
+                        </div>                                           
                     </div>
-                    <div class="col-md-3 col-6">
+                    <div class="col-md-2 col-6">
                         <div class="form-group">
                             <label for="color">Stock</label>
                             <input type="number" name="variants[${index}][stock]" placeholder="Stock" class="form-control">
@@ -440,5 +494,39 @@
         `);
         index++;
     }
+
+
+    //File image uplaod
+    Dropzone.autoDiscover = false;
+        const dropzone = $("#image").dropzone({
+            url:  "{{ route('temp-images.create') }}",
+            maxFiles: 10,
+            paramName: 'image',
+            addRemoveLinks: true,
+            acceptedFiles: "image/jpeg,image/png,image/gif",
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }, success: function(file, response){
+                $("#image_id").val(response.image_id);
+                console.log(response)
+
+               var html = `<div class="col-md-2" id="image-row-${response.image_id}">
+                    <div class="card">
+                        <input type="hidden" name="image_array[]" value="${response.image_id}" >
+                        <img src="${response.ImagePath}" />
+                        <a href="javascript:void(0)" onclick="deleteImage(${response.image_id})" class="deleteCardImg">X</a>
+                    </div>
+                </div>`;
+
+                $("#product-gallery").append(html);
+            },
+            complete: function(file){
+                this.removeFile(file);
+            }
+        });
+
+        function deleteImage(id){
+            $("#image-row-"+id).remove();
+        }
 </script>
 @endsection
