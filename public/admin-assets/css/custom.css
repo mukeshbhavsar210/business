@@ -331,6 +331,8 @@ input:checked + .slider { box-shadow:0 0 0 2px #007bff,0 0 2px #007bff; }
 
 .overflow-variant { height: 200px; overflow-y: auto; overflow-x: hidden;}
 
+
+
 .dropzone { text-align: center; cursor: pointer; }
 .dropzone:hover { border-color: var(--black); background-color: #e5e5e5;}
 

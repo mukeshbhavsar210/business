@@ -5,7 +5,7 @@
 <div class="container-small">
     <div class="small-title">
         <h4>Account</h4>
-        <p>{{ $userDetails->first_name }} {{ $userDetails->last_name }}</p>
+        <p>{{ $userDetails->name }} </p>
     </div>
 
     <div class="row">

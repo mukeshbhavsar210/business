@@ -42,6 +42,10 @@ class User extends Authenticatable
         return $this->hasOne(CustomerAddress::class, 'user_id');
     }
 
+    public function addresses() {
+        return $this->hasMany(CustomerAddress::class);
+    }
+
     public function getImageUrlAttribute() {
         if (!empty($this->image)) {
             return asset('uploads/user/'.$this->image);

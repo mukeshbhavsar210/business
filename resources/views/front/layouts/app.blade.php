@@ -125,6 +125,8 @@
         })
     }
 
+    
+
     //Alert timeout
     //setTimeout(function () {
         //$('.alert').fadeOut(300);

@@ -98,14 +98,16 @@ class AuthController extends Controller
     public function address(){
         $userId = Auth::user()->id;
         $states = State::orderBy('name','ASC')->get();
-        $user = User::where('id',$userId)->first();
-        $address = CustomerAddress::with('state')->where('user_id',$userId)->first();
-        $userDetails = CustomerAddress::where('user_id',$userId)->first();
+        $user = User::where('id',$userId)->first();        
+        $address = auth()->user()->addresses()->with('state')->get();
+        $userDetails = CustomerAddress::where('user_id',$userId)->first();  
+        $addressTypes = CustomerAddress::pluck('address_type')->toArray();      
 
         return view('front.account.address',[
             'user' => $user,
             'states' => $states,
             'address' => $address,
+            'addressTypes' => $addressTypes,
             'userDetails' => $userDetails,
         ]);
     }
@@ -324,6 +326,42 @@ class AuthController extends Controller
                 'errors' =>  $validator->errors()
             ]);
         }
+    }
+
+
+    public function address_store(Request $request) {
+        $validated = $request->validate([
+            'name' => 'required',
+            'mobile' => 'required',
+            'address' => 'required',
+            'city' => 'required',
+            // 'state' => 'required',
+            'zip' => 'required',
+        ]);
+
+        $validated['user_id'] = auth()->id();
+
+        CustomerAddress::create($validated);
+
+        return back()->with('success', 'Shipping address added successfully');
+    }
+    
+
+    public function address_update(Request $request, $id) {
+        $address = CustomerAddress::findOrFail($id);
+
+        $validated = $request->validate([
+            'name' => 'required',
+            'mobile' => 'required',
+            'address' => 'required',
+            'city' => 'required',
+            // 'state' => 'required',
+            'zip' => 'required',
+        ]);
+
+        $address->update($validated);
+
+        return back()->with('success', 'Shipping Address updated successfully');
     }
 
 }

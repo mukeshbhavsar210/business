@@ -251,7 +251,7 @@
 
                     <hr />
                     <h4 class="mb-2">Product Variants</h4>
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#variantsModal">
                         Create Product Variants
                     </button>
 
@@ -284,35 +284,29 @@
                 <a href="{{ route('products.index') }}" class="btn btn-outline-dark ml-3">Cancel</a>
             </div>
                     
-            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg">
+            <div class="modal fade" id="variantsModal" tabindex="-1" aria-labelledby="variantsModalLabel" aria-hidden="true">
+                <div class="modal-dialog ">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">Add Product Variant</h5>
+                            <h5 class="modal-title" id="variantsModalLabel">Add Product Variant</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
                             <div id="variants-wrapper" class="overflow-variant">
-                                <div class="variant-item">
-                                    <div class="row">                                        
-                                        @php
-                                            $variants = old('variants', isset($product) ? $product->variants->toArray() : [['price' => '']]);
-                                        @endphp
+                                <div class="variant-item">                                                                          
+                                    @php
+                                        $variants = old('variants', isset($product) ? $product->variants->toArray() : [['price' => '']]);
+                                    @endphp
 
-                                        @foreach ($variants as $index => $variant)
-                                            <div class="col-md-4 col-6">
+                                    @foreach ($variants as $index => $variant)
+                                        <div class="row">  
+                                            <div class="col-md-6 col-6">
                                                 <div class="form-group">
                                                     <label for="color">Photo</label>
                                                     <input type="file" name="variant_images[0]" class="form-control" value="{{ $variant['variant_images[0]'] ?? '' }}" >                                                    
                                                 </div>
-                                            </div>
-                                            <div class="col-md-3 col-6">
-                                                <div class="form-group">
-                                                    <label for="color">Price</label>
-                                                    <input type="number" name="variants[{{ $index }}][price]" class="form-control" value="{{ $variant['price'] ?? '' }}" placeholder="Price" >
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3 col-6">
+                                            </div>                                           
+                                            <div class="col-md-6 col-6">
                                                 <div class="form-group">
                                                     <label for="color">Color</label>
                                                     <select name="variants[0][color]" id="color_variants" class="form-select">
@@ -329,14 +323,8 @@
                                                     </select>                                                    
                                                 </div>
                                             </div>
-                                            <div class="col-md-2 col-6">
-                                                <div class="form-group">
-                                                    <label for="stock">Stock</label>
-                                                    <input type="text" name="variants[{{ $index }}][stock]" class="form-control" value="{{ $variant['stock'] ?? '' }}" placeholder="Stock" >
-                                                </div>
-                                            </div>                                            
-                                        @endforeach
-                                    </div>                                                                                                                   
+                                        </div>
+                                    @endforeach                                                                                                                                                      
                                 </div>
                             </div>
                         </div>
@@ -454,19 +442,13 @@
         wrapper.insertAdjacentHTML('beforeend', `
             <div class="variant-item">
                 <div class="row">
-                    <div class="col-md-4 col-6">
+                    <div class="col-md-6 col-6">
                         <div class="form-group">
-                            <label for="color">Product Photo</label>
+                            <label for="color">Photo</label>
                             <input type="file" name="variant_images[${index}]" class="form-control">
                         </div>
                     </div> 
-                    <div class="col-md-3 col-6">
-                        <div class="form-group">
-                            <label for="color">Price</label>
-                            <input type="number" name="variants[${index}][price]" placeholder="Price" class="form-control">
-                        </div>
-                    </div>
-                    <div class="col-md-3 col-6">                    
+                    <div class="col-md-6 col-6">                    
                         <div class="form-group">
                             <label for="color">Color</label>
                             <select name="variants[${index}][color]" id="color_variants" class="form-select">
@@ -482,12 +464,6 @@
                                 @endif
                             </select>                                                    
                         </div>                                           
-                    </div>
-                    <div class="col-md-2 col-6">
-                        <div class="form-group">
-                            <label for="color">Stock</label>
-                            <input type="number" name="variants[${index}][stock]" placeholder="Stock" class="form-control">
-                        </div>
                     </div>                                       
                 </div>
             </div>
