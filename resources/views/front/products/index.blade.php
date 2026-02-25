@@ -69,21 +69,28 @@
                     </div>
 
                 <div class="part mt-3">
-                    <h3>More Colors</h3>
+                    <h3>More</h3>
                     @if($product->variants->isNotEmpty())
                         <ul class="size-select">
                             @foreach($product->variants as $variant)
-                                {{-- <a href="{{ route('front.product', ['slug' => $product->slug, 'variant' => $variant->id]) }}" class="color-btn">
-                                    <img src="{{ asset('uploads/product/large/variant/'.$variant->image) }}" width="40">
-                                </a> --}}
+                                <li>
+                                    <a href="{{ route('front.product', ['slug' => $product->slug, 'variant' => $variant->id]) }}" class="color-btn">
+                                        <img src="{{ asset('uploads/product/large/variant/'.$variant->image) }}" width="40">
+                                    </a>
+                                </li>                            
+                            @endforeach
+                        @endif
+                    </ul>
+
+                    @if($product->variants->isNotEmpty())
+                        <ul class="size-select">
+                            @foreach($product->variants as $variant)                               
                                 <li>
                                     <a href="javascript:void(0);" class="color-option" data-color="{{ $variant->color }}">
                                         {{ $variant->color }}
                                     </a>
                                 </li>                            
                             @endforeach
-                        @else
-                            <p>No variants available</p>
                         @endif
                     </ul>
                 </div>                

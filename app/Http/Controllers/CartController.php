@@ -278,7 +278,9 @@ class CartController extends Controller {
             return redirect()->route('account.login');
         }
 
-        $customerAddress = Auth::user()->address; // Clean way
+        $address = auth()->user()->addresses()->with('state')->get();
+        $addressTypes = CustomerAddress::pluck('address_type')->toArray();
+        $customerAddress = Auth::user()->address;
 
         session()->forget('url.intended');
 
@@ -304,7 +306,8 @@ class CartController extends Controller {
 
         return view('front.checkout.index', [
             'states' => $states,
-            'customerAddress' => $customerAddress,
+            'address' => $address,
+            'addressTypes' => $addressTypes,
             'totalShiipingCharge' => $totalShippingCharge,
             'discount' => $discount,
             'grandTotal' => $grandTotal

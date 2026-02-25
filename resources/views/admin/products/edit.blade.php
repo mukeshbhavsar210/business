@@ -1,7 +1,6 @@
 @extends('admin.layouts.app')
 
 @section('content')           
-   
     <x-product-form 
         :product="$product"
         :categories="$categories"            

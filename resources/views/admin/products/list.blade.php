@@ -76,9 +76,9 @@
                                         <div class="d-flex align-items-center">
                                             <a href="{{ route('products.edit', $product->id) }}">
                                                 @if (!empty($productImage->image))
-                                                    <img src="{{ asset('uploads/product/small/'.$productImage->image) }}" height="70" class="me-3 align-self-center rounded" >
+                                                    <img src="{{ asset('uploads/product/small/'.$productImage->image) }}" height="80" class="me-3 align-self-center rounded" >
                                                     @else
-                                                    <img src="{{ asset('admin-assets/img/default-150x150.png') }}" alt="" height="70" class="me-3 align-self-center rounded" />
+                                                    <img src="{{ asset('admin-assets/img/default-150x150.png') }}" alt="" height="80" class="me-3 align-self-center rounded" />
                                                 @endif
                                             </a>
                                             <div class="flex-grow-1 text-truncate">
@@ -86,7 +86,6 @@
                                                     <a href="{{ route('products.edit', $product->id) }}">{{ Str::limit($product->title, 75, '...') }}</a>
                                                 </h5>
                                                 <div class="small-fonts">
-                                                    
                                                     <span class="color-small" style="background:{{ $product->color->code }}; height:20px; width:20px; border-radius:100px;"></span>
                                                     <p class="mb-0">
                                                         <span class="text-muted">{{ $product->id }}</span> | 
@@ -96,12 +95,9 @@
                                                     </p>
                                                 
                                                     @if($product->variants->count())
+                                                        <span class="text-muted">Variants Color:</span>
                                                         @foreach($product->variants as $variant)
-                                                            <p class="text-muted m-0">
-                                                                Color: {{ $variant->color }},
-                                                                Price: ₹{{ $variant->price }},
-                                                                Stock: {{ $variant->stock }}
-                                                            </p>                                                
+                                                            <span>{{ $variant->color }}, </span>
                                                         @endforeach
                                                     @else
                                                         <span class="text-muted">No Variants</span>

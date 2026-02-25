@@ -7,133 +7,100 @@
         <div class="col-md-8 col-12 left-border">
             @include('front.layouts.message')
 
-            <div class="shpping-address">
-                <div class="row">
-                    <div class="col-md-9 col-12">
-                        <h5 class="title">Select Delivery Address</h5>
-                        <h6>Default Address</h6>
+            <x-customer-address-form 
+                :states="$states"
+                :action="route('customer.address.store')" 
+                method="POST" 
+                title="Add New Address" 
+                buttonText="Create Address"
+                modalId="createAddressModal"
+            />
+
+            @include('front.layouts.shippingaddress')
+
+            <form action=" " name="orderForm" id="orderForm" method="POST">
+                <div class="shpping-address">
+                    <div class="row">
+                        <div class="col-md-9 col-12">
+                            <h5 class="title">Select Delivery Address</h5>
+                        </div>
+                        <div class="col-md-3 col-12">
+                            @if(!in_array('Home', $addressTypes) || !in_array('Office', $addressTypes))
+                                <a href="#" class="btn btn-outline-dark float-end" data-bs-toggle="modal" data-bs-target="#createAddressModal">
+                                    + Add New Address
+                                </a>
+                            @endif
+                        </div>
                     </div>
-                    <div class="col-md-3 col-12">
-                        <a href="#" class="btn btn-outline-dark float-end" data-bs-toggle="modal" data-bs-target="#addAddressModal">
-                            Add New Address
-                        </a>
-                    </div>
-                </div>
 
-                <div class="default coupon-box">                         
-                    <label>
-                        <div class="left">
-                            <input type="radio" name="default_address_id" value="1">
-                        </div>
-                        <div class="right">                               
-                                <h6 class="mb-2 h6"><b>{{ $customerAddress->name }}</b> 
-                                <span class="address-type">{{ $customerAddress->address_type }}</span>
-                            </h6>
-                            <p class="text-muted">{{ $customerAddress->address }}</p>
-                            <p class="text-muted">{{ $customerAddress->locality }}, {{ $customerAddress->city }}-{{ $customerAddress->zip }},</p>
-                            <p class="text-muted">{{ $customerAddress->state->name }}.</p>
-                            <p class="mt-2 text-muted">Mobile: {{ $customerAddress->mobile }}</p>                            
-                        </div>
-                    </label>
-                </div>
+                    @php
+                        $defaultAddressId = old(
+                            'default_address_id',
+                            optional($address->firstWhere('default_address', 1))->id
+                        );
+                    @endphp
 
-                <div class="add-address">
-                    <a href="#" class="link-primary" data-bs-toggle="modal" data-bs-target="#addAddressModal">
-                        Add New Address
-                    </a>
-                </div>
-            </div>            
-            
-            <div class="modal fade" id="addAddressModal" tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="addAddressModalLabel">Add New Address</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <form action=" " name="orderForm" id="orderForm" method="POST">
-                            <div class="modal-body"> 
-                                <h4>Contact Details</h4>
-                                <div class="row">                    
-                                    <div class="col-md-6 col-12">
-                                        <div class="form-group">
-                                            <label>Name</label>
-                                            <input type="text" name="name" id="name" class="form-control" placeholder="Name" >
-                                            <p></p>
-                                        </div>
-                                    </div>  
-                                    <div class="col-md-6 col-12">
-                                        <div class="form-group">
-                                            <label>Mobile</label>
-                                            <input type="text" name="mobile" id="mobile" class="form-control" placeholder="Mobile" >
-                                            <p></p>
-                                        </div>
+                    @foreach($address as $value)                                                
+                        <div class="card mb-3 default-card">
+                            <div class="card-header">
+                                <p>{{ $value->default_address ? 'Default address' : 'Other address' }}</p>
+                            </div>
+                            <label class="address-card w-100">
+                                <div class="card-body">                            
+                                    <input type="radio" name="default_address_id" value="{{ $value->id }}" class="address-radio" {{ $defaultAddressId == $value->id ? 'checked' : '' }}>
+
+                                    <div class="address-content w-100">
+                                        <h5 class="mb-2">
+                                            <b>{{ $value->name }}</b>
+                                            <span class="badge bg-dark text-light">
+                                                {{ $value->address_type }}
+                                            </span>
+                                        </h5>
+                                        <p class="text-muted mb-0">{{ $value->address }}</p>
+                                        <p class="text-muted mb-0">{{ $value->locality }}, {{ $value->city }} - {{ $value->zip }}, {{ $value->state->name }}.</p>                                                        
+                                        <p class="text-muted mt-2">Mobile: {{ $value->mobile }}</p>
                                     </div>
-                                </div>
-
-                                <h4>Address</h4>
-                                <div class="row">                                    
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <label>Address</label>
-                                            <textarea name="address" id="address" cols="30" rows="3" placeholder="House Number/Tower/Block*" class="form-control" ></textarea>
-                                            <p></p>
-                                        </div>
-                                    </div>                    
-                                    <div class="col-md-6 col-12">
-                                        <div class="form-group">
-                                            <label>Locality</label>
-                                            <input type="text" name="locality" id="locality" class="form-control" placeholder="Address (locality, building, street)*" >
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-12">
-                                        <div class="form-group">
-                                            <label>City</label>
-                                            <input type="text" name="city" id="city" class="form-control" placeholder="City" >
-                                            <p></p>
-                                        </div>
-                                    </div>        
-                                    <div class="col-md-6 col-12">
-                                        <div class="form-group">
-                                            <label>Pincode</label>
-                                            <input type="text" name="zip" id="zip" class="form-control" placeholder="Pincode" >
-                                            <p></p>
-                                        </div>
-                                    </div>                                                               
-                                    <div class="col-md-6 col-12">
-                                        <div class="form-group">
-                                            <label>State</label>
-                                            <select name="state" id="state" class="form-control">
-                                                <option value="">Select a State</option>
-                                                    @if ($states->isNotEmpty())
-                                                        {{-- @foreach ($states as $value)
-                                                            <option {{ (!empty($customerAddress) && $customerAddress->state_id == $value->id) ? 'selected' : '' }} value="{{ $state->id }}" >{{ $state->name }}</option>
-                                                        @endforeach --}}
-                                                        <option value="rest_of_state">Rest of the state</option>
-                                                    @endif
-                                            </select>
-                                            <p></p>
-                                        </div>
-                                    </div>                                      
                                     
-                                    {{-- 
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <label>Order notes</label>
-                                            <textarea name="order_notes" id="order_notes" cols="30" rows="2" placeholder="Order Notes (optional)" class="form-control"></textarea>
-                                            <p></p>
-                                        </div>
-                                    </div>                     --}}
-                                </div>                
+                                    <ul class="flex mt-3 d-none control-btn">
+                                        <li><a href="#" class="btn btn-outline-dark">Remove</a></li>
+                                        <li><a href="#" class="btn btn-outline-dark">Edit</a></li>
+                                    </ul>                                    
+                                </div>
+                            </label>                        
+                        </div>                        
+                    @endforeach                                                                                                         
+                                        
+                                            
+                                            {{-- <form action="{{ route('checkout.select.address') }}" method="POST">
+                                                @csrf --}}
+                                            {{-- </form> --}}
+
+                                            {{--<div class="default coupon-box">                         
+                                                <label>
+                                                    <div class="left">
+                                                        <input type="radio" name="default_address_id" value="1">
+                                                    </div>
+                                                    <div class="right">                               
+                                                        <h6 class="mb-2 h6"><b>{{ $customerAddress->name }}</b> 
+                                    <span class="address-type">{{ $customerAddress->address_type }}</span>
+                                </h6>
+                                <p class="text-muted">{{ $customerAddress->address }}</p>
+                                <p class="text-muted">{{ $customerAddress->locality }}, {{ $customerAddress->city }}-{{ $customerAddress->zip }},</p>
+                                <p class="text-muted">{{ $customerAddress->state->name }}.</p>
+                                <p class="mt-2 text-muted">Mobile: {{ $customerAddress->mobile }}</p>                            
                             </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-primary">Save changes</button>
-                            </div>
-                        </form>
-                    </div>                    
-                </div>
-            </div>
+                        </label>
+                    </div> --}}
+                    
+                    @if(!in_array('Home', $addressTypes) || !in_array('Office', $addressTypes))
+                        <div class="add-address">
+                            <a href="#" class="link-primary" data-bs-toggle="modal" data-bs-target="#createAddressModal">
+                                + Add New Address
+                            </a>
+                        </div>
+                    @endif                                            
+                </div>   
+            </form>
         </div>
 
         <div class="col-md-4 col-12">

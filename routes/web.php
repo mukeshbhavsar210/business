@@ -45,6 +45,7 @@ Route::controller(CartController::class)->group(function() {
 
     Route::post('/update-cart','updateCart')->name('front.updateCart');
     Route::post('/delete-item','deleteItem')->name('front.deleteItem.cart');
+    
     Route::get('/checkout/address','checkout')->name('front.checkout');
     Route::post('/process-checkout','processCheckout')->name('front.processCheckout');
     Route::get('/thanks/{orderId}','thankyou')->name('front.checkout.thankyou');
@@ -73,6 +74,10 @@ Route::group(['prefix' => 'account'], function(){
     Route::group(['middleware' => 'auth'], function(){
         Route::controller(AuthController::class)->group(function() {
             Route::get('/dashboard','dashboard')->name('account.dashboard');
+
+            Route::post('/address/store', 'address_store')->name('customer.address.store');
+            Route::put('/address/{id}', 'address_update')->name('customer.address.update');
+
             Route::get('/address','address')->name('account.address');
             Route::get('/cards','cards')->name('account.cards');
             Route::get('/profile','profile')->name('account.profile');
