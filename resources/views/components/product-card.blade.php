@@ -21,6 +21,8 @@
             </div>
         @endif        
 
+        <p class="gallery-icon">Gallery</p>
+
         <div class="product-slider">
             @php
                 $productImage = $product->product_images->first();
@@ -29,8 +31,8 @@
             @if ($product->images && $product->images->count() > 0)
                 @foreach($product->images as $image)
                     <div class="slider-item">
-                        <a href="{{ route('front.product',$product->slug) }}" class="product-img">
-                            <img src="{{ asset('uploads/product/small/'.$image->image) }}" class="img-fluid" alt="{{ $product->name }}" >
+                        <a href="{{ route('front.product',$product->slug) }}" class="product-img" target="_blank">
+                            <img src="{{ asset('uploads/product/small/'.$image->image) }}" class="img-fluid" alt="{{ $product->title }}" >
                         </a>
                     </div>
                 @endforeach
@@ -40,18 +42,19 @@
         </div>
 
         @if($showWishlist)
-            <div class="wishlist-btn">                                            
-                <a onclick="addToWishlist({{ $product->id }})" class="btn" href="javascript:void(0)">
+            <div class="hover-product">                
+                <a onclick="addToWishlist({{ $product->id }})" class="btn btn-outline" href="javascript:void(0)">
                     <i class="far fa-heart"></i> 
                     Wishlist
                 </a>
-                <p class="show-size">Sizes: {{ $product->size->code ?? '' }}</p>
+                <p class="show-size">Size: {{ $product->size->code ?? '' }}</p>
             </div>  
-        @endif   
-    </div>
+        @endif       
 
-    <div class="product-info">
-        <h2>{{ Str::limit($product->title, 25, '...') }}</h2>
+        <div class="product-info">
+            <h2>{{ Str::limit($product->title, 25, '...') }}</h2>
+            <p class="short">{{ Str::limit($product->short_description, 30, '...') }}</p>         
+        </div>
 
         <div class="price">
             <span class="dark">₹{{ $product->price }}</span>
@@ -64,6 +67,6 @@
                 @endphp
                 <span class="discount">{{ $discount }}% OFF</span>
             @endif           
-        </div>
-    </div>  
+        </div>            
+    </div>
 </div>

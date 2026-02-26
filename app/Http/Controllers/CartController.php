@@ -48,20 +48,21 @@ class CartController extends Controller {
             }
 
             if($productAlreadyExist == false){
-                Cart::add(
-                    $product->id, 
-                    $product->title,                         
-                    1, 
-                    $product->price, 
-                    [
+                Cart::add([
+                    'id'      => $product->id,
+                    'name'    => $product->title,
+                    'qty'     => 1,
+                    'price'   => $product->price,
+                    'weight'  => 0,
+                    'options' => [
                         'short_description' => $product->short_description,
-                        'compare_price' => $product->compare_price,
-                        'productImage' => (!empty($product->product_images)) ? $product->product_images->first() : '',
-                        'product_variant_id' => $product->id,
-                        'size' => $request->size,
-                        'color' => $request->color
+                        'compare_price'     => $product->compare_price,
+                        'productImage'      => optional($product->product_images->first())->image ?? '',
+                        'product_variant_id'=> $product->id,
+                        'size'              => $request->size,
+                        'color'             => $request->color,
                     ]
-                );
+                ]);                
                 $status = true;
                 $message = '<strong>'.$product->title.'</strong> added in your cart successfully.';
                 session()->flash('success', $message);
@@ -71,19 +72,21 @@ class CartController extends Controller {
             }
 
         } else {
-            Cart::add(
-                $product->id, 
-                $product->title,
-                1, 
-                $product->price, 
-                [
+            Cart::add([
+                'id'      => $product->id,
+                'name'    => $product->title,
+                'qty'     => 1,
+                'price'   => $product->price,
+                'weight'  => 0,
+                'options' => [
                     'short_description' => $product->short_description,
-                    'compare_price' => $product->compare_price,
-                    'productImage' => (!empty($product->product_images)) ? $product->product_images->first() : '',
-                    'product_variant_id' => $product->id,
-                    'size' => $request->size,
-                    'color' => $request->color
-                ]);
+                    'compare_price'     => $product->compare_price,
+                    'productImage'      => optional($product->product_images->first())->image ?? '',
+                    'product_variant_id'=> $product->id,
+                    'size'              => $request->size,
+                    'color'             => $request->color,
+                ]
+            ]);            
             $status = true;
             $message = '<strong>'.$product->title.'</strong> added in your cart successfully.';
             session()->flash('success', $message);
@@ -91,7 +94,8 @@ class CartController extends Controller {
         
         return response()->json([
             "status"=> $status,
-            "message"=> $message
+            "message"=> $message,
+            'cartCount' => Cart::count(),
         ]);
     }
 
@@ -103,7 +107,9 @@ class CartController extends Controller {
                 $q->whereNull('expires_at')
                 ->orWhere('expires_at', '>=', now());
             })
-            ->get();        
+            ->get();     
+            
+            //dd(Cart::content());
 
         return view('front.checkout.cart', [
             'cartContent' => $cartContent,
@@ -298,59 +304,16 @@ class CartController extends Controller {
     }
 
 
-    public function updateColorItem(Request $request) {
+    public function updateCartOption(Request $request) {
         $rowId = $request->rowId;
-        $color  = $request->color;
 
-        $item = Cart::get($rowId);
-
-        if (!$item) {
+        if (!$rowId) {
             return response()->json([
                 'status' => false,
-                'message' => 'Item not found'
+                'message' => 'Invalid request.'
             ]);
         }
 
-        Cart::update($rowId, [
-            'options' => array_merge($item->options->toArray(), [
-                'color' => $color
-            ])
-        ]);
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Color updated successfully'
-        ]);
-    }
-   
-
-    public function updateSizeItem(Request $request) {
-        $rowId = $request->rowId;
-        $size  = $request->size;
-
-        $item = Cart::get($rowId);
-
-        if (!$item) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Item not found'
-            ]);
-        }
-
-        Cart::update($rowId, [
-            'options' => array_merge($item->options->toArray(), [
-                'size' => $size
-            ])
-        ]);
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Size updated successfully'
-        ]);
-    }
-
-    public function updateQtyItem(Request $request) {
-        $rowId = $request->rowId;
         $item = Cart::get($rowId);
 
         if (!$item) {
@@ -361,11 +324,76 @@ class CartController extends Controller {
         }
 
         // Only update qty
-        Cart::update($rowId, $request->qty);
+        if ($request->has('qty')) {
+            $qty = (int) $request->qty;
+
+            if ($qty <= 0) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Quantity must be greater than 0.'
+                ]);
+            }
+            
+            Cart::update($rowId, $request->qty);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Quantity updated successfully'
+            ]);
+        }
+        
+        $options = $item->options->toArray();
+
+        if ($request->has('color')) {
+            $options['color'] = $request->color;
+        }
+
+        if ($request->has('size')) {
+            $options['size'] = $request->size;
+        }
+
+        // Important: DO NOT overwrite whole options blindly
+        Cart::update($rowId, [
+            'options' => $options
+        ]);
 
         return response()->json([
             'status' => true,
-            'message' => 'Qty updated successfully'
+            'message' => 'Cart updated successfully.'
+        ]);
+    }
+
+    
+    public function updateItem(Request $request) {
+        $rowId = $request->rowId;
+        $item = Cart::get($rowId);
+
+        if(!$item){
+            return response()->json([
+                'status' => false,
+                'message' => 'Item not found'
+            ]);
+        }
+
+        // Remove old item
+        Cart::remove($rowId);
+
+        // Add again with updated data
+        Cart::add(
+            $item->id,
+            $item->name,
+            $request->qty,
+            $item->price,
+            [
+                'size' => $request->size,
+                'color' => $request->color,
+                'short_description' => $item->options->short_description,
+            ]
+        );
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Cart updated successfully'
         ]);
     }
 
