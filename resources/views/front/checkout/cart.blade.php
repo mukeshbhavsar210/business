@@ -14,31 +14,33 @@
 
                 @if (Cart::count() > 0)                
                     @foreach ($cartContent as $item)                        
-                    <div class="product-repeate">
-                        <div class="photo">
-                            @if (!empty($item->options->productImage->image))
-                                <img src="{{ asset('uploads/product/large/'.$item->options->productImage->image) }}" >
-                            @else
-                                <img src="{{ asset('admin-assets/img/default-150x150.png') }}" alt="" />
-                            @endif
-                        </div>
-                        <div class="details">                                
-                            <h3>{{ $item->name }}</h3>
-                            <p class="short-desc">{{ $item->options->short_description ?? '' }}</p>
+                        <div class="product-repeate">
+                            <div class="photo">
+                                @if ($item->options->productImage)
+                                    <img src="{{ asset('uploads/product/large/'.$item->options->productImage) }}" >
+                                @else
+                                    <img src="{{ asset('admin-assets/img/default-150x150.png') }}" alt="" />
+                                @endif
+                            </div>
+                            <div class="details">                                
+                                <h3>{{ $item->name }}</h3>
+                                <p class="short-desc">{{ $item->options->short_description ?? '' }}</p>
+
+                            
 
                             <div class="manuplate">
-                                <div class="select">                                    
-                                    <a href="javascript:void(0);" class="open-color-modal" data-type="color" data-rowid="{{ $item->rowId }}" data-selected="{{ $item->options->color }}">
-                                    Color: <b>{{ $item->options->color ?? '' }}</b> 
-                                </a>                                    
+                                <div class="select">       
+                                    <a href="javascript:void(0);" class="update-color" data-type="color" data-rowid="{{ $item->rowId }}" data-selected="{{ $item->options->color }}">
+                                        Color: <b>{{ $item->options->color ?? '' }}</b> 
+                                    </a>                                    
                                 </div>
                                 <div class="select">                                    
-                                     <a href="javascript:void(0);" class="open-size-modal" data-type="size" data-rowid="{{ $item->rowId }}" data-selected="{{ $item->options->size }}">
+                                     <a href="javascript:void(0);" class="update-size" data-type="size" data-rowid="{{ $item->rowId }}" data-selected="{{ $item->options->size }}">
                                         Size: <b>{{ $item->options->size }}</b>
                                     </a>
                                 </div>
                                 <div class="select">                                
-                                    <a href="javascript:void(0);" class="open-qty-modal" data-type="qty" data-rowid="{{ $item->rowId }}" data-selected="{{ $item->qty }}">Qty:
+                                    <a href="javascript:void(0);" class="update-qty" data-type="qty" data-rowid="{{ $item->rowId }}" data-selected="{{ $item->qty }}">Qty:
                                         <b>{{ $item->qty }}</b>
                                     </a>
                                 </div>
@@ -55,7 +57,7 @@
                                         @endphp
                                         <span class="discount">{{ $discount }}% OFF</span>
                                     @endif           
-                                </div>
+                                </div>                               
 
                                 <div class="modal fade" id="commonOptionModal" tabindex="-1">
                                     <div class="modal-dialog modal-sm">
@@ -68,7 +70,7 @@
                                                 <ul class="list-unstyled" id="modalOptionsList">
                                                     
                                                 </ul>
-                                                <button type="button" class="btn btn-primary w-100" data-bs-dismiss="modal">Done</button>
+                                                {{-- <button type="button" class="btn btn-primary w-100" data-bs-dismiss="modal">Done</button> --}}
                                             </div>
                                         </div>
                                     </div>
@@ -85,13 +87,48 @@
                                                 <ul class="list-unstyled" id="modalSizesList">
                                                     
                                                 </ul>
-                                                <button type="button" class="btn btn-primary w-100" data-bs-dismiss="modal">Done</button>
+                                                {{-- <button type="button" class="btn btn-primary w-100" data-bs-dismiss="modal">Done</button> --}}
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="modal fade" id="commonQtyModal" tabindex="-1">
+                                    <div class="modal-dialog modal-sm">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h6>Quantity</h6>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <ul class="list-unstyled" id="modalQtyList">
+                                                    
+                                                </ul>
+                                                {{-- <button type="button" class="btn btn-primary w-100" data-bs-dismiss="modal">Done</button> --}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="modal fade" id="commonQtyModal" tabindex="-1">
+                                    <div class="modal-dialog modal-sm">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h6>Quantity</h6>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <ul class="list-unstyled" id="modalQtyList">
+                                                    
+                                                </ul>
+                                                {{-- <button type="button" class="btn btn-primary w-100" data-bs-dismiss="modal">Done</button> --}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="modal fade" id="cartOptionModal" tabindex="-1">
                                     <div class="modal-dialog modal-sm">
                                         <div class="modal-content">
                                             <div class="modal-header">
@@ -137,8 +174,8 @@
                             <h6>Price Details</h6>                            
                             @foreach (Cart::content() as $item)
                                 <div class="repeate-row">
-                                    <div class="left">{{ $item->name }}</div>
-                                    <div class="right">₹{{ $item->price*$item->qty }}</div>                                    
+                                    <div class="left"><b>{{ $item->name }} x {{ $item->qty }}</b></div>
+                                    <div class="right"><b>₹{{ $item->price*$item->qty }}</b></div>
                                 </div>
                             @endforeach
                            
@@ -219,15 +256,64 @@
                     </div>
                 </div>
             </div>
+
+
+             {{-- <a href="javascript:void(0);" 
+                class="edit-cart-item"
+                data-rowid="{{ $item->rowId }}"
+                data-color="{{ $item->options->color }}"
+                data-size="{{ $item->options->size }}"
+                data-qty="{{ $item->qty }}"
+                >Edit</a>
+
+                <div class="modal fade" id="editCartModal" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+
+                        <div class="modal-header">
+                            <h5 class="modal-title">Update Item</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+
+                        <div class="modal-body">
+                            <input type="hidden" id="modal_rowId">
+
+                            <label>Color</label>
+                            <select id="modal_color" class="form-control">
+                                <option value="Red">Red</option>
+                                <option value="Blue">Blue</option>
+                            </select>
+
+                            <label>Size</label>
+                            <select id="modal_size" class="form-control">
+                                <option value="S">S</option>
+                                <option value="M">M</option>
+                                <option value="L">L</option>
+                            </select>
+
+                            <label>Quantity</label>
+                            <input type="number" id="modal_qty" class="form-control" min="1">
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" id="updateCartBtn">
+                            Update
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div> --}}
         </div>
 @endsection
 
 @section('customJs')
     <script>
         let currentRowId = '';
-        let currentType = '';
+        let currentType = '';   
+        
+       
 
-        $(document).on('click', '.open-color-modal', function(){
+        $(document).on('click', '.update-color', function(){
             currentRowId = $(this).data('rowid');
             currentType = $(this).data('type');
             let selected = $(this).data('selected');
@@ -251,7 +337,6 @@
             new bootstrap.Modal('#commonOptionModal').show();
         });
 
-
         $(document).on('click', '.select-color-option', function(e){
             e.preventDefault();
 
@@ -266,7 +351,7 @@
                 data.color = value;
             }          
 
-            $.post('{{ route("front.updateCartColor") }}', data, function(res){
+            $.post('{{ route("front.updateCartOption") }}', data, function(res){
                 if(res.status){
                     location.reload();
                 }
@@ -274,7 +359,7 @@
         });
 
         //Size Modal
-        $(document).on('click', '.open-size-modal', function(){
+        $(document).on('click', '.update-size', function(){
             currentRowId = $(this).data('rowid');
             currentType = $(this).data('type');
             let selected = $(this).data('selected');
@@ -298,7 +383,6 @@
             new bootstrap.Modal('#commonSizesModal').show();
         });
 
-        
         $(document).on('click', '.select-size-option', function(e){            
             e.preventDefault();
 
@@ -313,23 +397,30 @@
                 data.size = value;
             }          
 
-            $.post('{{ route("front.updateCartSize") }}', data, function(res){
+            $.post('{{ route("front.updateCartOption") }}', data, function(res){
                 if(res.status){
                     location.reload();
                 }
             });
         });
 
-
-
         //Qty
-        $(document).on('click', '.open-qty-modal', function(){
+        $(document).on('click', '.update-qty', function(){            
             currentRowId = $(this).data('rowid');
             currentType = $(this).data('type');
             let selected = $(this).data('selected');
 
             let title = '';
-            let options = [];            
+            let options = [];     
+            
+            if(currentType === 'size'){
+                title = 'Select Size';
+                options = ['S', 'M', 'L', 'XL'];
+            }   
+
+            if(currentType === 'size'){
+                data.size = value;
+            } 
 
             if(currentType === 'qty'){
                 title = 'Select Quantity';
@@ -347,7 +438,6 @@
             new bootstrap.Modal('#commonQtyModal').show();
         });
 
-
         $(document).on('click', '.select-qty-option', function(e){
             e.preventDefault();
 
@@ -362,7 +452,7 @@
                 data.qty = value;
             }
 
-            $.post('{{ route("front.updateCartQty") }}', data, function(res){
+            $.post('{{ route("front.updateCartOption") }}', data, function(res){
                 if(res.status){
                     location.reload();
                 }
@@ -370,32 +460,63 @@
         });  
 
 
-        // function updateCart(rowId,qty){
-        //     $.ajax({
-        //         url: '{{ route("front.updateCart") }}',
-        //         type: 'post',
-        //         data: {rowId:rowId, qty:qty},
-        //         dataType: 'json',
-        //         success: function(response){
-        //             window.location.href='{{ route("front.cart") }}';
-        //         }
-        //     })
-        // }
+         // $(document).on('click', '.edit-cart-item', function(){
+        //     let rowId = $(this).data('rowid');
+        //     let size = $(this).data('size');
+        //     let color = $(this).data('color');
+        //     let qty = $(this).data('qty');
 
+        //     $('#modal_rowId').val(rowId);
+        //     $('#modal_size').val(size);
+        //     $('#modal_color').val(color);
+        //     $('#modal_qty').val(qty);
+
+        //     $('#editCartModal').modal('show');
+        // });
+
+
+        // $('#updateCartBtn').click(function(){
+        //     $.ajax({
+        //         url: '{{ route("front.updateCartItem") }}',
+        //         type: 'POST',
+        //         data: {
+        //             _token: '{{ csrf_token() }}',
+        //             rowId: $('#modal_rowId').val(),
+        //             size: $('#modal_size').val(),
+        //             color: $('#modal_color').val(),
+        //             qty: $('#modal_qty').val()
+        //         },
+        //         success: function(response){
+        //             if(response.status){
+        //                 location.reload();
+        //             } else {
+        //                 alert(response.message);
+        //             }
+        //         }
+        //     });
+        // });
+
+        
         function deleteItem(rowId){
             if(confirm("Are you sure you want to delete?")){
                 $.ajax({
                     url: '{{ route("front.deleteItem.cart") }}',
-                    type: 'post',
-                    data: {rowId:rowId},
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        rowId: rowId
+                    },
                     dataType: 'json',
                     success: function(response){
-                        window.location.href='{{ route("front.cart") }}';
+                        if(response.status){
+                            window.location.href='{{ route("front.cart") }}';
+                        } else {
+                            alert(response.message);
+                        }
                     }
                 })
             }
         }
-        
 
         $(document).on('change', 'input[name="coupon_id"]', function() {    
             $('.coupon-box').removeClass('active');

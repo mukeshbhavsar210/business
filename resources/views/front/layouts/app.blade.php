@@ -77,6 +77,7 @@
     });
 
     function addToCart(id){
+
         if(selectedSize == ''){
             alert('Please select size');
             return;
@@ -89,22 +90,42 @@
 
         $.ajax({
             url: '{{ route("front.addToCart") }}',
-            type: 'post',
+            type: 'POST',
             data: {
-				_token: '{{ csrf_token() }}', // Include CSRF token
-				id: id,
-				size: selectedSize,
-				color: selectedColor
-			},
+                _token: '{{ csrf_token() }}',
+                id: id,
+                size: selectedSize,
+                color: selectedColor
+            },
             dataType: 'json',
             success: function(response){
+
                 if(response.status == true){
-                    window.location.href= "{{ route('front.cart') }}";
+
+                    // ✅ Update cart count
+                    $('#cartCount').text(response.cartCount);
+
+                    // ✅ Show toast message
+                    $('#cartToastMessage').text(response.message);
+
+                    let toast = new bootstrap.Toast(
+                        document.getElementById('cartToast')
+                    );
+
+                    toast.show();
+
+                    // Optional: Reset selections
+                    selectedSize = '';
+                    selectedColor = '';
+
                 } else {
                     alert(response.message);
                 }
+            },
+            error: function(){
+                alert('Something went wrong');
             }
-        })
+        });
     }
 
     function addToWishlist(id){
@@ -119,7 +140,7 @@
                     $("#wishlistModal").modal('show');
                 } else {
                     window.location.href= "{{ route('account.login') }}";
-                    //alert(response.message);
+                    alert(response.message);
                 }
             }
         })
