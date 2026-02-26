@@ -11,7 +11,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="{{ $modalId }}Label">{{ $title }}</h1>
+                <h6 class="modal-title" id="{{ $modalId }}Label">{{ $title }}</h6>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
@@ -23,7 +23,7 @@
                 @endif
 
                 <div class="modal-body customer-address"> 
-                    <h4>Contact Details</h4>
+                    <h4 class="mb-2">Contact Details</h4>
                     <div class="row">                    
                         <div class="col-md-6 col-12">
                             <div class="form-group">
@@ -41,11 +41,11 @@
                         </div>
                     </div>
 
-                    <h4>Address</h4>
+                    <h4 class="mb-3">Address</h4>
                     <div class="row">                                    
                         <div class="col-md-12">
                             <div class="form-group">
-                                <textarea name="address" id="address" cols="30" rows="3" placeholder="House Number/Tower/Block*" class="form-control" >
+                                <textarea name="address" id="address" cols="30" rows="3" placeholder="House Number/Tower/Block*" class="form-control floating-input" >
                                     {{ (!empty($address)) ? $address->address : '' }}
                                 </textarea>
                                 <label class="floating-label">Address</label>
@@ -55,7 +55,7 @@
                         <div class="col-md-6 col-12">
                             <div class="form-group">                                
                                 <input type="text" name="locality" id="locality" class="form-control" value={{ (!empty($address)) ? $address->locality : '' }}>
-                                <label class="floating-label">Address (locality, building, street)*</label>
+                                <label class="floating-label">Locality, Building, Street</label>
                             </div>
                         </div>
                         <div class="col-md-6 col-12">
@@ -68,7 +68,7 @@
                         <div class="col-md-6 col-12">
                             <div class="form-group">                                
                                 <input type="text" name="zip" id="zip" class="form-control" value={{ (!empty($address)) ? $address->zip : '' }}>
-                                <label class="floating-label">Pincode</label>
+                                <label class="floating-label">Pin Code</label>
                                 <p></p>
                             </div>
                         </div>                                                               
@@ -92,13 +92,13 @@
                                 <p></p>
                             </div>
                         </div>  
-                        <div class="col-md-4 col-12">
+                        <div class="col-md-12 col-12">
                             <div class="form-group">                                                    
                                 @php 
                                     $addressType = old('address_type', auth()->user()->address->address_type ?? '');
                                 @endphp
                                     
-                                <label for="City">Types of address <span class="required">*</span></label>                                    
+                                <label for="City">Types of address <span class="required">*</span></label><br />                                    
                                 <label for="home">
                                     <input type="radio" name="address_type" id="home" value="Home"
                                     {{ old('address_type', optional(auth()->user()->address)->address_type) == 'Home' ? 'checked' : '' }}>
@@ -112,9 +112,8 @@
                                 </label>                                                                                                                                   
                                 <p></p>
                             </div>
-                        </div>                          
-                        <div class="col-md-8 col-12">
-                            <div class="form-check mt-3">
+                        
+                            <div class="form-check">
                                 <input type="checkbox" class="form-check-input" name="default_address" id="default_address" value="1"
                                     {{ old('default_address', optional(auth()->user()->address)->default_address) ? 'checked' : '' }}>
 

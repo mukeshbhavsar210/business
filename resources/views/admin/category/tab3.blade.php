@@ -57,7 +57,7 @@
                 @foreach ($sub2Categories as $value)
                     <tr>
                         <td>{{ $value->id }}</td>
-                        <td><h5 class="product-title">{{ $value->sub2_category_name }}</h5></td>
+                        <td>{{ $value->sub2_category_name }}</td>
                         <td>{{ $value->subCategoryName }}</td>
                         <td>{{ $value->categoryName }}</td>                       
                         <td>

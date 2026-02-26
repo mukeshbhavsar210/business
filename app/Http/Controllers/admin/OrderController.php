@@ -12,6 +12,7 @@ class OrderController extends Controller {
     public function index(Request $request) {
         $orders = Order::with([
                         'user',
+                        'items',
                         'orderItems.product.images',
                         'orderItems.product.size',
                         'orderItems.product.color'
@@ -34,13 +35,12 @@ class OrderController extends Controller {
 
 
     public function detail($orderId){
-
         $order = Order::select('orders.*','states.name as stateName' )
             ->where('orders.id',$orderId)
             ->leftJoin('states','states.id','orders.state_id')
             ->first();
 
-        $orderItems = OrderItem::where('order_id',$orderId)->get();
+        $orderItems = OrderItem::with('product.images')->where('order_id',$orderId)->get();
 
         return view('admin.orders.detail',[
             'order' => $order,

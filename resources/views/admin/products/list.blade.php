@@ -3,13 +3,12 @@
 @section('content')
 
 @include('admin.message')
-
-    <div class="card custom-card">
-        <div class="card-header">
-            <div class="row align-items-center">
+    <div class="card mb-0">
+        <div class="card-body pb-0">
+            <div class="row">
                 <div class="row">
                     <div class="col-sm-8 col-12 d-flex">
-                        <h3>Products</h3>  
+                        <h3 class="mb-0">Products</h3>  
                         <span class="counts">{{ $products->total() }}</span>
                     </div>
                     <div class="col-sm-4 col-12 float-end">
@@ -47,8 +46,9 @@
                 </div>                        
             </div>
         </div>
-
-        <div class="card-body">
+    </div>
+    <div class="card">
+        <div class="card-body pt-1">
             <div class="table-responsive">
                 @php
                     use Illuminate\Support\Str;

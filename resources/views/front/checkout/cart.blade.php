@@ -137,28 +137,26 @@
                             <h6>Price Details</h6>                            
                             @foreach (Cart::content() as $item)
                                 <div class="repeate-row">
-                                    <div class="left">Total MRP</div>
-                                    <div class="right">₹{{ $item->price*$item->qty }}</div>
-                                </div>
-
-                                <div class="repeate-row">
-                                    <div class="left">Discount on MRP</div>
-                                    <div class="right">₹{{ $item->price*$item->qty }}</div>
-                                </div>
-
-                                <div class="repeate-row">
-                                    <div class="left">Coupon Discount</div>
-                                    <div class="right">
-                                        <a href="#" data-bs-toggle="modal" data-bs-target="#discount">
-                                            Apply Discount
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="repeate-row">
-                                    <div class="left">Platform Fee</div>
-                                    <div class="right">₹{{ $item->price*$item->qty }}</div>
+                                    <div class="left">{{ $item->name }}</div>
+                                    <div class="right">₹{{ $item->price*$item->qty }}</div>                                    
                                 </div>
                             @endforeach
+                           
+                            <div class="repeate-row">
+                                <div class="left">Discount on MRP</div>
+                                <div class="right">₹</div>
+                            </div>
+
+                            <div class="repeate-row">
+                                <div class="left">Coupon Discount</div>
+                                <div class="right">
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#discount">Apply Discount</a>
+                                </div>
+                            </div>
+                            <div class="repeate-row">
+                                <div class="left">Platform Fee</div>
+                                <div class="right">₹</div>
+                            </div>
                                 
                             <div class="repeate-row total-amount">
                                 <div class="left">Total Amount</div>
@@ -229,7 +227,6 @@
         let currentRowId = '';
         let currentType = '';
 
-
         $(document).on('click', '.open-color-modal', function(){
             currentRowId = $(this).data('rowid');
             currentType = $(this).data('type');
@@ -276,9 +273,7 @@
             });
         });
 
-
-
-
+        //Size Modal
         $(document).on('click', '.open-size-modal', function(){
             currentRowId = $(this).data('rowid');
             currentType = $(this).data('type');
@@ -303,7 +298,8 @@
             new bootstrap.Modal('#commonSizesModal').show();
         });
 
-        $(document).on('click', '.select-size-option', function(e){
+        
+        $(document).on('click', '.select-size-option', function(e){            
             e.preventDefault();
 
             let value = $(this).data('value');
@@ -326,7 +322,7 @@
 
 
 
-
+        //Qty
         $(document).on('click', '.open-qty-modal', function(){
             currentRowId = $(this).data('rowid');
             currentType = $(this).data('type');

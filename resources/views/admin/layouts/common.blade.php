@@ -14,8 +14,8 @@
     @endif
 </div>
 
-<div class="card-header">
-    <div class="row align-items-center">            
+<div class="card mb-0">
+    <div class="card-body pb-0">            
         <div class="row">                
             <div class="col-sm-7 col-12 d-flex">
                 <h3>{{ $title }}</h3>  
@@ -56,7 +56,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="{{ $modal_id }}" tabindex="-1" aria-labelledby="{{ $modal_id }}Label" aria-hidden="true">
+<div class="modal fade" id="{{ $modal_id }}" tabindex="-1" aria-labelledby="{{ $modal_id }}Label" aria-hidden="true" data-bs-keyboard="true">
     <div class="modal-dialog {{ $formConfig['modal_size'] ?? '' }}">
         <div class="modal-content">            
             <form action="{{ $formConfig['action'] }}" method="POST" class="ajax-form" enctype="multipart/form-data">
@@ -67,47 +67,64 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
 
-                <div class="modal-body">
+                <div class="modal-body py-3">
                     <div class="row">
                         @foreach($formConfig['fields'] as $field)                        
-                            <div class="{{ $field['col'] ?? 'col-md-12' }}">
-                                <div class="form-group">
-                                    <label class="form-label" for="{{ $field['name'] }}">{{ $field['label'] }}</label>
-
-                                    @if($field['type'] == 'text')
-                                        <input type="{{ $field['type'] }}" name="{{ $field['name'] }}" id="{{ $field['id'] ?? '' }}" class="form-control {{ $field['class'] ?? '' }}" placeholder="{{ $field['placeholder'] ?? '' }}"
+                            <div class="{{ $field['col'] ?? 'col-md-12' }}">                                
+                                @if($field['type'] == 'text')
+                                    <div class="form-group">
+                                        <input type="{{ $field['type'] }}" name="{{ $field['name'] }}" id="{{ $field['id'] ?? '' }}" class="form-control {{ $field['animate_label'] ?? '' }} {{ $field['class'] ?? '' }}" 
                                             @if(isset($field['data']))
                                                 @foreach($field['data'] as $key => $value)
                                                     data-{{ $key }}="{{ $value }}"
                                                 @endforeach
                                             @endif 
                                         >
+                                        <label class="floating-label" for="{{ $field['name'] }}">{{ $field['label'] }}</label>
+                                    </div>
 
                                     @elseif($field['type'] == 'textarea')
-                                        <textarea name="{{ $field['name'] }}" class="form-control {{ $field['summer_class'] }}"></textarea>                                        
-
+                                        <div class="form-group">
+                                            <textarea name="{{ $field['name'] }}" class="form-control {{ $field['summer_class'] }}" rows="4"></textarea>                                        
+                                            <label class="floating-label" for="{{ $field['name'] }}">{{ $field['label'] }}</label>
+                                        </div>
+                                        
                                     @elseif($field['type'] == 'color')
-                                        <input type="{{ $field['type'] }}" id="{{ $field['name'] }}" name="{{ $field['name'] }}" class="form-control" placeholder="{{ $field['placeholder'] ?? '' }}">
+                                        <div class="form-group">
+                                            <label for="{{ $field['name'] }}">{{ $field['label'] }}</label>
+                                            <input type="{{ $field['type'] }}" id="{{ $field['name'] }}" name="{{ $field['name'] }}" class="form-control" placeholder="{{ $field['placeholder'] ?? '' }}">                                            
+                                        </div>
 
                                     @elseif($field['type'] == 'email')
-                                        <input type="{{ $field['type'] }}" id="{{ $field['name'] }}" name="{{ $field['name'] }}" class="form-control" placeholder="{{ $field['placeholder'] ?? '' }}">
+                                        <div class="form-group">
+                                            <input type="{{ $field['type'] }}" id="{{ $field['name'] }}" name="{{ $field['name'] }}" class="form-control" placeholder="{{ $field['placeholder'] ?? '' }}">
+                                            <label class="floating-label" for="{{ $field['name'] }}">{{ $field['label'] }}</label>
+                                        </div>
 
                                     @elseif($field['type'] == 'date')
-                                        <input type="{{ $field['type'] }}" id="{{ $field['name'] }}" name="{{ $field['name'] }}" class="form-control" placeholder="{{ $field['placeholder'] ?? '' }}">
+                                        <div class="form-group">
+                                            <label for="{{ $field['name'] }}">{{ $field['label'] }}</label>
+                                            <input type="{{ $field['type'] }}" id="{{ $field['name'] }}" name="{{ $field['name'] }}" class="form-control" placeholder="{{ $field['placeholder'] ?? '' }}">                                            
+                                        </div>
 
                                     @elseif($field['type'] == 'file')
-                                        <input type="{{ $field['type'] }}" id="{{ $field['name'] }}" name="{{ $field['name'] }}" class="form-control" placeholder="{{ $field['placeholder'] ?? '' }}">
+                                        <div class="form-group">
+                                            <input type="{{ $field['type'] }}" id="{{ $field['name'] }}" name="{{ $field['name'] }}" class="form-control" placeholder="{{ $field['placeholder'] ?? '' }}">
+                                            <label class="floating-label" for="{{ $field['name'] }}">{{ $field['label'] }}</label>
+                                        </div>
 
                                     @elseif($field['type'] == 'select')
-                                        <select name="{{ $field['name'] }}" class="form-select">
-                                            @foreach($field['options'] as $value => $label)
-                                                <option value="{{ $value }}">
-                                                    {{ $label }}
-                                                </option>
-                                            @endforeach
-                                        </select>                                                    
+                                        <div class="form-group">
+                                            <label for="{{ $field['name'] }}">{{ $field['label'] }}</label>
+                                            <select name="{{ $field['name'] }}" class="form-select">
+                                                @foreach($field['options'] as $value => $label)
+                                                    <option value="{{ $value }}">
+                                                        {{ $label }}
+                                                    </option>
+                                                @endforeach
+                                            </select>                                                    
+                                        </div>
                                     @endif
-                                </div>
                             </div>                        
                         @endforeach
                     </div>

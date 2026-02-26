@@ -348,7 +348,8 @@ class AuthController extends Controller
     
 
     public function address_update(Request $request, $id) {
-        $address = CustomerAddress::findOrFail($id);
+        //$address = CustomerAddress::findOrFail($id);
+        $address = CustomerAddress::where('user_id', auth()->id())->first();
 
         $validated = $request->validate([
             'name' => 'required',
