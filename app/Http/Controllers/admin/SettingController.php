@@ -48,6 +48,7 @@ class SettingController extends Controller {
                         'placeholder' => 'Enter Brand name',
                         'slug_create' => 'slug-source',
                         'class' => 'slug-source',
+                        'animate_label' => 'floating-input',
                         'data'  => [
                             'target' => '#slug'
                         ],
@@ -59,7 +60,7 @@ class SettingController extends Controller {
                         'label' => 'Brand Slug',
                         'placeholder' => 'Enter Brand slug',
                         'id'    => 'slug',
-                        'col' => 'col-md-12 col-12 d-none'
+                        'col' => 'col-md-6 col-6 d-none'
                     ],
                     [
                         'type' => 'select',
@@ -82,7 +83,6 @@ class SettingController extends Controller {
 
         return view('admin.settings.brands', $data);
     }
-
     
     public function brand_store(Request $request ){
         $validator = Validator::make($request->all(), [
@@ -156,14 +156,14 @@ class SettingController extends Controller {
                         'name' => 'name',
                         'label' => 'Color Name',
                         'placeholder' => 'Enter Color name',
-                        'col' => 'col-md-8 col-8'
+                        'col' => 'col-md-12 col-12'
                     ],
                     [
                         'type' => 'color',
                         'name' => 'code',
                         'label' => 'Code',
                         'placeholder' => 'Drag Color code',
-                        'col' => 'col-md-4 col-4'
+                        'col' => 'col-md-12 col-12'
                     ]
                 ]
             ]
@@ -215,7 +215,121 @@ class SettingController extends Controller {
         ]);
     }
 
+    //Discount
+    public function coupon_index(Request $request){
+        $discountCoupons = DiscountCoupon::latest('id');
 
+        if(!empty($request->get('keyword'))){
+            $discountCoupons = $discountCoupons->where('name', 'like', '%'.$request->get('keyword').'%');
+            $discountCoupons = $discountCoupons->orWhere('code', 'like', '%'.$request->get('keyword').'%');
+        }        
+       
+        $discountTotal = DiscountCoupon::count();
+        $discountCoupons = $discountCoupons->paginate(10);
+
+        $data = [
+            'title'         => 'Discount Coupon',
+            'button_name'   => 'Create Discount',
+            'modal_id'      => 'createPageModal',
+            'refresh'       => route('coupons.index'),
+            'button_route'  => null,
+            'discountCoupons' => $discountCoupons,
+            'total'         => $discountTotal,
+
+            'formConfig' => [
+                'action' => route('coupons.store'),
+                'modal_size' => 'modal-lg',
+                'method' => 'POST',
+                'button' => 'Create Page',
+                'fields' => [
+                    [
+                        'type' => 'text',
+                        'name' => 'code',
+                        'label' => 'Code',                                                                   
+                        'col' => 'col-md-4 col-6'
+                    ],
+                    [
+                        'type' => 'text',
+                        'name' => 'name',
+                        'id' => 'name',
+                        'label' => 'Name',
+                        'col' => 'col-md-4 col-6'
+                    ],
+                    [
+                        'type' => 'text',
+                        'name' => 'max_uses',
+                        'id' => 'max_uses',
+                        'label' => 'Max Uses',
+                        'col' => 'col-md-4 col-6'
+                    ],
+                    [
+                        'type' => 'text',
+                        'name' => 'max_uses_user',
+                        'id' => 'max_uses_user',
+                        'label' => 'Max Users Use',
+                        'col' => 'col-md-4 col-6'
+                    ],
+                    [
+                        'type' => 'text',
+                        'name' => 'discount_amount',
+                        'id' => 'discount_amount',
+                        'label' => 'Discount Amount',
+                        'col' => 'col-md-4 col-6'
+                    ],
+                    [
+                        'type' => 'text',
+                        'name' => 'min_amount',
+                        'id' => 'min_amount',
+                        'label' => 'Min Amount',
+                        'col' => 'col-md-4 col-6'
+                    ],
+                    [
+                        'type' => 'date',
+                        'name' => 'starts_at',
+                        'label' => 'Starts At',
+                        'col' => 'col-md-4 col-6'
+                    ],
+                    [
+                        'type' => 'date',
+                        'name' => 'expires_at',
+                        'label' => 'Expires At',
+                        'col' => 'col-md-4 col-6'
+                    ],
+                    [
+                        'type' => 'select',
+                        'name' => 'type',
+                        'label' => 'Discount Type',
+                        'options' => [
+                            'Percent' => 'Percent',
+                            'Fixed' => 'Fixed',
+                        ],
+                        'col' => 'col-md-2 col-6'
+                    ],
+                    [
+                        'type' => 'select',
+                        'name' => 'status',
+                        'label' => 'Status',
+                        'options' => [
+                            1 => 'Active',
+                            0 => 'Block',
+                        ],
+                        'col' => 'col-md-2 col-12'
+                    ],
+                    [
+                        'type' => 'textarea',
+                        'name' => 'description',
+                        'summer_class' => '',
+                        'label' => 'Description',
+                        'id'    => 'description',
+                        'col' => 'col-md-12 col-12'
+                    ],
+                    
+                ]
+            ]
+        ];       
+
+        return view('admin.settings.coupon.index', $data);
+    }  
 
 
     public function showChangePasswordForm(){
@@ -223,7 +337,6 @@ class SettingController extends Controller {
     }
 
     public function processChangePassword(Request $request){
-
         $validator = Validator::make(request()->all(), [
             'old_password' => 'required',
             'new_password' => 'required|min:5',
@@ -259,134 +372,6 @@ class SettingController extends Controller {
         }
     }
 
-
-    //Discount
-    public function coupon_index(Request $request){
-        $discountCoupons = DiscountCoupon::latest('id');
-
-        if(!empty($request->get('keyword'))){
-            $discountCoupons = $discountCoupons->where('name', 'like', '%'.$request->get('keyword').'%');
-            $discountCoupons = $discountCoupons->orWhere('code', 'like', '%'.$request->get('keyword').'%');
-        }        
-       
-        $discountTotal = DiscountCoupon::count();
-        $discountCoupons = $discountCoupons->paginate(10);
-
-        $data = [
-            'title'         => 'Discount',
-            'button_name'   => 'Create Discount',
-            'modal_id'      => 'createPageModal',
-            'refresh'       => route('coupons.index'),
-            'button_route'  => null,
-            'discountCoupons' => $discountCoupons,
-            'total'         => $discountTotal,
-
-            'formConfig' => [
-                'action' => route('coupons.store'),
-                'modal_size' => 'modal-lg',
-                'method' => 'POST',
-                'button' => 'Create Page',
-                'fields' => [
-                    [
-                        'type' => 'text',
-                        'name' => 'code',
-                        'label' => 'Coupon Code',
-                        'placeholder' => 'Enter Code',                                                                    
-                        'col' => 'col-md-3 col-6'
-                    ],
-                    [
-                        'type' => 'text',
-                        'name' => 'name',
-                        'id' => 'name',
-                        'label' => 'Coupon Name',
-                        'placeholder' => 'Enter Name',
-                        'col' => 'col-md-3 col-6'
-                    ],
-                    [
-                        'type' => 'text',
-                        'name' => 'max_uses',
-                        'id' => 'max_uses',
-                        'label' => 'Max Uses',
-                        'placeholder' => 'Max Uses',
-                        'col' => 'col-md-3 col-6'
-                    ],
-                    [
-                        'type' => 'text',
-                        'name' => 'max_uses_user',
-                        'id' => 'max_uses_user',
-                        'label' => 'Max uses User',
-                        'placeholder' => 'Max uses User',
-                        'col' => 'col-md-3 col-6'
-                    ],
-                    [
-                        'type' => 'text',
-                        'name' => 'discount_amount',
-                        'id' => 'discount_amount',
-                        'label' => 'Discount amount',
-                        'placeholder' => 'Discount amount',
-                        'col' => 'col-md-3 col-6'
-                    ],
-                    [
-                        'type' => 'text',
-                        'name' => 'min_amount',
-                        'id' => 'min_amount',
-                        'label' => 'Min Amount',
-                        'placeholder' => 'Min Amount',
-                        'col' => 'col-md-3 col-6'
-                    ],
-                    [
-                        'type' => 'select',
-                        'name' => 'type',
-                        'label' => 'type',
-                        'options' => [
-                            'Percent' => 'Percent',
-                            'Fixed' => 'Fixed',
-                        ],
-                        'col' => 'col-md-3 col-6'
-                    ],
-                    [
-                        'type' => 'date',
-                        'name' => 'starts_at',
-                        'label' => 'starts_at',
-                        'placeholder' => 'Min Amount',
-                        'col' => 'col-md-3 col-6'
-                    ],
-                    [
-                        'type' => 'date',
-                        'name' => 'expires_at',
-                        'label' => 'expires_at',
-                        'placeholder' => 'Min Amount',
-                        'col' => 'col-md-3 col-6'
-                    ],
-                    [
-                        'type' => 'select',
-                        'name' => 'status',
-                        'label' => 'Status',
-                        'options' => [
-                            1 => 'Active',
-                            0 => 'Block',
-                        ],
-                        'col' => 'col-md-3 col-12'
-                    ],
-                    [
-                        'type' => 'textarea',
-                        'name' => 'description',
-                        'summer_class' => '',
-                        'label' => 'description',
-                        'placeholder' => 'description',
-                        'id'    => 'description',
-                        'col' => 'col-md-6 col-12'
-                    ],
-                    
-                ]
-            ]
-        ];       
-
-        return view('admin.settings.coupon.index', $data);
-    }  
-
-
-
      public function coupon_index2(Request $request){
         $discountCoupons = DiscountCoupon::latest();
 
@@ -399,8 +384,6 @@ class SettingController extends Controller {
 
         return view('admin.settings.coupon.index',compact('discountCoupons'));
     }
-
-
 
     public function coupon_store(Request $request){
         $validator = Validator::make(request()->all(), [
@@ -442,7 +425,6 @@ class SettingController extends Controller {
         }
     }
 
-
     public function coupon_edit(Request $request, $id){
         $coupon = DiscountCoupon::find($id);
 
@@ -453,7 +435,6 @@ class SettingController extends Controller {
         $data['coupon'] = $coupon;
         return view('admin.settings.coupon.edit', $data);
     }
-
 
     public function coupon_update(Request $request, $id){
         $discountCode = DiscountCoupon::find($id);
@@ -517,7 +498,6 @@ class SettingController extends Controller {
         }
     }
 
-
     public function coupon_destroy(Request $request, $id){
         $discountCode = DiscountCoupon::find($id);
 
@@ -565,8 +545,7 @@ class SettingController extends Controller {
                     [
                         'type' => 'text',
                         'name' => 'name',
-                        'label' => 'Page Name',
-                        'placeholder' => 'Enter Brand name',
+                        'label' => 'Page Title',                        
                         'slug_create' => 'slug-source',
                         'class' => 'slug-source',
                         'data'  => [
@@ -577,17 +556,15 @@ class SettingController extends Controller {
                     [
                         'type' => 'text',
                         'name' => 'slug',
-                        'label' => 'Page Slug',
-                        'placeholder' => 'Enter Page slug',
+                        'label' => 'Page Slug',                        
                         'id'    => 'slug',
-                        'col' => 'col-md-12 col-12'
+                        'col' => 'd-none'
                     ],
                     [
                         'type' => 'textarea',
                         'name' => 'content',
                         'summer_class' => 'summernote',
-                        'label' => 'Content',
-                        'placeholder' => '',
+                        'label' => 'Content',                        
                         'id'    => 'slug',
                         'col' => 'col-md-12 col-12'
                     ]                    
@@ -726,35 +703,30 @@ class SettingController extends Controller {
                         'type' => 'text',
                         'name' => 'name',
                         'label' => 'User Name',
-                        'placeholder' => 'Enter User name',
                         'col' => 'col-md-6 col-6'
                     ],
                     [
                         'type' => 'email',
                         'name' => 'email',
                         'label' => 'Email',
-                        'placeholder' => 'Enter Email',
                         'col' => 'col-md-6 col-6'
                     ],
                     [
                         'type' => 'text',
                         'name' => 'password',
                         'label' => 'Password',
-                        'placeholder' => 'Enter Password',
                         'col' => 'col-md-6 col-6'
                     ],
                     [
                         'type' => 'text',
                         'name' => 'phone',
-                        'label' => 'phone',
-                        'placeholder' => 'Enter Phone',
+                        'label' => 'Phone',                        
                         'col' => 'col-md-6 col-6'
                     ],
                     [
                         'type' => 'text',
                         'name' => 'mobile',
-                        'label' => 'mobile',
-                        'placeholder' => 'Enter Mobile',
+                        'label' => 'Mobile',                        
                         'col' => 'col-md-6 col-6'
                     ],
                     [
@@ -766,14 +738,13 @@ class SettingController extends Controller {
                     [
                         'type' => 'date',
                         'name' => 'birthdate',
-                        'label' => 'birthdate',
-                        'placeholder' => 'Enter birthdate',
+                        'label' => 'Birthdate',                        
                         'col' => 'col-md-3 col-6'
                     ],
                     [
                         'type' => 'select',
                         'name' => 'gender',
-                        'label' => 'gender',
+                        'label' => 'Gender',
                         'options' => [
                             'Male' => 'Male',
                             'Female' => 'Female',
@@ -783,7 +754,7 @@ class SettingController extends Controller {
                     [
                         'type' => 'select',
                         'name' => 'role',
-                        'label' => 'role',
+                        'label' => 'Role',
                         'options' => [
                             1 => 'User',
                             0 => 'Admin',
@@ -928,7 +899,55 @@ class SettingController extends Controller {
     }
 
     //Shipping
-    public function shipping_index(){
+    public function shipping_index(Request $request){
+        $states = State::get();
+        $shippings = ShippingCharge::select('shipping_charges.*','states.name')->leftJoin('states','states.id','shipping_charges.state_id')->get();
+        $shippingTotal = ShippingCharge::count();
+        //$shippings = $shippings->paginate(10);
+
+        $data['states'] = $states;
+        $data['shippings'] = $shippings;
+
+        $data = [
+            'title'         => 'Shipping',
+            'button_name'   => 'Add State',
+            'modal_id'      => 'createStateModal',
+            'refresh'       => route('shipping.index'),
+            'button_route'  => null,
+            'shippings'     => $shippings,
+            'states'     => $states,
+            'total'         => $shippingTotal,
+
+            'formConfig' => [
+                'action' => route('shipping.store'),
+                'modal_size' => null,
+                'method' => 'POST',
+                'button' => 'Create Shipping',
+                'fields' => [
+                    [
+                        'type' => 'select',
+                        'name' => 'state_id',
+                        'label' => 'State',
+                        'options' => $states->pluck('name', 'id')->toArray() + [
+                            'rest_of_state' => 'Rest of the state'
+                        ],
+                        'col' => 'col-md-12 col-12'
+                    ],
+                    [
+                        'type' => 'text',
+                        'name' => 'amount',
+                        'label' => 'Amount',
+                        'placeholder' => 'Enter amount',
+                        'col' => 'col-md-12 col-12'
+                    ]                    
+                ]
+            ]
+        ];       
+
+        return view('admin.settings.shipping.index', $data);
+    }
+
+    public function shipping_index2(){
         $states = State::get();
         $data['states'] = $states;
         $shippings = ShippingCharge::select('shipping_charges.*','states.name')->leftJoin('states','states.id','shipping_charges.state_id')->get();

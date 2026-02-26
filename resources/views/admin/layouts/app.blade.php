@@ -155,6 +155,7 @@
 <script src="{{ asset('admin-assets/js/bootstrap.bundle.min.js.download') }}"></script>
 <script src="{{ asset('admin-assets/js/simplebar.min.js.download') }}"></script>
 <script src="{{ asset('admin-assets/js/app.js.download') }}"></script>
+<script src="{{ asset('admin-assets/js/admin_documentReady.js') }}"></script>
 
 <script src="{{ asset('admin-assets/plugins/dropzone/min/dropzone.min.js') }}"></script>
 <script src="{{ asset('admin-assets/plugins/summernote/summernote-bs4.min.js') }}"></script>
@@ -212,7 +213,6 @@
             }
         });
     });
-
 </script>
 
 @yield('customJs')

@@ -49,7 +49,6 @@
                 <tr>
                     <th class="border-top-0" width="50">ID</th>
                     <th class="border-top-0">Category Name</th>
-                    <th class="border-top-0" width="150">Show</th>
                     <th class="border-top-0" width="120">Menu Order</th>
                     <th class="border-top-0" width="80">Status</th>
                     <th class="border-top-0" width="120">Action</th>
@@ -69,10 +68,10 @@
                                         <h5 class="product-title">
                                             <a href="{{ route('products.edit', $category->id) }}">{{ Str::limit($category->category_name, 75, '...') }}</a>
                                         </h5>
+                                        <p>Show: {{ $category->showHome }}</p>
                                     </div>
                                 </div>
-                            </td>  
-                            <td>{{ $category->showHome }}</td>
+                            </td>                              
                             <td>{{ $category->menu_order }}</td>
                             <td>
                                 @if($category->status == 1)

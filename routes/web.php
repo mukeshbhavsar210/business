@@ -34,22 +34,24 @@ Route::controller(ShopController::class)->group(function() {
 });
 
 Route::controller(CartController::class)->group(function() {
+    //Bag
     Route::get('/checkout/cart','cart')->name('front.cart');
-    Route::post('/update-cart','updateCart')->name('front.updateCart');
-    Route::post('/add-to-cart','addToCart')->name('front.addToCart');
+    Route::post('/checkout/update-cart','updateCart')->name('front.updateCart');
+    Route::post('/checkout/add-to-cart','addToCart')->name('front.addToCart');
+    Route::post('/checkout/delete-item','deleteItem')->name('front.deleteItem.cart');
 
     //Update Color/Size/Qty in cart
-    Route::post('/checkout/cart/update-color', 'updateColorItem')->name('front.updateCartColor');
-    Route::post('/checkout/cart/update-size', 'updateSizeItem')->name('front.updateCartSize');
-    Route::post('/checkout/cart/update-qty', 'updateQtyItem')->name('front.updateCartQty');
+    Route::post('/checkout/cart/color', 'updateColorItem')->name('front.updateCartColor');
+    Route::post('/checkout/cart/size', 'updateSizeItem')->name('front.updateCartSize');
+    Route::post('/checkout/cart/qty', 'updateQtyItem')->name('front.updateCartQty');
 
-    Route::post('/update-cart','updateCart')->name('front.updateCart');
-    Route::post('/delete-item','deleteItem')->name('front.deleteItem.cart');
-    
+    //Route::post('/update-cart','updateCart')->name('front.updateCart');
     Route::get('/checkout/address','checkout')->name('front.checkout');
     Route::post('/process-checkout','processCheckout')->name('front.processCheckout');
     Route::get('/thanks/{orderId}','thankyou')->name('front.checkout.thankyou');
     Route::post('/get-order-summary','getOrderSummary')->name('front.getOrderSummary');
+
+    //Discount apply
     Route::post('/apply-coupon', 'applyCoupon')->name('coupon.apply');
     Route::post('/apply-discount','applyDiscount')->name('front.applyDiscount');
     Route::post('/remove-discount','removeCoupon')->name('front.removeCoupon');

@@ -1,5 +1,4 @@
 $(document).ready(function(){
-
     function checkValue(element){
         if($(element).val() !== ''){
             $(element).closest('.form-group').addClass('active');
@@ -23,9 +22,7 @@ $(document).ready(function(){
         checkValue(this);
     });
 
-
-
-     function updateActive() {
+    function updateActive() {
         $('.card').removeClass('delivery-address');
 
         $('.address-radio:checked')

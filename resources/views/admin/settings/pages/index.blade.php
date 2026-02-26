@@ -4,18 +4,18 @@
 
 @include('admin.message')
 
-<div class="card custom-card">
-    @include('admin.layouts.common')
+@include('admin.layouts.common')
     
-    <div class="container-fluid">        
-        <div class="card">
-            <div class="card-body table-responsive p-0">
-                <table class="table table-hover text-nowrap">
-                    <thead>
+<div class="card">
+    <div class="card-body pt-1">
+        <div class="table-responsive">          
+                <table class="table mb-0">
+                    <thead class="table-light">
                         <tr>
-                            <th width="60">ID</th>
-                            <th>Name</th>                            
-                            <th width="100">Action</th>
+                            <th class="border-top-0" width="60">ID</th>
+                            <th class="border-top-0">Name</th>
+                            <th class="border-top-0">Contents</th>
+                            <th class="border-top-0" width="100">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -24,6 +24,7 @@
                                 <tr>
                                     <td>{{ $page->id }}</td>
                                     <td>{{ $page->name }}</td>
+                                    <td>{!! Str::limit($page->content, 125, '...') !!}</td>
                                     <td>
                                         <a href="{{ route('pages.edit', $page->id ) }}">
                                             <svg class="filament-link-icon w-4 h-4 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">

@@ -331,6 +331,27 @@ input:checked + .slider { box-shadow:0 0 0 2px #007bff,0 0 2px #007bff; }
 
 .overflow-variant { height: 200px; overflow-y: auto; overflow-x: hidden;}
 
+.flex-details { display: flex; column-gap: 10px; margin-bottom: 2px;}
+.flex-details .label { width: 90px; margin: 0;}
+.flex-details .right { margin: 0;}
+
+.table-text td, .table-text th { vertical-align: top; }
+
+.form-group { position: relative; margin-bottom: 20px; }
+.form-group label { font-size: 13px; color: var(--gray); margin-bottom: 5px;}
+.form-group .floating-label {
+    position: absolute;
+    left: 9px;
+    top: 10px;
+    color: var(--gray);
+    font-size: 13px;
+    pointer-events: none;
+    transition: all 0.25s ease;
+    background: #fff;
+    padding: 0 5px;
+}
+
+.form-group.active .floating-label { top: -11px; }
 
 
 .dropzone { text-align: center; cursor: pointer; }
