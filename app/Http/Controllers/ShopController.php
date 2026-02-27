@@ -17,8 +17,9 @@ class ShopController extends Controller {
     public function index(Request $request, $categorySlug = null, $subCategorySlug = null, $subSubCategory = null) {
         $brandsArray = [];
         $colorsArray = [];
-
-        $categories = Category::orderBy("category_name","ASC")->with('sub_category')->where('status',1)->get();               
+        $sizesArray = [];
+        
+        $categories = Category::orderBy("category_name","ASC")->with(['sub_category'])->where('status',1)->get();               
         $products = Product::with('ratings')->where('status',1);
         $productCount = Product::where('status', 1)->count();
         $totalProducts = $products->count();
@@ -75,13 +76,24 @@ class ShopController extends Controller {
 
         $colors = Color::withCount([
             'products as products_count' => function($query) use ($selectedCategory, $selectedSubCategory) {
-
                 $query->where('status', 1);
-
                 if ($selectedCategory) {
                     $query->where('category_id', $selectedCategory->id);
                 }
+                if ($selectedSubCategory) {
+                    $query->where('sub_category_id', $selectedSubCategory->id);
+                }
+            }
+        ])
+        ->orderBy('name','ASC')
+        ->get();
 
+        $sizes = Size::withCount([
+            'products as products_count' => function($query) use ($selectedCategory, $selectedSubCategory) {
+                $query->where('status', 1);
+                if ($selectedCategory) {
+                    $query->where('category_id', $selectedCategory->id);
+                }
                 if ($selectedSubCategory) {
                     $query->where('sub_category_id', $selectedSubCategory->id);
                 }
@@ -112,11 +124,21 @@ class ShopController extends Controller {
             $products = $products->whereIn('color_id', $colorIds);
         }
 
+        // size filters
+        if (!empty($request->get('size'))) {
+            $sizeCode = explode(',', $request->get('size'));
+            $sizeIds = Size::whereIn('name', $sizeCode)
+                ->pluck('id')
+                ->toArray();
+
+            $sizesArray = $sizeCode; 
+            $products = $products->whereIn('size_id', $sizeIds);
+        }
+
         // Price slider
         if ($request->filled('price_min') && $request->filled('price_max')) {
             $min = intval($request->get('price_min'));
             $max = intval($request->get('price_max'));
-
             $products = $products->whereBetween('price', [$min, $max]);
         }
 
@@ -169,6 +191,7 @@ class ShopController extends Controller {
         if (
             $request->filled('brand') ||
             $request->filled('color') ||
+            $request->filled('size') ||
             $request->filled('sub2') ||
             $request->filled('price_min') ||
             $request->filled('price_max') ||
@@ -185,6 +208,8 @@ class ShopController extends Controller {
         $data['brandsArray'] = $brandsArray;
         $data['colors'] = $colors;
         $data['colorsArray'] = $colorsArray;
+        $data['sizes'] = $sizes;
+        $data['sizesArray'] = $sizesArray;
         $data['products'] = $products;
         $data['productCount '] = $productCount;
         $data['selectedCategory'] = $selectedCategory;
@@ -204,8 +229,8 @@ class ShopController extends Controller {
     
 
 
-    public function product($slug){
-        $product = Product::where('slug',$slug)->with(['product_images', 'variants'])->first();
+    public function product($slug){        
+        $product = Product::where('slug',$slug)->with(['product_images', 'variants', 'subSubCategory.subCategory.category'])->first();
         $colors = Color::get();
         $sizes = Size::get();
 
@@ -260,9 +285,9 @@ class ShopController extends Controller {
         $totalRatings = Review::where('product_id', $product->id)->count();
         $averageRating = Review::avg('rating');
         $reviews = Review::with('user')->where('product_id', $product->id)->latest()->take(3)->get();      
-        $totalReviews = Review::where('product_id', $product->id)->count(); 
+        $totalReviews = Review::where('product_id', $product->id)->count();         
        
-        $data['product'] = $product;
+        $data['product'] = $product;      
         $data['ratings'] = $ratings;
         $data['totalRatings'] = $totalRatings;
         $data['averageRating'] = $averageRating;

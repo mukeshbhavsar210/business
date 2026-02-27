@@ -14,8 +14,23 @@ class Category extends Model {
         return $this->hasMany(SubCategory::class);
     }
 
+    // public function subCategories(){
+    //     return $this->hasMany(SubCategory::class, 'category_id'); 
+    // }
+
     public function subCategories() {
-        return $this->hasMany(SubCategory::class, 'category_id'); 
+        return $this->hasMany(SubCategory::class);
     }
 
+    public function products(){
+        return $this->hasMany(Product::class);
+    }
+
+    public function parent(){
+        return $this->belongsTo(Category::class, 'parent_id');
+    }
+
+    public function children(){
+        return $this->hasMany(Category::class, 'parent_id');
+    }   
 }

@@ -134,12 +134,10 @@
                                             <path stroke="#303030" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M.75 4.8c0-.02.003-.037.006-.05h14.488c.003.013.006.03.006.05v14.4c0 .02-.003.037-.006.05H.756a.196.196 0 0 1-.006-.05V4.8ZM4.5 3.75c0-.73.395-1.429 1.098-1.945C6.302 1.29 7.255 1 8.25 1c.995 0 1.948.29 2.652.805C11.605 2.321 12 3.021 12 3.75"></path>
                                         </svg>
                                         <span>Bag</span>
-                                                                        
-                                        @if(Cart::count())
-                                            <span id="cartCount" class="card-count" >
-                                                {{ Cart::count() }}
-                                            </span>					    
-                                        @endif 
+
+                                        <span id="cartCount" class="card-count" >
+                                            {{ Cart::count() }}
+                                        </span>					                                            
                                     </a>
                                 </li>
                             </ul>
@@ -149,14 +147,11 @@
             </div>							
         </div>
     </div>
-
-    <div class="position-fixed top-0 end-0 p-3" style="z-index: 1080">
-        <div id="cartToast" class="toast align-items-center bg-dark text-white border-0 shadow rounded-3" role="alert" data-bs-delay="2000">
-            <div class="d-flex">
-                <div class="toast-body" id="cartToastMessage">Product added to cart</div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast">
-                </button>
-            </div>
+     
+    <div id="cartToast" class="toast toast-cart" role="alert" data-bs-delay="2000">
+        <div class="d-flex">
+            <div class="toast-body" id="cartToastMessage">Product added to cart</div>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
         </div>
-    </div>
+    </div>    
 </header>

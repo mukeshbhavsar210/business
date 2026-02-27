@@ -14,7 +14,15 @@ class SubCategory extends Model {
         return $this->hasMany(SubCategory::class, 'category_id');  
     }
 
+    // public function subSubCategories() {
+    //     return $this->hasMany(SubSubCategory::class, 'sub_category_id');
+    // }
+
+    public function category() {
+        return $this->belongsTo(Category::class);
+    }
+
     public function subSubCategories() {
-        return $this->hasMany(SubSubCategory::class, 'sub_category_id');
+        return $this->hasMany(SubSubCategory::class);
     }
 }

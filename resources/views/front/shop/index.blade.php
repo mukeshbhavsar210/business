@@ -3,8 +3,8 @@
 @section('content')
     
 <div class="container-fluid">
-    <div class="row py-1">
-        <div class="col-md-10 col-12">
+    <div class="row">
+        <div class="col-md-2 col-12">
             <div class="light-font">
                 <ol class="breadcrumb primary-color">
                     <li class="breadcrumb-item"><a href="{{ route('front.home') }}">Home</a></li>
@@ -12,93 +12,36 @@
                 </ol>
             </div>
         </div>
-        <div class="col-md-2 col-12">            
-            <div class="d-flex justify-content-between align-items-center mt-3">
-                <select class="form-select" id="sortFilter">
-                    <option value="latest" {{ request('sort') == 'recommended' ? 'selected' : '' }}>Recommended</option>
-                    <option value="latest" {{ request('sort') == 'latest' ? 'selected' : '' }}>What's New</option>
-                    <option value="popularity" {{ request('sort') == 'popularity' ? 'selected' : '' }}>Popularity</option>
-                    <option value="discount" {{ request('sort') == 'discount' ? 'selected' : '' }}>Better Discount</option>
-                    <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>Price: High to Low</option>
-                    <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>Price: Low to High</option>
-                    <option value="rating" {{ request('sort') == 'rating' ? 'selected' : '' }}>Customer Rating</option>
-                </select>                    
-            </div>            
+
+        <div class="col-md-10 col-12">
+            <div class="row">
+                <div class="col-md-10 col-12">
+                    <h6 class="h6">
+                        <b>{{ $selectedCategory->category_name }} {{ $selectedSubCategory->sub_category_name }}</b> -
+                        <span class="text-muted">{{ $products->total() }} items</span>
+                    </h6>                    
+                </div>
+
+                <div class="col-md-2 col-12">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <select class="form-select" id="sortFilter">
+                            <option value="latest" {{ request('sort') == 'recommended' ? 'selected' : '' }}>Recommended</option>
+                            <option value="latest" {{ request('sort') == 'latest' ? 'selected' : '' }}>What's New</option>
+                            <option value="popularity" {{ request('sort') == 'popularity' ? 'selected' : '' }}>Popularity</option>
+                            <option value="discount" {{ request('sort') == 'discount' ? 'selected' : '' }}>Better Discount</option>
+                            <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>Price: High to Low</option>
+                            <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>Price: Low to High</option>
+                            <option value="rating" {{ request('sort') == 'rating' ? 'selected' : '' }}>Customer Rating</option>
+                        </select>                    
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <div class="row">
         <div class="col-md-2 col-12 sticky">
-            <h6 class="h6">{{ $selectedCategory->category_name }} {{ $selectedSubCategory->sub_category_name }} -
-                <span class="text-muted">{{ $products->total() }} items</span>
-            </h6>            
-
-            <div class="filter-group">
-                <h5>Filters</h5>
-            </div>
-            <div class="filter-group">
-                <div class="flex-end">
-                    <h5>Categories</h5>
-                    @if($filtersApplied)                    
-                        <a href="{{ url()->current() }}" class="btn-link">Clear All</a>                    
-                    @endif
-                </div>
-
-                @if($selectedSubCategory)                    
-                    @foreach($subSubCategories as $sub2)
-                        <div class="form-check">
-                            <input {{ (request()->get('sub2') && in_array($sub2->sub2_category_slug, explode(',', request()->get('sub2')))) ? 'checked' : '' }}
-                                class="form-check-input sub2-label" type="checkbox" value="{{ $sub2->sub2_category_slug }}" id="sub2-{{ $sub2->id }}">
-
-                            <label class="form-check-label" for="sub2-{{ $sub2->id }}">
-                                {{ $sub2->sub2_category_name }} 
-                                <span class="text-muted">({{ $sub2->products_count }})</span>                            
-                            </label>
-                        </div>
-                    @endforeach
-                @endif
-            </div>
-            <div class="filter-group">
-                <h5>Brands</h5>            
-                @if ($brands->isNotEmpty())
-                    @foreach ($brands as $brand)
-                        <div class="form-check">
-                            <input {{ (in_array($brand->slug, $brandsArray)) ? 'checked' : '' }}
-                                class="form-check-input brand-label" type="checkbox" value="{{ $brand->slug }}" id="brand-{{ $brand->id }}">
-
-                            <label class="form-check-label" for="brand-{{ $brand->id }}">
-                                {{ $brand->name }} <span class="text-muted">({{ $brand->products_count }})</span>
-                            </label>
-                        </div>
-                    @endforeach
-                @endif
-            </div>
-
-            <div class="filter-group">
-                <h5 class="h5 mb-2">Price</h5>
-                <input type="text" class="js-range-slider" name="my_range" value="" />
-            </div>
-            
-            <div class="filter-group">
-                <h5>Color</h5>
-                @if($colors->isNotEmpty())
-                    @foreach($colors as $color)
-                        <div class="form-check">
-                            <input {{ request()->get('color') && in_array($color->name, explode(',', request()->get('color'))) ? 'checked' : '' }}
-                                class="form-check-input color-label" type="checkbox" value="{{ $color->name }}" id="color-{{ $color->id }}">
-
-                            <label class="form-check-label" for="color-{{ $color->id }}">                                
-                                <span class="color-code" style="background-color: {{ $color->code }}"></span>
-                                <span class="color-name">{{ $color->name }}</span>
-                                <span class="text-muted">({{ $color->products_count }})</span>
-                            </label>
-                        </div>
-                    @endforeach
-                @endif
-            </div>
-            <div class="filter-group">
-                <h5>Discount Range</h5>
-            </div>
+           @include('front.shop.filters')
         </div>
 
         <div class="col-md-10 col-12">
@@ -120,9 +63,41 @@
 
 @section('customJs')
     <script>
+
+        $('.form-check-input').on('change', function () {
+            let url = new URL(window.location.href);
+            let params = url.searchParams;
+
+            let type = $(this).data('type');
+            let value = $(this).val();
+
+            // Get existing values
+            let existing = params.get(type);
+            let values = existing ? existing.split(',') : [];
+
+            if (this.checked) {
+                if (!values.includes(value)) {
+                    values.push(value);
+                }
+            } else {
+                values = values.filter(v => v !== value);
+            }
+
+            if (values.length > 0) {
+                params.set(type, values.join(','));
+            } else {
+                params.delete(type);
+            }
+
+            window.location.href = url.toString();
+        });
+
+
+
         $(".sub2-label").on('change', apply_category_filters);
         $(".brand-label").on('change', apply_brand_filters);
         $(".color-label").on('change', apply_color_filters);
+        $(".size-label").on('change', apply_size_filters);
         $("#sortFilter").on('change', apply_sort_filters);
 
         function apply_brand_filters(){
@@ -152,6 +127,24 @@
                 params.set('color', colors.join(','));
             } else {
                 params.delete('color');
+            }
+
+            window.location.href = '{{ url()->current() }}?' + params.toString();
+        }
+
+        function apply_size_filters(){
+            var sizes = [];
+
+            $(".size-label:checked").each(function(){
+                sizes.push($(this).val());
+            });
+
+            var params = new URLSearchParams(window.location.search);
+
+            if (sizes.length > 0) {
+                params.set('size', sizes.join(','));
+            } else {
+                params.delete('size');
             }
 
             window.location.href = '{{ url()->current() }}?' + params.toString();

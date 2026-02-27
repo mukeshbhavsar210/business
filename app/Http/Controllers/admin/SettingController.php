@@ -538,7 +538,7 @@ class SettingController extends Controller {
 
             'formConfig' => [
                 'action' => route('pages.store'),
-                'modal_size' => 'modal-xl',
+                'modal_size' => 'modal-lg',
                 'method' => 'POST',
                 'button' => 'Create Page',
                 'fields' => [
@@ -551,7 +551,7 @@ class SettingController extends Controller {
                         'data'  => [
                             'target' => '#slug'
                         ],
-                        'col' => 'col-md-12 col-12'
+                        'col' => 'col-md-9 col-9'
                     ],
                     [
                         'type' => 'text',
@@ -559,6 +559,22 @@ class SettingController extends Controller {
                         'label' => 'Page Slug',                        
                         'id'    => 'slug',
                         'col' => 'd-none'
+                    ],
+                    [
+                        'type' => 'select',
+                        'name' => 'status',
+                        'label' => 'Status',
+                        'options' => [
+                            1 => '1',
+                            2 => '2',
+                            3 => '3',
+                            4 => '4',
+                            5 => '5',
+                            6 => '6',
+                            7 => '7',
+                            8 => '8',
+                        ],
+                        'col' => 'col-md-3 col-3'
                     ],
                     [
                         'type' => 'textarea',
@@ -594,6 +610,7 @@ class SettingController extends Controller {
         $page->name = $request->name;
         $page->slug = $request->slug;
         $page->content = $request->content;
+        $page->menu_order = $request->menu_order;
         $page->save();
 
         $message = 'Page added successfully.';
@@ -641,6 +658,7 @@ class SettingController extends Controller {
         $page->name = $request->name;
         $page->slug = $request->slug;
         $page->content = $request->content;
+        $page->menu_order = $request->menu_order;
         $page->save();
 
         $message = 'Page updated successfully.';
