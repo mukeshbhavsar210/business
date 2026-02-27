@@ -9,15 +9,17 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
-class FrontController extends Controller
-{
+class FrontController extends Controller {
     public function index(){
         $products = Product::where('is_featured','Yes')->orderBy('id','DESC')->take(4)->where('status',1)->get();
         $latestProducts = Product::orderBy('id','DESC')->where('status',1)->take(4)->get();
+
         $data['latestProducts'] = $latestProducts;
-        $data['featuredProducts'] = $products;        
+        $data['featuredProducts'] = $products;    
+
         return view("front.home.index",$data);
     }
+
 
     public function addToWishlist(Request $request){
         if(Auth::check() == false){
@@ -27,15 +29,7 @@ class FrontController extends Controller
             ]);
         }
 
-        // if(Auth::check() == false){
-        //     session(['url.intended' => url()->previous() ]);
-        //     return response()->json([
-        //         'status' => false,
-        //     ]);
-        // }
-
-        //Product add in wishlist
-        $product = Product::where('id', $request->id)->first();
+        $product = Product::find($request->id);
 
         if ($product == null){
             return response()->json([
@@ -43,7 +37,6 @@ class FrontController extends Controller
                 'message' => '<div class="alert alert-danger">Product not found.</div>'
             ]);
         }
-
 
         Wishlist::updateOrCreate(
             [
@@ -56,16 +49,13 @@ class FrontController extends Controller
             ],
         );
 
-        //$wishlist = new Wishlist;
-        //$wishlist->user_id = Auth::user()->id;
-        //$wishlist->product_id = $request->id;
-        //$wishlist->save();
-
         return response()->json([
             'status' => true,
             'message' => '<div class="alert alert-success"><strong>"'.$product->title.'"</strong> added in yout wishlist!</div>'
         ]);
     }
+
+
 
     public function page($slug){
         $page = Page::where('slug', $slug)->first();
@@ -79,6 +69,8 @@ class FrontController extends Controller
         ]);
     }
 
+
+    
     public function sendContactEmail(Request $request){
         $validator = Validator::make($request->all(), [
             'name' => 'required',

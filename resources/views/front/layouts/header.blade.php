@@ -76,7 +76,7 @@
                                 @if (Auth::check())
                                     <li>
                                         <div class="hover-parent position-relative">
-                                            <a href="" class="link">
+                                            <a href="{{ route('account.profile') }}" class="link">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="none" viewBox="0 0 18 18" style="font-size: 20px;" class=" " stroke="none"><path stroke="#303030" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.25 5a4.25 4.25 0 1 1-8.5 0 4.25 4.25 0 0 1 8.5 0Z"></path><mask id="header_icon_account_svg__a" fill="#fff"><path d="M0 16.997c.844-2.406 2.131-4.427 3.72-5.838C5.308 9.747 7.136 9 9 9c1.864 0 3.691.747 5.28 2.159C15.87 12.57 17.156 14.594 18 17"></path></mask><path fill="#303030" d="M-1.415 16.5a1.5 1.5 0 0 0 2.83.993l-2.83-.993Zm18 .996a1.5 1.5 0 0 0 2.83-.992l-2.83.992Zm-15.17-.003c.777-2.213 1.938-4.002 3.301-5.213l-1.992-2.243C.91 11.65-.504 13.902-1.416 16.5l2.831.993Zm3.301-5.213C6.071 11.076 7.555 10.5 9 10.5v-3c-2.283 0-4.454.918-6.276 2.537l1.992 2.243ZM9 10.5c1.445 0 2.929.576 4.284 1.78l1.992-2.243C13.454 8.418 11.283 7.5 9 7.5v3Zm4.284 1.78c1.363 1.21 2.524 3.002 3.3 5.216l2.832-.992c-.912-2.598-2.325-4.855-4.14-6.467l-1.992 2.243Z" mask="url(#header_icon_account_svg__a)"></path><path stroke="#303030" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M.8 17h16.3"></path></svg>
                                                 <span>Profile</span>
                                             </a>
@@ -102,6 +102,8 @@
                                     <li>
                                         <div class="hover-parent position-relative">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="none" viewBox="0 0 24 24" style="font-size: 24px;" class=" " stroke="none"><g clip-path="url(#header_icon_wishlist_svg__a)"><path stroke="#303030" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 20S3 14.91 3 8.727c0-1.093.375-2.152 1.06-2.997a4.672 4.672 0 0 1 2.702-1.638 4.639 4.639 0 0 1 3.118.463A4.71 4.71 0 0 1 12 6.909a4.71 4.71 0 0 1 2.12-2.354 4.639 4.639 0 0 1 3.118-.463 4.672 4.672 0 0 1 2.701 1.638A4.756 4.756 0 0 1 21 8.727C21 14.91 12 20 12 20Z"></path></g><defs><clipPath id="header_icon_wishlist_svg__a"><path fill="#fff" d="M0 0h24v24H0z"></path></clipPath></defs></svg>
+
+                                            
                                             <span>Profile</span>
 
                                             <div class="hover-content">
@@ -123,9 +125,13 @@
                                     </li>
                                 @endif						
                                 <li>
-                                    <a href="{{ route('front.cart') }}" class="link">
+                                    <a href="{{ route('account.wishlist') }}" class="link">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="none" viewBox="0 0 24 24" style="font-size: 24px;" class=" " stroke="none"><g clip-path="url(#header_icon_wishlist_svg__a)"><path stroke="#303030" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 20S3 14.91 3 8.727c0-1.093.375-2.152 1.06-2.997a4.672 4.672 0 0 1 2.702-1.638 4.639 4.639 0 0 1 3.118.463A4.71 4.71 0 0 1 12 6.909a4.71 4.71 0 0 1 2.12-2.354 4.639 4.639 0 0 1 3.118-.463 4.672 4.672 0 0 1 2.701 1.638A4.756 4.756 0 0 1 21 8.727C21 14.91 12 20 12 20Z"></path></g><defs><clipPath id="header_icon_wishlist_svg__a"><path fill="#fff" d="M0 0h24v24H0z"></path></clipPath></defs></svg>
-                                        <span>Wishlist</span>						
+                                        <span>Wishlist</span>	
+                                        
+                                        <span class="wishlist-count">
+                                            {{ wishlistCount() }}
+                                        </span>
                                     </a>
                                 </li>
                                 <li>
@@ -135,9 +141,9 @@
                                         </svg>
                                         <span>Bag</span>
 
-                                        <span id="cartCount" class="card-count" >
+                                        <span id="cartCount" class="card-count">
                                             {{ Cart::count() }}
-                                        </span>					                                            
+                                        </span>					                                                                                   
                                     </a>
                                 </li>
                             </ul>
@@ -154,4 +160,20 @@
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
         </div>
     </div>    
+    
+    <div id="wishlistToast" class="toast toast-cart" role="alert" data-bs-delay="2000">
+        <div class="d-flex">
+            <div class="toast-body" id="wishlistToastBody">Product added to wishlist!</div>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+        </div>
+    </div>
+
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        <div id="wishlistToast" class="toast align-items-center text-white bg-success border-0" role="alert">
+            <div class="d-flex">
+                <div class="toast-body" id="wishlistToastBody"></div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
 </header>

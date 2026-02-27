@@ -1,92 +1,138 @@
 @extends('front.layouts.app')
 
 @section('content')
-<section class="section-5 pt-3 pb-3 mb-3 bg-white">
-    <div class="container">
-        <div class="light-font">
-            <ol class="breadcrumb primary-color mb-0">
-                <li class="breadcrumb-item"><a class="white-text" href="#">My Account</a></li>
-                <li class="breadcrumb-item">My Wishlist</li>
-            </ol>
-        </div>
-    </div>
-</section>
 
-<section class=" section-11 ">
-    <div class="container  mt-5">
-        <div class="row">
-            <div class="col-md-3">
-                @include('front.account.common.sidebar')
-            </div>
-            <div class="col-md-9">
+<div class="container">                
+    <h5 class="h5 mb-4 mt-3">
+        My Wishlist
+        <span class="text-muted">- {{ $wishlist->count() }} items</span>
+    </h5>
+    
+    @include('front.account.common.message')
 
-                @include('front.account.common.message')
+    <div class="row">
+        @if ($wishlist->isNotEmpty())
+            @foreach ($wishlist as $value)
+                <div class="col-md-3 col-6">
+                    <div class="product-card m-0">                                
+                        <div class="product-image-wrapper">                                    
+                            @if ($value->product->qty < 1)
+                                <div class="out-stock"><span>Out of Stock</span></div>
+                            @endif                                    
+                            
+                            <div class="product-slider">
+                                @php
+                                    $image = $value->product->images->first();
+                                @endphp
 
-                <div class="card">
-                    <div class="card-header">
-                        <h2 class="h5 mb-0 pt-2 pb-2">Wishlist</h2>
-                    </div>
-                    <div class="card-body p-4">
-                        @if ($wishlists->isNotEmpty())
-                            @foreach ($wishlists as $wishlist)
-                                <div class="d-sm-flex justify-content-between mb-2 pb-3 pb-sm-2 border-bottom">
-                                    <div class="d-block d-sm-flex align-items-start text-center text-sm-start">
-
-                                    @php
-                                        $productImage = getProductImage($wishlist->product_id);
-                                    @endphp
-
-                                    <a class="d-block flex-shrink-0 mx-auto me-sm-4" style="width: 10rem;" href="{{ route('front.product',$wishlist->product->slug) }}">
-                                        @if (!empty($productImage))
-                                            <img src="{{ asset('uploads/product/small/'.$productImage->image) }}" >
-                                        @else
-                                            <img src="{{ asset('admin-assets/img/default-150x150.png') }}" alt="" />
-                                        @endif
-                                    </a>
-
-                                    </a>
-                                        <div class="pt-2">
-                                            <h3 class="product-title fs-base mb-2"><a href="{{ route('front.product',$wishlist->product->slug) }}">{{ $wishlist->product->title }}</a></h3>
-                                            <div class="fs-lg text-accent pt-2">
-                                                <span class="h5"><strong>₹ {{ $wishlist->product->price }}</strong></span>
-                                                @if ($wishlist->product->compare_price > 0)
-                                                    <span class="h6 text-underline"><del>₹ {{ $wishlist->product->compare_price }}</del></span>
+                                @if ($value->product->images && $value->product->images->count() > 0)
+                                    @foreach($value->product->images as $image)
+                                        <div class="slider-item">
+                                            <a href="{{ route('front.product', $value->product->slug) }}" target="_blank" class="product-img">
+                                                @if($image)
+                                                    <img src="{{ asset('uploads/product/small/'.$image->image) }}" class="img-fluid" alt="{{ $value->product->title }}">
+                                                @else
+                                                    <img src="{{ asset('admin-assets/img/default-150x150.png') }}" class="img-fluid">
                                                 @endif
-                                            </div>
+                                            </a>     
                                         </div>
-                                    </div>
-                                    <div class="pt-2 ps-sm-3 mx-auto mx-sm-0 text-center">
-                                        <button onclick="removeProduct({{ $wishlist->product_id }})" class="btn btn-outline-danger btn-sm" type="button"><i class="fas fa-trash-alt me-2"></i>Remove</button>
-                                    </div>
-                                </div>
-                            @endforeach
-                            @else
-                            <div>
-                                <h5>Your wishlist is empty!</h5>
+                                    @endforeach                                            
+                                @else
+                                    <img class="card-img-top" src="{{ asset('admin-assets/img/default-150x150.png') }}" alt="" class="product-img" />
+                                @endif                                       
+                            </div>            
+                                    
+                            <div class="hover-product">      
+                                <button onclick="removeProduct({{ $value->product_id }})" class="btn btn-outline-danger btn-sm" type="button">
+                                    <i class="fas fa-trash-alt me-2"></i> Remove
+                                </button>
+                                <p class="show-size">Size: {{ $value->product->size->code ?? '' }}</p>
                             </div>
-                        @endif
 
+                            <div class="product-info">
+                                <h2>{{ Str::limit($value->product->title, 25, '...') }}</h2>
+                                <p class="short">{{ Str::limit($value->product->short_description, 30, '...') }}</p>                                                                
+                            </div>
+
+                            <div class="price">
+                                <span class="dark">₹ {{ $value->product->price }}</span>
+                                @if ($value->product->compare_price > 0)
+                                    <span class="h6 text-underline">
+                                        <del>₹ {{ $value->product->compare_price }}</del>
+                                    </span>
+                                    @php
+                                        $discount = round((($value->product->compare_price - $value->product->price) / $value->product->compare_price) * 100);
+                                    @endphp
+                                    <span class="discount">{{ $discount }}% OFF</span>
+                                @endif                                        
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        @else
+            <div class="row">
+                <div class="col-md-8 mx-auto">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h5 class="h5">YOUR WISHLIST IS EMPTY</h5>
+                            <p>Add items that you like to your wishlist. Review them anytime and easily move them to the bag.</p>
+
+                            <a href="{{ route('front.home') }}" class="btn btn-outline-primary mt-4">Continue Shopping</a>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        @endif
     </div>
-</section>
+</div>
 @endsection
 
 @section('customJs')
     <script>
-        function removeProduct(id){
-            $.ajax({
-                url: '{{ route("account.removeProductFromWishlist") }}',
-                type: 'post',
-                data: {id:id},
-                dataType: 'json',
-                success: function(response){
-                    if(response.status == true)
-                        window.location.href="{{ route('account.wishlist') }}"
-                    }
-            });
+       function removeProduct(id){            
+    $.ajax({
+        url: '{{ route("account.removeProductFromWishlist") }}',
+        type: 'POST',
+        data: {
+            id: id,
+            _token: '{{ csrf_token() }}'
+        },
+        dataType: 'json',
+        success: function(response){
+
+            var toastEl = document.getElementById('wishlistToast');
+
+            if(response.status === true){
+
+                // Remove item visually
+                $("#wishlist-item-" + id).fadeOut(300, function(){
+                    $(this).remove();
+                });
+
+                // Update wishlist count badge (if exists)
+                $(".wishlist-count").text(response.wishlistCount);
+
+                // Success toast
+                toastEl.classList.remove('bg-danger');
+                toastEl.classList.add('bg-success');
+
+            } else {
+
+                toastEl.classList.remove('bg-success');
+                toastEl.classList.add('bg-danger');
+            }
+
+            $("#wishlistToastBody").text(response.message);
+
+            var toast = new bootstrap.Toast(toastEl);
+            toast.show();
+
+            setTimeout(function(){
+                location.reload();
+            }, 1000);
         }
+    });
+}
     </script>
 @endsection

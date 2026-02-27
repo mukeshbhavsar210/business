@@ -9,9 +9,6 @@
                 <h4>Account</h4>
                 <p>{{ $userDetails->name }}</p>
             </div>
-            <div class="col-md-9 col-12">
-                
-            </div>
         </div>
     </div>
 

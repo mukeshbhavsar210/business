@@ -13,7 +13,6 @@
         @if ($count > 0)
             <div class="rating-wrapper">
                 <small>
-                    {{-- ({{ $count }} {{ $count == 1 ? 'Review' : 'Reviews' }}) --}}
                     {{ $product->average_rating }}
                     <small class="fas fa-star"></small> 
                     <small>{{ $product->rating_count ?? 0 }}</small>
@@ -40,16 +39,13 @@
                 <img class="card-img-top" src="{{ asset('admin-assets/img/default-150x150.png') }}" alt="" />
             @endif            
         </div>
-
-        @if($showWishlist)
-            <div class="hover-product">                
-                <a onclick="addToWishlist({{ $product->id }})" class="btn btn-outline" href="javascript:void(0)">
-                    <i class="far fa-heart"></i> 
-                    Wishlist
-                </a>
-                <p class="show-size">Size: {{ $product->size->code ?? '' }}</p>
-            </div>  
-        @endif       
+        
+        <div class="hover-product">                
+            <a onclick="addToWishlist({{ $product->id }})" class="btn btn-outline" href="javascript:void(0)">
+                <i class="far fa-heart"></i> Wishlist
+            </a>
+            <p class="show-size">Size: {{ $product->size->code ?? '' }}</p>
+        </div>  
 
         <div class="product-info">
             <h2>{{ Str::limit($product->title, 25, '...') }}</h2>
