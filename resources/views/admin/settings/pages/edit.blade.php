@@ -1,59 +1,64 @@
 @extends('admin.layouts.app')
 
 @section('content')
-<section class="content-header">
+
     <div class="container-fluid">
-        <div class="row">
-            <div class="col-sm-6">
-                <h1>Edit Page</h1>
-            </div>
-            <div class="col-sm-6 text-right">
-                <a href="{{ route('pages.index') }}" class="btn btn-primary">Back</a>
+        <div class="card mb-0">
+            <div class="card-body pb-0">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <h3>Edit Page</h3>
+                    </div>
+                    <div class="col-sm-6">
+                        <a href="{{ route('pages.index') }}" class="btn btn-primary float-end">Back</a>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-    <!-- /.container-fluid -->
-</section>
-<!-- Main content -->
-<section class="content">
-    <!-- Default box -->
-    <div class="container-fluid">
-        <form action="" method="post" id="pageForm" name="pageForm">
-            <div class="card">
-                <div class="card-body">
+    
+        <div class="card">
+            <div class="card-body pt-0">
+                <form action="" method="post" id="pageForm" name="pageForm">              
                     <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
+                        <div class="col-md-10 col-8">
+                            <div class="form-group">
                                 <label for="name">Name</label>
                                 <input value={{ $page->name }} type="text" name="name" id="name" class="form-control" placeholder="Name">
+                                <input value={{ $page->slug }} type="hidden" readonly name="slug" id="slug" class="form-control" placeholder="slug">
                                 <p></p>
                             </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="slug">Slug</label>
-                                <input value={{ $page->slug }}  type="text" readonly name="slug" id="slug" class="form-control" placeholder="slug">
-                                <p></p>
+                        </div>                    
+                        <div class="col-md-2 col-4">
+                            <div class="form-group">
+                                <label for="menu_order">Menu Order</label>
+                                <select name="menu_order" id="menu_order" class="form-select">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                    <option value="9">9</option>
+                                    <option value="10">10</option>
+                                </select>
                             </div>
                         </div>
                         <div class="col-md-12">
-                            <div class="mb-3">
+                            <div class="form-group">
                                 <label for="content">Content</label>
                                 <textarea name="content" id="content" class="summernote" cols="30" rows="10">{!! $page->content !!}</textarea>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <div class="pb-5 pt-3">
-                <button type="submit" class="btn btn-primary">Update</button>
-                <a href="{{ route('pages.index') }}" class="btn btn-outline-dark ml-3">Cancel</a>
+                    <a href="{{ route('pages.index') }}" class="btn btn-outline-dark mr-3">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </form>
             </div>
-        </form>
-    </div>
-    <!-- /.card -->
-</section>
+        </div>
+</div>
 @endsection
 
 @section('customJs')

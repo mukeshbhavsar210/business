@@ -26,7 +26,7 @@ Route::controller(FrontController::class)->group(function() {
 });
 
 Route::controller(ShopController::class)->group(function() {
-    Route::get('/shop/{categorySlug?}/','category')->name('front.category.shop');
+    Route::get('/products/{categorySlug?}/','category')->name('front.category.shop');
     Route::get('/products/{subCategorySlug?}/{subSubCategory?}','index')->name('front.shop');
     Route::get('/product/{slug}','product')->name('front.product');
     Route::get('/product/{id}/reviews', 'allReviews')->name('product.reviews');

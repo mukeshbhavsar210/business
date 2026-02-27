@@ -39,6 +39,7 @@ body { background-color: #f7f9fb; }
 .flexContainer { display: flex;  justify-content: end;}
 
 .table td, .table th { padding:0.5rem;}
+.table td p { margin: 0;}
 
 .product-title { margin-bottom: 2px;}
 .product-title a { color: var(--black);}
@@ -46,7 +47,7 @@ body { background-color: #f7f9fb; }
 
 .small-fonts { font-size: 14px;}
 
-.table { font-size: 14px;}
+.table { font-size: 13px;}
 
 .chip-wrapper { display: flex; column-gap: 10px; flex-wrap: wrap; }
 .chip-wrapper .color-chip { border: 1px #e5e5e5 solid; padding:8px 10px 6px 10px; display: flex; margin-bottom: 10px; border-radius: 6px; justify-content: space-between;}

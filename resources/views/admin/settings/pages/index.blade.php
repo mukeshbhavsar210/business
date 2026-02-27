@@ -12,10 +12,11 @@
                 <table class="table mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th class="border-top-0" width="60">ID</th>
-                            <th class="border-top-0">Name</th>
+                            <th class="border-top-0" width="40">ID</th>
+                            <th class="border-top-0" width="150">Name</th>
                             <th class="border-top-0">Contents</th>
-                            <th class="border-top-0" width="100">Action</th>
+                            <th class="border-top-0" width="100">Menu Order</th>
+                            <th class="border-top-0" width="70">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -24,7 +25,8 @@
                                 <tr>
                                     <td>{{ $page->id }}</td>
                                     <td>{{ $page->name }}</td>
-                                    <td>{!! Str::limit($page->content, 125, '...') !!}</td>
+                                    <td>{!! Str::limit($page->content, 110, '...') !!}</td>
+                                    <td>{{ $page->menu_order }}</td>
                                     <td>
                                         <a href="{{ route('pages.edit', $page->id ) }}">
                                             <svg class="filament-link-icon w-4 h-4 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">

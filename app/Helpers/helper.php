@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Mail;
         return Category::with([
                 'subCategories.subSubCategories'
             ])
+            ->withCount('products')
             ->orderBy('menu_order', 'asc')
             ->where('status', 1)
             ->where('showHome', 'Yes')
@@ -21,7 +22,6 @@ use Illuminate\Support\Facades\Mail;
             ->take(4)
             ->get();
     }
-
 
     function getProductImage($productId){
         return ProductImage::where('product_id',$productId)->first();
@@ -52,7 +52,9 @@ use Illuminate\Support\Facades\Mail;
     }
 
     function staticPages(){
-        $pages = Page::orderBy('name','ASC')->get();
+        $pages = Page::orderBy('menu_order','ASC')->get();
         return $pages;
     }
+
+    
 ?>

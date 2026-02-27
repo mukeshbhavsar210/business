@@ -1,4 +1,7 @@
 $(document).ready(function(){
+    
+
+
     function checkValue(element){
         if($(element).val() !== ''){
             $(element).closest('.form-group').addClass('active');
@@ -37,6 +40,26 @@ $(document).ready(function(){
     // Run on page load
     updateActive();
 
+
+     $('.menu-toggle').on('click', function (e) {
+        e.preventDefault();
+
+        var parent = $(this).parent('.menu-item');
+
+        parent.toggleClass('active');
+
+        // Optional: Close other open menus
+        parent.siblings().removeClass('active');
+    });
+
+     // all filters left
+    $('.form-check-input:checked').each(function () {
+        $(this).closest('.form-check .link').addClass('active-check');
+    });
+    
+    $('.form-check-input').on('change', function () {
+        $(this).closest('.form-check .link').toggleClass('active-check', this.checked);
+    });
     
 
     var lazyLoadInstance = new LazyLoad({elements_selector:"img.lazy, video.lazy, div.lazy, section.lazy, header.lazy, footer.lazy,iframe.lazy"});
@@ -140,3 +163,5 @@ $("#isShippingDiffernt").click(function(){
         $("#shippingForm").addClass('d-none');
     }
 });
+
+
