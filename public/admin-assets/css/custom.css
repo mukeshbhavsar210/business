@@ -31,14 +31,14 @@
 :root{--primary:#0d6efd;--primary-light:#e7f6fd;--secondary:#6c757d;--white:#fff;--black:#212529;--gray:#6c757d; --green:rgb(3, 166, 133); --gray-light:#ccc;--success:#198754;--info:#0dcaf0;--warning:#ffc107;--danger:#dc3545;--light:#f8f9fa;--body-font:"Open Sans",sans-serif;--title-font:Manrope,Arial,Sans-serif; --bs-font-sans-serif:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans","Liberation Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";--bs-font-monospace:SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;--bs-gradient:linear-gradient(180deg,#ffffff26,#fff0);--bs-body-font-family:var(--bs-font-sans-serif);--bs-body-font-size:1rem;--bs-body-font-weight:400;--bs-body-line-height:1.5;--bs-body-color:#212529;--bs-body-bg:#fff}
 .invoice-svg { border-radius: 5px; background-color: #000; width: 100%; height: 125px; margin-top: 7px;}
 
-body { background-color: #f7f9fb; }
+body { background-color: #f7f9fb; font-size: 14px; }
 
 .content-header { padding:0px;}
 .content-header h1 { font-size: 1.6rem; }
 .btn { padding:7px 13px; font-size: 12px; height: 35px; border-radius: 4px;}
 .flexContainer { display: flex;  justify-content: end;}
 
-.table td, .table th { padding:0.5rem;}
+.table td, .table th { padding:0.5rem; font-size: 13px;}
 .table td p { margin: 0;}
 
 .product-title { margin-bottom: 2px;}

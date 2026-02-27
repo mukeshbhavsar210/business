@@ -3,14 +3,13 @@
 @section('content')    
     <div class="container">        
         <div class="row">
-            <div class="col-md-8 col-12 left-border">
-               
+            <div class="col-md-8 col-12 left-border">               
                 <div class="delivery-time">
                     <div>Check delivery time & service</div>
                     <div>Enter Pin Code</div>
                 </div>
 
-                 @include('front.layouts.message')
+                @include('front.layouts.message')
 
                 @if (Cart::count() > 0)                
                     @foreach ($cartContent as $item)                        
@@ -127,7 +126,6 @@
                                     </div>
                                 </div>
 
-
                                 <div class="modal fade" id="cartOptionModal" tabindex="-1">
                                     <div class="modal-dialog modal-sm">
                                         <div class="modal-content">
@@ -158,7 +156,8 @@
 
                         <h5>Hey, your bag feels so light!</h5>
                         <h5>Let’s add some items in your bag</h5>
-                        <a href="{{ route('front.home') }}" class="btn btn-primary">START SHOPPING</a>                        
+
+                        <a href="{{ route('front.home') }}" class="btn btn-primary">START SHOPPING</a>
                         </div>
                     </div>
                 @endif
@@ -309,9 +308,7 @@
 @section('customJs')
     <script>
         let currentRowId = '';
-        let currentType = '';   
-        
-       
+        let currentType = '';          
 
         $(document).on('click', '.update-color', function(){
             currentRowId = $(this).data('rowid');

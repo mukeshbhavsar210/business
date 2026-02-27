@@ -7,6 +7,7 @@
         <hr />
         <li class="li-title">Account</li>
         <li><a href="{{ route('account.profile') }}" class="{{ request()->routeIs(['account.profile', 'account.profile.edit', 'account.changePassword']) ? 'active' : '' }}">Profile</a></li>
+        <li><a href="{{ route('account.wishlist') }}" class="{{ request()->routeIs(['account.wishlist']) ? 'active' : '' }}">Wishlist</a></li>
         <li><a href="{{ route('account.cards') }}" class="{{ request()->routeIs('account.cards') ? 'active' : '' }}">Saved Cards</a></li>
         <li><a href="{{ route('account.address') }}" class="{{ request()->routeIs('account.address') ? 'active' : '' }}" >Addresses</a></li>
         <li><a href="{{ route('account.profile') }}" >Delete Account</a></li>

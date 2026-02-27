@@ -4,6 +4,7 @@ use App\Mail\OrderEmail;
 use App\Models\Category;
 use App\Models\State;
 use App\Models\CustomerAddress;
+use App\Models\Wishlist;
 use App\Models\Order;
 use App\Models\Page;
 use App\Models\ProductImage;
@@ -25,6 +26,13 @@ use Illuminate\Support\Facades\Mail;
 
     function getProductImage($productId){
         return ProductImage::where('product_id',$productId)->first();
+    }
+
+    function wishlistCount() {
+        if (Auth::check()) {
+            return Wishlist::where('user_id', Auth::id())->count();
+        }
+        return 0;
     }
 
     function orderEmail($orderId, $userType="customer"){

@@ -32,23 +32,6 @@
 
 @include(request()->routeIs(['front.cart','front.checkout']) ? 'front.layouts.cart_footer' : 'front.layouts.footer')
 
-<!-- Wishlist Modal -->
-<div class="modal fade" id="wishlistModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Success</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          ...
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
 
 <script src="{{ asset('front-assets/js/jquery-3.6.0.min.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -76,7 +59,6 @@
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
-
     
     function addToCart(id){
         if(selectedSize == ''){
@@ -100,7 +82,6 @@
             },
             dataType: 'json',
             success: function(response){
-
                 if(response.status == true){
 
                     // ✅ Update cart count
@@ -131,28 +112,28 @@
 
     function addToWishlist(id){
         $.ajax({
-            url: '{{ route("front.addToWishlist",) }}',
-            type: 'post',
-            data: {id:id},
+            url: '{{ route("front.addToWishlist") }}',
+            type: 'POST',
+            data: {
+                id: id,
+                _token: '{{ csrf_token() }}' 
+            },
             dataType: 'json',
             success: function(response){
                 if(response.status == true){
-                    $("#wishlistModal .modal-body").html(response.message);
-                    $("#wishlistModal").modal('show');
+                    $("#wishlistToastBody").html(response.message);
+                    var toastEl = document.getElementById('wishlistToast');
+                    var toast = new bootstrap.Toast(toastEl);
+                    toast.show();
                 } else {
                     window.location.href= "{{ route('account.login') }}";
-                    alert(response.message);
                 }
+            },
+            error: function(xhr){
+                console.log(xhr.responseText); // So you can see real error
             }
         })
-    }
-
-    
-
-    //Alert timeout
-    //setTimeout(function () {
-        //$('.alert').fadeOut(300);
-    //}, 2000);
+    }    
 </script>
 
 @yield('customJs')

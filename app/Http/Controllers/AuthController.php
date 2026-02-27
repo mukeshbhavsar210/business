@@ -268,27 +268,59 @@ class AuthController extends Controller
     }
 
     public function wishlist(){
-        $wishlists = Wishlist::where('user_id', Auth::user()->id)->with('product')->get();
-        $data['wishlists'] = $wishlists;
+        $userId = Auth::user()->id;   
+        $wishlist = Wishlist::where('user_id', Auth::user()->id)->with(['product'])->get();
+        $userDetails = CustomerAddress::where('user_id',$userId)->first();
+
+        $data['wishlist'] = $wishlist;
+        $data['userDetails'] = $userDetails;
+
         return view('front.account.wishlist', $data);
     }
 
-    public function removeProductFromWishlist(Request $request){
-        $wishlist = Wishlist::where('user_id',Auth::user()->id)->where('product_id',$request->id)->first();
 
-        if($wishlist == null){
-            session()->flash('error','Product already removed.');
+    public function removeProductFromWishlist(Request $request)
+{
+        if (!Auth::check()) {
+            return response()->json(['status' => false]);
+        }
+
+        $wishlist = Wishlist::where('user_id', Auth::id())
+            ->where('product_id', $request->id)
+            ->first();
+
+        if ($wishlist) {
+            $wishlist->delete();
+
             return response()->json([
                 'status' => true,
-            ]);
-        } else {
-            Wishlist::where('user_id',Auth::user()->id)->where('product_id',$request->id)->delete();
-            session()->flash('success','Product removed successfully.');
-            return response()->json([
-                'status' => true,
+                'message' => 'Item removed from wishlist',
+                'wishlistCount' => Wishlist::where('user_id', Auth::id())->count()
             ]);
         }
+
+        return response()->json([
+            'status' => false,
+            'message' => 'Item removed from wishlist'
+        ]);
     }
+
+    // public function removeProductFromWishlist(Request $request){
+    //     $wishlist = Wishlist::where('user_id',Auth::user()->id)->where('product_id',$request->id)->first();
+
+    //     if($wishlist == null){
+    //         session()->flash('error','Product already removed.');
+    //         return response()->json([
+    //             'status' => true,
+    //         ]);
+    //     } else {
+    //         Wishlist::where('user_id',Auth::user()->id)->where('product_id',$request->id)->delete();
+    //         session()->flash('success','Product removed successfully.');
+    //         return response()->json([
+    //             'status' => true,
+    //         ]);
+    //     }
+    // }
 
     public function changePasswordForm (){
         return view('front.account.password');
