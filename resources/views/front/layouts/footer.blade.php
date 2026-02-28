@@ -69,3 +69,5 @@
 		</div>
 	</div>
 </footer>
+
+@include('front.layouts.login_register')

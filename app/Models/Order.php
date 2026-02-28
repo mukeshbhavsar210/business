@@ -29,4 +29,13 @@ class Order extends Model {
         return $this->belongsTo(User::class);
     }
 
+    public function scopeWithFullRelations($query) {
+        return $query->with([
+            'user',
+            'items',
+            'orderItems.product.images',
+            'orderItems.product.size',
+            'orderItems.product.color'
+        ]);
+    }
 }

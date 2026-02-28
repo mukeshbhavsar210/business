@@ -17,9 +17,11 @@
 <div class="card mb-0">
     <div class="card-body pb-0">            
         <div class="row">                
-            <div class="col-sm-7 col-12 d-flex">
-                <h3>{{ $title }}</h3>  
-                <span class="counts">{{ $total }}</span>
+            <div class="col-sm-7 col-12">
+                <div class="page-title">
+                    <h4>{{ $title }}</h4>
+                    <span class="counts">{{ $total  }}</span>
+                </div>
             </div>
             <div class="col-sm-5 col-12 float-end">
                 <div class="flexContainer">

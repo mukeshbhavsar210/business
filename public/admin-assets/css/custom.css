@@ -33,6 +33,10 @@
 
 body { background-color: #f7f9fb; font-size: 14px; }
 
+.nav-link:focus, .nav-link:hover {
+    color: var(--primary);
+}
+
 .content-header { padding:0px;}
 .content-header h1 { font-size: 1.6rem; }
 .btn { padding:7px 13px; font-size: 12px; height: 35px; border-radius: 4px;}
@@ -40,6 +44,10 @@ body { background-color: #f7f9fb; font-size: 14px; }
 
 .table td, .table th { padding:0.5rem; font-size: 13px;}
 .table td p { margin: 0;}
+
+.page-title { display: flex; column-gap: 10px;}
+.page-title h4 { margin-bottom: 0; }
+.page-title .counts { background-color: #0d6efd; color: #fff; padding:3px 5px; border-radius: 100px; font-size: 12px; text-align: center; display: block; height:24px; width: 24px; }
 
 .product-title { margin-bottom: 2px;}
 .product-title a { color: var(--black);}
@@ -112,6 +120,20 @@ body { background-color: #f7f9fb; font-size: 14px; }
 .filterControls ul, .filterControls li { list-style-type: none; margin-left:15px;}
 .filterControls li a .icons { position:relative; top:5px; height:18px; width: 18px;}
 .filterControls li a .bigIcons { position:relative; top:4px; height:30px; width: 30px; }
+
+.nav-tabs .nav-item .nav-link { display: flex; column-gap: 8px; color: var(--gray);}
+.nav-tabs .nav-item .nav-link .counts { background-color: #f4f6f9;
+    color: #000;
+    padding: 2px 3px;
+    border-radius: 100px;
+    font-size: 10px;
+    text-align: center;
+    display: block;
+    height: 20px; position: relative; top:2px;
+    width: 20px;}
+
+.nav-tabs .nav-item .nav-link.active { color: var(--black);}
+.nav-tabs .nav-item .nav-link.active .counts { background-color: #0d6efd; color: #fff; }
 
 /* Basic Rules */
 .switch input {  display:none; }
@@ -307,7 +329,7 @@ input:checked + .slider { box-shadow:0 0 0 2px #007bff,0 0 2px #007bff; }
 
 
 .pull-right { float: right;}
-.counts { background-color: #0d6efd; color: #fff; padding:3px 5px; border-radius: 100px; font-size: 12px; text-align: center; display: block; margin-left: 10px;; height:24px; width: 24px; position: relative; top:3px;}
+
 
 .mainPage .card-header { padding: 15px 20px;}
 .mainPage hr { color: #ccc;}
@@ -324,7 +346,7 @@ input:checked + .slider { box-shadow:0 0 0 2px #007bff,0 0 2px #007bff; }
 .modal-body { padding: 15px 25px 10px 25px; }
 .modal-header, .modal-footer { padding: 10px 25px;}
 
-.form-control, .form-select { font-size: 14px; border-radius: 4px; padding: 7px 15px 10px 15px; border-color: var(--gray-light);}
+.form-control, .form-select { border-radius: 4px; padding: 7px 15px 10px 15px; border-color: var(--gray-light);}
 .checkboxDropdown .dropdown-menu.show { padding:10px;}
 .checkboxDropdown .dropdown-menu.show input[type=checkbox] { margin-right: 5px;}
 .checkboxDropdown .dropdown-menu.show label { margin-bottom: 5px;}
@@ -338,8 +360,8 @@ input:checked + .slider { box-shadow:0 0 0 2px #007bff,0 0 2px #007bff; }
 
 .table-text td, .table-text th { vertical-align: top; }
 
-.form-group { position: relative; margin-bottom: 20px; }
-.form-group label { font-size: 13px; color: var(--gray); margin-bottom: 5px;}
+.form-group { position: relative; margin-bottom: 10px; }
+.form-group label { font-size: 13px; color: var(--gray); margin-bottom: 3px;}
 .form-group .floating-label {
     position: absolute;
     left: 9px;

@@ -10,29 +10,47 @@ use Illuminate\Http\Request;
 
 class OrderController extends Controller {
     public function index(Request $request) {
-        $orders = Order::with([
-                        'user',
-                        'items',
-                        'orderItems.product.images',
-                        'orderItems.product.size',
-                        'orderItems.product.color'
-                    ])
-                    ->latest('orders.created_at');
+        $statuses = ['delivered', 'pending', 'shipped', 'cancelled'];
+        $orders = [];
 
-        if($request->get('keyword') != ""){
-            $orders = $orders->whereHas('user', function($query) use ($request){
-                $query->where('name','like','%'.$request->keyword.'%')
-                    ->orWhere('email','like','%'.$request->keyword.'%');
-            })
-            ->orWhere('id','like','%'.$request->keyword.'%');
+        foreach ($statuses as $status) {
+            $query = Order::with($this->orderRelations())
+                ->where('status', $status)
+                ->latest('orders.created_at');
+
+            // Apply search only for delivered (if needed)
+            if ($status === 'delivered' && $request->filled('delivered_keyword')) {
+                $keyword = $request->delivered_keyword;
+
+                $query->where(function ($q) use ($keyword) {
+                    $q->whereHas('user', function ($sub) use ($keyword) {
+                        $sub->where('name', 'like', "%{$keyword}%")
+                            ->orWhere('email', 'like', "%{$keyword}%");
+                    })
+                    ->orWhere('id', 'like', "%{$keyword}%");
+                });
+            }
+
+            $orders[$status] = $query->paginate(10, ['*'], $status . '_page');
         }
 
-        $orders = $orders->paginate(10);
-
-        return view('admin.orders.list', compact('orders'));
+        return view('admin.orders.list', [
+            'delivered_orders' => $orders['delivered'],
+            'pending_orders' => $orders['pending'],
+            'shipped_orders' => $orders['shipped'],
+            'cancelled_orders' => $orders['cancelled'],
+        ]);
     }
 
-
+    private function orderRelations() {
+        return [
+            'user',
+            'items',
+            'orderItems.product.images',
+            'orderItems.product.size',
+            'orderItems.product.color'
+        ];
+    }
 
     public function detail($orderId){
         $order = Order::select('orders.*','states.name as stateName' )

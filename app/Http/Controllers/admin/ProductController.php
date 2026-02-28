@@ -22,7 +22,7 @@ use Intervention\Image\Drivers\Gd\Driver;
 class ProductController extends Controller {
 
     public function index(Request $request){
-        $products = Product::latest('id')->with(['product_images','variants']);
+        $products = Product::latest('id')->with(['product_images','variant_images']);
 
         if ($request->get('keyword') != ""){
             $products = $products->where('title', 'like', '%'.$request->keyword.'%');
@@ -105,14 +105,11 @@ class ProductController extends Controller {
                     if ($request->hasFile("variant_images.$key")) {
                         $file = $request->file("variant_images.$key");
                         $variantImage = time().'_'.$file->getClientOriginalName();
-                        $file->move(public_path('uploads/product'), $variantImage);
+                        $file->move(public_path('uploads/product/large'), $variantImage);
                     }
 
                     ProductVariant::create([
-                        'product_id' => $product->id,
-                        'color' => $variant['color'],
-                        'price' => $variant['price'],
-                        'stock' => $variant['stock'],
+                        'product_id' => $product->id,                        
                         'image' => $variantImage,
                     ]);
                 }
@@ -176,7 +173,7 @@ class ProductController extends Controller {
 
 
     public function edit($id, Request $request){
-        $product = Product::find($id);
+        $product = Product::find($id);        
         $product->load('variants');
         
         if (empty($product)) {
@@ -259,32 +256,101 @@ class ProductController extends Controller {
             $product->save();
 
             // 3️⃣ Save Variants
-            if ($request->variants && is_array($request->variants)) {
-                foreach ($request->variants as $key => $variant) {
+            if ($request->filled('variant_image_array') && is_array($request->variant_image_array)) {
+                foreach ($request->variant_image_array as $temp_image_id) {
 
-                    if (!isset($variant['color'])) {
+                    $tempImageInfo = TempImage::find($temp_image_id);
+
+                    if (!$tempImageInfo) {
                         continue;
                     }
 
-                    $variantImage = null;
+                    $ext = pathinfo($tempImageInfo->name, PATHINFO_EXTENSION);
 
-                    if ($request->hasFile("variant_images.$key")) {
-                        $file = $request->file("variant_images.$key");
-                        $variantImage = time().'_'.$file->getClientOriginalName();
-                        $file->move(public_path('uploads/product'), $variantImage);
+                    // Create variant record first (temporary image value)
+                    $productVariant = new ProductVariant();
+                    $productVariant->product_id = $product->id;
+                    $productVariant->image = 'temp.jpg'; // NOT NULL safety
+                    $productVariant->save();
+
+                    $imageName = $product->id . '-' . $productVariant->id . '-' . time() . '.' . $ext;
+
+                    // Update image name
+                    $productVariant->image = $imageName;
+                    $productVariant->save();
+
+                    $sourcePath = public_path('/temp/' . $tempImageInfo->name);
+
+                    if (!file_exists($sourcePath)) {
+                        continue;
                     }
 
-                    ProductVariant::create([
-                        'product_id' => $product->id,
-                        'color' => $variant['color'] ?? null,
-                        'price' => $variant['price'] ?? 0,
-                        'stock' => $variant['stock'] ?? 0,
-                        'image' => $variantImage,
-                    ]);
+                    $manager = new ImageManager(new Driver());
+
+                    // LARGE IMAGE (1000px width)
+                    $largePath = public_path('/uploads/product/large/' . $imageName);
+                    $image = $manager->read($sourcePath);
+                    $image->scale(width: 1000);
+                    $image->save($largePath, quality: 85);
+
+                    // SMALL IMAGE (300x300 exact)
+                    $smallPath = public_path('/uploads/product/small/' . $imageName);
+                    $image = $manager->read($sourcePath);
+                    $image->cover(300, 300);
+                    $image->save($smallPath, quality: 85);
+
+                    // Delete temp file
+                    File::delete($sourcePath);
+                }
+            }
+
+
+            if ($request->filled('image_array') && is_array($request->image_array)) {
+                foreach ($request->image_array as $temp_image_id) {
+                    $tempImageInfo = TempImage::find($temp_image_id);
+
+                    if (!$tempImageInfo) {
+                        continue;
+                    }
+
+                    $ext = pathinfo($tempImageInfo->name, PATHINFO_EXTENSION);
+
+                    // Create record with temporary name
+                    $productImage = new ProductImage();
+                    $productImage->product_id = $product->id;
+                    $productImage->image = 'temp.jpg'; // temporary value (not null)
+                    $productImage->save();
+
+                    $imageName = $product->id . '-' . $productImage->id . '-' . time() . '.' . $ext;
+
+                    // Update with correct filename
+                    $productImage->image = $imageName;
+                    $productImage->save();
+
+                    $sourcePath = public_path('/temp/' . $tempImageInfo->name);
+
+                    if (!file_exists($sourcePath)) {
+                        continue;
+                    }
+
+                    $manager = new ImageManager(new Driver());
+
+                    // Large
+                    $largePath = public_path('/uploads/product/large/' . $imageName);
+                    $image = $manager->read($sourcePath);
+                    $image->scale(width: 1000);
+                    $image->save($largePath, quality: 85);
+
+                    // Small
+                    $smallPath = public_path('/uploads/product/small/' . $imageName);
+                    $image = $manager->read($sourcePath);
+                    $image->cover(300, 300);
+                    $image->save($smallPath, quality: 85);
+
+                    File::delete($sourcePath);
                 }
             }
         
-
         $request->session()->flash('success','Product updated successfully');
 
         return redirect()

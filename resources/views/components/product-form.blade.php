@@ -11,17 +11,17 @@
     </div>
 </div> 
 
-<div class="card p-0">
-    <div class="card-body">
-        <form action="{{ $route }}" method="POST" name="{{ $formname }}" id="{{ $formname }}" enctype="multipart/form-data" >
-            @csrf
+<form action="{{ $route }}" method="POST" name="{{ $formname }}" id="{{ $formname }}" enctype="multipart/form-data" >
+    @csrf
 
-            @if($method !== 'POST')
-                @method($method)
-            @endif
-            
-            <div class="row">
-                <div class="col-md-9 col-12">
+    @if($method !== 'POST')
+        @method($method)
+    @endif
+    
+    <div class="row gx-1">
+        <div class="col-md-9 col-12">
+            <div class="card ">
+                <div class="card-body">
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
@@ -60,7 +60,7 @@
                         <div class="dz-message needsclick">
                             <br>Drop files here or click to upload.<br><br>
                         </div>
-                    </div>   
+                    </div>
 
                     <div class="row" id="product-gallery"></div>
                                     
@@ -72,19 +72,42 @@
                                     <div class="col-md-2" id="image-row-{{ $image->id }}">
                                         <div class="uploaded-images">
                                             <input type="hidden" name="image_array[]" value="{{ $image->id }}">
-
-                                            <img src="{{ asset('uploads/product/small/'.$image->image) }}" 
-                                                class="rounded" />
-
-                                            <a href="javascript:void(0)" 
-                                            onclick="deleteImage({{ $image->id }})" 
-                                            class="deleteCardImg">X</a>
+                                            <img src="{{ asset('uploads/product/small/'.$image->image) }}" class="rounded" />                                            
+                                            <a href="javascript:void(0)" class="deleteCardImg" data-id="{{ $image->id }}">X</a>                                            
                                         </div>
                                     </div>
                                 @endforeach
                             </div>
                         </div>
                     @endif     
+                    <hr />
+
+
+                    <h4 class="mb-2">Variant Photos</h4>
+                    <div id="variant_image" class="dropzone dz-clickable mb-2">
+                        <div class="dz-message needsclick">
+                            <br>Drop variant images here or click to upload.<br><br>
+                        </div>
+                    </div>
+
+                    <div class="row" id="variant-gallery"></div>
+                                    
+                    @if(isset($product) && $product->variants->isNotEmpty())
+                    <h5>Uploaded Variant Images</h5>
+                    <div class="row">
+                        @foreach ($product->variants as $variant)
+                            @if($variant->image)
+                                <div class="col-md-2" id="variant-image-row-{{ $variant->id }}">
+                                    <div class="uploaded-images">
+                                        <input type="hidden" name="existing_variant_images[]" value="{{ $variant->id }}">
+                                        <img src="{{ asset('uploads/product/small/'.$variant->image) }}" class="rounded" />
+                                        <a href="javascript:void(0)" onclick="deleteVariantImage({{ $variant->id }})" class="deleteCardImg">X</a>
+                                    </div>
+                                </div>
+                            @endif
+                        @endforeach
+                    </div>
+                @endif   
                     <hr />
 
                     <h4 class="mb-1">Pricing</h4>
@@ -150,9 +173,18 @@
                             @endforeach
                         @endif
                     </select>
-                </div>
 
-                <div class="col-md-3 col-12">
+                    <div class="col-md-3 col-12 mt-3">
+                        <button type="submit" class="btn btn-primary"> {{ $buttonText }}</button>
+                        <a href="{{ route('products.index') }}" class="btn btn-outline-dark ml-3">Cancel</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-12 pl-0">
+            <div class="card p-0">
+                <div class="card-body">
                     <h4 class="mb-2">Product Category</h4>
                     <div class="form-group">
                         <label for="category">Category</label>
@@ -249,111 +281,100 @@
                         </div>
                     </div>
 
-                    <hr />
-                    <h4 class="mb-2">Product Variants</h4>
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#variantsModal">
-                        Create Product Variants
-                    </button>
-
-                    <hr />
-                    <h4 class="mb-2">Featured</h4>
-                    <select name="is_featured" id="is_featured" class="form-select">
-                        <option value="No" {{ old('is_featured', $product->is_featured ?? 'No') == 'No' ? 'selected' : '' }}>
-                            No
-                        </option>
-                        <option value="Yes" {{ old('is_featured', $product->is_featured ?? '') == 'Yes' ? 'selected' : '' }}>
-                            Yes
-                        </option>
-                    </select>
-                    <p class="error"></p>
-                    
-                    <h4 class="mb-2">Status</h4>
-                    <select name="status" id="status" class="form-select">
-                        <option value="1" {{ old('status', $product->status ?? 'No') == 1 ? 'selected' : '' }}>
-                            Active
-                        </option>
-                        <option value="0" {{ old('status', $product->status ?? '') == 0 ? 'selected' : '' }}>
-                            Block
-                        </option>
-                    </select>                                                 
-                </div>
-            </div>
-
-            <div class="pb-5 pt-3">
-                <button type="submit" class="btn btn-primary"> {{ $buttonText }}</button>
-                <a href="{{ route('products.index') }}" class="btn btn-outline-dark ml-3">Cancel</a>
-            </div>
-                    
-            <div class="modal fade" id="variantsModal" tabindex="-1" aria-labelledby="variantsModalLabel" aria-hidden="true">
-                <div class="modal-dialog ">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="variantsModalLabel">Add Product Variant</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="row">
+                        <div class="col-6">
+                            <h5 class="mb-1">Featured</h5>
+                            <input type="hidden" name="is_featured" value="No">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="is_featured" value="Yes"
+                                    {{ old('is_featured', $product->is_featured ?? 'No') == 'Yes' ? 'checked' : '' }} >                        
+                            </div> 
                         </div>
-                        <div class="modal-body">
-                            <div id="variants-wrapper" class="overflow-variant">
-                                <div class="variant-item">                                                                          
-                                    @php
-                                        $variants = old('variants', isset($product) ? $product->variants->toArray() : [['price' => '']]);
-                                    @endphp
-
-                                    @foreach ($variants as $index => $variant)
-                                        <div class="row">  
-                                            <div class="col-md-6 col-6">
-                                                <div class="form-group">
-                                                    <label for="color">Photo</label>
-                                                    <input type="file" name="variant_images[0]" class="form-control" value="{{ $variant['variant_images[0]'] ?? '' }}" >                                                    
-                                                </div>
-                                            </div>                                           
-                                            <div class="col-md-6 col-6">
-                                                <div class="form-group">
-                                                    <label for="color">Color</label>
-                                                    <select name="variants[0][color]" id="color_variants" class="form-select">
-                                                        <option value="">Select a Color</option>
-                                                        @if ($colors->isNotEmpty())
-                                                            @foreach ($colors as $value)
-                                                                <option 
-                                                                    value="{{ $value->id }}"
-                                                                    {{ old('color_id', $product->color_id ?? '') == $value->id ? 'selected' : '' }}>
-                                                                    {{ $value->name }}
-                                                                </option>
-                                                            @endforeach
-                                                        @endif
-                                                    </select>                                                    
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach                                                                                                                                                      
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-outline-dark" onclick="addVariant()">Add Row</button>
-                            <button type="button" class="btn btn-primary">Save</button>
+                        <div class="col-6">
+                            <h5 class="mb-1">Status</h5>
+                            <input type="hidden" name="status" value="0">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="status" value="1"
+                                    {{ old('status', $product->status ?? 0) == 1 ? 'checked' : '' }} >                        
+                            </div>                                              
                         </div>
                     </div>
+
+                    <hr />
+                    <div class="row">
+                        <div class="col-6">
+                            <h4 class="mb-2">Variants</h4>
+                        </div>
+                        <div class="col-6">                        
+                            <button type="button" class="btn btn-outline-dark btn-sm" onclick="addVariant()">Add Variants</button>                    
+                        </div>
+                    </div>
+
+                    <div class="variant-item">
+                        <div class="row">
+                            <div class="col-md-12 col-6">
+                                <div class="form-group">
+                                    <label for="color">Photo</label>
+                                    <input type="file" name="variant_images[0]" class="form-control">
+                                </div>
+                            </div>                                                           
+                        </div>
+                    </div>
+                    
+                    <div id="variants-wrapper" class="overflow-variant">
+                        <div class="variant-item">                                                                          
+                            @php
+                                $variants = old('variants', isset($product) ? $product->variants->toArray() : [['price' => '']]);
+                            @endphp
+
+                            @foreach ($variants as $index => $variant)
+                                <div class="row">  
+                                    <div class="col-md-6 col-6">
+                                        <div class="form-group">
+                                            <label for="color">Photo</label>
+                                            <input type="file" name="variant_images[0]" class="form-control" value="{{ $variant['variant_images[0]'] ?? '' }}" >                                                    
+                                        </div>
+                                    </div>                                           
+                                    <div class="col-md-6 col-6">
+                                        <div class="form-group">
+                                            <label for="color">Color</label>
+                                            <select name="variants[0][color]" id="color_variants" class="form-select">
+                                                <option value="">Select a Color</option>
+                                                @if ($colors->isNotEmpty())
+                                                    @foreach ($colors as $value)
+                                                        <option 
+                                                            value="{{ $value->id }}"
+                                                            {{ old('color_id', $product->color_id ?? '') == $value->id ? 'selected' : '' }}>
+                                                            {{ $value->name }}
+                                                        </option>
+                                                    @endforeach
+                                                @endif
+                                            </select>                                                    
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach                                                                                                                                                      
+                        </div>
+                    </div>                    
                 </div>
             </div>
-        </form>
+        </div>        
     </div>
-</div>
-
+</form>
+   
 @section('customJs')
 <script>
     $(document).ready(function () {
-
-    if ($("#category").val()) {
-        $("#category").trigger('change');
-    }
-
-    setTimeout(function () {
-        if ($("#sub_category").val()) {
-            $("#sub_category").trigger('change');
+        if ($("#category").val()) {
+            $("#category").trigger('change');
         }
-    }, 500);
 
-});
+        setTimeout(function () {
+            if ($("#sub_category").val()) {
+                $("#sub_category").trigger('change');
+            }
+        }, 500);
+    });
 
      $('.related-product').select2({
         ajax: {
@@ -418,23 +439,63 @@
     });
 
 
-    function deleteImage(id){
-        $("#image-row-"+id).remove();
-        if (confirm("Are you sure you want to delete image?")) {
-            $.ajax({
-                url: '{{ route("product-images.destroy") }}',
-                type: 'delete',
-                data: {id:id},
-                    success: function(response) {
-                        if(response.status == true){
-                            alert(response.message);
-                        } else {
-                            alert(response.message);
-                        }
-                    }
-            })
+    $(document).on('click', '.deleteCardImg', function () {
+        let id = $(this).data('id');
+
+        if (!confirm("Are you sure you want to delete image?")) {
+            return;
         }
-    }    
+
+        $.ajax({
+            url: '{{ route("product-images.destroy") }}',
+            type: 'DELETE',
+            data: {
+                id: id,
+                _token: '{{ csrf_token() }}'
+            },
+            success: function(response) {
+                if (response.status) {
+                    $("#image-row-" + id).remove();
+                    alert(response.message);
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function(xhr) {
+                console.log(xhr.responseText);
+            }
+        });
+    });    
+
+
+    $(document).on('click', '.deleteCardImg2', function () {
+        let id = $(this).data('id');
+
+        if (!confirm("Are you sure you want to delete image?")) {
+            return;
+        }
+
+        $.ajax({
+            url: '{{ route("product-images.destroy") }}',
+            type: 'DELETE',
+            data: {
+                id: id,
+                _token: '{{ csrf_token() }}'
+            },
+            success: function(response) {
+                if (response.status) {
+                    $("#image-row2-" + id).remove();
+                    alert(response.message);
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function(xhr) {
+                console.log(xhr.responseText);
+            }
+        });
+    });  
+ 
 
     let index = 1;
     function addVariant() {
@@ -442,35 +503,16 @@
         wrapper.insertAdjacentHTML('beforeend', `
             <div class="variant-item">
                 <div class="row">
-                    <div class="col-md-6 col-6">
+                    <div class="col-md-12 col-6">
                         <div class="form-group">
-                            <label for="color">Photo</label>
                             <input type="file" name="variant_images[${index}]" class="form-control">
                         </div>
-                    </div> 
-                    <div class="col-md-6 col-6">                    
-                        <div class="form-group">
-                            <label for="color">Color</label>
-                            <select name="variants[${index}][color]" id="color_variants" class="form-select">
-                                <option value="">Select a Color</option>
-                                @if ($colors->isNotEmpty())
-                                    @foreach ($colors as $value)
-                                        <option 
-                                            value="{{ $value->id }}"
-                                            {{ old('color_id', $product->color_id ?? '') == $value->id ? 'selected' : '' }}>
-                                            {{ $value->name }}
-                                        </option>
-                                    @endforeach
-                                @endif
-                            </select>                                                    
-                        </div>                                           
-                    </div>                                       
+                    </div>                                                           
                 </div>
             </div>
         `);
         index++;
     }
-
 
     //File image uplaod
     Dropzone.autoDiscover = false;
@@ -487,9 +529,9 @@
                 console.log(response)
 
                var html = `<div class="col-md-2" id="image-row-${response.image_id}">
-                    <div class="card">
+                    <div class="uploaded-images">
                         <input type="hidden" name="image_array[]" value="${response.image_id}" >
-                        <img src="${response.ImagePath}" />
+                        <img src="${response.ImagePath}" class="rounded" />
                         <a href="javascript:void(0)" onclick="deleteImage(${response.image_id})" class="deleteCardImg">X</a>
                     </div>
                 </div>`;
@@ -504,5 +546,43 @@
         function deleteImage(id){
             $("#image-row-"+id).remove();
         }
+
+
+        //File image uplaod
+        Dropzone.autoDiscover = false;
+
+        const variantDropzone = $("#variant_image").dropzone({
+            url: "{{ route('temp-images.create') }}",
+            maxFiles: 10,
+            paramName: 'image',
+            addRemoveLinks: true,
+            acceptedFiles: "image/jpeg,image/png,image/gif",
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+
+            success: function(file, response){
+
+                var html = `
+                <div class="col-md-2" id="variant-image-row-${response.image_id}">
+                    <div class="uploaded-images">
+                        <input type="hidden" name="variant_image_array[]" value="${response.image_id}">
+                        <img src="${response.ImagePath}" class="rounded" />
+                        <a href="javascript:void(0)" onclick="deleteVariantImage(${response.image_id})" class="deleteCardImg">X</a>
+                    </div>
+                </div>`;
+
+                $("#variant-gallery").append(html);
+            },
+
+            complete: function(file){
+                this.removeFile(file);
+            }
+        });
+
+        function deleteVariantImage(id){
+            $("#variant-image-row-"+id).remove();
+        }
+   
 </script>
 @endsection

@@ -2,11 +2,11 @@
 <div class="tab-pane" id="images" role="tabpanel">
     <div class="card mb-1">        
         <div class="row">
-            <div class="col">                      
-                <h4 class="card-title">
-                    Sub Category
-                    <span class="badge rounded text-blue bg-blue-subtle ms-1">{{ $subCategories->total() }}</span>                     
-                </h4> 
+            <div class="col"> 
+                <div class="page-title">            
+                    <h4>Sub Category</h4>
+                    <span class="counts">{{ $subCategories->total() }}</span>
+                </div>
             </div>
             <div class="col-auto"> 
                 <div class="flexContainer">

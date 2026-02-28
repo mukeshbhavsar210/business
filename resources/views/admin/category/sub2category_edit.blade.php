@@ -1,70 +1,69 @@
 @extends('admin.layouts.app')
 
 @section('content')
-<section class="content-header">
-    <div class="container-fluid">
+<div class="card mb-0">
+    <div class="card-body pb-0">
         <div class="row">
             <div class="col-sm-6">
-                <h1>Edit Sub2 Category</h1>
+                <div class="page-title">
+                    <h4>Edit Sub2 Category</h4>
+                </div>
             </div>
             <div class="col-sm-6">
                 <a href="{{ route('categories.index') }}" class="btn btn-primary float-end">Back</a>
             </div>
         </div>
     </div>
-</section>
+</div>
 
-<section class="content">
-    <div class="container-fluid">
-        <form action="" method="post" name="sub2CategoryForm" id="sub2CategoryForm">
-            <div class="card">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-2">
-                            <div class="form-group">
-                            <label>Category</label>
-                                <select name="category_id" id="category" class="form-select">
-                                    <option value="">Select Category</option>
-                                    @foreach ($categories as $category)
-                                        <option value="{{ $category->id }}"
-                                            {{ $sub2Category->category_id == $category->id ? 'selected' : '' }}>
-                                            {{ $category->category_name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="form-group">
-                                <label>Sub Category</label>
-                                <select name="sub_category_id" id="sub_category" class="form-select">
-                                    <option value="">Select Sub Category</option>
-                                    @foreach ($subCategories as $subCategory)
-                                        <option value="{{ $subCategory->id }}"
-                                            {{ $sub2Category->sub_category_id == $subCategory->id ? 'selected' : '' }}>
-                                            {{ $subCategory->sub_category_name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>                       
-                        <div class="col-md-7">
-                            <div class="form-group">                            
-                                <label for="sub2_category_name">Name</label>
-                                <input type="text" name="sub2_category_name" id="sub2_category_name" class="slug-source form-control" data-target="#sub2_category_slug" placeholder="Name" value="{{ $sub2Category->sub2_category_name }}">
-                                <input type="hidden" readonly id="sub2_category_slug" name="sub2_category_slug" class="form-control" value="{{ $sub2Category->sub2_category_slug }}">
-                                <p></p>
-                            </div>
-                        </div>
-                        <div class="col-md-1 mt-3">
-                            <button type="submit" class="btn btn-primary">Update</button>                
-                        </div>
+<div class="card">
+    <div class="card-body pt-1">
+        <form action="" method="post" name="sub2CategoryForm" id="sub2CategoryForm">            
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="form-group">
+                    <label>Category</label>
+                        <select name="category_id" id="category" class="form-select">
+                            <option value="">Select Category</option>
+                            @foreach ($categories as $category)
+                                <option value="{{ $category->id }}"
+                                    {{ $sub2Category->category_id == $category->id ? 'selected' : '' }}>
+                                    {{ $category->category_name }}
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label>Sub Category</label>
+                        <select name="sub_category_id" id="sub_category" class="form-select">
+                            <option value="">Select Sub Category</option>
+                            @foreach ($subCategories as $subCategory)
+                                <option value="{{ $subCategory->id }}"
+                                    {{ $sub2Category->sub_category_id == $subCategory->id ? 'selected' : '' }}>
+                                    {{ $subCategory->sub_category_name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>                       
+                <div class="col-md-7">
+                    <div class="form-group">                            
+                        <label for="sub2_category_name">Name</label>
+                        <input type="text" name="sub2_category_name" id="sub2_category_name" class="slug-source form-control" data-target="#sub2_category_slug" placeholder="Name" value="{{ $sub2Category->sub2_category_name }}">
+                        <input type="text" readonly id="sub2_category_slug" name="sub2_category_slug" class="form-control" value="{{ $sub2Category->sub2_category_slug }}">
+                        <p></p>
+                    </div>
+                </div>
+                <div class="col-md-1 mt-3">
+                    <button type="submit" class="btn btn-primary">Update</button>                
                 </div>
             </div>            
         </form>
-    </div>    
-</section>
+    </div>
+</div>
+
 @endsection
 
 @section('customJs')
@@ -204,6 +203,6 @@
                 }
             }
         });
-    });
+    });    
 </script>
 @endsection

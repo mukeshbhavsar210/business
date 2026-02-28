@@ -1,11 +1,11 @@
 <div class="tab-pane active" id="documents" role="tabpanel">
     <div class="card mb-2">
         <div class="row">
-            <div class="col">                      
-                <h4 class="card-title">
-                    Category 
-                    <span class="badge rounded text-blue bg-blue-subtle ms-1">{{ $categories->total() }}</span>
-                </h4>
+            <div class="col">          
+                <div class="page-title">            
+                    <h4>Category </h4>
+                    <span class="counts">{{ $categories->total() }}</span>
+                </div>
             </div>
             <div class="col-auto"> 
                 <div class="flexContainer">
@@ -62,7 +62,7 @@
                             <td>
                                 <div class="d-flex align-items-center">
                                     <a href="{{ route('products.edit', $category->id) }}">
-                                        <img src="{{ asset('uploads/category/thumb/'.$category->image) }}" alt="" height="70" width="70" class="me-3 align-self-center rounded" />                                        
+                                        <img src="{{ asset('uploads/category/'.$category->image) }}" alt="" height="70" width="70" class="me-3 align-self-center rounded" />                                        
                                     </a>
                                     <div class="flex-grow-1 text-truncate">
                                         <h5 class="product-title">

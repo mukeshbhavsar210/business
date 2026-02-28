@@ -9,8 +9,8 @@
 	<link rel="stylesheet" type="text/css" href="{{ asset('front-assets/css/slick.css') }}" />
 	<link rel="stylesheet" type="text/css" href="{{ asset('front-assets/css/slick-theme.css') }}" />
 	
-	{{-- <link rel="stylesheet" type="text/css" href="{{ asset('front-assets/css/style.min.css') }}" /> --}}
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="{{ asset('front-assets/css/style.min.css') }}" />
+	{{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"> --}}
 	<link rel="stylesheet" type="text/css" href="{{ asset('front-assets/css/style.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('front-assets/css/ion.rangeSlider.min.css') }}" />
 
@@ -32,10 +32,9 @@
 
 @include(request()->routeIs(['front.cart','front.checkout']) ? 'front.layouts.cart_footer' : 'front.layouts.footer')
 
-
 <script src="{{ asset('front-assets/js/jquery-3.6.0.min.js') }}"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-{{-- <script src="{{ asset('front-assets/js/bootstrap.bundle.5.1.3.min.js') }}"></script> --}}
+{{-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script> --}}
+<script src="{{ asset('front-assets/js/bootstrap.bundle.5.1.3.min.js') }}"></script>
 <script src="{{ asset('front-assets/js/instantpages.5.1.0.min.js') }}"></script>
 <script src="{{ asset('front-assets/js/lazyload.17.6.0.min.js') }}"></script>
 <script src="{{ asset('front-assets/js/slick.min.js') }}"></script>
@@ -61,27 +60,28 @@
     });
     
     function addToCart(id){
+
         if(selectedSize == ''){
             alert('Please select size');
             return;
         }
 
-        if(selectedColor == ''){
-            alert('Please select color');
-            return;
-        }
+        // Get variant id from URL
+        let urlParams = new URLSearchParams(window.location.search);
+        let variantId = urlParams.get('variant'); // null if not selected
 
         $.ajax({
             url: '{{ route("front.addToCart") }}',
             type: 'POST',
             data: {
                 _token: '{{ csrf_token() }}',
-                id: id,
+                product_id: id,
+                variant_id: variantId,
                 size: selectedSize,
-                color: selectedColor
             },
             dataType: 'json',
             success: function(response){
+
                 if(response.status == true){
 
                     // ✅ Update cart count
@@ -98,7 +98,6 @@
 
                     // Optional: Reset selections
                     selectedSize = '';
-                    selectedColor = '';                    
 
                 } else {
                     alert(response.message);
@@ -109,6 +108,66 @@
             }
         });
     }
+
+
+
+    $("#registrationForm").submit(function(event){
+        event.preventDefault();
+
+        $("button[type='submit']").prop('disabled', true);
+
+        $.ajax({
+            url: '{{ route("account.processRegister") }}',
+            type: 'post',
+            data: $(this).serializeArray(),
+            dataType: 'json',
+            success: function(response){
+                $("button[type='submit']").prop('disabled', false);
+
+                var errors = response.errors;
+
+                if(response.status == false){
+                    if(errors.name){
+                        $("#name").siblings("p").addClass('invalid-feedback').html(errors.name);
+                        $("#name").addClass('is-invalid');
+                    } else {
+                        $("#name").siblings("p").removeClass('invalid-feedback').html();
+                        $("#name").removeClass('is-invalid');
+                    }
+
+                    if(errors.email){
+                        $("#email").siblings("p").addClass('invalid-feedback').html(errors.email);
+                        $("#email").addClass('is-invalid');
+                    } else {
+                        $("#email").siblings("p").removeClass('invalid-feedback').html();
+                        $("#email").removeClass('is-invalid');
+                    }
+
+                    if(errors.password){
+                        $("#password").siblings("p").addClass('invalid-feedback').html(errors.password);
+                        $("#password").addClass('is-invalid');
+                    } else {
+                        $("#password").siblings("p").removeClass('invalid-feedback').html();
+                        $("#password").removeClass('is-invalid');
+                    }
+                } else {
+                    $("#name").siblings("p").removeClass('invalid-feedback').html();
+                    $("#name").removeClass('is-invalid');
+                    $("#email").siblings("p").removeClass('invalid-feedback').html();
+                    $("#email").removeClass('is-invalid');
+                    $("#password").siblings("p").removeClass('invalid-feedback').html();
+                    $("#password").removeClass('is-invalid');
+
+                    window.location.href="{{ route('front.home') }}"
+                }
+            },
+            error: function(JQXHR, exception){
+                console.log("Something went wrong");
+            }
+        })
+    });
+
+
 
     function addToWishlist(id){
         $.ajax({
@@ -126,7 +185,7 @@
                     var toast = new bootstrap.Toast(toastEl);
                     toast.show();
                 } else {
-                    window.location.href= "{{ route('account.login') }}";
+                    window.location.href= "{{ route('front.home') }}";
                 }
             },
             error: function(xhr){

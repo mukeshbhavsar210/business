@@ -1,94 +1,91 @@
 @extends('admin.layouts.app')
 
 @section('content')
-<section class="content-header">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-sm-6">
-                <h1>Edit Category</h1>
-            </div>
-            <div class="col-sm-6">
-                <a href="{{ route('categories.index') }}" class="btn btn-primary float-end">Back</a>
-            </div>
-        </div>
-    </div>    
-</section>
-
-<section class="content">
-    <div class="container-fluid">
-        <form action="" method="post" id="categoryForm" name="categoryForm">
-            <div class="card">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-8 col-12">
-                            <div class="form-group">
-                                <label for="category_name">Name</label>
-                                <input type="text" value="{{ $category->category_name}}" name="category_name" id="category_name" class="form-control" placeholder="Name">
-                                <input type="hidden" value="{{ $category->category_slug}}" readonly name="category_slug" id="category_slug" class="form-control" placeholder="">
-                                <p></p>
-                            </div>
-                            
-                            <div class="row">
-                                <div class="col-md-4 col-4">
-                                    <div class="form-group">
-                                        <label for="status">Status</label>
-                                        <select name="status" id="status" class="form-select">
-                                            <option {{ ($category->status == 1 ? 'selected' : '')}} value="1">Active</option>
-                                            <option  {{ ($category->status == 0 ? 'selected' : '')}} value="0">Block</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 col-4">
-                                    <div class="form-group">
-                                        <label for="showHome">Show on Home</label>
-                                        <select name="showHome" id="showHome" class="form-select">
-                                            <option {{ ($category->showHome == 'Yes' ? 'selected' : '')}} value="Yes">Yes</option>
-                                            <option  {{ ($category->showHome == 'No' ? 'selected' : '')}} value="No">No</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 col-4">
-                                    <div class="form-group">
-                                        <label for="menu_order">Order</label>
-                                        <select name="menu_order" id="menu_order" class="form-select">
-                                            <option {{ ($category->menu_order == '1' ? 'selected' : '')}} value="1">1</option>
-                                            <option {{ ($category->menu_order == '2' ? 'selected' : '')}} value="2">2</option>
-                                            <option {{ ($category->menu_order == '3' ? 'selected' : '')}} value="3">3</option>
-                                            <option {{ ($category->menu_order == '4' ? 'selected' : '')}} value="4">4</option>
-                                            <option {{ ($category->menu_order == '5' ? 'selected' : '')}} value="5">5</option>
-                                            <option {{ ($category->menu_order == '6' ? 'selected' : '')}} value="6">6</option>
-                                        </select>                                
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6 col-6 mt-4">                                    
-                                    <button type="submit" class="btn btn-primary">Update</button>
-                                    <a href="{{ route('categories.index') }}" class="btn btn-outline-dark ml-3">Cancel</a>                                    
-                                </div>
-                            </div>
-                        </div>                        
-                        <div class="col-md-4 col-12">       
-                            <div class="form-group">                     
-                                <input type="hidden" id="image_id" name="image_id" value=" ">                            
-                                <label for="image">Image</label>
-                                <div id="image" class="dropzone dz-clickable">
-                                    <div class="dz-message needsclick">
-                                        <br>Drop files here or click to upload.<br><br>
-                                    </div>                            
-                                </div>
-
-                                @if(!empty($category->image))
-                                    <img style="border-radius: 7px; width:200px" src="{{ asset('uploads/category/thumb/'.$category->image) }}" alt="" />
-                                @endif
-                            </div>
-                        </div>
+    <div class="card mb-0">
+        <div class="card-body pb-0">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="page-title">
+                        <h4>Edit Category</h4>
                     </div>
                 </div>
-            </div>            
-        </form>
+                <div class="col-sm-6">
+                    <a href="{{ route('categories.index') }}" class="btn btn-primary float-end">Back</a>
+                </div>
+            </div>
+        </div>
     </div>
-    <!-- /.card -->
-</section>
+
+    <div class="card">
+        <div class="card-body pt-1">
+            <form action="" method="post" id="categoryForm" name="categoryForm">            
+                <div class="row">
+                    <div class="col-md-7 col-12">
+                        <div class="form-group">
+                            <label for="category_name">Name</label>
+                            <input type="text" value="{{ $category->category_name}}" name="category_name" id="category_name" class="form-control slug-source" placeholder="Name" data-target="#category_slug">
+                            <input type="hidden" value="{{ $category->category_slug}}" readonly name="category_slug" id="category_slug" class="form-control" placeholder="">
+                            <p></p>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4 col-4">
+                                <div class="form-group">
+                                    <label for="status">Status</label>
+                                    <select name="status" id="status" class="form-select">
+                                        <option {{ ($category->status == 1 ? 'selected' : '')}} value="1">Active</option>
+                                        <option  {{ ($category->status == 0 ? 'selected' : '')}} value="0">Block</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-4">
+                                <div class="form-group">
+                                    <label for="showHome">Show on Home</label>
+                                    <select name="showHome" id="showHome" class="form-select">
+                                        <option {{ ($category->showHome == 'Yes' ? 'selected' : '')}} value="Yes">Yes</option>
+                                        <option  {{ ($category->showHome == 'No' ? 'selected' : '')}} value="No">No</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-4">
+                                <div class="form-group">
+                                    <label for="menu_order">Order</label>
+                                    <select name="menu_order" id="menu_order" class="form-select">
+                                        <option {{ ($category->menu_order == '1' ? 'selected' : '')}} value="1">1</option>
+                                        <option {{ ($category->menu_order == '2' ? 'selected' : '')}} value="2">2</option>
+                                        <option {{ ($category->menu_order == '3' ? 'selected' : '')}} value="3">3</option>
+                                        <option {{ ($category->menu_order == '4' ? 'selected' : '')}} value="4">4</option>
+                                        <option {{ ($category->menu_order == '5' ? 'selected' : '')}} value="5">5</option>
+                                        <option {{ ($category->menu_order == '6' ? 'selected' : '')}} value="6">6</option>
+                                    </select>                                
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 col-6 mt-4">                                    
+                                <button type="submit" class="btn btn-primary">Update</button>
+                                <a href="{{ route('categories.index') }}" class="btn btn-outline-dark ml-3">Cancel</a>                                    
+                            </div>
+                        </div>
+                    </div>                        
+                    <div class="col-md-5 col-12">       
+                        <div class="form-group">                     
+                            <input type="hidden" id="image_id" name="image_id" value=" ">                            
+                            <label for="image">Image</label>
+                            <div id="image" class="dropzone dz-clickable">
+                                <div class="dz-message needsclick">
+                                    <br>Drop files here or click to upload.<br><br>
+                                </div>                            
+                            </div>
+
+                            @if(!empty($category->image))
+                                <img style="border-radius: 7px; width:200px" src="{{ asset('uploads/category/thumb/'.$category->image) }}" alt="" />
+                            @endif
+                        </div>
+                    </div>
+                </div>            
+            </form>
+        </div>
+    </div>
 @endsection
 
 @section('customJs')
@@ -190,5 +187,30 @@
                     //console.log(response)
                 }
             });
+
+
+    $(document).on('input', '.slug-source', function () {
+        let element = $(this);
+        let form = element.closest('form');
+        let target = element.data('target');
+        let submitBtn = form.find("button[type=submit]");
+
+        submitBtn.prop('disabled', true);
+
+        $.ajax({
+            url: '{{ route("getSlug") }}',
+            type: 'GET',
+            data: { title: element.val() },
+            dataType: 'json',
+            success: function (response) {
+
+                submitBtn.prop('disabled', false);
+
+                if (response.status) {
+                    form.find(target).val(response.slug);
+                }
+            }
+        });
+    });
     </script>
 @endsection
