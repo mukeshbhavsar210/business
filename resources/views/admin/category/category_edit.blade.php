@@ -24,7 +24,7 @@
                         <div class="form-group">
                             <label for="category_name">Name</label>
                             <input type="text" value="{{ $category->category_name}}" name="category_name" id="category_name" class="form-control slug-source" placeholder="Name" data-target="#category_slug">
-                            <input type="text" value="{{ $category->category_slug}}" readonly name="category_slug" id="category_slug" class="form-control" placeholder="">
+                            <input type="hidden" value="{{ $category->category_slug}}" readonly name="category_slug" id="category_slug" class="form-control" placeholder="">
                             <p></p>
                         </div>
                         

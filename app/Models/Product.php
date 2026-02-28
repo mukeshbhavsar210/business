@@ -23,6 +23,10 @@ class Product extends Model {
         return $this->hasMany(ProductImage::class);
     }    
 
+    public function variant_images(){
+        return $this->hasMany(ProductVariant::class);
+    }  
+
     public function color() {
         return $this->belongsTo(Color::class);
     }

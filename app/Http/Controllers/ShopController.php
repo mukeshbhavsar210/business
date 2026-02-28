@@ -229,10 +229,18 @@ class ShopController extends Controller {
     
 
 
-    public function product($slug){        
+    public function product($slug, Request $request){        
         $product = Product::where('slug',$slug)->with(['product_images', 'variants', 'subSubCategory.subCategory.category'])->first();
         $colors = Color::get();
         $sizes = Size::get();
+
+        $selectedVariant = null;
+
+        if ($request->filled('variant')) {
+            $selectedVariant = $product->variants
+                                ->where('id', $request->variant)
+                                ->first();
+        }
 
         if($product == null){
             abort(404);
@@ -287,7 +295,8 @@ class ShopController extends Controller {
         $reviews = Review::with('user')->where('product_id', $product->id)->latest()->take(3)->get();      
         $totalReviews = Review::where('product_id', $product->id)->count();         
        
-        $data['product'] = $product;      
+        $data['product'] = $product;
+        $data['selectedVariant'] = $selectedVariant;
         $data['ratings'] = $ratings;
         $data['totalRatings'] = $totalRatings;
         $data['averageRating'] = $averageRating;

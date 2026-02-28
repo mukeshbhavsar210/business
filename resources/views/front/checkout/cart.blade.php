@@ -28,12 +28,7 @@
                                 <h3>{{ $item->name }}</h3>
                                 <p class="short-desc">{{ $item->options->short_description ?? '' }}</p>
 
-                                <div class="manuplate">
-                                    <div class="select">       
-                                        <a href="javascript:void(0);" class="update-color" data-type="color" data-rowid="{{ $item->rowId }}" data-selected="{{ $item->options->color }}">
-                                            Color: <b>{{ $item->options->color ?? '' }}</b> 
-                                        </a>                                    
-                                    </div>
+                                <div class="manuplate">                                    
                                     <div class="select">                                    
                                         <a href="javascript:void(0);" class="update-size" data-type="size" data-rowid="{{ $item->rowId }}" data-selected="{{ $item->options->size }}">
                                             Size: <b>{{ $item->options->size }}</b>
@@ -59,23 +54,6 @@
                                     @endif           
                                 </div>                               
 
-                                <div class="modal fade" id="commonOptionModal" tabindex="-1">
-                                    <div class="modal-dialog modal-sm">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h6>Colors</h6>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <ul class="list-unstyled" id="modalOptionsList">
-                                                    
-                                                </ul>
-                                                {{-- <button type="button" class="btn btn-primary w-100" data-bs-dismiss="modal">Done</button> --}}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
                                 <div class="modal fade" id="commonSizesModal" tabindex="-1">
                                     <div class="modal-dialog modal-sm">
                                         <div class="modal-content">
@@ -87,62 +65,28 @@
                                                 <ul class="list-unstyled" id="modalSizesList">
                                                     
                                                 </ul>
-                                                {{-- <button type="button" class="btn btn-primary w-100" data-bs-dismiss="modal">Done</button> --}}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="modal fade" id="commonQtyModal" tabindex="-1">
-                                    <div class="modal-dialog modal-sm">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h6>Quantity</h6>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <ul class="list-unstyled" id="modalQtyList">
-                                                    
-                                                </ul>
-                                                {{-- <button type="button" class="btn btn-primary w-100" data-bs-dismiss="modal">Done</button> --}}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="modal fade" id="commonQtyModal" tabindex="-1">
-                                    <div class="modal-dialog modal-sm">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h6>Quantity</h6>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <ul class="list-unstyled" id="modalQtyList">
-                                                    
-                                                </ul>
-                                                {{-- <button type="button" class="btn btn-primary w-100" data-bs-dismiss="modal">Done</button> --}}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="modal fade" id="cartOptionModal" tabindex="-1">
-                                    <div class="modal-dialog modal-sm">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h6>Quantity</h6>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <ul class="list-unstyled" id="modalQtyList">
-                                                    
-                                                </ul>
                                                 <button type="button" class="btn btn-primary w-100" data-bs-dismiss="modal">Done</button>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+
+                                <div class="modal fade" id="commonQtyModal" tabindex="-1">
+                                    <div class="modal-dialog modal-sm">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h6>Quantity</h6>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <ul class="list-unstyled" id="modalQtyList">
+                                                    
+                                                </ul>
+                                                {{-- <button type="button" class="btn btn-primary w-100" data-bs-dismiss="modal">Done</button> --}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>                                                             
                             </div>
 
                             <div class="remove">
@@ -264,7 +208,6 @@
              {{-- <a href="javascript:void(0);" 
                 class="edit-cart-item"
                 data-rowid="{{ $item->rowId }}"
-                data-color="{{ $item->options->color }}"
                 data-size="{{ $item->options->size }}"
                 data-qty="{{ $item->qty }}"
                 >Edit</a>
@@ -280,13 +223,7 @@
 
                         <div class="modal-body">
                             <input type="hidden" id="modal_rowId">
-
-                            <label>Color</label>
-                            <select id="modal_color" class="form-control">
-                                <option value="Red">Red</option>
-                                <option value="Blue">Blue</option>
-                            </select>
-
+                          
                             <label>Size</label>
                             <select id="modal_size" class="form-control">
                                 <option value="S">S</option>
@@ -313,52 +250,7 @@
     <script>
         let currentRowId = '';
         let currentType = '';          
-
-        $(document).on('click', '.update-color', function(){
-            currentRowId = $(this).data('rowid');
-            currentType = $(this).data('type');
-            let selected = $(this).data('selected');
-
-            let title = '';
-            let options = [];
-
-            if(currentType === 'color'){
-                title = 'Select Color';
-                options = ['Red', 'Blue', 'Green'];
-            }                             
-
-            let html = '';
-            options.forEach(function(option){
-                let active = (option == selected) ? 'selected' : '';
-                html += `<li><a href="#" class="select-color-option ${active}" data-value="${option}">${option}</a></li>`;
-            });
-
-            $('#modalOptionsList').html(html);
-
-            new bootstrap.Modal('#commonOptionModal').show();
-        });
-
-        $(document).on('click', '.select-color-option', function(e){
-            e.preventDefault();
-
-            let value = $(this).data('value');
-
-            let data = {
-                rowId: currentRowId,
-                _token: '{{ csrf_token() }}'
-            };
        
-            if(currentType === 'color'){
-                data.color = value;
-            }          
-
-            $.post('{{ route("front.updateCartOption") }}', data, function(res){
-                if(res.status){
-                    location.reload();
-                }
-            });
-        });
-
         //Size Modal
         $(document).on('click', '.update-size', function(){
             currentRowId = $(this).data('rowid');

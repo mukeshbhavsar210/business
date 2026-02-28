@@ -49,21 +49,27 @@ class ProductImageController extends Controller {
         ]);
     }
 
-    public function destroy(Request $request){
+    public function destroy(Request $request) {
         $productImage = ProductImage::find($request->id);
 
-        if (empty($productImage)){
+        if (!$productImage) {
             return response()->json([
                 'status' => false,
                 'message' => 'Image not found'
             ]);
         }
 
-        //Delete images from folder
-        File::delete(public_path('uploads/product/large/'.$productImage->image));
-        File::delete(public_path('uploads/product/small/'.$productImage->image));
+        $largePath = public_path('uploads/product/large/'.$productImage->image);
+        $smallPath = public_path('uploads/product/small/'.$productImage->image);
 
-        //Delete images from database
+        if (File::exists($largePath)) {
+            File::delete($largePath);
+        }
+
+        if (File::exists($smallPath)) {
+            File::delete($smallPath);
+        }
+
         $productImage->delete();
 
         return response()->json([

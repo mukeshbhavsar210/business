@@ -62,7 +62,7 @@
                             <td>
                                 <div class="d-flex align-items-center">
                                     <a href="{{ route('products.edit', $category->id) }}">
-                                        <img src="{{ asset('uploads/category/thumb/'.$category->image) }}" alt="" height="70" width="70" class="me-3 align-self-center rounded" />                                        
+                                        <img src="{{ asset('uploads/category/'.$category->image) }}" alt="" height="70" width="70" class="me-3 align-self-center rounded" />                                        
                                     </a>
                                     <div class="flex-grow-1 text-truncate">
                                         <h5 class="product-title">

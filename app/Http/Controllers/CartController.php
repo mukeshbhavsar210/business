@@ -20,82 +20,79 @@ use App\Models\State;
 use Razorpay\Api\Api;
 
 class CartController extends Controller {
-    public function addToCart(Request $request){
-        $product = Product::with('product_images')->find($request->id);
-        $size = $request->size ?? 'Default Size';
+    public function addToCart(Request $request) {
+        $product = Product::with(['product_images','variants'])
+            ->find($request->product_id);
 
-        if ($product == null) {
+        if (!$product) {
             return response()->json([
-                "status"=> false,
-                "message"=> "Product not found"
+                "status" => false,
+                "message" => "Product not found"
             ]);
         }
 
-        if (Cart::count() > 0) {
-            //echo "Product already in cart";
-            //Product found in cart
-            //Check if this product already in the cart
-            //Return a message that product already added in your cart
-            //if product not found in the cart, then add product in cart
+        $variantId = $request->variant_id;
+        $size      = $request->size ?? 'Default Size';
+        $color     = $request->color ?? null;
 
-            $cartContent = Cart::content();
-            $productAlreadyExist = false;
+        // Get selected variant (if exists)
+        $variant = null;
+        if (!empty($variantId)) {
+            $variant = $product->variants->where('id', $variantId)->first();
+        }
 
-            foreach ($cartContent as $item) {
-                if ($item->id == $product->id) {
-                    $productAlreadyExist = true;
-                }
+        // Determine correct image
+        $image = $variant && $variant->image
+                    ? $variant->image
+                    : optional($product->product_images->first())->image;
+
+        // Unique rowId check (product + variant + size)
+        $alreadyExists = false;
+
+        foreach (Cart::content() as $item) {
+            if (
+                $item->id == $product->id &&
+                $item->options->variant_id == $variantId &&
+                $item->options->size == $size
+            ) {
+                $alreadyExists = true;
+                break;
             }
+        }
 
-            if($productAlreadyExist == false){
-                Cart::add([
-                    'id'      => $product->id,
-                    'name'    => $product->title,
-                    'qty'     => 1,
-                    'price'   => $product->price,
-                    'weight'  => 0,
-                    'options' => [
-                        'short_description' => $product->short_description,
-                        'compare_price'     => $product->compare_price,
-                        'productImage'      => optional($product->product_images->first())->image ?? '',
-                        'product_variant_id'=> $product->id,
-                        'size'              => $request->size,
-                        'color'             => $request->color,
-                    ]
-                ]);                
-                $status = true;
-                $message = '<strong>'.$product->title.'</strong> added in your cart successfully.';
-                session()->flash('success', $message);
-            } else {
-                $status = false;
-                $message = $product->title.' already added in cart';
-            }
+        if (!$alreadyExists) {
 
-        } else {
             Cart::add([
                 'id'      => $product->id,
                 'name'    => $product->title,
                 'qty'     => 1,
-                'price'   => $product->price,
+                'price'   => $product->price, // You can change price based on variant
                 'weight'  => 0,
                 'options' => [
                     'short_description' => $product->short_description,
                     'compare_price'     => $product->compare_price,
-                    'productImage'      => optional($product->product_images->first())->image ?? '',
-                    'product_variant_id'=> $product->id,
-                    'size'              => $request->size,
-                    'color'             => $request->color,
+                    'productImage'      => $image,
+                    'variant_id'        => $variantId,
+                    'size'              => $size,
+                    'color'             => $color,
                 ]
-            ]);            
-            $status = true;
-            $message = '<strong>'.$product->title.'</strong> added in your cart successfully.';
+            ]);
+
+            $status  = true;
+            $message = '<strong>'.$product->title.'</strong> added to cart successfully.';
             session()->flash('success', $message);
+
+        } else {
+
+            $status  = false;
+            $message = $product->title.' already added in cart';
+
         }
-        
+
         return response()->json([
-            "status"=> $status,
-            "message"=> $message,
-            'cartCount' => Cart::count(),
+            "status"    => $status,
+            "message"   => $message,
+            "cartCount" => Cart::count(),
         ]);
     }
 

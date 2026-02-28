@@ -12,7 +12,7 @@
                         <div class="product-card-home">
                             <a href="{{ route('front.category.shop', [$category->category_slug]) }}" >                            
                                 @if ($category->image != "")
-                                    <img src="{{ asset('uploads/category/thumb/'.$category->image) }} " alt="" class="img-fluid">
+                                    <img src="{{ asset('uploads/category/'.$category->image) }} " alt="" class="img-fluid">
                                 @endif
                             
                                 <div class="product-card-home-body">

@@ -346,7 +346,7 @@ input:checked + .slider { box-shadow:0 0 0 2px #007bff,0 0 2px #007bff; }
 .modal-body { padding: 15px 25px 10px 25px; }
 .modal-header, .modal-footer { padding: 10px 25px;}
 
-.form-control, .form-select { font-size: 14px; border-radius: 4px; padding: 7px 15px 10px 15px; border-color: var(--gray-light);}
+.form-control, .form-select { border-radius: 4px; padding: 7px 15px 10px 15px; border-color: var(--gray-light);}
 .checkboxDropdown .dropdown-menu.show { padding:10px;}
 .checkboxDropdown .dropdown-menu.show input[type=checkbox] { margin-right: 5px;}
 .checkboxDropdown .dropdown-menu.show label { margin-bottom: 5px;}
@@ -360,8 +360,8 @@ input:checked + .slider { box-shadow:0 0 0 2px #007bff,0 0 2px #007bff; }
 
 .table-text td, .table-text th { vertical-align: top; }
 
-.form-group { position: relative; margin-bottom: 20px; }
-.form-group label { font-size: 13px; color: var(--gray); margin-bottom: 5px;}
+.form-group { position: relative; margin-bottom: 10px; }
+.form-group label { font-size: 13px; color: var(--gray); margin-bottom: 3px;}
 .form-group .floating-label {
     position: absolute;
     left: 9px;

@@ -12,13 +12,20 @@
     <div class="row">
         <div class="col-md-7 col-12">
             <div class="row">
-                @if ($product->product_images)
-                    @foreach ($product->product_images as $key => $productImage)
-                        <div class="col-md-6 col-12">
-                            <img class="w-100 h-100" src="{{ asset('uploads/product/large/'.$productImage->image) }}" alt="Image">
-                        </div>
-                    @endforeach
-                @endif
+                @if(request()->filled('variant') && $selectedVariant && $selectedVariant->image)
+                    {{-- Show ONLY selected variant image --}}
+                    <div class="col-md-6 col-12">
+                        <img class="w-100 h-100" src="{{ asset('uploads/product/large/'.$selectedVariant->image) }}" alt="Variant Image">
+                    </div>
+                @else                    
+                    @if ($product->product_images && $product->product_images->count())
+                        @foreach ($product->product_images as $productImage)
+                            <div class="col-md-6 col-12">
+                                <img class="w-100 h-100" src="{{ asset('uploads/product/large/'.$productImage->image) }}" alt="Product Image">
+                            </div>
+                        @endforeach
+                    @endif
+                @endif                          
             </div>
         </div>
         <div class="col-md-5 col-12">
@@ -61,34 +68,30 @@
                             <span class="discount">({{ $discount }}% OFF)</span>
                         @endif           
                     </div>                                                                                                                                      
-                        <p class="inclusive">Inclusive of all taxes</p>
-                    </div>
+                    <p class="inclusive">Inclusive of all taxes</p>
+                </div>
 
-                <div class="part mt-3">
-                    <h3>More</h3>
-                    @if($product->variants->isNotEmpty())
-                        <ul class="size-select">
-                            @foreach($product->variants as $variant)
-                                <li>
-                                    <a href="{{ route('front.product', ['slug' => $product->slug, 'variant' => $variant->id]) }}" class="color-btn">
-                                        <img src="{{ asset('uploads/product/large/variant/'.$variant->image) }}" width="40">
-                                    </a>
-                                </li>                            
-                            @endforeach
+                <div class="part mt-1">
+                    <h3>More Colors</h3>
+                    <ul class="variant">
+                        @if($product->images->first())
+                            <li>
+                                <a href="{{ route('front.product', ['slug' => $product->slug]) }}" class="variant-btn {{ request('variant') ? '' : 'active' }}">
+                                    <img src="{{ asset('uploads/product/small/'.$product->images->first()->image) }}" >
+                                </a>
+                            </li>
                         @endif
-                    </ul>
-
-                    @if($product->variants->isNotEmpty())
-                        <ul class="size-select">
-                            @foreach($product->variants as $variant)                               
-                                <li>
-                                    <a href="javascript:void(0);" class="color-option" data-color="{{ $variant->color }}">
-                                        {{ $variant->color }}
+                        @foreach ($product->variants as $variant)
+                            @if($variant->image)
+                                <li id="variant-image-row-{{ $variant->id }}">                                
+                                    <a href="{{ route('front.product', ['slug' => $product->slug, 'variant' => $variant->id]) }}" class="variant-btn {{ request('variant') == $variant->id ? 'active' : '' }}">
+                                        <input type="hidden" name="existing_variant_images[]" value="{{ $variant->id }}">
+                                        <img src="{{ asset('uploads/product/small/'.$variant->image) }}"  />
                                     </a>
-                                </li>                            
-                            @endforeach
-                        @endif
-                    </ul>
+                                </li>
+                            @endif
+                        @endforeach
+                    </ul> 
                 </div>                
 
                 <div class="part">

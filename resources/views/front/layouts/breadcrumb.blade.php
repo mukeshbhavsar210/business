@@ -1,4 +1,4 @@
-<nav aria-label="breadcrumb">
+{{-- <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item">
             <a href="{{ route('front.home') }}">Home</a>
@@ -34,4 +34,4 @@
             {{ $product->title }}
         </li>
     </ol>
-</nav>
+</nav> --}}

@@ -60,27 +60,28 @@
     });
     
     function addToCart(id){
+
         if(selectedSize == ''){
             alert('Please select size');
             return;
         }
 
-        if(selectedColor == ''){
-            alert('Please select color');
-            return;
-        }
+        // Get variant id from URL
+        let urlParams = new URLSearchParams(window.location.search);
+        let variantId = urlParams.get('variant'); // null if not selected
 
         $.ajax({
             url: '{{ route("front.addToCart") }}',
             type: 'POST',
             data: {
                 _token: '{{ csrf_token() }}',
-                id: id,
+                product_id: id,
+                variant_id: variantId,
                 size: selectedSize,
-                color: selectedColor
             },
             dataType: 'json',
             success: function(response){
+
                 if(response.status == true){
 
                     // ✅ Update cart count
@@ -97,7 +98,6 @@
 
                     // Optional: Reset selections
                     selectedSize = '';
-                    selectedColor = '';                    
 
                 } else {
                     alert(response.message);
