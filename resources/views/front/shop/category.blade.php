@@ -2,11 +2,10 @@
 
 @section('content')
     
-<div class="container-fluid">
-    
+<div class="container">    
     <div class="row">
         @foreach($products as $product)         
-            <div class="col-md-2 col-6">
+            <div class="col-md-3 col-6">
                 <x-product-card :product="$product" />                    
             </div>
         @endforeach

@@ -6,17 +6,20 @@
     <ul class="nav nav-tabs" role="tablist">
         <li class="nav-item" role="presentation">
             <a class="nav-link fw-semibold active py-2" data-bs-toggle="tab" href="#documents" role="tab" aria-selected="true">
-                Category                        
+                Category      
+                <span class="counts">{{ $categories->total() }}</span>                  
             </a>
         </li>
         <li class="nav-item" role="presentation">
             <a class="nav-link fw-semibold py-2" data-bs-toggle="tab" href="#images" role="tab" aria-selected="false" tabindex="-1">                                            
-                Sub Category                
+                Sub Category   
+                <span class="counts">{{ $subCategories->total() }}</span>              
             </a>
         </li>                                                
         <li class="nav-item" role="presentation">
             <a class="nav-link fw-semibold py-2" data-bs-toggle="tab" href="#audio" role="tab" aria-selected="false" tabindex="-1">
                 Sub2 Category                
+                <span class="counts">{{ $sub2Categories->total() }}</span> 
             </a>
         </li>
     </ul>                           

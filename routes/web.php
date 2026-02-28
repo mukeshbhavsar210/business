@@ -65,7 +65,7 @@ Route::controller(CartController::class)->group(function() {
 Route::group(['prefix' => 'account'], function(){
     Route::group(['middleware' => 'guest'], function(){
         Route::controller(AuthController::class)->group(function() {
-            Route::get('/login','login')->name('account.login');
+            //Route::get('/login','login')->name('account.login');
             Route::post('/login','authenticate')->name('account.authenticate');
             Route::get('/register','register')->name('account.register');
             Route::post('/process-register','processRegister')->name('account.processRegister');
@@ -75,10 +75,8 @@ Route::group(['prefix' => 'account'], function(){
     Route::group(['middleware' => 'auth'], function(){
         Route::controller(AuthController::class)->group(function() {
             Route::get('/dashboard','dashboard')->name('account.dashboard');
-
             Route::post('/address/store', 'address_store')->name('customer.address.store');
             Route::put('/address/{id}', 'address_update')->name('customer.address.update');
-
             Route::get('/address','address')->name('account.address');
             Route::get('/cards','cards')->name('account.cards');
             Route::get('/profile','profile')->name('account.profile');

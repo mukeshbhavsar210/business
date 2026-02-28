@@ -126,7 +126,7 @@ class CartController extends Controller {
             if (!session()->has('url.intended')) {
                 session(['url.intended' => url()->current()]);
             }
-            return redirect()->route('account.login');
+            return redirect()->route('front.home');
         }
 
         $address = auth()->user()->addresses()->with('state')->get();

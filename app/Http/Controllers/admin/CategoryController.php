@@ -18,7 +18,6 @@ use Illuminate\Validation\Rule;
 class CategoryController extends Controller {
 
     public function index(Request $request) {
-        // Categories
         $categories = Category::orderBy('menu_order', 'asc');
 
         if ($request->filled('keyword')) {
@@ -27,9 +26,6 @@ class CategoryController extends Controller {
 
         $categories = $categories->paginate(10);
 
-
-
-        // Sub Categories
         $subCategories = SubCategory::select(
                 'sub_categories.*',
                 'categories.category_name as categoryName'
@@ -47,10 +43,6 @@ class CategoryController extends Controller {
         }
 
         $subCategories = $subCategories->paginate(10);
-
-
-
-        // Sub Sub Categories
         $sub2Categories = SubSubCategory::select(
                 'sub_sub_categories.*',
                 'sub_categories.sub_category_name as subCategoryName',
@@ -131,89 +123,6 @@ class CategoryController extends Controller {
                 'errors' => $validator->errors()
             ]);
         }
-    }
-
-
-    public function sub_category_store(Request $request){
-        $validator = Validator::make($request->all(), [
-            'sub_category_name' => 'required',             
-            // 'slug' => 'required|unique:sub_categories',
-            'sub_category_slug' => [
-                    'required',
-                    Rule::unique('sub_categories')
-                        ->where(function ($query) use ($request) {
-                            return $query->where('category_id', $request->category_id);
-                        }),
-                ],
-            'category_id' => 'required',
-            'status' => 'required',
-        ]);
-
-        if ($validator->passes()) {
-            $subCategory = new SubCategory();
-            $subCategory->sub_category_name = $request->sub_category_name;
-            $subCategory->sub_category_slug = $request->sub_category_slug;
-            $subCategory->status = $request->status;
-            $subCategory->category_id = $request->category_id;
-            $subCategory->showHome = $request->showHome;
-            $subCategory->save();
-
-            $request->session()->flash('success', 'Sub Category added successfully');
-
-            return response([
-                'status' => true,
-                'message' => 'Sub Category added successfully',
-            ]);
-
-        } else {
-            return response([
-                'status' => false,
-                'errors' => $validator->errors()
-            ]);
-        }
-    }
-
-
-    public function sub2_category_store(Request $request){
-        $validator = Validator::make($request->all(), [
-            'sub2_category_name' => 'required',
-            // 'slug' => [
-            //     'required',
-            //     Rule::unique('sub_sub_categories')
-            //         ->where(function ($query) use ($request) {
-            //             return $query->where('sub_category_id', $request->sub_category_id);
-            //         }),
-            // ],
-            //'slug' => 'required|unique:sub_sub_categories',
-            //'category' => 'required',
-            //'sub_category' => 'required',            
-        ]);
-
-        if ($validator->passes()) {
-            $sub2Category = new SubSubCategory();
-            $sub2Category->category_id = $request->category;
-            $sub2Category->sub_category_id = $request->sub_category_id;
-            $sub2Category->sub2_category_name = $request->sub2_category_name;
-            $sub2Category->sub2_category_slug = $request->sub2_category_slug;            
-            $sub2Category->save();
-
-            $request->session()->flash('success', 'Sub2 Category added successfully');
-
-            return response([
-                'status' => true,
-                'message' => 'Sub2 Category added successfully',
-            ]);
-
-        } else {
-            return response([
-                'status' => false,
-                'errors' => $validator->errors()
-            ]);
-        }
-    }
-
-    public function getSubCategories($id) {
-        return SubCategory::where('category_id', $id)->get();
     }
 
     public function category_edit($categoryId, Request $request){
@@ -318,6 +227,94 @@ class CategoryController extends Controller {
         ]);
     }
 
+    
+
+
+
+    public function sub_category_store(Request $request){
+        $validator = Validator::make($request->all(), [
+            'sub_category_name' => 'required',             
+            // 'slug' => 'required|unique:sub_categories',
+            'sub_category_slug' => [
+                    'required',
+                    Rule::unique('sub_categories')
+                        ->where(function ($query) use ($request) {
+                            return $query->where('category_id', $request->category_id);
+                        }),
+                ],
+            'category_id' => 'required',
+            'status' => 'required',
+        ]);
+
+        if ($validator->passes()) {
+            $subCategory = new SubCategory();
+            $subCategory->sub_category_name = $request->sub_category_name;
+            $subCategory->sub_category_slug = $request->sub_category_slug;
+            $subCategory->status = $request->status;
+            $subCategory->category_id = $request->category_id;
+            $subCategory->showHome = $request->showHome;
+            $subCategory->save();
+
+            $request->session()->flash('success', 'Sub Category added successfully');
+
+            return response([
+                'status' => true,
+                'message' => 'Sub Category added successfully',
+            ]);
+
+        } else {
+            return response([
+                'status' => false,
+                'errors' => $validator->errors()
+            ]);
+        }
+    }
+
+
+    public function sub2_category_store(Request $request){
+        $validator = Validator::make($request->all(), [
+            'sub2_category_name' => 'required',
+            // 'slug' => [
+            //     'required',
+            //     Rule::unique('sub_sub_categories')
+            //         ->where(function ($query) use ($request) {
+            //             return $query->where('sub_category_id', $request->sub_category_id);
+            //         }),
+            // ],
+            //'slug' => 'required|unique:sub_sub_categories',
+            //'category' => 'required',
+            //'sub_category' => 'required',            
+        ]);
+
+        if ($validator->passes()) {
+            $sub2Category = new SubSubCategory();
+            $sub2Category->category_id = $request->category;
+            $sub2Category->sub_category_id = $request->sub_category_id;
+            $sub2Category->sub2_category_name = $request->sub2_category_name;
+            $sub2Category->sub2_category_slug = $request->sub2_category_slug;            
+            $sub2Category->save();
+
+            $request->session()->flash('success', 'Sub2 Category added successfully');
+
+            return response([
+                'status' => true,
+                'message' => 'Sub2 Category added successfully',
+            ]);
+
+        } else {
+            return response([
+                'status' => false,
+                'errors' => $validator->errors()
+            ]);
+        }
+    }
+
+    public function getSubCategories($id) {
+        return SubCategory::where('category_id', $id)->get();
+    }
+
+    
+
 
     public function sub_category_destroy ($id, Request $request){
         $subCategory = SubCategory::find($id);
@@ -339,6 +336,8 @@ class CategoryController extends Controller {
             'message' => 'Sub Category deleted successfully',
         ]);
     }
+
+
 
 
     public function sub2_category_destroy($id, Request $request){
@@ -423,9 +422,7 @@ class CategoryController extends Controller {
 
     public function sub2_category_edit($id, Request $request) {
         $sub2Category = SubSubCategory::findOrFail($id);
-
         $categories = Category::orderBy('category_name','ASC')->get();
-
         // Load subcategories of selected category
         $subCategories = SubCategory::where('category_id', $sub2Category->category_id)->get();
 

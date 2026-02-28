@@ -1,7 +1,4 @@
 $(document).ready(function(){
-    
-
-
     function checkValue(element){
         if($(element).val() !== ''){
             $(element).closest('.form-group').addClass('active');

@@ -70,13 +70,13 @@ class AuthController extends Controller
                 return redirect()->route('account.profile');
 
             } else {
-                return redirect()->route('account.login')
+                return redirect()->route('front.home')
                     ->withInput($request->only('email'))
                     ->with('error','Either email/password is incorrect.');
             }
 
         } else {
-            return redirect()->route('account.login')
+            return redirect()->route('front.home')
             ->withErrors($validator)
             ->withInput($request->only('email'));
         }
@@ -231,8 +231,10 @@ class AuthController extends Controller
 
     public function logout(){
         Auth::logout();
-        return redirect()->route('account.login')->with('success','You successfully logged out!');;
+
+        return redirect()->route('front.home')->with('success','You successfully logged out!');;
     }
+
 
     public function orders(){
         $user = Auth::user();
@@ -248,6 +250,7 @@ class AuthController extends Controller
 
         return view('front.account.order', $data);
     }
+
 
     public function orderDetail($id){
         $user = Auth::user();

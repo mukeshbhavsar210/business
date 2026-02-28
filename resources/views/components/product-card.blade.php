@@ -20,7 +20,9 @@
             </div>
         @endif        
 
-        <p class="gallery-icon">Gallery</p>
+        @if ($product->images && $product->images->count() > 0)
+            <p class="gallery-icon">Gallery</p>
+        @endif
 
         <div class="product-slider">
             @php
@@ -40,10 +42,16 @@
             @endif            
         </div>
         
-        <div class="hover-product">                
-            <a onclick="addToWishlist({{ $product->id }})" class="btn btn-outline" href="javascript:void(0)">
-                <i class="far fa-heart"></i> Wishlist
-            </a>
+        <div class="hover-product">
+            @if (Auth::check())
+                <a onclick="addToWishlist({{ $product->id }})" class="btn btn-outline" href="javascript:void(0)">
+                    <i class="far fa-heart"></i> Wishlist
+                </a>
+            @else
+                <a class="btn btn-outline" href="#" data-bs-toggle="modal" data-bs-target="#login">
+                    <i class="far fa-heart"></i> Wishlist
+                </a>
+            @endif                        
             <p class="show-size">Size: {{ $product->size->code ?? '' }}</p>
         </div>  
 
