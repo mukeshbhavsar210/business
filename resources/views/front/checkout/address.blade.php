@@ -19,8 +19,6 @@
                 modalId="createAddressModal"
             />
 
-            
-
             @include('front.layouts.shippingaddress')
             
             <div class="shpping-address">
@@ -121,19 +119,24 @@
                 </div>
 
                 <div class="part">
-                    @foreach (Cart::content() as $item)
-                        <h6>Price Details {{ $item->qty }}</h6>
+                    <h6>Price Details</h6>
 
+                    @foreach (Cart::content() as $item)
                         <div class="repeate-row">
-                            <div class="left">Total MRP</div>
+                            <div class="left">{{ $item->name }} x {{ $item->qty }}</div>
                             <div class="right">₹{{ $item->price*$item->qty }}</div>
-                        </div>
+                        </div>                        
                     @endforeach
 
-                    <div class="repeate-row">
+                    <div class="repeate-row total-amount">
+                        <div class="left">SubTotal</div>
+                        <div class="right">₹{{ Cart::subtotal() }}</div>
+                    </div>
+
+                    {{-- <div class="repeate-row">
                         <div class="left">Discount on MRP</div>
                         <div class="right"><span id="discount_value">₹{{ $item->compare_price }}</span></div>
-                    </div>
+                    </div> --}}
 
                     <div class="repeate-row">
                         <div class="left">Discount on MRP</div>
@@ -144,6 +147,7 @@
                         <div class="left">Subtotal</div>
                         <div class="right">₹{{ Cart::subtotal() }}</div>
                     </div>  --}}
+                    
                     <div class="repeate-row">
                         <div class="left">Platform fees</div>
                         <div class="right"><span id="shippingAmount">₹ {{ number_format($totalShiipingCharge,2) }}</span></div>

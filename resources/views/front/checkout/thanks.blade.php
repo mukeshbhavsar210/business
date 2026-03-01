@@ -33,14 +33,37 @@
                             <tr>
                                 <td>
                                     @php
-                                        $thumb = $item->product->images->first();
+                                        $variantImage = null;
+
+                                        if(!empty($item->variant_id)) {
+                                            $variant = $item->product->variants
+                                                        ->where('id', $item->variant_id)
+                                                        ->first();
+
+                                            $variantImage = $variant?->image;
+                                        }
+                                        $defaultImage = optional($item->product->images->first())->image;
+                                        $imageToShow = $variantImage ?? $defaultImage;
                                     @endphp
-                                                                        
-                                    @if($thumb->image)
-                                        <img src="{{ asset('uploads/product/small/'.$thumb->image) }}" width="80" class="img-fluid rounded">
-                                    @endif                                                    
+
+                                    @if($imageToShow)
+                                        <img src="{{ asset('uploads/product/small/'.$imageToShow) }}"
+                                            width="80"
+                                            class="img-fluid rounded">
+                                    @endif                                                
                                 </td>
                                 <td>{{ $item->name }}</td>
+                               @if($item->variant_id)
+                                    <p>
+                                        <strong>Variant ID:</strong> {{ $item->variant_id }}
+                                    </p>
+                                @endif
+
+                                @if($item->variant)
+                                    <p>
+                                        <strong>Variant Name:</strong> {{ $item->variant->name }}
+                                    </p>
+                                @endif
                                 <td>
                                     @if($item->color)
                                         <small class="text-muted">{{ $item->color }}</small><br>

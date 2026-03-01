@@ -57,6 +57,12 @@ $(document).ready(function(){
     $('.form-check-input').on('change', function () {
         $(this).closest('.form-check .link').toggleClass('active-check', this.checked);
     });
+
+    //Discount coupon radio button
+    $(document).on('change', 'input[name="coupon_id"]', function () {
+        $('.coupon-box').removeClass('active');
+        $(this).closest('.coupon-box').addClass('active');
+    });
     
 
     var lazyLoadInstance = new LazyLoad({elements_selector:"img.lazy, video.lazy, div.lazy, section.lazy, header.lazy, footer.lazy,iframe.lazy"});
