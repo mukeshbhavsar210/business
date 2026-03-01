@@ -1,12 +1,10 @@
 @extends('front.layouts.app')
 
 @section('content')    
-    <div class="container">        
-        
-        <div class="mt-3">
-            @include('front.layouts.message')
-        </div>
 
+@include('front.layouts.toast')
+
+    <div class="container">        
         @if (Cart::count() > 0)   
             <div class="row">             
                 <div class="col-md-8 col-12 left-border">               
@@ -106,41 +104,80 @@
                                 </div>
                                 <div class="part">
                                     @if (Cart::count() > 0)                     
-                                        <h6>Price Details</h6>                            
+                                        <h6>Price Details</h6>           
+                                        
+                                         @php
+                                            $total = $item->price * $item->qty; 
+                                            $cartTotal = (float) str_replace(',', '', Cart::subtotal());
+                                            $discount = session('discount', 0);
+                                            $finalTotal = $cartTotal - $discount;
+                                        @endphp
+
                                         @foreach (Cart::content() as $item)
                                             <div class="repeate-row">
                                                 <div class="left"><b>{{ $item->name }} x {{ $item->qty }}</b></div>
-                                                <div class="right"><b>₹{{ $item->price*$item->qty }}</b></div>
+                                                <div class="right"><b>₹{{ number_format($total, 2) }}</b></div>
                                             </div>
                                         @endforeach
-                                    
-                                        <div class="repeate-row">
-                                            <div class="left">Discount on MRP</div>
-                                            <div class="right">₹</div>
-                                        </div>
 
-                                        <div class="repeate-row">
-                                            <div class="left">Coupon Discount</div>
-                                            <div class="right">
-                                                <a href="#" data-bs-toggle="modal" data-bs-target="#discount">Apply Discount</a>
+                                        @if(session()->has('discount'))
+                                            @php
+                                                $discount = session('discount');
+                                                $finalTotal = $cartTotal - $discount;
+                                            @endphp
+
+                                            <div class="repeate-row">
+                                                <div class="left">Discount on MRP 
+                                                    - {{ session('coupon_code') }}
+                                                     <a href="{{ route('coupon.remove') }}" class="btn btn-outline-danger btn-sm">X</a>
+                                                </div>
+                                                <div class="right">-₹{{ number_format($discount, 2) }}</div>
                                             </div>
-                                        </div>
+
+                                            <div class="repeate-row total-amount">
+                                                <div class="left">Total:</div>
+                                                <div class="right">
+                                                    <b>₹{{ number_format($finalTotal, 2) }}</b>
+                                                </div>
+                                            </div>                                            
+                                        @else
+                                            <div class="repeate-row">
+                                                <div class="left">Coupon Discount</div>
+                                                <div class="right">
+                                                    <a href="#" data-bs-toggle="modal" data-bs-target="#discount">Apply Discount</a>
+                                                </div>
+                                            </div>
+
+                                            <div class="repeate-row total-amount">
+                                                <div class="left">Final Total:</div>
+                                                <div class="right">
+                                                    <b>₹{{ number_format($cartTotal, 2) }}</b>
+                                                </div>
+                                            </div>                                            
+                                        @endif
+
                                         <div class="repeate-row">
                                             <div class="left">Platform Fee</div>
                                             <div class="right">₹</div>
                                         </div>
-                                            
+
                                         <div class="repeate-row total-amount">
                                             <div class="left">Total Amount</div>
                                             <div class="right">₹{{ Cart::subtotal() }}</div>
-                                        </div>                            
+                                        </div> 
 
                                         <div class="terms">
                                             By placing the order, you agree to Myntra's <a href="https://www.myntra.com/termsofuse" target="_blank" class="privaryPolicyTermsOfUseStrip-base-link">Terms of Use</a> and 
                                             <a href="https://www.myntra.com/privacypolicy" target="_blank" class="privaryPolicyTermsOfUseStrip-base-link">Privacy Policy</a>
                                         </div>
 
-                                        <a href="{{ route('front.checkout') }}" class="btn btn-primary btn-block w-100">Place Order</a>
+                                        @if (Auth::check())
+                                            <a href="{{ route('front.checkout') }}" class="btn btn-primary btn-block w-100">Place Order</a>
+                                        @else
+                                            <a class="btn btn-primary btn-block w-100" href="#" data-bs-toggle="modal" data-bs-target="#login">
+                                                Login to Place Order
+                                            </a>
+                                        @endif 
                                     @endif
 
                                     <div class="modal fade" id="discount" tabindex="-1" aria-labelledby="discountLabel" aria-hidden="true">
@@ -153,36 +190,41 @@
                                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                     </div>
                                                     <div class="modal-body">
-                                                        <div class="apply-coupan">
-                                                            <input type="text" placeholder="Enter coupon Code" class="form-control" name="discount_code" id="discount_code">                                    
+                                                        <div class="apply-coupan mb-2">
+                                                            <input type="text" placeholder="Enter coupon Code" class="form-control" name="discount_code" id="discount_code">
                                                         </div>
-
-                                                        @foreach($coupons as $coupon)
-                                                            <div class="coupon-box">
-                                                                <label>
-                                                                    <div class="left">
-                                                                        <input type="radio" name="coupon_id" value="{{ $coupon->id }}">
-                                                                    </div>
-                                                                    <div class="right">
-                                                                        <div class="code">{{ $coupon->code }}</div>
-                                                                        <p class="title">{{ $coupon->name }}</p>
-                                                                        <p>
-                                                                            @if($coupon->type == 'percent')
-                                                                                {{ $coupon->discount_amount }}% off
-                                                                            @else
-                                                                                ₹{{ $coupon->discount_amount }} off
-                                                                            @endif
-                                                                            on minimum purchase of ₹{{ $coupon->min_amount  }}.
-                                                                        </p>
-                                                                        <p>Expire on: {{ \Carbon\Carbon::parse($coupon->expires_at)->format('jS F Y | h:i A') }}</p>
-                                                                    </div>
-                                                                </label>
-                                                            </div>
-                                                        @endforeach
+                                                        
+                                                        <div class="scroll-body">
+                                                            @foreach($coupons as $coupon)
+                                                                <div class="coupon-box">
+                                                                    <label>
+                                                                        <div class="left">
+                                                                            <input type="radio" name="coupon_id" value="{{ $coupon->id }}" data-code="{{ $coupon->code }}">
+                                                                        </div>
+                                                                        <div class="right">
+                                                                            <div class="code-details">
+                                                                                <div class="code">{{ $coupon->code }}</div>
+                                                                                <p class="title">{{ $coupon->name }}</p>
+                                                                            </div>
+                                                                            <p class="text-muted">
+                                                                                @if($coupon->type == 'percent')
+                                                                                    {{ $coupon->discount_amount }}% off
+                                                                                @else
+                                                                                    ₹{{ $coupon->discount_amount }} off
+                                                                                @endif
+                                                                                on minimum purchase of ₹{{ $coupon->min_amount  }}.
+                                                                            
+                                                                            Expire on: {{ \Carbon\Carbon::parse($coupon->expires_at)->format('jS F Y | h:i A') }}</p>
+                                                                        </div>
+                                                                    </label>
+                                                                </div>
+                                                            @endforeach
+                                                        </div>
                                                     </div>
 
                                                     <div class="modal-footer">
-                                                        <button class="btn btn-dark" type="button" id="apply-discount">Apply Coupon</button>
+                                                        {{-- <button class="btn btn-dark" data-bs-dismiss="modal" aria-label="Close" type="submit">Apply Coupon</button> --}}
+                                                        <button class="btn btn-dark" id="#apply-discount" type="submit">Apply Coupon</button>
                                                     </div>                                    
                                                 </form>
                                             </div>
@@ -190,7 +232,7 @@
                                     </div>
                                 </div>
                             </div>
-                    </div>
+                        </div>
                     </div>
                 @else
                     <div class="card mt-4">
@@ -423,6 +465,30 @@
             $.post($(this).attr('action'), $(this).serialize(), function(response){
                 console.log(response);
             });
+        });
+
+
+        $(document).ready(function () {
+            $('input[name="coupon_id"]').on('change', function () {
+                let code = $(this).data('code');
+                $('#discount_code').val(code);
+            });
+
+             @if(session('success'))
+                var toast = new bootstrap.Toast(document.getElementById('liveToast'));
+                toast.show();
+            @endif
+
+            $('#apply-discount').on('click', function () {
+                var modal = bootstrap.Modal.getInstance(document.getElementById('discount'));
+                modal.hide();
+                $('#couponForm').submit();
+            });
+
+            @if(session('success'))
+                var toast = new bootstrap.Toast(document.getElementById('liveToast'));
+                toast.show();
+            @endif
         });
     </script>
 @endsection

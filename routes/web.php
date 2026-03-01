@@ -53,7 +53,8 @@ Route::controller(CartController::class)->group(function() {
     //Discount apply
     Route::post('/apply-coupon', 'applyCoupon')->name('coupon.apply');
     Route::post('/apply-discount','applyDiscount')->name('front.applyDiscount');
-    Route::post('/remove-discount','removeCoupon')->name('front.removeCoupon');
+    //Route::post('/remove-discount','removeCoupon')->name('front.removeCoupon');
+    Route::get('/coupon/remove', 'removeCoupon')->name('coupon.remove');
 
     //Payment routes
     Route::post('checkout/razorpay', 'razorpayPayment')->name('checkout.razorpay');

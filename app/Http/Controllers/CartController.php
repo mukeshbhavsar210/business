@@ -81,20 +81,19 @@ class CartController extends Controller {
             $status  = true;
             $message = '<strong>'.$product->title.'</strong> added to cart successfully.';
             session()->flash('success', $message);
-
         } else {
-
             $status  = false;
             $message = $product->title.' already added in cart';
-
         }
-
         return response()->json([
             "status"    => $status,
             "message"   => $message,
             "cartCount" => Cart::count(),
         ]);
     }
+
+
+
 
     public function cart() {
         $cartContent = Cart::content();
@@ -106,7 +105,7 @@ class CartController extends Controller {
             })
             ->get();     
             
-            //dd(Cart::content());
+        //dd(Cart::content());
 
         return view('front.checkout.cart', [
             'cartContent' => $cartContent,
@@ -252,11 +251,10 @@ class CartController extends Controller {
         foreach (Cart::content() as $item) {
             $orderItem = new OrderItem;
             $orderItem->order_id = $order->id;
-            $orderItem->product_id = $item->id;
-            //$orderItem->product_variant_id = $item->id; 
-            $orderItem->name = $item->name;
-            $orderItem->color = $item->options->color ?? null;
+            $orderItem->product_id = $item->id;            
+            $orderItem->product_variant_id = $item->options->variant_id ?? null;
             $orderItem->size = $item->options->size ?? null;            
+            $orderItem->name = $item->name;
             $orderItem->qty = $item->qty;
             $orderItem->price = $item->price;
             $orderItem->total = $item->price * $item->qty;            
@@ -586,24 +584,58 @@ class CartController extends Controller {
     //     return back()->with('error', 'Invalid coupon code');
     // }
 
+    // public function applyCoupon(Request $request) {
+    //     $coupon = DiscountCoupon::findOrFail($request->coupon_id);
+
+    //     $cartTotal = session('cart_total');
+
+    //     // Minimum amount check
+    //     if ($coupon->min_amount && $cartTotal < $coupon->min_amount) {
+    //         return back()->with('error', 'Minimum cart value not reached');
+    //     }
+
+    //     if ($coupon->type == 'percent') {
+    //         $discount = ($cartTotal * $coupon->value) / 100;
+    //     } else {
+    //         $discount = $coupon->value;
+    //     }
+
+    //     session([
+    //         'coupon' => $coupon->code,
+    //         'discount' => $discount
+    //     ]);
+
+    //     return back()->with('success', 'Coupon applied successfully!');
+    // }
+
     public function applyCoupon(Request $request) {
         $coupon = DiscountCoupon::findOrFail($request->coupon_id);
 
-        $cartTotal = session('cart_total');
+        // Get cart total properly
+        $cartTotal = (float) str_replace(',', '', Cart::subtotal());
+
+        // Expiry check
+        if ($coupon->expires_at && now()->gt($coupon->expires_at)) {
+            return back()->with('error', 'Coupon expired');
+        }
 
         // Minimum amount check
         if ($coupon->min_amount && $cartTotal < $coupon->min_amount) {
             return back()->with('error', 'Minimum cart value not reached');
         }
 
+        // Calculate discount
         if ($coupon->type == 'percent') {
-            $discount = ($cartTotal * $coupon->value) / 100;
+            $discount = ($cartTotal * $coupon->discount_amount) / 100;
         } else {
-            $discount = $coupon->value;
+            $discount = $coupon->discount_amount;
         }
 
+        $discount = min($discount, $cartTotal);
+
         session([
-            'coupon' => $coupon->code,
+            'coupon_id' => $coupon->id,
+            'coupon_code' => $coupon->code,
             'discount' => $discount
         ]);
 
@@ -687,9 +719,10 @@ class CartController extends Controller {
         return $this->getOrderSummary($request);
     }
 
-    public function removeCoupon(Request $request){
-        session()->forget('code');
-        return $this->getOrderSummary($request);
+    public function removeCoupon() {
+        session()->forget(['coupon_id', 'coupon_code', 'discount']);
+
+        return back()->with('success', 'Coupon removed successfully!');
     }
 
     //Razorpay
