@@ -10,7 +10,8 @@ class Product extends Model {
 
     protected $fillable = [ 'title', 'slug', 'description', 'short_description', 'shipping_returns', 'related_products', 
         'price', 'compare_price', 'category_id', 'sub_category_id', 'brand_id', 'is_featured', 'sku', 'barcode', 
-        'track_qty', 'qty', 'status', 'sub2_category_id'
+        'track_qty', 'qty', 'recommended', 'views', 'discount_percentage', 'average_rating', 'is_returnable', 'return_days', 
+        'delivery_min_days', 'delivery_max_days', 'status', 'sub2_category_id'
     ];
 
     protected $appends = ['average_rating', 'rating_count'];

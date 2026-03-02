@@ -42,10 +42,11 @@
                     );
                 @endphp
 
-                <h6>Default Address</h6>
-
                 @foreach($address as $address)                                                
-                    <div class="card mb-3 mt-2 default-card">
+                    <div class="card mb-3 default-card">
+                        <div class="card-header">
+                            <p>{{ $address->default_address ? 'Default address' : 'Other address' }}</p>
+                        </div>
                         <label class="address-card">
                             <div class="card-body">                                    
                                 <label class="custom-radio">
@@ -66,6 +67,8 @@
                                     <ul class="flex mt-3 d-none control-btn">
                                         <li><a href="#" class="btn btn-outline-danger btn-sm">Remove</a></li>
                                         <li>
+                                           
+
                                             <a href="#"
                                                 class="btn btn-outline-dark btn-sm"
                                                 data-bs-toggle="modal"
@@ -125,79 +128,80 @@
                 </div>
 
                 <div class="part">                            
-                    <h6>Price Details (<span class="selected-items">{{ Cart::count() }}</span> <span>items</span>)</h6>
-                    @if (Cart::count() > 0)                                
-                        @php
-                            $price_total = Cart::content()->sum(function($item){
-                                return $item->price * $item->qty;
-                            });
+                            <h6>Price Details (<span class="selected-items">0</span> <span>items</span>)</h6>
+                            @if (Cart::count() > 0)                                
+                                @php
+                                    $price_total = Cart::content()->sum(function($item){
+                                        return $item->price * $item->qty;
+                                    });
 
-                            $totalCompare = Cart::content()->sum(function ($item) {
-                                return $item->options->compare_price * $item->qty;
-                            });
+                                    $totalCompare = Cart::content()->sum(function ($item) {
+                                        return $item->options->compare_price * $item->qty;
+                                    });
+                                    
+                                    $compare = $item->compare_price * $item->qty;
+                                    $cartTotal = (float) str_replace(',', '', Cart::subtotal());
+                                    $discount = session('discount', 0);
+                                    $finalTotal = $cartTotal - $discount;
+                                @endphp
+
+                                <div class="repeate-row">
+                                    <div class="left">Total MRP</div>
+                                    <div class="right">₹ <span class="total-mrp">0.00</span></div>
+                                </div>
+
+                                <div class="repeate-row priceDetailsBox">
+                                    <div class="left">Discount on MRP</div>
+                                    <div class="right">
+                                        <span class="compare-discount">- ₹<span class="total-compare">0.00</span></span>
+                                    </div>
+                                </div>
+
+                                @if(session()->has('discount'))
+                                    @php
+                                        $discount = session('discount');
+                                        $finalTotal = $cartTotal - $discount;
+                                    @endphp
+
+                                    <div class="repeate-row priceDetailsBox" >
+                                        <div class="left">Coupon Discount
+                                            {{-- - {{ session('coupon_code') }} 
+                                                <a href="{{ route('coupon.remove') }}" class="btn btn-outline-danger btn-sm">X</a>--}}
+                                        </div>
+                                        <div class="right">
+                                            <span class="compare-discount">-₹{{ $discount }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="repeate-row priceDetailsBox" >
+                                        <div class="left">Platform Fee</div>
+                                        <div class="right">₹</div>
+                                    </div>
+
+                                    <div class="repeate-row total-amount">
+                                        <div class="left">Total Amount</div>
+                                        <div class="right">
+                                            <b>₹<span class="final-total">0.00</span></b>
+                                        </div>
+                                    </div>                                            
+                                @else
+                                    <div class="repeate-row">
+                                        <div class="left">Coupon Discount</div>
+                                        <div class="right">
+                                            <a href="#" data-bs-toggle="modal" data-bs-target="#discount">Apply Discount</a>
+                                        </div>
+                                    </div>
+
+                                    <div class="repeate-row total-amount">
+                                        <div class="left">Final Total:</div>
+                                        <div class="right">
+                                            <b>₹{{ number_format($cartTotal, 2) }}</b>
+                                        </div>
+                                    </div>                                            
+                                @endif
+                            @endif
                             
-                            $compare = $item->compare_price * $item->qty;
-                            $cartTotal = (float) str_replace(',', '', Cart::subtotal());
-                            $discount = session('discount', 0);
-                            $finalTotal = $cartTotal - $discount;
-                        @endphp
-
-                        <div class="repeate-row">
-                            <div class="left">Total MRP</div>
-                            <div class="right">₹ <span class="total-mrp">0.00</span></div>
-                        </div>
-
-                        <div class="repeate-row priceDetailsBox">
-                            <div class="left">Discount on MRP</div>
-                            <div class="right">
-                                <span class="compare-discount">- ₹<span class="total-compare">0.00</span></span>
-                            </div>
-                        </div>
-
-                        @if(session()->has('discount'))
-                            @php
-                                $discount = session('discount');
-                                $finalTotal = $cartTotal - $discount;
-                            @endphp
-
-                            <div class="repeate-row priceDetailsBox" >
-                                <div class="left">Coupon Discount
-                                    {{-- - {{ session('coupon_code') }} 
-                                        <a href="{{ route('coupon.remove') }}" class="btn btn-outline-danger btn-sm">X</a>--}}
-                                </div>
-                                <div class="right">
-                                    <span class="compare-discount">-₹{{ $discount }}</span>
-                                </div>
-                            </div>
-
-                            <div class="repeate-row priceDetailsBox" >
-                                <div class="left">Platform Fee</div>
-                                <div class="right">₹</div>
-                            </div>
-
-                            <div class="repeate-row total-amount">
-                                <div class="left">Total Amount</div>
-                                <div class="right">
-                                    <b>₹<span class="final-total">0.00</span></b>
-                                </div>
-                            </div>                                            
-                        @else
-                            <div class="repeate-row">
-                                <div class="left">Coupon Discount</div>
-                                <div class="right">
-                                    <a href="#" data-bs-toggle="modal" data-bs-target="#discount">Apply Discount</a>
-                                </div>
-                            </div>
-
-                            <div class="repeate-row total-amount">
-                                <div class="left">Final Total:</div>
-                                <div class="right">
-                                    <b>₹{{ number_format($cartTotal, 2) }}</b>
-                                </div>
-                            </div>                                            
-                        @endif
-                    @endif
-                                            
+                
                     <div class="part">
                         <div class="btn-group w-100 mb-3" role="group">
                             <input type="radio" class="btn-check" name="payment_method" id="payment_cod" value="cod" autocomplete="off" checked>

@@ -133,11 +133,20 @@
                     <h3>Delivery Options</h3>
                     <div class="delivery-check">
                         <p>Please enter PIN code to check delivery time & Pay on Delivery Availability</p>
+                        @if($product->delivery_min_days)
+                            <p>{{ $product->delivery_min_days }}</p>
+                            <p>{{ $product->delivery_max_days }}</p>
+                        @endif
                     </div>
                     <ul>
                         <li>100% Original Products</li>
                         <li>Pay on delivery might be available</li>
-                        <li>Easy 14 days returns and exchanges</li>
+
+                        @if($product->is_returnable)
+                            <p>Easy {{ $product->return_days }} days returns and exchanges</p>
+                        @else
+                            <p>Non-returnable product</p>
+                        @endif                       
                     </ul>
                 </div>
 
