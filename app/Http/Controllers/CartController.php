@@ -62,7 +62,6 @@ class CartController extends Controller {
         }
 
         if (!$alreadyExists) {
-
             Cart::add([
                 'id'      => $product->id,
                 'name'    => $product->title,
@@ -76,11 +75,14 @@ class CartController extends Controller {
                     'variant_id'        => $variantId,
                     'size'              => $size,
                     'color'             => $color,
+                    'return_days'       => $product->return_days,
+                    'delivery_min_days' => $product->delivery_min_days,
+                    'delivery_max_days' => $product->delivery_max_days,
                 ]
             ]);
 
             $status  = true;
-            $message = '<strong>'.$product->title.'</strong> added to cart successfully.';
+            $message = $product->title . ' added to Bag.';
             session()->flash('success', $message);
         } else {
             $status  = false;
@@ -158,6 +160,8 @@ class CartController extends Controller {
     }
 
 
+
+    
 
     public function checkout() {
         if (Cart::count() == 0) {
@@ -471,7 +475,6 @@ class CartController extends Controller {
     }
 
     public function deleteItem(Request $request){
-
         $rowId = $request->rowId;
         $itemInfo = Cart::get($rowId);
 
@@ -486,13 +489,48 @@ class CartController extends Controller {
 
         Cart::remove($request->rowId);
 
-        $success = 'Item removed from cart successfully.';
+        $success = 'Item removed from Bag.';
         session()->flash('success',$success);
         return response()->json([
             "status"=> true,
             "message"=> $success,
         ]);
     }
+
+
+    public function moveToWishlist(Request $request){
+        $rowId = $request->rowId;
+        $itemInfo = Cart::get($rowId);
+
+        if($itemInfo == null ){
+            $errorMessage = 'Item not found in cart.';
+            return response()->json([
+                "status"=> false,
+                "message"=> $errorMessage,
+            ]);
+        }
+
+        // Prevent duplicate wishlist entry
+        $alreadyExists = Wishlist::where('user_id', auth()->id())
+                            ->where('product_id', $itemInfo->id)
+                            ->exists();
+
+        if(!$alreadyExists){
+            Wishlist::create([
+                'user_id'    => auth()->id(),
+                'product_id' => $itemInfo->id,
+            ]);
+        }
+
+        // Remove from cart
+        Cart::remove($rowId);
+
+        return response()->json([
+            "status"=> true,
+            "message"=> "Item moved to wishlist successfully.",
+        ]);
+    }
+
 
     public function checkout_old(){
         $discount = 0;

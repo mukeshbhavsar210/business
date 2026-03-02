@@ -60,9 +60,20 @@
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
+
+    $(document).ready(function () {
+        alert("Hi");
+        
+        var toastEl = $('.toast')[0];   // Get DOM element
+            var toast = new bootstrap.Toast(toastEl, {
+                delay: 2000,        // 2 seconds
+                autohide: true
+            });
+
+            toast.show();
+    });
     
     function addToCart(id){
-
         if(selectedSize == ''){
             alert('Please select size');
             return;

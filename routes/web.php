@@ -39,7 +39,8 @@ Route::controller(CartController::class)->group(function() {
     Route::post('/checkout/update-cart','updateCart')->name('front.updateCart');
     Route::post('/checkout/add-to-cart','addToCart')->name('front.addToCart');
     Route::post('/checkout/delete-item','deleteItem')->name('front.deleteItem.cart');
-    Route::post('/cart/bulk-action', 'bulkAction')->name('cart.bulk.action');
+    Route::post('/move-to-wishlist', 'moveToWishlist')->name('front.moveToWishlist.cart');    
+    Route::post('/cart/bulk-action', 'bulkAction')->name('cart.bulk.action');    
 
     //Update Color/Size/Qty in cart
     Route::post('/checkout/cart/common', 'updateCartOption')->name('front.updateCartOption');
@@ -54,7 +55,7 @@ Route::controller(CartController::class)->group(function() {
     //Discount apply
     Route::post('/apply-coupon', 'applyCoupon')->name('coupon.apply');
     Route::post('/apply-discount','applyDiscount')->name('front.applyDiscount');
-    //Route::post('/remove-discount','removeCoupon')->name('front.removeCoupon');
+    Route::post('/remove-discount','removeCoupon')->name('front.removeCoupon');
     Route::get('/coupon/remove', 'removeCoupon')->name('coupon.remove');
 
     //Payment routes
