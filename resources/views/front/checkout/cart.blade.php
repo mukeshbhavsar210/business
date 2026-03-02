@@ -13,88 +13,151 @@
                         <div>Enter Pin Code</div>
                     </div>
 
-                    @foreach ($cartContent as $item)                        
-                        <div class="product-repeate">
-                            <div class="photo">
-                                @if ($item->options->productImage)
-                                    <img src="{{ asset('uploads/product/large/'.$item->options->productImage) }}" >
-                                @else
-                                    <img src="{{ asset('admin-assets/img/default-150x150.png') }}" alt="" />
-                                @endif
-                            </div>
-                            <div class="details">                                
-                                <h3>{{ $item->name }}</h3>
-                                <p class="short-desc">{{ $item->options->short_description ?? '' }}</p>
+                    <form id="cartForm" method="POST" action="{{ route('cart.bulk.action') }}">
+                        @csrf
 
-                                <div class="manuplate">                                    
-                                    <div class="select">                                    
-                                        <a href="javascript:void(0);" class="update-size" data-type="size" data-rowid="{{ $item->rowId }}" data-selected="{{ $item->options->size }}">
-                                            Size: <b>{{ $item->options->size }}</b>
-                                        </a>
-                                    </div>
-                                    <div class="select">                                
-                                        <a href="javascript:void(0);" class="update-qty" data-type="qty" data-rowid="{{ $item->rowId }}" data-selected="{{ $item->qty }}">Qty:
-                                            <b>{{ $item->qty }}</b>
-                                        </a>
-                                    </div>
-                                </div>
-
-                                <div class="price">
-                                    <span class="dark">₹{{ $item->price }}</span>
-                                    @if ($item->options->compare_price > 0)
-                                        <span class="text-underline">
-                                            <del>₹{{ $item->options->compare_price }}</del>
-                                        </span>
-                                        @php
-                                            $discount = round((($item->options->compare_price - $item->price) / $item->options->compare_price) * 100);
-                                        @endphp
-                                        <span class="discount">{{ $discount }}% OFF</span>
-                                    @endif           
-                                </div>                               
-
-                                <div class="modal fade" id="commonSizesModal" tabindex="-1">
-                                    <div class="modal-dialog modal-sm">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h6>Sizes</h6>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <ul class="list-unstyled" id="modalSizesList">
-                                                    
-                                                </ul>
-                                                <button type="button" class="btn btn-primary w-100" data-bs-dismiss="modal">Done</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="modal fade" id="commonQtyModal" tabindex="-1">
-                                    <div class="modal-dialog modal-sm">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h6>Quantity</h6>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <ul class="list-unstyled" id="modalQtyList">
-                                                    
-                                                </ul>
-                                                {{-- <button type="button" class="btn btn-primary w-100" data-bs-dismiss="modal">Done</button> --}}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>                                                             
+                        <div class="product-title-cart">                            
+                            <div class="title">
+                                <label>
+                                    <input type="checkbox" id="selectAll">
+                                    <span id="selectedCount">0</span>/{{ Cart::count() }} items selected
+                                </label>                                
                             </div>
 
-                            <div class="remove">
-                                <a href="#" onclick="deleteItem('{{ $item->rowId}}' );">
-                                    <i class="fa fa-times"></i> Remove
-                                </a>
-                            </div>
-                        </div> 
-                        @endforeach
+                            <div class="btn-group">
+                                <button type="submit" name="action" value="remove" class="btn bulk-action">Remove</button>
+                                <button type="submit" name="action" value="wishlist" class="btn">Move to Wishlist</button>
+                            </div>                            
                         </div>
+                       
+                        @foreach($cartContent as $item)
+                            <div class="product-repeate">
+                                <div class="photo">      
+                                    <input type="checkbox" name="cart_ids[]" value="{{ $item->rowId }}" class="item-checkbox checkbox">
+                                    @if ($item->options->productImage)
+                                        <img src="{{ asset('uploads/product/large/'.$item->options->productImage) }}" >
+                                    @else
+                                        <img src="{{ asset('admin-assets/img/default-150x150.png') }}" alt="" />
+                                    @endif
+                                </div>
+                                <div class="details">                                
+                                    <h3>{{ $item->name }}</h3>
+                                    <p class="short-desc">{{ $item->options->short_description ?? '' }}</p>
+
+                                    <div class="manuplate">                                    
+                                        <div class="select">                                    
+                                            <a href="javascript:void(0);" class="update-size" data-type="size" data-rowid="{{ $item->rowId }}" data-selected="{{ $item->options->size }}">
+                                                Size: <b>{{ $item->options->size }}</b>
+                                            </a>
+                                        </div>
+                                        <div class="select">                                
+                                            <a href="javascript:void(0);" class="update-qty" data-type="qty" data-rowid="{{ $item->rowId }}" data-selected="{{ $item->qty }}">Qty:
+                                                <b>{{ $item->qty }}</b>
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    <div class="price">
+                                        <span class="dark">₹{{ $item->price }}</span>
+                                        @if ($item->options->compare_price > 0)
+                                            <span class="text-underline">
+                                                <del>₹{{ $item->options->compare_price }}</del>
+                                            </span>
+                                            @php
+                                                $discount = round((($item->options->compare_price - $item->price) / $item->options->compare_price) * 100);
+                                            @endphp
+                                            <span class="discount">{{ $discount }}% OFF</span>
+                                        @endif           
+                                    </div>
+
+                                    <div class="return-notice">
+                                        <p>{{ $item->options->return_available ?? '' }} <b>7 days</b> return available</p>
+                                    </div>
+
+                                    <div class="delivery-notice">
+                                        <p>Delivery between {{ $item->options->delivery_between ?? '' }} <b>7 Mar - 9 Mar</b></p>
+                                    </div>
+                                    
+                                    <div class="modal fade" id="commonSizesModal" tabindex="-1">
+                                        <div class="modal-dialog modal-sm">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h6>Sizes</h6>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <ul class="list-unstyled" id="modalSizesList">
+                                                        
+                                                    </ul>
+                                                    <button type="button" class="btn btn-primary w-100" data-bs-dismiss="modal">Done</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="modal fade" id="commonQtyModal" tabindex="-1">
+                                        <div class="modal-dialog modal-sm">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h6>Quantity</h6>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <ul class="list-unstyled" id="modalQtyList">
+                                                        
+                                                    </ul>
+                                                    {{-- <button type="button" class="btn btn-primary w-100" data-bs-dismiss="modal">Done</button> --}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>    
+                                </div>
+
+                                <div class="remove">                                
+                                    <a data-bs-toggle="modal" data-bs-target="#removeItemModal_{{ $item->id }}">
+                                        <i class="fa fa-times"></i> Remove
+                                    </a>
+                                </div>
+
+                                <div class="modal fade" id="removeItemModal_{{ $item->id }}" tabindex="-1" aria-labelledby="removeItemModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered item-remove-modal">
+                                        <div class="modal-content">                                
+                                            <div class="modal-body">
+                                                <div class="item-remove-cart">
+                                                    <div class="image">                                            
+                                                        @if ($item->options->productImage)
+                                                            <img src="{{ asset('uploads/product/large/'.$item->options->productImage) }}" class="photo" >
+                                                        @else
+                                                            <img src="{{ asset('admin-assets/img/default-150x150.png') }}" alt="" />
+                                                        @endif
+                                                    </div>
+                                                    <div class="text">
+                                                        <h5>Move from Bag</h5>
+                                                        <p>Are you sure you want to move this item from bag?</p>
+                                                    </div>
+                                                    <div class="close">
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="btn-group">
+                                                <button type="submit" name="action" value="remove" class="btn bulk-action">Remove</button>
+                                                <button type="submit" name="action" value="wishlist" class="btn">Move to Wishlist</button>
+
+                                                {{-- <a href="#" class="btn btn-link text-secondary" onclick="deleteItem('{{ $item->rowId}}' );" data-bs-dismiss="modal">
+                                                    Remove
+                                                </a>
+                                                <a href="#" class="btn btn-link text-primary"  onclick="addToWishlist({{ $item->id }})" data-bs-dismiss="modal">
+                                                    Move to Wishlist
+                                                </a> --}}
+                                            </div>                                        
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach    
+                    </form>
+                </div>
 
                         <div class="col-md-4 col-12">
                             <div class="cart-summery">
@@ -432,26 +495,45 @@
         // });
 
         
-        function deleteItem(rowId){
-            if(confirm("Are you sure you want to delete?")){
-                $.ajax({
-                    url: '{{ route("front.deleteItem.cart") }}',
-                    type: 'POST',
-                    data: {
-                        _token: '{{ csrf_token() }}',
-                        rowId: rowId
-                    },
-                    dataType: 'json',
-                    success: function(response){
-                        if(response.status){
-                            window.location.href='{{ route("front.cart") }}';
-                        } else {
-                            alert(response.message);
-                        }
+        function deleteItem(rowId){            
+            $.ajax({
+                url: '{{ route("front.deleteItem.cart") }}',
+                type: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    rowId: rowId
+                },
+                dataType: 'json',
+                success: function(response){
+                    if(response.status){
+                        window.location.href='{{ route("front.cart") }}';
+                    } else {
+                        alert(response.message);
                     }
-                })
-            }
+                }
+            })            
         }
+
+        // function deleteItem(rowId){
+        //     if(confirm("Are you sure you want to delete?")){
+        //         $.ajax({
+        //             url: '{{ route("front.deleteItem.cart") }}',
+        //             type: 'POST',
+        //             data: {
+        //                 _token: '{{ csrf_token() }}',
+        //                 rowId: rowId
+        //             },
+        //             dataType: 'json',
+        //             success: function(response){
+        //                 if(response.status){
+        //                     window.location.href='{{ route("front.cart") }}';
+        //                 } else {
+        //                     alert(response.message);
+        //                 }
+        //             }
+        //         })
+        //     }
+        // }
 
         $(document).on('change', 'input[name="coupon_id"]', function() {    
             $('.coupon-box').removeClass('active');
@@ -469,6 +551,127 @@
 
 
         $(document).ready(function () {
+          
+
+
+            $('#selectAll').on('click', function() {
+                $('.item-checkbox').prop('checked', $(this).prop('checked'));
+            });
+
+            // Individual Checkbox Click
+            $('.item-checkbox').on('change', function() {
+                if ($('.item-checkbox:checked').length == $('.item-checkbox').length) {
+                    $('#selectAll').prop('checked', true);
+                } else {
+                    $('#selectAll').prop('checked', false);
+                }
+
+            });
+           
+            function updateSelectedCount() {
+                let count = $('.item-checkbox:checked').length;
+                $('#selectedCount').text(count);
+            }
+            
+
+            // Select All
+            $('#selectAll').on('click', function() {
+                $('.item-checkbox').prop('checked', $(this).prop('checked'));
+                updateSelectedCount();
+            });
+
+            // Individual Checkbox
+            $('.item-checkbox').on('change', function() {
+
+                // Auto toggle Select All
+                $('#selectAll').prop(
+                    'checked',
+                    $('.item-checkbox:checked').length === $('.item-checkbox').length
+                );
+
+                updateSelectedCount();
+            });
+
+            // Initial load
+            updateSelectedCount();
+
+
+
+            function updateSelectedCount() {
+                let count = $('.item-checkbox:checked').length;
+                $('#selectedCount').text(count);
+            }
+
+            // Select All
+            $('#selectAll').on('click', function() {
+                $('.item-checkbox').prop('checked', $(this).prop('checked'));
+                updateSelectedCount();
+            });
+
+          
+
+           // When main checkbox clicked
+            $('#selectAll').on('change', function() {
+                $('.item-checkbox').prop('checked', $(this).prop('checked'));
+            });
+
+            // When individual checkbox clicked
+            $('.item-checkbox').on('change', function() {
+                if ($('.item-checkbox:checked').length > 0) {
+                    $('#selectAll').prop('checked', true);
+                } else {
+                    $('#selectAll').prop('checked', false);
+                }
+            });
+
+
+            function updateMainCheckbox() {
+                let total = $('.item-checkbox').length;
+                let checked = $('.item-checkbox:checked').length;
+
+                if (checked === 0) {
+                    // none selected
+                    $('#selectAll')
+                        .prop('checked', false)
+                        .prop('indeterminate', false);
+
+                } else if (checked === total) {
+                    // all selected
+                    $('#selectAll')
+                        .prop('checked', true)
+                        .prop('indeterminate', false);
+
+                } else {
+                    // partially selected
+                    $('#selectAll')
+                        .prop('checked', false)
+                        .prop('indeterminate', true);
+                }
+            }
+
+            // When main checkbox clicked
+            $('#selectAll').on('change', function() {
+                $('.item-checkbox')
+                    .prop('checked', $(this).prop('checked'));
+                updateMainCheckbox();
+            });
+
+            // When individual checkbox changes
+            $('.item-checkbox').on('change', function() {
+                updateMainCheckbox();
+            });
+
+            // Initial load
+            updateMainCheckbox();
+
+            //without select checkbox show alert
+            $('.bulk-action').on('click', function(e) {
+                if ($('.item-checkbox:checked').length === 0) {
+                    e.preventDefault();
+                    alert('Select any item to remove from bag.');
+                }
+            });
+
             $('input[name="coupon_id"]').on('change', function () {
                 let code = $(this).data('code');
                 $('#discount_code').val(code);

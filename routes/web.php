@@ -39,6 +39,7 @@ Route::controller(CartController::class)->group(function() {
     Route::post('/checkout/update-cart','updateCart')->name('front.updateCart');
     Route::post('/checkout/add-to-cart','addToCart')->name('front.addToCart');
     Route::post('/checkout/delete-item','deleteItem')->name('front.deleteItem.cart');
+    Route::post('/cart/bulk-action', 'bulkAction')->name('cart.bulk.action');
 
     //Update Color/Size/Qty in cart
     Route::post('/checkout/cart/common', 'updateCartOption')->name('front.updateCartOption');

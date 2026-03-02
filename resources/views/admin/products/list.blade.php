@@ -67,13 +67,14 @@
                             <th class="border-top-0" width="80">Action</th>
                         </tr>
                     </thead>                     
-                    <tbody>
+                    <tbody id="productAccordion">
                         @if ($products->isNotEmpty())
-                            @foreach($products as $product)
+                            @foreach($products as $key => $product)
                                 @php
                                     $productImage = $product->product_images->first();
                                 @endphp
-                                <tr>
+
+                                <tr data-bs-toggle="collapse" data-bs-target="#variantRow{{ $product->id }}" class="cursor-pointer">
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="{{ route('products.edit', $product->id) }}">
@@ -95,25 +96,22 @@
                                                             <span class="mb-0 text-muted">SKU: {{ $product->sku }}</span>
                                                         @endif          
                                                     </p>
-                                                
-                                                    @if($product->variants->count())
-                                                        <span class="text-muted">Variants Color:</span>
-                                                        @foreach($product->variants as $variant)
-                                                            <span>{{ $variant->color }}, </span>
-                                                        @endforeach
-                                                    @else
-                                                        <span class="text-muted">No Variants</span>
-                                                    @endif 
-                                                </div>                 
+
+                                                    @if($product->variants->count() > 0)
+                                                        <a href="javascript:0" data-bs-toggle="modal" data-bs-target="#variantRow{{ $product->id }}">
+                                                            <b>Variants: {{ $product->variants->count() }}</b>
+                                                        </a>
+                                                    @endif                                                    
+                                                </div>
                                             </div>
                                         </div>
                                     </td> 
                                     <td>
-                                        <h5 class="mb-1">{{ $product->color->name ?? '' }}</h5>
+                                        <p>{{ $product->color->name ?? '' }}</p>
                                         <span class="text-muted">Size:</span> {{ $product->size->code ?? '' }}                                        
                                     </td>    
                                     <td>
-                                        <h5 class="mb-1">₹{{ number_format($product->price,2) }}</h5>
+                                        <p><b>₹{{ number_format($product->price,2) }}</b></p>
                                         <p class="text-muted fs-10">
                                             @if($product->compare_price)
                                                 Offer: ₹{{ number_format($product->compare_price,2) }}
@@ -123,13 +121,13 @@
                                         </p>   
                                     </td>                                                                                                             
                                     <td>
-                                        <h5>{{ $product->qty }}
+                                        <p>{{ $product->qty }}
                                             @if ($product->qty > 0)
                                                 <span class="badge bg-primary-subtle text-primary px-2">Stock</span>
                                             @else
                                                 <span class="badge bg-danger-subtle text-danger px-2">Out of Stock</span>
                                             @endif
-                                        </h5>                                        
+                                        </p>                                        
                                     </td>                                   
                                     <td>
                                         @if ($product->status == 1)                                        
@@ -149,7 +147,35 @@
                                         <a href="#" onclick="deleteProduct( {{ $product->id }} )" class="text-danger w-4 h-4">
                                             <i class="las la-trash-alt text-secondary fs-18"></i>
                                         </a>
-                                    </td>                         
+                                    </td> 
+                                    
+                                    <div class="modal fade" id="variantRow{{ $product->id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-sm">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLabel">Variants</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    @if($product->variants->count())
+                                                        @foreach($product->variants as $variant)
+                                                            @php
+                                                                $variantImage = $product->variant_images->first();
+                                                            @endphp
+                                                            
+                                                            @if(!empty($variantImage->image))
+                                                                <img src="{{ asset('uploads/product/small/'.$variantImage->image) }}" height="70" class="me-3 rounded">
+                                                            @else
+                                                                <img src="{{ asset('admin-assets/img/default-150x150.png') }}" height="70" class="me-3 rounded">
+                                                            @endif                                                                                                            
+                                                        @endforeach
+                                                    @else
+                                                        <div class="text-muted">No Variants Available</div>
+                                                    @endif
+                                                </div>                                        
+                                            </div>
+                                        </div>
+                                    </div>
                                 </tr>
                                 @endforeach
                             @else

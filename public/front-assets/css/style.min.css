@@ -2369,8 +2369,6 @@ h1 span,h2 span,h3 span,h4 span,h5 span,h6 span{font-size:inherit;font-family:in
 .navbar-toggler:focus{box-shadow:none}
 ul{margin:0;padding:0}
 ul li{list-style:none}
-.text-primary{color:#f7ca0d!important}
-.text-secondary{color:#001d3d}
 .bg-dark{background:#001d3d}
 a.link{color:#001d3d}
 a.link:hover{color:#f7ca0d}

@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Payment;
 use App\Models\ProductVariant;
 use App\Models\State;
+use App\Models\Wishlist;
 use Razorpay\Api\Api;
 
 class CartController extends Controller {
@@ -112,6 +113,51 @@ class CartController extends Controller {
             'coupons'     => $coupons,
         ]);
     }
+
+
+
+    public function bulkAction(Request $request) {
+        $cartIds = $request->cart_ids;   // rowIds
+        $action  = $request->action;     // remove or wishlist
+
+        if (!$cartIds || count($cartIds) == 0) {
+            return back()->with('error', 'No items selected.');
+        }
+
+        // REMOVE ITEMS
+        if ($action === 'remove') {
+            foreach ($cartIds as $rowId) {
+                Cart::remove($rowId);
+            }
+            return back()->with('success', 'Selected items removed.');
+        }
+
+        // MOVE TO WISHLIST
+        if ($action === 'wishlist') {
+            foreach ($cartIds as $rowId) {
+                $item = Cart::get($rowId);
+                if ($item) {
+                    // Optional: prevent duplicate wishlist entry
+                    $exists = Wishlist::where('user_id', auth()->id())
+                        ->where('product_id', $item->id)
+                        ->exists();
+
+                    if (!$exists) {
+                        Wishlist::create([
+                            'user_id'   => auth()->id(),
+                            'product_id'=> $item->id,
+                        ]);
+                    }
+                    Cart::remove($rowId);
+                }
+            }
+            return back()->with('success', 'Selected items moved to wishlist.');
+        }
+
+        return back();
+    }
+
+
 
     public function checkout() {
         if (Cart::count() == 0) {
