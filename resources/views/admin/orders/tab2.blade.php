@@ -1,6 +1,6 @@
-<div class="tab-pane" id="pending" role="tabpanel">
+<div class="tab-pane " id="shipped" role="tabpanel">
     <div class="table-responsive browser_users">
-           <table class="table table-text mb-0">
+         <table class="table table-text mb-0">
             <thead class="table-light">
                 <tr>
                     <th class="border-top-0" width="40">ID</th>
@@ -9,79 +9,64 @@
                     <th class="border-top-0 text-end" width="140">Customer</th>
                     <th class="border-top-0 text-end" width="100">AWB</th>
                     <th class="border-top-0 text-end" width="100">Courier</th>                        
-                    <th class="border-top-0 text-end" width="130">Order Date</th>
-                    <th class="border-top-0 text-end" width="130">Status</th> 
+                    <th class="border-top-0 text-end" width="100">Order Date</th>
+                    <th class="border-top-0 text-end" width="100">Status</th> 
                 </tr>
             </thead>
-            <tbody>
-                @if ($pending_orders->isNotEmpty())
-                    @foreach($pending_orders as $order)                            
-                        <tr>
-                            <td>
-                                <p class="mt-4"><a href="{{ route('orders.detail',$order->id) }}">{{ $order->id }}</a></p>
-                            </td>
-                            <td>                                   
-                                @foreach($order->items as $item)
-                                    <div class="mb-2">                                            
-                                        @php
-                                            $productImage = $item->product->images->first();
-                                        @endphp                                                           
-                                        <div class="d-flex align-items-center">                              
-                                            <a href="{{ route('front.product', $item->product->slug) }}" target="_blank">
-                                                @if($productImage && !empty($productImage->image))
-                                                    <img src="{{ asset('uploads/product/small/'.$productImage->image) }}" height="90" class="me-3 align-self-center rounded" />
-                                                @else
-                                                    <img src="{{ asset('admin-assets/img/default-150x150.png') }}" height="90" class="me-3 align-self-center rounded" />
-                                                @endif
-                                            </a>
-                                            <div class="flex-grow-1 text-truncate">
-                                                <h5 class="product-title">
-                                                    <a href="{{ route('front.product', $item->product->slug) }}" target="_blank">{{ Str::limit($item->product->title, 75, '...') }}</a>
-                                                </h5>
-                                                <div class="small-fonts">
-                                                    <p class="mb-0 text-muted">Color: {{ $item->product->color->name }}, Size: {{ $item->product->size->code }}</p>
-                                                    <p class="mb-0 text-muted">{{ $item->qty }} x ₹{{ number_format($item->product->price,2) }}</p>                                                        
-                                                </div>
-                                            </div>
-                                        </div>                                             
-                                    </div>                                                                                                                                          
-                                @endforeach                                        
-                            </td>
-                            <td class="text-end">
-                                <p class="mb-0 mt-2">₹{{ number_format($order->grandtotal,2) }}</p>
-                            </td>
-                            <td class="text-end">
-                                <p class="mb-0 mt-2">{{ $order->name }}</p>
-                                <p class="mb-0 text-muted">{{ $order->mobile }}</p>
-                                <p class="mb-0 text-muted">{{ $order->city }}</p>
-                            </td>
-                            <td class="text-end"><p class="mb-0 mt-2">{{ $order->awb_code ?? '-' }}</p></td>
-                            <td class="text-end"><p class="mb-0 mt-2">{{ $order->courier_name ?? '-' }}</p></td>                                
-                            <td class="text-end">
-                                <p class="mt-2">{{ \Carbon\Carbon::parse($order->created_at)->format('d M, Y') }}</p>
-                            </td>
-                            <td class="text-end">
-                                <p class="mb-0 mt-2">
-                                    @if (!empty($order->shipped_date))
-                                        {{ \Carbon\Carbon::parse($order->shipped_date)->format('d M, Y')}}
-                                    @else
-                                        No
-                                    @endif
-                                </p>
-                                <p class="mb-1">
-                                    @if ($order->status == 'pending')
-                                        <span class="badge bg-danger">Pending</span>                                    
-                                    @endif
-                                </p>
-                            </td>
-                        </tr>
-                    @endforeach   
-                    @else
-                    <tr>
-                        <td>Records not found</td>
+            <tbody id="orderAccordion">
+                @foreach($shipped_orders as $key => $order)
+                    <tr data-bs-toggle="collapse" data-bs-target="#orderItems{{ $order->id }}" class="accordion-toggle cursor-pointer">
+                        <td>
+                            <a href="{{ route('orders.detail',$order->id) }}">
+                                {{ $order->id }}
+                            </a>
+                            <i class="bi bi-chevron-down me-2"></i>
+                        </td>
+                        
+                        <td>{{ $order->items->count() }} Item(s)</td>
+                        <td class="text-end">₹{{ number_format($order->grandtotal,2) }}</td>
+                        <td class="text-end">{{ $order->name }}</td>
+                        <td class="text-end">{{ \Carbon\Carbon::parse($order->created_at)->format('d M, Y') }}</td>
+                        <td class="text-end">
+                            @if ($order->status == 'shipped')
+                                <span class="badge bg-warning">Shipped</span>
+                            @endif
+                        </td>
                     </tr>
-                @endif                 
+    
+                    <tr id="orderItems{{ $order->id }}" class="collapse {{ $key == 0 ? 'show' : '' }}" data-bs-parent="#orderAccordion">
+                        <td></td>
+                        <td colspan="7">
+                            @foreach($order->items as $item)
+                                @php
+                                    $productImage = $item->product->images->first();
+                                @endphp
+
+                                <div class="d-flex align-items-center mb-1 border-bottom pb-1">
+                                    <a href="{{ route('front.product', $item->product->slug) }}" target="_blank">
+                                        @if($productImage && !empty($productImage->image))
+                                            <img src="{{ asset('uploads/product/small/'.$productImage->image) }}" height="80" class="me-3 rounded" />
+                                        @else
+                                            <img src="{{ asset('admin-assets/img/default-150x150.png') }}" height="80" class="me-3 rounded" />
+                                        @endif
+                                    </a>
+
+                                    <div class="flex-grow-1">
+                                        <strong>{{ $item->product->title }}</strong>
+                                        <div class="small text-muted">
+                                            Color: {{ $item->product->color->name }},
+                                            Size: {{ $item->product->size->code }}
+                                        </div>
+                                        <div class="small text-muted">
+                                            {{ $item->qty }} x ₹{{ number_format($item->product->price,2) }}
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </td>
+                    </tr>
+                @endforeach
             </tbody>
-        </table>                                         
+        </table>                                          
     </div>
 </div>
