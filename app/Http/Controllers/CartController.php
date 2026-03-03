@@ -100,6 +100,7 @@ class CartController extends Controller {
 
     public function cart() {
         $cartContent = Cart::content();
+        $appliedCouponId = session('applied_coupon_id'); 
 
         $coupons = DiscountCoupon::where('status', 1)
             ->where(function ($q) {
@@ -108,11 +109,12 @@ class CartController extends Controller {
             })
             ->get();     
             
-        //dd(Cart::content());
+        //dd(Cart::content());        
 
         return view('front.checkout.cart', [
             'cartContent' => $cartContent,
             'coupons'     => $coupons,
+            'appliedCouponId'     => $appliedCouponId,
         ]);
     }
 
@@ -159,8 +161,76 @@ class CartController extends Controller {
         return back();
     }
 
+    public function address(Request $request) {
+        $selectedIds = $request->cart_ids ?? [];
 
+        if(empty($selectedIds)){
+            return back()->with('error','Please select at least one item');
+        }
 
+        $cartItems = Cart::content()->filter(function($item) use ($selectedIds){
+            return in_array($item->rowId, $selectedIds);
+        });
+
+         if (Cart::count() == 0) {
+            return redirect()->route('front.cart');
+        }
+
+        if (!Auth::check()) {
+            if (!session()->has('url.intended')) {
+                session(['url.intended' => url()->current()]);
+            }
+            return redirect()->route('front.home');
+        }
+
+        $address = auth()->user()->addresses()->with('state')->get();
+        $addressTypes = CustomerAddress::pluck('address_type')->toArray();
+        $customerAddress = Auth::user()->address;
+        $states = State::orderBy('name', 'ASC')->get();
+
+        $totalQty = Cart::count(); // total items qty
+        $totalShippingCharge = 0;
+
+        if ($customerAddress) {
+            $shippingInfo = ShippingCharge::where('state_id', $customerAddress->state_id)->first();
+
+            if ($shippingInfo) {
+                $totalShippingCharge = $totalQty * $shippingInfo->amount;
+            }
+        }
+
+        // IMPORTANT: remove formatting to avoid string math
+        $subTotal = (float) Cart::subtotal(2, '.', '');
+
+        $discount = session()->get('discount', 0);
+
+        $grandTotal = max($subTotal + $totalShippingCharge - $discount, 0);
+
+        $totalMRP = $cartItems->sum(function($item){
+            return $item->options->compare_price * $item->qty;
+        });
+
+        $sellingTotal = $cartItems->sum(function($item){
+            return $item->price * $item->qty;
+        });
+
+        $totalDiscount = $totalMRP - $sellingTotal;
+        $totalAmount = $sellingTotal;
+
+        return view('front.checkout.address', [
+            'cartItems'             => $cartItems,
+            'totalMRP'              => $totalMRP,
+            'totalDiscount'         => $totalDiscount,
+            'totalAmount'           => $totalAmount,
+            'states'                => $states,
+            'address'               => $address,
+            'addressTypes'          => $addressTypes,
+            'totalShiipingCharge' => $totalShippingCharge,
+            'discount'            => $discount,
+            'subTotal'            => $subTotal,
+            'grandTotal'          => $grandTotal
+        ]);        
+    }
     
 
     public function checkout() {
