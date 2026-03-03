@@ -5,16 +5,15 @@
 @include('front.layouts.toast')
 
     <div class="container">        
-        @if (Cart::count() > 0)   
-            <div class="row">             
-                <div class="col-md-8 col-12 left-border">               
-                    <div class="delivery-time">
-                        <div>Check delivery time & service</div>
-                        <div>Enter Pin Code</div>
-                    </div>
-
-                    <form id="cartForm" method="POST" action="{{ route('cart.bulk.action') }}">
-                        @csrf
+        @if (Cart::count() > 0)               
+            <form id="cartForm" method="POST" action="{{ route('cart.bulk.action') }}">
+                @csrf
+                <div class="row">
+                    <div class="col-md-8 col-12 left-border">               
+                        <div class="delivery-time">
+                            <div>Check delivery time & service</div>
+                            <div>Enter Pin Code</div>
+                        </div>
 
                         <div class="product-title-cart">                            
                             <div class="title">
@@ -57,12 +56,18 @@
                                     <div class="manuplate">                                    
                                         <div class="select">                                    
                                             <a href="javascript:void(0);" class="update-size" data-type="size" data-rowid="{{ $item->rowId }}" data-selected="{{ $item->options->size }}">
-                                                Size: <b>{{ $item->options->size }}</b>
+                                                <b>
+                                                    Size: {{ $item->options->size }}
+                                                    <span class="caret"></span>
+                                                </b>
                                             </a>
                                         </div>
                                         <div class="select">                                
-                                            <a href="javascript:void(0);" class="update-qty" data-type="qty" data-rowid="{{ $item->rowId }}" data-selected="{{ $item->qty }}">Qty:
-                                                <b>{{ $item->qty }}</b>
+                                            <a href="javascript:void(0);" class="update-qty" data-type="qty" data-rowid="{{ $item->rowId }}" data-selected="{{ $item->qty }}">
+                                                <b>
+                                                    Qty: {{ $item->qty }}
+                                                    <span class="caret"></span>
+                                                </b>
                                             </a>
                                         </div>
                                     </div>
@@ -76,12 +81,12 @@
                                             @php
                                                 $discount = round((($item->options->compare_price - $item->price) / $item->options->compare_price) * 100);
                                             @endphp
-                                            <span class="discount">{{ $discount }}% OFF</span>
+                                            <span class="discount">₹{{ $discount }} OFF</span>
                                         @endif           
                                     </div>
 
                                     <div class="return-notice">
-                                        <p><b>{{ $item->options->return_days ?? '' }} days</b> return available</p>
+                                        <p><b>{{ $item->options->return_days ?? '' }}</b> return available</p>
                                     </div>
 
                                     <div class="delivery-notice">                                        
@@ -142,106 +147,134 @@
                                 </div>
                             </div>
                         @endforeach    
-                    </form>
-                </div>
+                    
+                    </div>
 
-                <div class="col-md-4 col-12">
-                    <div class="cart-summery">
-                        <div class="part">
-                            <h6>Price Details</h6>
-                            <p>Price Details</p>
-                        </div>
-
-                        <div class="part">                            
-                            <h6>Price Details (<span class="selected-items">0</span> <span>items</span>)</h6>
-                            @if (Cart::count() > 0)                                
-                                @php
-                                    $price_total = Cart::content()->sum(function($item){
-                                        return $item->price * $item->qty;
-                                    });
-
-                                    $totalCompare = Cart::content()->sum(function ($item) {
-                                        return $item->options->compare_price * $item->qty;
-                                    });
-                                    
-                                    $compare = $item->compare_price * $item->qty;
-                                    $cartTotal = (float) str_replace(',', '', Cart::subtotal());
-                                    $discount = session('discount', 0);
-                                    $finalTotal = $cartTotal - $discount;
-                                @endphp
-
-                                <div class="repeate-row">
-                                    <div class="left">Total MRP</div>
-                                    <div class="right">₹ <span class="total-mrp">0.00</span></div>
-                                </div>
-
-                                <div class="repeate-row priceDetailsBox">
-                                    <div class="left">Discount on MRP</div>
-                                    <div class="right">
-                                        <span class="compare-discount">- ₹<span class="total-compare">0.00</span></span>
-                                    </div>
-                                </div>
-
+                    <div class="col-md-4 col-12">
+                        <div class="cart-summery">
+                            <div class="part">
+                                <h6>Coupon</h6>                                
                                 @if(session()->has('discount'))
                                     @php
                                         $discount = session('discount');
-                                        $finalTotal = $cartTotal - $discount;
                                     @endphp
 
-                                    <div class="repeate-row priceDetailsBox" >
-                                        <div class="left">Coupon Discount
-                                            {{-- - {{ session('coupon_code') }} 
-                                                <a href="{{ route('coupon.remove') }}" class="btn btn-outline-danger btn-sm">X</a>--}}
+                                    <div class="repeate-row">
+                                        <div class="left">
+                                            <div class="flex">
+                                                <div>Icon</div>
+                                                <div>
+                                                    <b>1 Coupon applied</b>
+                                                    <p class="compare-discount tiny-font">You saved additional ₹{{ $discount }}</p>                                                    
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="right">
-                                            <span class="compare-discount">-₹{{ $discount }}</span>
+                                            <a href="#" data-bs-toggle="modal" data-bs-target="#discount" class="btn btn-outline-danger btn-sm">Edit</a>                                            
                                         </div>
                                     </div>
-
-                                    <div class="repeate-row priceDetailsBox" >
-                                        <div class="left">Platform Fee</div>
-                                        <div class="right">₹</div>
-                                    </div>
-
-                                    <div class="repeate-row total-amount">
-                                        <div class="left">Total Amount</div>
-                                        <div class="right">
-                                            <b>₹<span class="final-total">0.00</span></b>
-                                        </div>
-                                    </div>                                            
                                 @else
                                     <div class="repeate-row">
                                         <div class="left">Coupon Discount</div>
                                         <div class="right">
                                             <a href="#" data-bs-toggle="modal" data-bs-target="#discount">Apply Discount</a>
                                         </div>
+                                    </div>                                           
+                                @endif
+                            </div>
+
+                            <div class="part">                            
+                                <h6>Price Details (<span class="selected-items">0</span> <span>items</span>)</h6>                           
+                                @if (Cart::count() > 0)                                
+                                    @php
+                                        $price_total = Cart::content()->sum(function($item){
+                                            return $item->price * $item->qty;
+                                        });
+
+                                        $totalCompare = Cart::content()->sum(function ($item) {
+                                            return $item->options->compare_price * $item->qty;
+                                        });
+                                        
+                                        $compare = $item->compare_price * $item->qty;
+                                        $cartTotal = (float) str_replace(',', '', Cart::subtotal());
+                                        $discount = session('discount', 0);
+                                        $finalTotal = $cartTotal - $discount;
+                                    @endphp
+
+                                    <div class="repeate-row">
+                                        <div class="left">Total MRP</div>
+                                        <div class="right">₹ <span class="total-mrp">0.00</span></div>
                                     </div>
 
-                                    <div class="repeate-row total-amount">
-                                        <div class="left">Final Total:</div>
+                                    <div class="repeate-row priceDetailsBox">
+                                        <div class="left">Discount on MRP</div>
                                         <div class="right">
-                                            <b>₹{{ number_format($cartTotal, 2) }}</b>
+                                            <span class="compare-discount">- ₹<span class="total-compare">0.00</span></span>
                                         </div>
-                                    </div>                                            
+                                    </div>
+
+                                    @if(session()->has('discount'))
+                                        @php
+                                            $discount = session('discount');
+                                            $finalTotal = $cartTotal - $discount;
+                                        @endphp
+
+                                        <div class="repeate-row priceDetailsBox" >
+                                            <div class="left">Coupon Discount
+                                                {{-- - {{ session('coupon_code') }} 
+                                                    <a href="{{ route('coupon.remove') }}" class="btn btn-outline-danger btn-sm">X</a>--}}
+                                            </div>
+                                            <div class="right">
+                                                <span class="compare-discount">-₹{{ $discount }}</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="repeate-row priceDetailsBox" >
+                                            <div class="left">Platform Fee</div>
+                                            <div class="right">₹</div>
+                                        </div>
+
+                                        <div class="repeate-row total-amount">
+                                            <div class="left">Total Amount</div>
+                                            <div class="right">
+                                                <b>₹<span class="final-total">0.00</span></b>
+                                            </div>
+                                        </div>                                            
+                                    @else
+                                        <div class="repeate-row">
+                                            <div class="left">Coupon Discount</div>
+                                            <div class="right">
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#discount">Apply Discount</a>
+                                            </div>
+                                        </div>
+
+                                        <div class="repeate-row total-amount">
+                                            <div class="left">Final Total:</div>
+                                            <div class="right">
+                                                <b>₹{{ $cartTotal }}</b>
+                                            </div>
+                                        </div>                                            
+                                    @endif
+
+                                    <div class="terms">
+                                        By placing the order, you agree to Myntra's <a href="https://www.myntra.com/termsofuse" target="_blank" class="privaryPolicyTermsOfUseStrip-base-link">Terms of Use</a> and 
+                                        <a href="https://www.myntra.com/privacypolicy" target="_blank" class="privaryPolicyTermsOfUseStrip-base-link">Privacy Policy</a>
+                                    </div>
+
+                                    @if (Auth::check())
+                                        {{-- <a href="{{ route('front.checkout') }}" class="btn btn-primary btn-block w-100">Place Order</a> --}}
+                                        <button type="submit" class="btn btn-primary w-100" id="checkoutBtn" formaction="{{ route('checkout.address') }}">Place Order</button>
+                                    @else
+                                        <a class="btn btn-primary btn-block w-100" href="#" data-bs-toggle="modal" data-bs-target="#login">
+                                            Login to Place Order
+                                        </a>
+                                    @endif 
                                 @endif
-
-                                <div class="terms">
-                                    By placing the order, you agree to Myntra's <a href="https://www.myntra.com/termsofuse" target="_blank" class="privaryPolicyTermsOfUseStrip-base-link">Terms of Use</a> and 
-                                    <a href="https://www.myntra.com/privacypolicy" target="_blank" class="privaryPolicyTermsOfUseStrip-base-link">Privacy Policy</a>
-                                </div>
-
-                                @if (Auth::check())
-                                    <a href="{{ route('front.checkout') }}" class="btn btn-primary btn-block w-100">Place Order</a>
-                                @else
-                                    <a class="btn btn-primary btn-block w-100" href="#" data-bs-toggle="modal" data-bs-target="#login">
-                                        Login to Place Order
-                                    </a>
-                                @endif 
-                            @endif
+                            </div>
                         </div>
-                    </div>
+                    </div>                                    
                 </div>
-            </div>
+            </form>            
         @else
             <div class="card mt-4">
                 <div class="card-body text-center p-4">
@@ -254,51 +287,12 @@
                 </div>
             </div>
         @endif
-
-             {{-- <a href="javascript:void(0);" 
-                class="edit-cart-item"
-                data-rowid="{{ $item->rowId }}"
-                data-size="{{ $item->options->size }}"
-                data-qty="{{ $item->qty }}"
-                >Edit</a>
-
-                <div class="modal fade" id="editCartModal" tabindex="-1">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-
-                        <div class="modal-header">
-                            <h5 class="modal-title">Update Item</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                        </div>
-
-                        <div class="modal-body">
-                            <input type="hidden" id="modal_rowId">
-                          
-                            <label>Size</label>
-                            <select id="modal_size" class="form-control">
-                                <option value="S">S</option>
-                                <option value="M">M</option>
-                                <option value="L">L</option>
-                            </select>
-
-                            <label>Quantity</label>
-                            <input type="number" id="modal_qty" class="form-control" min="1">
-                        </div>
-
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" id="updateCartBtn">
-                            Update
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div> --}}
         
             <div class="modal fade" id="commonSizesModal" tabindex="-1">
                 <div class="modal-dialog modal-sm">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h6>Sizes</h6>
+                            <h6 class="modal-title">Sizes</h6>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
@@ -315,7 +309,7 @@
                 <div class="modal-dialog modal-sm">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h6>Quantity</h6>
+                            <h6 class="modal-title">Quantity</h6>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
@@ -339,29 +333,38 @@
                             </div>
                             <div class="modal-body">
                                 <div class="apply-coupan mb-2">
-                                    <input type="text" placeholder="Enter coupon Code" class="form-control" name="discount_code" id="discount_code">
+                                    <input type="text" placeholder="Enter coupon Code" class="form-control" name="discount_code" id="discount_code" value="{{ old('discount_code', session('coupon_code')) }}">
                                 </div>
                                 
                                 <div class="scroll-body">
                                     @foreach($coupons as $coupon)
-                                        <div class="coupon-box">
+                                        <div class="coupon-box {{ old('coupon_id', session('coupon_id')) == $coupon->id ? 'active' : '' }}">
                                             <label>
                                                 <div class="left">
-                                                    <input type="radio" name="coupon_id" value="{{ $coupon->id }}" data-code="{{ $coupon->code }}">
+                                                    <label class="custom-radio">
+                                                        <input type="radio" name="coupon_id" value="{{ $coupon->id }}" data-code="{{ $coupon->code }}"
+                                                        {{ old('coupon_id', session('coupon_id')) == $coupon->id ? 'checked' : '' }} >
+                                                        <span class="radio-mark"></span>
+                                                    </label>
                                                 </div>
+
                                                 <div class="right">
                                                     <div class="code-details">
                                                         <div class="code">{{ $coupon->code }}</div>
-                                                        <p class="title">{{ $coupon->name }}</p>
                                                     </div>
+
+                                                    <p class="title">{{ $coupon->name }}</p>
                                                     <p class="text-muted">
                                                         @if($coupon->type == 'percent')
                                                             {{ $coupon->discount_amount }}% off
                                                         @else
                                                             ₹{{ $coupon->discount_amount }} off
-                                                        @endif
-                                                        on minimum purchase of ₹{{ $coupon->min_amount  }}.
-                                                        Expire on: {{ \Carbon\Carbon::parse($coupon->expires_at)->format('jS F Y | h:i A') }}
+                                                        @endif              
+                                                        on minimum purchase of ₹{{ $coupon->min_amount }}.                                          
+                                                    </p>
+                                                    <p class="text-muted">                                                        
+                                                        Expire on:
+                                                        {{ \Carbon\Carbon::parse($coupon->expires_at)->format('jS F Y | h:i A') }}
                                                     </p>
                                                 </div>
                                             </label>
@@ -370,8 +373,19 @@
                                 </div>
                             </div>
 
-                            <div class="modal-footer">                                
-                                <button class="btn btn-primary" type="submit" data-bs-dismiss="modal">Apply Coupon</button>
+                            <div class="modal-footer-extra">                                
+                                <div class="max-savings">
+                                    <p>Maximum savings:</p> 
+                                    @if(session()->has('discount'))
+                                        @php
+                                            $discount = session('discount');                                            
+                                        @endphp                                        
+                                        <p class="discount-text">₹{{ $discount }}</p> 
+                                    @endif
+                                </div>
+                                <div>
+                                    <button class="btn btn-primary btn-big" type="submit" data-bs-dismiss="modal">Apply</button>
+                                </div>                                
                             </div>                                    
                         </form>
                     </div>
@@ -552,6 +566,17 @@
             function updateSelectedCount() {
                 let count = $('.item-checkbox:checked').length;
                 $('#selectedCount').text(count);
+
+                let total = $('.item-checkbox').length;
+                let checked = $('.item-checkbox:checked').length;
+
+                $('#selectedCount').text(checked);
+
+                if(checked === 0){
+                    $('.price-details').hide();
+                } else {
+                    $('.price-details').show();
+                }
             }
             
             // Select All
@@ -716,6 +741,16 @@
 
             // Run on page load
             updateCartSummary();
+        });
+
+
+        $(document).ready(function(){
+            $('#checkoutForm').on('submit', function(e){
+                if($('.item-checkbox:checked').length === 0){
+                    e.preventDefault();
+                    alert('Please select at least one item');
+                }
+            });
         });
     </script>
 @endsection

@@ -151,7 +151,7 @@
         </div>
 
         <div class="col-md-3 col-12 pl-0">
-            <div class="card p-0">
+            <div class="card mb-1 p-0">
                 <div class="card-body">
                     <h4 class="mb-2">Product Category</h4>
                     <div class="form-group">
@@ -201,9 +201,12 @@
                                 @endforeach
                             @endif
                         </select>    
-                    </div>                           
-
-                    <hr />
+                    </div>
+                </div>
+            </div>
+                    
+            <div class="card mb-1 p-0">
+                <div class="card-body">
                     <h4 class="mb-2">Product Brand</h4>                        
                     <select name="brand" id="brand" class="form-select">
                         <option value="">Select a Brand</option>
@@ -248,26 +251,60 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    <div class="row">
-                        <div class="col-6">
-                            <h5 class="mb-1">Featured</h5>
+            <div class="card mb-1 p-0">
+                <div class="card-body">
+                    <div class="row">                                                
+                        <div class="col-4">
+                            <h6 class="mb-1">COD</h6>
+                            <input type="hidden" name="cod" value="0">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="cod" value="1"
+                                    {{ old('cod', $product->cod ?? 0) == 1 ? 'checked' : '' }} >                        
+                            </div> 
+                        </div>                       
+                        <div class="col-4">
+                            <h6 class="mb-1">Featured</h6>
                             <input type="hidden" name="is_featured" value="No">
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" name="is_featured" value="Yes"
                                     {{ old('is_featured', $product->is_featured ?? 'No') == 'Yes' ? 'checked' : '' }} >                        
                             </div> 
                         </div>
-                        <div class="col-6">
-                            <h5 class="mb-1">Status</h5>
+                        <div class="col-4">
+                            <h6 class="mb-1">Status</h6>
                             <input type="hidden" name="status" value="0">
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" name="status" value="1"
                                     {{ old('status', $product->status ?? 0) == 1 ? 'checked' : '' }} >                        
                             </div>                                              
                         </div>
-                    </div>
+                        <div class="col-6 mt-3">
+                            <h6 class="mb-1">Is Returnable</h6>
+                            <input type="hidden" name="is_returnable" value="0">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="is_returnable" value="1"
+                                    {{ old('is_returnable', $product->is_returnable ?? 0) == 1 ? 'checked' : '' }} >                        
+                            </div> 
+                        </div>
+                        <div class="col-6 mt-3">
+                            <h6 class="mb-1">Is Returnable</h6>
+                            <select name="return_days" id="return_days" class="form-select">
+                                <option value="7 days"
+                                    {{ old('return_days', $product->return_days ?? '7 days') == '7 days' ? 'selected' : '' }}>
+                                    7 days
+                                </option>
 
+                                <option value="14 days"
+                                    {{ old('return_days', $product->return_days ?? '') == '14 days' ? 'selected' : '' }}>
+                                    14 days
+                                </option>
+                            </select>
+                        </div> 
+                    </div>
+                    
                     <hr />
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#variantProductModal">Variant Product</button>
                     

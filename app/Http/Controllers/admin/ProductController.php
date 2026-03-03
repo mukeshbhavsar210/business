@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
+use Carbon\Carbon;
 
 class ProductController extends Controller {
 
@@ -77,13 +78,10 @@ class ProductController extends Controller {
             $product->title = $request->title;
             $product->slug = $request->slug;
             $product->description = $request->description;
+            $product->short_description = $request->short_description;$product->shipping_returns = $request->shipping_returns;
+            $product->related_products = (!empty($request->related_products)) ? implode(',',$request->related_products) : '';
             $product->price = $request->price;
             $product->compare_price = $request->compare_price;
-            $product->sku = $request->sku;
-            $product->barcode = $request->barcode;
-            $product->track_qty = $request->track_qty;
-            $product->qty = $request->qty;
-            $product->status = $request->status;
             $product->category_id = $request->category;
             $product->sub_category_id = $request->sub_category;
             $product->sub_sub_category_id = $request->sub_sub_category;
@@ -91,9 +89,19 @@ class ProductController extends Controller {
             $product->color_id = $request->color;            
             $product->size_id = $request->size;
             $product->is_featured = $request->is_featured;
-            $product->shipping_returns = $request->shipping_returns;
-            $product->short_description = $request->short_description;
-            $product->related_products = (!empty($request->related_products)) ? implode(',',$request->related_products) : '';
+            $product->sku = $request->sku;
+            $product->barcode = $request->barcode;
+            $product->track_qty = $request->track_qty;
+            $product->qty = $request->qty;
+            $product->recommended = $request->recommended;
+            $product->discount_percentage = $request->discount_percentage;
+            $product->average_rating = $request->average_rating;
+            $product->cod = $request->cod;
+            $product->is_returnable = $request->is_returnable;
+            $product->return_days = $request->return_days;
+            $product->delivery_min_days = Carbon::now();
+            $product->delivery_max_days = Carbon::now()->addDays(7);
+            $product->status = $request->status;
             $product->save();
 
             // 3️⃣ Save Variants
@@ -236,13 +244,10 @@ class ProductController extends Controller {
             $product->title = $request->title;
             $product->slug = $request->slug;
             $product->description = $request->description;
+            $product->short_description = $request->short_description;$product->shipping_returns = $request->shipping_returns;
+            $product->related_products = (!empty($request->related_products)) ? implode(',',$request->related_products) : '';
             $product->price = $request->price;
             $product->compare_price = $request->compare_price;
-            $product->sku = $request->sku;
-            $product->barcode = $request->barcode;
-            $product->track_qty = $request->track_qty;
-            $product->qty = $request->qty;
-            $product->status = $request->status;
             $product->category_id = $request->category;
             $product->sub_category_id = $request->sub_category;
             $product->sub_sub_category_id = $request->sub_sub_category;
@@ -250,9 +255,19 @@ class ProductController extends Controller {
             $product->color_id = $request->color;            
             $product->size_id = $request->size;
             $product->is_featured = $request->is_featured;
-            $product->shipping_returns = $request->shipping_returns;
-            $product->short_description = $request->short_description;
-            $product->related_products = (!empty($request->related_products)) ? implode(',',$request->related_products) : '';
+            $product->sku = $request->sku;
+            $product->barcode = $request->barcode;
+            $product->track_qty = $request->track_qty;
+            $product->qty = $request->qty;
+            $product->recommended = $request->recommended;
+            $product->discount_percentage = $request->discount_percentage;
+            $product->average_rating = $request->average_rating;
+            $product->cod = $request->cod;
+            $product->is_returnable = $request->is_returnable;
+            $product->return_days = $request->return_days;
+            $product->delivery_min_days = Carbon::now();
+            $product->delivery_max_days = Carbon::now()->addDays(7);
+            $product->status = $request->status;
             $product->save();
 
             // 3️⃣ Save Variants

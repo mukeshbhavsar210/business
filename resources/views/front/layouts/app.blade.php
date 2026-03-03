@@ -60,26 +60,14 @@
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
-
-    $(document).ready(function () {
-        alert("Hi");
-        
-        var toastEl = $('.toast')[0];   // Get DOM element
-            var toast = new bootstrap.Toast(toastEl, {
-                delay: 2000,        // 2 seconds
-                autohide: true
-            });
-
-            toast.show();
-    });
+    
     
     function addToCart(id){
         if(selectedSize == ''){
             alert('Please select size');
             return;
         }
-
-        // Get variant id from URL
+        
         let urlParams = new URLSearchParams(window.location.search);
         let variantId = urlParams.get('variant'); // null if not selected
 
@@ -94,13 +82,10 @@
             },
             dataType: 'json',
             success: function(response){
-
                 if(response.status == true){
-
                     // ✅ Update cart count
                     $('#cartCount').text(response.cartCount);
 
-                    // ✅ Show toast message
                     $('#cartToastMessage').text(response.message);
 
                     let toast = new bootstrap.Toast(

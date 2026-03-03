@@ -60,11 +60,11 @@
                     <thead class="table-light">
                         <tr>
                             <th class="border-top-0">Product</th>
-                            <th class="border-top-0" width="100">Color/Size</th>
-                            <th class="border-top-0" width="120">Price</th>
-                            <th class="border-top-0" width="120">Stock</th>
-                            <th class="border-top-0" width="60">Status</th>
-                            <th class="border-top-0" width="80">Action</th>
+                            <th class="border-top-0" width="100">Color/Size</th>                            
+                            <th class="border-top-0" width="100">Price</th>
+                            <th class="border-top-0" width="90">Stock</th>
+                            <th class="border-top-0" width="50">Status</th>
+                            <th class="border-top-0" width="70">Action</th>
                         </tr>
                     </thead>                     
                     <tbody id="productAccordion">
@@ -86,10 +86,10 @@
                                             </a>
                                             <div class="flex-grow-1 text-truncate">
                                                 <h5 class="product-title">
-                                                    <a href="{{ route('products.edit', $product->id) }}">{{ Str::limit($product->title, 75, '...') }}</a>
+                                                    <a href="{{ route('products.edit', $product->id) }}">{{ Str::limit($product->title, 70, '...') }}</a>
                                                 </h5>
                                                 <div class="small-fonts">
-                                                    <span class="color-small" style="background:{{ $product->color->code }}; height:20px; width:20px; border-radius:100px;"></span>
+                                                    {{-- <span class="color-small" style="background:{{ $product->color->code }}; height:20px; width:20px; border-radius:100px;"></span> --}}
                                                     <p class="mb-0">
                                                         <span class="text-muted">{{ $product->id }}</span> | 
                                                         @if($product->sku)
@@ -114,20 +114,18 @@
                                         <p><b>₹{{ number_format($product->price,2) }}</b></p>
                                         <p class="text-muted fs-10">
                                             @if($product->compare_price)
-                                                Offer: ₹{{ number_format($product->compare_price,2) }}
+                                                Discount: ₹{{ number_format($product->compare_price,2) }}
                                             @else
-                                                <span>No Offer</span>
+                                                <span>No Discount</span>
                                             @endif
                                         </p>   
                                     </td>                                                                                                             
-                                    <td>
-                                        <p>{{ $product->qty }}
-                                            @if ($product->qty > 0)
-                                                <span class="badge bg-primary-subtle text-primary px-2">Stock</span>
-                                            @else
-                                                <span class="badge bg-danger-subtle text-danger px-2">Out of Stock</span>
-                                            @endif
-                                        </p>                                        
+                                    <td>                                        
+                                        @if ($product->qty > 0)
+                                            <span class="badge bg-primary-subtle text-primary px-2">{{ $product->qty }} Stock</span>
+                                        @else
+                                            <span class="badge bg-danger-subtle text-danger px-2">Out of Stock</span>
+                                        @endif                                    
                                     </td>                                   
                                     <td>
                                         @if ($product->status == 1)                                        
