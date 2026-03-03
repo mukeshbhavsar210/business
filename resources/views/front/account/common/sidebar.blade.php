@@ -3,7 +3,7 @@
         <li><a href="{{ route('account.dashboard') }}" class="{{ request()->routeIs('account.dashboard') ? 'active' : '' }}" >Overview</a></li>
         <hr />
         <li class="li-title">Orders</li>
-        <li><a href="{{ route('account.orders') }}" class="{{ request()->routeIs(['account.orders', 'account.orderDetail']) ? 'active' : '' }}">Orders & Returns</a></li>
+        <li><a href="{{ route('account.orders') }}" class="{{ request()->routeIs(['account.orders', 'account.orderDetail', 'account.order.view', 'account.orders.cancelled']) ? 'active' : '' }}">Orders & Returns</a></li>
         <hr />
         <li class="li-title">Account</li>
         <li><a href="{{ route('account.profile') }}" class="{{ request()->routeIs(['account.profile', 'account.profile.edit', 'account.changePassword']) ? 'active' : '' }}">Profile</a></li>

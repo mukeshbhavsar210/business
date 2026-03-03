@@ -116,8 +116,8 @@
 
                     <div class="wrapper">
                         <h3>Delivery Address</h3>
-                        <p class="mt-3"><b>{{ $order->first_name }} {{ $order->last_name }} | {{ $order->mobile }}</b></p>
-                        <p>{{ $order->apartment }}, {{ $order->address }}, {{ $order->state }}, {{ $order->city }} - {{ $order->zip }}.</p>
+                        <p class="mt-3"><b>{{ $order->name }} | {{ $order->mobile }}</b></p>
+                        <p class="text-muted">{{ $order->address }}, {{ $order->locality }}, {{ $order->city }}, {{ $order->state->name }}-{{ $order->zip }}. </p>
                     </div>                  
 
                     <div class="wrapper">
@@ -132,8 +132,8 @@
 
                     <div class="wrapper">
                         <h3>Updates sent to</h3>
-                        <p class="mt-3">Mobile: {{ $order->mobile }}</p>
-                        <p class="mt-1">Email: {{ $order->email }}</p>
+                        <p class="mt-1 text-muted">Mobile: {{ $order->mobile }}</p>
+                        <p class="text-muted">Email: {{ $order->user->email }}</p>
                     </div>
 
                     <div class="wrapper">
@@ -155,7 +155,17 @@
                                     <span class="ms-auto">₹{{ number_format($order->subtotal,2) }}</span>
                                 </li>
                                 <li class="list-group-item d-flex">
-                                    <span>Coupon discount {{ (!empty($order->coupon_code)) ? '('.$order->coupon_code.')' : '' }}</span>
+                                    <span>Discount {{ (!empty($order->coupon_code)) ? '('.$order->coupon_code.')' : '' }}</span>
+                                    <span class="ms-auto discount-text">- ₹{{ number_format($order->discount,2) }}</span>
+                                </li>
+                                <hr />
+                                <li class="list-group-item d-flex">
+                                    <span>Discounted price {{ (!empty($order->coupon_code)) ? '('.$order->coupon_code.')' : '' }}</span>
+                                    <span class="ms-auto discount-text">- ₹{{ number_format($order->discount,2) }}</span>
+                                </li>
+                                <hr />
+                                <li class="list-group-item d-flex">
+                                    <span>Coupon Discount {{ (!empty($order->coupon_code)) ? '('.$order->coupon_code.')' : '' }}</span>
                                     <span class="ms-auto discount-text">- ₹{{ number_format($order->discount,2) }}</span>
                                 </li>
                                 <li class="list-group-item d-flex">
@@ -171,7 +181,7 @@
                             <div class="paid-by">Paid by UPI</div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" >Get Invoice</button>
+                            <button type="button" class="btn btn-outline-secondary w-100">Get Invoice</button>
                         </div>
                     </div>
                 </div>

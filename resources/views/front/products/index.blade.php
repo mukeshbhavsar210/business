@@ -65,7 +65,7 @@
                             @php
                                 $discount = round((($product->compare_price - $product->price) / $product->compare_price) * 100);
                             @endphp
-                            <span class="discount">({{ $discount }}% OFF)</span>
+                            <span class="discount">({{ $discount }} OFF)</span>
                         @endif           
                     </div>                                                                                                                                      
                     <p class="inclusive">Inclusive of all taxes</p>
@@ -141,11 +141,10 @@
                     <ul>
                         <li>100% Original Products</li>
                         <li>Pay on delivery might be available</li>
-
                         @if($product->is_returnable)
-                            <p>Easy {{ $product->return_days }} days returns and exchanges</p>
+                            <li>Easy {{ $product->return_days }} returns and exchanges</li>
                         @else
-                            <p>Non-returnable product</p>
+                            <li>Non-returnable product</li>
                         @endif                       
                     </ul>
                 </div>
@@ -154,14 +153,14 @@
                     <h3>BEST OFFERS</h3>
                     Best Price: Rs. 374
 
-                    Coupon code: MYNTRASAVE
+                    {{-- Coupon code: MYNTRASAVE
                     Coupon Discount: 30% off (Your total saving: Rs. 425)
                     Applicable on: Orders above Rs. 750 (only on first purchase)
 
                     View Eligible Products
                     7.5% Assured Cashback on Flipkart Axis Bank & SBI Credit Cards.
                     Flat 7.5% Cashback on Flipkart Axis Bank & SBI Credit Cards on a min spend of ₹100
-                    Terms & Condition
+                    Terms & Condition --}}
                 </div>
                 
                 <div class="part">

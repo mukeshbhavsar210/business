@@ -248,10 +248,28 @@ class AuthController extends Controller
         $data['orders'] = $orders;
         $data['userDetails'] = $userDetails;
 
-        return view('front.account.order', $data);
+        return view('front.account.orders.index', $data);
     }
 
 
+    public function viewOrder($id) {
+        $userId = Auth::user()->id;
+        $userDetails = CustomerAddress::where('user_id',$userId)->first();
+        $order = Order::where('id', $id)
+                    ->where('user_id', auth()->id()) // 🔐 security
+                    ->with([
+                        'orderItems.product',
+                        'orderItems.product.images',
+                        'orderItems.variant',
+                        'state'
+                    ])
+                    ->firstOrFail();
+
+        return view('front.account.orders.placed_order', compact('order', 'userDetails'));
+    }
+
+
+    
     public function orderDetail($id){
         $user = Auth::user();
         $userId = Auth::user()->id;
@@ -267,8 +285,68 @@ class AuthController extends Controller
         $data['orderItemsCount'] = $orderItemsCount;
         $data['userDetails'] = $userDetails;
 
-        return view('front.account.order-detail',$data);
+        return view('front.account.orders.order_detail',$data);
     }
+
+
+    public function cancel(Order $order) {
+        $userId = Auth::user()->id;
+        $userDetails = CustomerAddress::where('user_id',$userId)->first();
+        if ($order->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        return view('front.account.orders.order_cancel', compact('order', 'userDetails'));
+    }
+
+
+    public function cancelOrder(Request $request, Order $order) {
+        // Security check
+        if ($order->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        // Prevent cancelling shipped/completed orders
+        // if (!in_array($order->status, ['pending', 'processing'])) {
+        //     return back()->with('error', 'Order cannot be cancelled.');
+        // }
+
+        $request->validate([
+            'cancel_reason' => 'required|string',
+            'cancel_comments' => 'nullable|string|max:500',
+        ]);
+
+        $order->update([
+            'status' => 'cancelled',
+            'cancel_reason' => $request->cancel_reason,
+            'cancel_comments' => $request->cancel_comments,
+            'cancelled_at' => now(),
+        ]);
+
+        return redirect()
+            ->route('account.orders.cancelled')
+            ->with('success', 'Order cancelled successfully.');
+    }
+
+
+    public function cancelledOrders() {
+        $userId = Auth::user()->id;
+        $userDetails = CustomerAddress::where('user_id',$userId)->first();
+
+        $orders = Order::where('user_id', auth()->id())
+            ->where('status', 'cancelled')
+            ->with('items.product')
+            ->latest()
+            ->get();
+
+        $totalCancelledItems = $orders->sum(function ($order) {
+            return $order->items->sum('quantity');
+        });
+
+        return view('front.account.orders.cancelled', compact('orders', 'totalCancelledItems', 'userDetails'));
+    }
+
+
 
     public function wishlist(){
         $userId = Auth::user()->id;   
