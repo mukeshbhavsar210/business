@@ -37,8 +37,7 @@
                                         <input type="checkbox" name="cart_ids[]" value="{{ $item->rowId }}" class="item-checkbox" checked
                                             data-price="{{ $item->price }}"
                                             data-qty="{{ $item->qty }}"
-                                            data-compare="{{ $item->options->compare_price }}"
-                                        >
+                                            data-compare="{{ $item->options->compare_price }}" >
                                         <span class="checkmark"></span>
                                     </label>
                                 </div>                                                                   
@@ -146,8 +145,7 @@
                                     </div>
                                 </div>
                             </div>
-                        @endforeach    
-                    
+                        @endforeach                        
                     </div>
 
                     <div class="col-md-4 col-12">
@@ -263,7 +261,7 @@
 
                                     @if (Auth::check())
                                         {{-- <a href="{{ route('front.checkout') }}" class="btn btn-primary btn-block w-100">Place Order</a> --}}
-                                        <button type="submit" class="btn btn-primary w-100" id="checkoutBtn" formaction="{{ route('checkout.address') }}">Place Order</button>
+                                        <button type="submit" class="btn btn-primary w-100" id="checkoutBtn" formaction="{{ route('checkout.address') }}">Pay ₹{{ $cartTotal }}</button>
                                     @else
                                         <a class="btn btn-primary btn-block w-100" href="#" data-bs-toggle="modal" data-bs-target="#login">
                                             Login to Place Order
@@ -749,6 +747,25 @@
                 if($('.item-checkbox:checked').length === 0){
                     e.preventDefault();
                     alert('Please select at least one item');
+                }
+            });
+
+            // $('.item-checkbox').change(function() {
+            //     $('#cartForm').submit();
+            // });
+        });
+
+
+        $('.item-checkbox').on('change', function() {
+            $.ajax({
+                url: "{{ route('cart.bulk.action') }}",
+                type: "POST",
+                data: $('#cartForm').serialize(),
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    location.reload(); // or update totals dynamically
                 }
             });
         });

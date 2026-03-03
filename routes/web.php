@@ -89,10 +89,18 @@ Route::group(['prefix' => 'account'], function(){
             Route::post('/update-address','updateAddress')->name('account.updateAddress');
             Route::get('/password','changePasswordForm')->name('account.changePassword');
             Route::post('/change-password','changePassword')->name('account.processChangePassword');
+
             Route::get('/orders','orders')->name('account.orders');
+            Route::get('/order/{id}', 'viewOrder')->name('account.order.view');            
+            Route::get('/order/details/{orderId}','orderDetail')->name('account.orderDetail');
+
+            Route::get('/order/{order}/cancel', 'cancel')->name('account.order.cancel.form');
+            Route::post('/order/{order}/cancel_order', 'cancelOrder')->name('account.order.cancel');
+            Route::get('/account/order/cancelled-orders', 'cancelledOrders')->name('account.orders.cancelled');
+
             Route::get('/wishlist','wishlist')->name('account.wishlist');
             Route::post('/remove-product-from-wishlist','removeProductFromWishlist')->name('account.removeProductFromWishlist');
-            Route::get('/item/details/{orderId}','orderDetail')->name('account.orderDetail');
+            
             Route::get('/logout','logout')->name('account.logout');
         });
     });

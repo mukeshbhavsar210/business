@@ -121,6 +121,14 @@ class CartController extends Controller {
 
 
     public function bulkAction(Request $request) {
+        $checkedIds = $request->cart_ids ?? [];
+
+        foreach (Cart::content() as $item) {
+            if (!in_array($item->rowId, $checkedIds)) {
+                Cart::remove($item->rowId);
+            }
+        }
+
         $cartIds = $request->cart_ids;   // rowIds
         $action  = $request->action;     // remove or wishlist
 
@@ -355,7 +363,7 @@ class CartController extends Controller {
         $order->coupon_code_id = $discountCodeId;
         $order->coupon_code = $promoCode;
         $order->payment_status = 'not paid';
-        $order->status = 'pending';
+        $order->status = 'confirmed';
 
         // Shipping Address Data
         $order->name = $selectedAddress->name;
@@ -410,7 +418,7 @@ class CartController extends Controller {
     }
 
     public function thankyou($id){
-        $order = Order::with(['orderItems.product', 'orderItems.product.images', 'orderItems.variant'])->findOrFail($id);
+        $order = Order::with(['orderItems.product', 'orderItems.product.images', 'orderItems.variant', 'state'])->findOrFail($id);
 
         return view('front.checkout.thanks',[
             'id' => $id,

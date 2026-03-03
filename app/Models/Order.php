@@ -9,7 +9,7 @@ class Order extends Model {
     use HasFactory;
 
     protected $fillable = [ 'user_id', 'subtotal', 'shipping', 'coupon_code', 'coupon_code_id', 'discount',
-                            'grandtotal', 'payment_status', 'status', 'shipped_date', 'name', 'mobile',
+                            'grandtotal', 'payment_status', 'status', 'cancel_reason', 'cancel_comments', 'cancelled_at', 'shipped_date', 'name', 'mobile',
                             'state_id', 'address', 'locality', 'city', 'zip', 'mobile',
     ];
 
@@ -37,5 +37,9 @@ class Order extends Model {
             'orderItems.product.size',
             'orderItems.product.color'
         ]);
+    }
+
+    public function state() {
+        return $this->belongsTo(State::class);
     }
 }
