@@ -84,12 +84,10 @@ class AuthController extends Controller
 
     public function dashboard(){
         $userId = Auth::user()->id;        
-        $user = User::where('id',$userId)->first();
-        $userDetails = CustomerAddress::where('user_id',$userId)->first();
+        $user = User::where('id',$userId)->first();        
 
         return view('front.account.dashboard',[
-            'user' => $user,            
-            'userDetails' => $userDetails
+            'user' => $user,                        
         ]);
     }
 
@@ -97,96 +95,141 @@ class AuthController extends Controller
 
     public function address(){
         $userId = Auth::user()->id;
-        $states = State::orderBy('name','ASC')->get();
         $user = User::where('id',$userId)->first();        
         $address = auth()->user()->addresses()->with('state')->get();
-        $userDetails = CustomerAddress::where('user_id',$userId)->first();  
-        $addressTypes = CustomerAddress::pluck('address_type')->toArray();      
-
-        return view('front.account.address',[
-            'user' => $user,
+        $addressTypes = CustomerAddress::pluck('address_type')->toArray();  
+        $states = State::orderBy('name','ASC')->get();
+        
+        $data = [
+            'user'   => $user,       
             'states' => $states,
             'address' => $address,
-            'addressTypes' => $addressTypes,
-            'userDetails' => $userDetails,
-        ]);
+            'addressTypes' => $addressTypes,        
+            
+        //     'createAddress' => [
+        //         'title' => 'Create Address',
+        //         'modal_id' => 'createAddressModal',
+        //         'action' => route('customer.address.store'),
+        //         'modal_size' => null,
+        //         'method' => 'POST',
+        //         'button' => 'Create Address',
+        //         'button_class' => 'w-100',
+        //         'modal_body' => 'customer-address',
+        //         'fields' => [
+        //             [
+        //                 'type' => 'text',
+        //                 'name' => 'name',
+        //                 'label' => 'Name',                        
+        //                 'animate_label' => 'floating-input',
+        //                 'col' => 'col-6 mt-2'
+        //             ],
+        //             [
+        //                 'type' => 'text',
+        //                 'name' => 'mobile',
+        //                 'label' => 'Mobile',                        
+        //                 'animate_label' => 'floating-input',
+        //                 'col' => 'col-6 mt-2'
+        //             ],
+        //             [
+        //                 'type' => 'textarea',
+        //                 'name' => 'address',
+        //                 'label' => 'address',                        
+        //                 'animate_label' => 'floating-input',
+        //                 'col' => 'col-12'
+        //             ],
+        //             [
+        //                 'type' => 'text',
+        //                 'name' => 'locality',
+        //                 'label' => 'Locality',                        
+        //                 'animate_label' => 'floating-input',
+        //                 'col' => 'col-6'
+        //             ],
+        //             [
+        //                 'type' => 'text',
+        //                 'name' => 'city',
+        //                 'label' => 'City',                        
+        //                 'animate_label' => 'floating-input',
+        //                 'col' => 'col-6'
+        //             ],
+        //             [
+        //                 'type' => 'select',
+        //                 'name' => 'state',
+        //                 'label' => 'State',
+        //                 'options' => $states->pluck('name','id')->toArray(),
+        //                 'animate_label' => null,
+        //                 'col' => 'col-6'
+        //             ],
+        //             [
+        //                 'type' => 'text',
+        //                 'name' => 'zip',
+        //                 'label' => 'Pin Code',                        
+        //                 'animate_label' => 'floating-input',
+        //                 'col' => 'col-6'
+        //             ],                    
+        //             [
+        //                 'type' => 'radio',
+        //                 'name' => 'address_type',
+        //                 'label' => 'Address Type',
+        //                 'default' => 'Home',
+        //                 'options' => [
+        //                     'Home' => 'Home',
+        //                     'Office' => 'Office',
+        //                 ],
+        //                 'animate_label' => null,
+        //                 'col' => 'col-12'
+        //             ],
+        //             [
+        //                 'type' => 'checkbox',
+        //                 'name' => 'default_address',
+        //                 'label' => 'Make this as my default Address',    
+        //                 'default' => 'Select State',                    
+        //                 'animate_label' => null,
+        //                 'col' => 'col-12'
+        //             ],
+                    
+        //         ]
+        //     ],
+        
+
+        // 'EditAddress' => [
+        //         'title' => 'Edit Address',
+        //         'modal_id' => 'editAddressModal',   
+        //         'action' => route('account.processChangePassword'),
+        //         'method' => 'POST',
+        //         'button' => 'Edit Password',
+        //         'button_class' => 'w-100',   
+        //         'modal_body' => 'customer-address',             
+        //         'fields' => [
+        //             [
+        //                 'type' => 'password',
+        //                 'name' => 'current_password',
+        //                 'label' => 'Current Password',
+        //                 'col' => 'col-md-12'
+        //             ],
+        //             [
+        //                 'type' => 'password',
+        //                 'name' => 'new_password',
+        //                 'label' => 'New Password',
+        //                 'col' => 'col-md-12'
+        //             ],
+        //             [
+        //                 'type' => 'password',
+        //                 'name' => 'new_password_confirmation',
+        //                 'label' => 'Confirm Password',
+        //                 'col' => 'col-md-12'
+        //             ],
+        //         ]
+        //     ]
+        ];  
+
+        return view('front.account.address', $data);
     }
-
-     public function cards(){
-        $userId = Auth::user()->id;
-        $countries = State::orderBy('name','ASC')->get();
-        $user = User::where('id',$userId)->first();
-        $address = CustomerAddress::where('user_id',$userId)->first();
-
-        return view('front.account.cards',[
-            'user' => $user,
-            'countries' => $countries,
-            'address' => $address
-        ]);
-    }
-
-    public function profile(){
-        $userId = Auth::user()->id;
-        $countries = State::orderBy('name','ASC')->get();
-        $user = User::where('id',$userId)->first();
-        $address = CustomerAddress::where('user_id',$userId)->first();
-
-        return view('front.account.profile',[
-            'user' => $user,
-            'countries' => $countries,
-            'address' => $address
-        ]);
-    }
-
-    public function profileEdit(){
-        $userId = Auth::user()->id;
-        $user = User::where('id',$userId)->first();
-        $userDetails = CustomerAddress::where('user_id',$userId)->first();
-
-        return view('front.account.profile_edit',[
-            'user' => $user,
-            'userDetails' => $userDetails
-        ]);
-    }
-
-    public function updateProfile(Request $request){
-        $userId = Auth::user()->id;
-        $validator = Validator::make($request->all(), [
-            'name' => 'required',
-            'email' => 'required|email|unique:users,email,'.$userId.',id',
-            'phone' => 'required',
-        ]);
-
-        if($validator->passes()){
-            $user = User::find($userId);
-            $user->name = $request->name;
-            $user->email = $request->email;
-            $user->phone = $request->phone;
-            $user->mobile = $request->mobile;
-            $user->save();
-
-            session()->flash('success','Profile updated successfully.');
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Profile updated successfully.'
-            ]);
-
-        } else {
-            return response()->json([
-                'status' => false,
-                'error' => $validator->errors()
-            ]);
-        }
-    }
-
 
     public function updateAddress(Request $request){
         $userId = Auth::user()->id;
 
         $validator = Validator::make($request->all(),[
-            'first_name' => 'required|min:5',
-            'last_name' => 'required',
+            'name' => 'required|min:5',            
             'mobile' => 'required',            
             'address' => 'required|min:30',
             'city' => 'required',            
@@ -199,9 +242,8 @@ class AuthController extends Controller
                 [
                     'user_id' => $userId,
                     'address_type' => $request->address_type,
-                    'default_address' => $request->default_address,
-                    'first_name' => $request->first_name,
-                    'last_name' => $request->last_name,
+                    'default_address' => $request->has('default_address') ? 1 : 0,
+                    'name' => $request->name,                    
                     'mobile' => $request->mobile,
                     'email' => $request->email,
                     'address' => $request->address,
@@ -228,6 +270,160 @@ class AuthController extends Controller
         }
     }
 
+     public function cards(){
+        $userId = Auth::user()->id;
+        $countries = State::orderBy('name','ASC')->get();
+        $user = User::where('id',$userId)->first();
+        $address = CustomerAddress::where('user_id',$userId)->first();
+
+        return view('front.account.cards',[
+            'user' => $user,
+            'countries' => $countries,
+            'address' => $address
+        ]);
+    }
+
+    public function profile(){
+        $userId = Auth::user()->id;
+        $state = State::orderBy('name','ASC')->get();
+        $user = User::where('id',$userId)->first();
+        $address = CustomerAddress::where('user_id',$userId)->first();
+
+        $data = [
+            'user'          => $user,        
+            
+            'profileFormConfig' => [
+                'title' => 'Edit Profile',
+                'modal_id' => 'editProfileModal',                
+                'action' => route('account.updateProfile'),
+                'modal_size' => null,
+                'method' => 'POST',
+                'button' => 'Update Profile',
+                'button_class' => 'w-100',          
+                'modal_body' => null,
+                'fields' => [
+                    [
+                        'type' => 'text',
+                        'name' => 'name',
+                        'label' => 'Name',                        
+                        'animate_label' => 'floating-input',
+                        'col' => 'col-6 mt-2'
+                    ],
+                    [
+                        'type' => 'text',
+                        'name' => 'phone',
+                        'label' => 'Phone',                        
+                        'animate_label' => 'floating-input',
+                        'col' => 'col-6 mt-2'
+                    ],
+                    [
+                        'type' => 'email',
+                        'name' => 'email',
+                        'label' => 'Email',                        
+                        'animate_label' => 'floating-input',
+                        'col' => 'col-12 mt-2'
+                    ],                    
+                    [
+                        'type' => 'text',
+                        'name' => 'mobile',
+                        'label' => 'Mobile',                        
+                        'animate_label' => 'floating-input',
+                        'col' => 'col-6 mt-2'
+                    ],                                   
+                    [
+                        'type' => 'date',
+                        'name' => 'birthdate',
+                        'label' => 'Birthdate',                        
+                        'animate_label' => 'floating-input',
+                        'col' => 'col-6 mt-2'
+                    ],
+                    [
+                        'type' => 'file',
+                        'name' => 'image',
+                        'label' => 'User Photo',
+                        'col' => 'col-6 mt-2'
+                    ],
+                    [
+                        'type' => 'radio',
+                        'name' => 'gender',
+                        'label' => 'Gender',
+                        'options' => [
+                            'male' => 'Male',
+                            'female' => 'Female',
+                        ],
+                        'col' => 'col-6'
+                    ],     
+                    
+                ]
+            ],
+        
+
+        'passwordFormConfig' => [
+                'title' => 'Change Password',
+                'modal_id' => 'editPasswordModal',   
+                'action' => route('account.processChangePassword'),
+                'method' => 'POST',
+                'button' => 'Update Password',
+                'button_class' => 'w-100',
+                'modal_body' => null,      
+                'fields' => [
+                    [
+                        'type' => 'password',
+                        'name' => 'current_password',
+                        'label' => 'Current Password',
+                        'col' => 'col-12'
+                    ],
+                    [
+                        'type' => 'password',
+                        'name' => 'new_password',
+                        'label' => 'New Password',
+                        'col' => 'col-6'
+                    ],
+                    [
+                        'type' => 'password',
+                        'name' => 'new_password_confirmation',
+                        'label' => 'Confirm Password',
+                        'col' => 'col-6'
+                    ],
+                ]
+            ]
+        ];  
+
+        return view('front.account.profile', $data);
+    }
+
+    public function updateProfile(Request $request){
+        $userId = Auth::user()->id;
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'email' => 'required|email|unique:users,email,'.$userId.',id',
+            'phone' => 'required',
+        ]);
+
+        if($validator->passes()){
+            $user = User::find($userId);
+            $user->name = $request->name;
+            $user->email = $request->email;
+            $user->phone = $request->phone;
+            $user->mobile = $request->mobile;
+            $user->birthdate = $request->birthdate;
+            $user->gender = $request->gender;
+            $user->save();
+
+            session()->flash('success','Profile updated successfully.');
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Profile updated successfully.'
+            ]);
+
+        } else {
+            return response()->json([
+                'status' => false,
+                'error' => $validator->errors()
+            ]);
+        }
+    }
 
     public function logout(){
         Auth::logout();
@@ -243,18 +439,28 @@ class AuthController extends Controller
                     ->where('user_id', $user->id)
                     ->latest()
                     ->get();
-        $userDetails = CustomerAddress::where('user_id',$userId)->first();
 
-        $data['orders'] = $orders;
-        $data['userDetails'] = $userDetails;
+                     $userId = Auth::user()->id;        
+
+        // $orders = Order::where('user_id', auth()->id())
+        //     ->where('status', 'cancelled')
+        //     ->with('items.product')
+        //     ->latest()
+        //     ->get();
+
+        $totalCancelledItems = $orders->sum(function ($order) {
+            return $order->items->sum('quantity');
+        });
+        
+        $data['orders'] = $orders;        
+        $data['totalCancelledItems'] = $totalCancelledItems; 
 
         return view('front.account.orders.index', $data);
     }
 
 
     public function viewOrder($id) {
-        $userId = Auth::user()->id;
-        $userDetails = CustomerAddress::where('user_id',$userId)->first();
+        $userId = Auth::user()->id;        
         $order = Order::where('id', $id)
                     ->where('user_id', auth()->id()) // 🔐 security
                     ->with([
@@ -265,10 +471,8 @@ class AuthController extends Controller
                     ])
                     ->firstOrFail();
 
-        return view('front.account.orders.placed_order', compact('order', 'userDetails'));
+        return view('front.account.orders.placed_order', compact('order'));
     }
-
-
     
     public function orderDetail($id){
         $user = Auth::user();
@@ -279,26 +483,12 @@ class AuthController extends Controller
         $orderItems = OrderItem::where('order_id',$id)->get();
         $data['orderItems'] = $orderItems;
 
-        $orderItemsCount = OrderItem::where('order_id',$id)->count();
-        $userDetails = CustomerAddress::where('user_id',$userId)->first();
+        $orderItemsCount = OrderItem::where('order_id',$id)->count();        
 
-        $data['orderItemsCount'] = $orderItemsCount;
-        $data['userDetails'] = $userDetails;
+        $data['orderItemsCount'] = $orderItemsCount;        
 
-        return view('front.account.orders.order_detail',$data);
+        return view('front.account.orders.detail',$data);
     }
-
-
-    public function cancel(Order $order) {
-        $userId = Auth::user()->id;
-        $userDetails = CustomerAddress::where('user_id',$userId)->first();
-        if ($order->user_id !== auth()->id()) {
-            abort(403);
-        }
-
-        return view('front.account.orders.order_cancel', compact('order', 'userDetails'));
-    }
-
 
     public function cancelOrder(Request $request, Order $order) {
         // Security check
@@ -324,44 +514,20 @@ class AuthController extends Controller
         ]);
 
         return redirect()
-            ->route('account.orders.cancelled')
+            ->route('account.orders')
             ->with('success', 'Order cancelled successfully.');
     }
 
-
-    public function cancelledOrders() {
-        $userId = Auth::user()->id;
-        $userDetails = CustomerAddress::where('user_id',$userId)->first();
-
-        $orders = Order::where('user_id', auth()->id())
-            ->where('status', 'cancelled')
-            ->with('items.product')
-            ->latest()
-            ->get();
-
-        $totalCancelledItems = $orders->sum(function ($order) {
-            return $order->items->sum('quantity');
-        });
-
-        return view('front.account.orders.cancelled', compact('orders', 'totalCancelledItems', 'userDetails'));
-    }
-
-
-
     public function wishlist(){
-        $userId = Auth::user()->id;   
         $wishlist = Wishlist::where('user_id', Auth::user()->id)->with(['product'])->get();
-        $userDetails = CustomerAddress::where('user_id',$userId)->first();
-
+        
         $data['wishlist'] = $wishlist;
-        $data['userDetails'] = $userDetails;
 
         return view('front.account.wishlist', $data);
     }
 
 
-    public function removeProductFromWishlist(Request $request)
-{
+    public function removeProductFromWishlist(Request $request) {
         if (!Auth::check()) {
             return response()->json(['status' => false]);
         }
@@ -401,11 +567,7 @@ class AuthController extends Controller
     //             'status' => true,
     //         ]);
     //     }
-    // }
-
-    public function changePasswordForm (){
-        return view('front.account.password');
-    }
+    // }   
 
     public function changePassword(Request $request){
         $validator = Validator::make($request->all(),[
