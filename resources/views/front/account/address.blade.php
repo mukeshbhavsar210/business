@@ -7,7 +7,7 @@
         <div class="row">
             <div class="col-md-3 col-12">
                 <h4>Account</h4>
-                <p>{{ $userDetails->name }}</p>
+                <p>{{ currentUserName() }}</p>
             </div>
         </div>
     </div>
@@ -18,8 +18,17 @@
         </div>
         <div class="col-md-9 col-12">
             <div class="orders-details">
-
                 @include('front.account.common.message')
+
+                {{-- @include('front.account.common.modal', [
+                    'form' => $createAddress,
+                    'model' => $user
+                ])
+
+                @include('front.account.common.modal', [
+                    'form' => $EditAddress,
+                    'model' => null
+                ]) --}}
 
                 <div class="user-details-repeate">
                     <div class="row justify-content-center">
@@ -30,7 +39,10 @@
                                 </div>
                                 <div class="col-md-6 col-6">
                                     @if(!in_array('Home', $addressTypes) || !in_array('Office', $addressTypes))
-                                        <button type="button" class="btn btn-outline-dark float-end" data-bs-toggle="modal" data-bs-target="#createAddressModal">+ Add New Address</button>
+                                        <button type="button" class="btn btn-outline-dark float-end" data-bs-toggle="modal" data-bs-target="#createAddressModal">
+                                            + Add New Address
+                                        </button>
+                                        {{-- <button type="button" class="btn btn-outline-dark float-end" data-bs-toggle="modal" data-bs-target="#createAddressModal">+ Add New Address</button> --}}
                                     @endif
                                 </div>
                             </div>
@@ -73,7 +85,10 @@
                                             <div class="col-md-2 col-4">
                                                 <div class="btn-group-sm">
                                                     <button type="button" class="btn btn-outline-danger">R</button>
-                                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editAddress_{{ $value->id }}">Edit</button>
+                                                    <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#editPasswordModal">
+                                                        Edit Address
+                                                    </button>
+                                                    {{-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editAddress_{{ $value->id }}">Edit</button> --}}
                                                 </div>        
                                             </div>
                                         </div>
@@ -88,15 +103,6 @@
     </div>
 </div>
 
-{{-- <x-customer-address-form 
-    :address="$address"
-    :states="$states"
-    :action="route('customer.address.update', $address->id)" 
-    method="PUT" 
-    title="Edit Address" 
-    buttonText="Update Address"
-    modalId="editAddressModal"
-/> --}}
 
 <x-customer-address-form     
     :states="$states"

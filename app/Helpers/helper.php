@@ -64,5 +64,12 @@ use Illuminate\Support\Facades\Mail;
         return $pages;
     }
 
+
+    if (!function_exists('currentUserName')) {
+        function currentUserName()
+        {
+            return Auth::check() ? Auth::user()->name : null;
+        }
+    }
     
 ?>

@@ -5,111 +5,118 @@
 <div class="container-small">
     <div class="small-title">
         <h4>Account</h4>
-        <p>{{ $address->first_name }} {{ $address->last_name }}</p>
+        <p>{{ currentUserName() }}</p>
     </div>
 
     <div class="row">
         <div class="col-md-3 col-12">
-            @include('front.account.common.sidebar')  
+            @include('front.account.common.sidebar')
         </div>
         <div class="col-md-9 col-12">
-            @include('front.account.common.message')        
-            
-            <div class="orders-details">
-                <div class="user-details-repeate">
-                    <div class="row justify-content-center">
-                        <div class="col-md-8">                        
-                            <div class="row">
-                                <div class="col-md-6 col-6">
-                                    <h5 class="h5 mt-3 mb-4">Profile Details</h5>
-                                </div>
-                                <div class="col-md-6 col-6">
-                                    <a href="{{ route('account.changePassword') }}" class="btn mt-2 btn-outline-dark float-end">Change Password</a>
-                                </div>
-                            </div>
+            <div class="details-accounts">
+                @include('front.account.common.message')
 
-                            <div class="row">
-                                <div class="col-md-6 col-6">Full Name</div>
-                                <div class="col-md-6 col-6">{{ $user->name }}</div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 col-6">Mobile Number</div>
-                                <div class="col-md-6 col-6">{{ $user->phone }}</div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 col-6">Email ID</div>
-                                <div class="col-md-6 col-6">{{ $user->email }}</div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 col-6">Alternate Mobile</div>
-                                <div class="col-md-6 col-6">{{ $user->mobile }}</div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 col-6">Gender</div>
-                                <div class="col-md-6 col-6">{{ $user->gender }}</div>
-                            </div>   
-                            <div class="row">
-                                <div class="col-md-6 col-6">Date of Birth</div>
-                                <div class="col-md-6 col-6">{{ $user->birthdate }}</div>
-                            </div>           
-                            <div class="row">
-                                <div class="col-md-12 col-12">
-                                    <a href="{{ route('account.profile.edit') }}" class="btn btn-primary w-100">Edit Profile</a>
-                                </div>
-                            </div>                         
+                @include('front.account.common.modal', [
+                    'form' => $profileFormConfig,
+                    'model' => $user
+                ])
+
+                @include('front.account.common.modal', [
+                    'form' => $passwordFormConfig,
+                    'model' => null
+                ])
+
+                <h3>Profile Details</h3> 
+
+                <div class="order-history">
+                    <div class="individual">
+                        <div class="row mb-2">
+                            <div class="col-3">Name</div>
+                            <div class="col-9">{{ $user->name }}</div>
                         </div>
+                        <div class="row mb-2">
+                            <div class="col-3">Mobile Number</div>
+                            <div class="col-9">{{ $user->phone }}</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-3">Email ID</div>
+                            <div class="col-9">{{ $user->email }}</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-3">Alternate Mobile</div>
+                            <div class="col-9">{{ $user->mobile }}</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-3">Gender</div>
+                            <div class="col-9">{{ $user->gender }}</div>
+                        </div>   
+                        <div class="row mb-2">
+                            <div class="col-3">Date of Birth</div>
+                            <div class="col-9">{{ $user->birthdate }}</div>
+                        </div>           
+                        <div class="row mt-4">
+                            <div class="col-3"></div>
+                            <div class="col-9">
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                                    Edit Profile
+                                </button>
+
+                                <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#editPasswordModal">
+                                    Edit Password
+                                </button>
+                            </div>
+                        </div>                                                 
                     </div>
-                </div>                                
-            </div>                   
+                </div>
+            </div>                  
         </div>            
     </div>
 </div>
-
 @endsection
 
 @section('customJs')
 <script>
-    $("#profileForm").submit(function(event){
+    $("#changePasswordForm").submit(function(event){
         event.preventDefault();
 
+        $("#submit").prop('disbled','true');
+
         $.ajax({
-            url: '{{ route("account.updateProfile") }}',
+            url: '{{ route("account.processChangePassword") }}',
             type: 'post',
             data: $(this).serializeArray(),
             dataType: 'json',
             success: function(response){
+                $("#submit").prop('disbled','false');
                 if (response.status == true){
-
-                    $('#profileForm #name').removeClass('is-invalid').siblings('p').html('').removeClass('invalid-feedback');
-                    $('#profileForm #email').removeClass('is-invalid').siblings('p').html('').removeClass('invalid-feedback');
-                    $('#profileForm #phone').removeClass('is-invalid').siblings('p').html('').removeClass('invalid-feedback');
-
-                    window.location.href = '{{ route("account.profile") }}'
-
+                    $('#old_password').removeClass('is-invalid').siblings('p').html('').removeClass('invalid-feedback');
+                    $('#new_password').removeClass('is-invalid').siblings('p').html('').removeClass('invalid-feedback');
+                    $('#confirm_password').removeClass('is-invalid').siblings('p').html('').removeClass('invalid-feedback');
+                    //window.location.href = '{{ route("account.changePassword") }}'
                 } else {
                     var errors = response.errors;
-                    if(errors.name){
-                        $('#profileForm #name').addClass('is-invalid').siblings('p').html(errors.name).addClass('invalid-feedback');
+
+                    if(errors.old_password){
+                        $('#old_password').addClass('is-invalid').siblings('p').html(errors.old_password).addClass('invalid-feedback');
                     } else {
-                        $('#profileForm #name').removeClass('is-invalid').siblings('p').html('').removeClass('invalid-feedback');
+                        $('#old_password').removeClass('is-invalid').siblings('p').html('').removeClass('invalid-feedback');
                     }
 
-                    if(errors.email){
-                        $('#profileForm #email').addClass('is-invalid').siblings('p').html(errors.email).addClass('invalid-feedback');
+                    if(errors.new_password){
+                        $('#new_password').addClass('is-invalid').siblings('p').html(errors.new_password).addClass('invalid-feedback');
                     } else {
-                        $('#profileForm #email').removeClass('is-invalid').siblings('p').html('').removeClass('invalid-feedback');
+                        $('#new_password').removeClass('is-invalid').siblings('p').html('').removeClass('invalid-feedback');
                     }
 
-                    if(errors.phone){
-                        $('#profileForm #phone').addClass('is-invalid').siblings('p').html(errors.phone).addClass('invalid-feedback');
+                    if(errors.confirm_password){
+                        $('#confirm_password').addClass('is-invalid').siblings('p').html(errors.confirm_password).addClass('invalid-feedback');
                     } else {
-                        $('#profileForm #phone').removeClass('is-invalid').siblings('p').html('').removeClass('invalid-feedback');
+                        $('#confirm_password').removeClass('is-invalid').siblings('p').html('').removeClass('invalid-feedback');
                     }
                 }
             }
         })
     })
-
 
 </script>
 @endsection

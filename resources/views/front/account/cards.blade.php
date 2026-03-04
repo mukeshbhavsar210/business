@@ -5,7 +5,7 @@
 <div class="container-small">
     <div class="small-title">
         <h4>Account</h4>
-        <p>User name</p>
+        <p>{{ currentUserName() }}</p>
     </div>
 
     <div class="row">
