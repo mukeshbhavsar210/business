@@ -169,7 +169,9 @@ class CartController extends Controller {
         return back();
     }
 
-    public function address(Request $request) {
+
+
+    public function payment(Request $request) {
         $selectedIds = $request->cart_ids ?? [];
 
         if(empty($selectedIds)){
@@ -197,46 +199,39 @@ class CartController extends Controller {
         $states = State::orderBy('name', 'ASC')->get();
 
         $totalQty = Cart::count(); // total items qty
-        $totalShippingCharge = 0;
+        $shipping_charge = 0;
 
         if ($customerAddress) {
             $shippingInfo = ShippingCharge::where('state_id', $customerAddress->state_id)->first();
 
             if ($shippingInfo) {
-                $totalShippingCharge = $totalQty * $shippingInfo->amount;
+                $shipping_charge = $totalQty * $shippingInfo->amount;
             }
         }
 
         // IMPORTANT: remove formatting to avoid string math
-        $subTotal = (float) Cart::subtotal(2, '.', '');
-
-        $discount = session()->get('discount', 0);
-
-        $grandTotal = max($subTotal + $totalShippingCharge - $discount, 0);
-
-        $totalMRP = $cartItems->sum(function($item){
-            return $item->options->compare_price * $item->qty;
-        });
-
-        $sellingTotal = $cartItems->sum(function($item){
+        $price_total = $cartItems->sum(function($item){
             return $item->price * $item->qty;
         });
 
-        $totalDiscount = $totalMRP - $sellingTotal;
-        $totalAmount = $sellingTotal;
+        $price_discount = $cartItems->sum(function($item){
+            return $item->options->compare_price * $item->qty;
+        });
 
-        return view('front.checkout.address', [
-            'cartItems'             => $cartItems,
-            'totalMRP'              => $totalMRP,
-            'totalDiscount'         => $totalDiscount,
-            'totalAmount'           => $totalAmount,
+        $sub_total = $price_total - $price_discount;        
+        $coupon_discount = session()->get('discount', 0);
+        $grand_total = max($sub_total + $shipping_charge - $coupon_discount, 0);
+
+        return view('front.checkout.payment', [
             'states'                => $states,
             'address'               => $address,
             'addressTypes'          => $addressTypes,
-            'totalShiipingCharge' => $totalShippingCharge,
-            'discount'            => $discount,
-            'subTotal'            => $subTotal,
-            'grandTotal'          => $grandTotal
+            'cartItems'             => $cartItems,
+            'price_total'           => $price_total,
+            'price_discount'        => $price_discount,
+            'coupon_discount'       => $coupon_discount,
+            'shipping_charge'       => $shipping_charge,            
+            'grand_total'           => $grand_total
         ]);        
     }
     

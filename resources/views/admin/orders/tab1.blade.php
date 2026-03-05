@@ -5,16 +5,15 @@
                 <tr>
                     <th class="border-top-0" width="40">ID</th>
                     <th class="border-top-0">Products details</th>
-                    <th class="border-top-0 text-end" width="100">Amount</th>
-                    <th class="border-top-0 text-end" width="140">Customer</th>
-                    <th class="border-top-0 text-end" width="100">AWB</th>
+                    <th class="border-top-0 text-end" width="100">Amount</th>                    
+                    <th class="border-top-0 text-end" width="120">AWB</th>
                     <th class="border-top-0 text-end" width="100">Courier</th>                        
                     <th class="border-top-0 text-end" width="100">Order Date</th>
                     <th class="border-top-0 text-end" width="100">Status</th> 
                 </tr>
             </thead>
             <tbody id="orderAccordion">
-                @foreach($pending_orders as $key => $order)
+                @foreach($confirmed_orders as $key => $order)
                     <tr data-bs-toggle="collapse" data-bs-target="#orderItems{{ $order->id }}" class="accordion-toggle cursor-pointer">
                         <td>
                             <a href="{{ route('orders.detail',$order->id) }}">
@@ -24,8 +23,7 @@
                         </td>
                         
                         <td>{{ $order->items->count() }} Item(s)</td>
-                        <td class="text-end">₹{{ number_format($order->grandtotal,2) }}</td>
-                        <td class="text-end">{{ $order->name }}</td>
+                        <td class="text-end">₹{{ number_format($order->grandtotal,2) }}</td>                        
                         <td class="text-end">{{ \Carbon\Carbon::parse($order->created_at)->format('d M, Y') }}</td>
                         <td class="text-end">
                             @if ($order->status == 'pending')
@@ -54,7 +52,7 @@
                                     <div class="flex-grow-1">
                                         <strong>{{ $item->product->title }}</strong>
                                         <div class="small text-muted">
-                                            Color: {{ $item->product->color->name }},
+                                            {{-- Color: {{ $item->product->color->name }}, --}}
                                             Size: {{ $item->product->size->code }}
                                         </div>
                                         <div class="small text-muted">

@@ -1,5 +1,7 @@
 @extends('front.layouts.app')
 
+@section('title', 'Online Fashion Shopping for Men and Women')
+
 @section('content')
     <div class="container">
         <div class="section-title">

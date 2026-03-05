@@ -1,5 +1,7 @@
 @extends('front.layouts.app')
 
+@section('title', 'My Orders')
+
 @section('content')
     <div class="container-small">
         <div class="small-title">
@@ -29,9 +31,9 @@
                                         @include('front.account.orders.confirmed_order')
                                     @elseif ($order->status == 'shipped')                                       
                                         @include('front.account.orders.shipped_order')
-                                    @elseif ($order->status == 'delivered')                                        
+                                    @elseif ($order->status == 'delivered')
                                         @include('front.account.orders.delivered_order')
-                                    @else
+                                    @elseif ($order->status == 'cancelled')
                                         @include('front.account.orders.cancelled_order')                                        
                                     @endif
                                 </div>

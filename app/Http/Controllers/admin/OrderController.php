@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 
 class OrderController extends Controller {
     public function index(Request $request) {
-        $statuses = ['delivered', 'pending', 'shipped', 'cancelled'];
+        $statuses = ['confirmed', 'delivered', 'shipped', 'cancelled'];
         $orders = [];
 
         foreach ($statuses as $status) {
@@ -35,8 +35,8 @@ class OrderController extends Controller {
         }
 
         return view('admin.orders.list', [
-            'delivered_orders' => $orders['delivered'],
-            'pending_orders' => $orders['pending'],
+            'confirmed_orders' => $orders['confirmed'],
+            'delivered_orders' => $orders['delivered'],            
             'shipped_orders' => $orders['shipped'],
             'cancelled_orders' => $orders['cancelled'],
         ]);

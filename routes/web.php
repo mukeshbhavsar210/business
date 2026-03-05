@@ -47,7 +47,7 @@ Route::controller(CartController::class)->group(function() {
     Route::post('/cart/update-item', 'updateItem')->name('front.updateCartItem');
 
     //Route::post('/update-cart','updateCart')->name('front.updateCart');
-    Route::post('/checkout/address_new', 'address')->name('checkout.address');
+    Route::post('/checkout/payment', 'payment')->name('checkout.payment');
     Route::get('/checkout/address','checkout')->name('front.checkout');
     Route::post('/process-checkout','processCheckout')->name('front.processCheckout');
     Route::get('/thanks/{orderId}','thankyou')->name('front.checkout.thankyou');

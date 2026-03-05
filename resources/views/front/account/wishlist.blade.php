@@ -72,13 +72,13 @@
             @endforeach
         @else
             <div class="row">
-                <div class="col-md-8 mx-auto">
+                <div class="col-md-7 mx-auto">
                     <div class="card">
-                        <div class="card-body text-center">
-                            <h5 class="h5">YOUR WISHLIST IS EMPTY</h5>
-                            <p>Add items that you like to your wishlist. Review them anytime and easily move them to the bag.</p>
+                        <div class="card-body text-center p-5">
+                            <h3 class="mb-2">Your Wishlist is Empty</h3>
+                            <p>Add items that you like to your wishlist. <br />Review them anytime and easily move them to the bag.</p>
 
-                            <a href="{{ route('front.home') }}" class="btn btn-outline-primary mt-4">Continue Shopping</a>
+                            <a href="{{ route('front.home') }}" class="btn btn-primary mt-3">Continue Shopping</a>
                         </div>
                     </div>
                 </div>

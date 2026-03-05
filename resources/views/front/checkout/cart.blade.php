@@ -1,5 +1,7 @@
 @extends('front.layouts.app')
 
+@section('title', 'Your Bag')
+
 @section('content')    
 
 @include('front.layouts.toast')
@@ -100,8 +102,8 @@
                                 </div>
 
                                 <div class="remove">                                
-                                    <a data-bs-toggle="modal" data-bs-target="#removeItemModal_{{ $item->id }}">
-                                        <i class="fa fa-times"></i> Remove
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#removeItemModal_{{ $item->id }}">
+                                        <svg fill="#666666" width="23px" height="23px" viewBox="-3.5 0 19 19" xmlns="http://www.w3.org/2000/svg" class="cf-icon-svg"><path d="M11.383 13.644A1.03 1.03 0 0 1 9.928 15.1L6 11.172 2.072 15.1a1.03 1.03 0 1 1-1.455-1.456l3.928-3.928L.617 5.79a1.03 1.03 0 1 1 1.455-1.456L6 8.261l3.928-3.928a1.03 1.03 0 0 1 1.455 1.456L7.455 9.716z"/></svg>
                                     </a>                                    
                                 </div>
 
@@ -160,7 +162,25 @@
                                     <div class="repeate-row">
                                         <div class="left">
                                             <div class="flex">
-                                                <div>Icon</div>
+                                                <div>
+                                                    <svg height="45px" width="45px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+                                                        viewBox="0 0 505 505" xml:space="preserve">
+                                                    <circle style="fill:#FD8469;" cx="252.5" cy="252.5" r="252.5"/>
+                                                    <path style="fill:#FFFFFF;" d="M382.3,296.1l26.3-26.3c9.6-9.6,9.6-25,0-34.6l-26.3-26.3c-4.6-4.6-7.2-10.8-7.2-17.3v-37.2
+                                                        c0-13.5-11-24.5-24.5-24.5h-37.2c-6.5,0-12.7-2.6-17.3-7.2l-26.3-26.3c-9.6-9.6-25-9.6-34.6,0l-26.3,26.3
+                                                        c-4.6,4.6-10.8,7.2-17.3,7.2h-37.2c-13.5,0-24.5,11-24.5,24.5v37.2c0,6.5-2.6,12.7-7.2,17.3l-26.3,26.3c-9.6,9.6-9.6,25,0,34.6
+                                                        l26.3,26.3c4.6,4.6,7.2,10.8,7.2,17.3v37.2c0,13.5,11,24.5,24.5,24.5h37.2c6.5,0,12.7,2.6,17.3,7.2l26.3,26.3c9.6,9.6,25,9.6,34.6,0
+                                                        l26.3-26.3c4.6-4.6,10.8-7.2,17.3-7.2h37.2c13.5,0,24.5-11,24.5-24.5v-37.2C375.1,306.9,377.7,300.7,382.3,296.1z"/>
+                                                    <path style="fill:#4CDBC4;" d="M241.2,207.7c0,9-3.2,16.6-9.6,22.8c-6.4,6.2-14.5,9.3-24.2,9.3s-17.8-3.1-24.2-9.4
+                                                        c-6.4-6.3-9.6-13.9-9.6-22.8c0-8.9,3.2-16.5,9.6-22.8c6.4-6.2,14.5-9.4,24.2-9.4s17.7,3.1,24.2,9.4
+                                                        C238,191.1,241.2,198.7,241.2,207.7z M329.1,171.5L214.3,331.7h-39.4l115-160.1h39.2V171.5z M200.5,215.8c1.8,2.1,4,3.1,6.8,3.1
+                                                        c2.7,0,5-1,6.9-3.1c1.8-2.1,2.7-4.8,2.7-8.1s-0.9-6.1-2.7-8.4c-1.8-2.2-4.1-3.3-6.8-3.3s-4.9,1.1-6.8,3.3c-1.8,2.2-2.7,5-2.7,8.4
+                                                        S198.7,213.8,200.5,215.8z M331.4,301.4c0,9-3.2,16.6-9.6,22.8c-6.4,6.2-14.5,9.3-24.2,9.3s-17.8-3.1-24.2-9.4
+                                                        c-6.4-6.2-9.6-13.9-9.6-22.8s3.2-16.5,9.6-22.8s14.5-9.4,24.2-9.4s17.7,3.1,24.2,9.4C328.2,284.8,331.4,292.4,331.4,301.4z
+                                                        M290.8,309.5c1.8,2.1,4,3.1,6.8,3.1s5-1,6.9-3.1c1.8-2.1,2.8-4.8,2.8-8.1c0-3.4-0.9-6.2-2.8-8.4c-1.8-2.2-4.1-3.3-6.8-3.3
+                                                        c-2.7,0-4.9,1.1-6.8,3.3c-1.8,2.2-2.8,5-2.8,8.4S289,307.5,290.8,309.5z"/>
+                                                    </svg>
+                                                </div>
                                                 <div>
                                                     <b>1 Coupon applied</b>
                                                     <p class="compare-discount tiny-font">You saved additional ₹{{ $discount }}</p>                                                    
@@ -227,11 +247,6 @@
                                             </div>
                                         </div>
 
-                                        <div class="repeate-row priceDetailsBox" >
-                                            <div class="left">Platform Fee</div>
-                                            <div class="right">₹</div>
-                                        </div>
-
                                         <div class="repeate-row total-amount">
                                             <div class="left">Total Amount</div>
                                             <div class="right">
@@ -261,7 +276,7 @@
 
                                     @if (Auth::check())
                                         {{-- <a href="{{ route('front.checkout') }}" class="btn btn-primary btn-block w-100">Place Order</a> --}}
-                                        <button type="submit" class="btn btn-primary w-100" id="checkoutBtn" formaction="{{ route('checkout.address') }}">Pay ₹{{ $cartTotal }}</button>
+                                        <button type="submit" class="btn btn-primary w-100" id="checkoutBtn" formaction="{{ route('checkout.payment') }}">Pay ₹{{ $cartTotal }}</button>
                                     @else
                                         <a class="btn btn-primary btn-block w-100" href="#" data-bs-toggle="modal" data-bs-target="#login">
                                             Login to Place Order
@@ -290,7 +305,7 @@
                 <div class="modal-dialog modal-sm">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h6 class="modal-title">Sizes</h6>
+                            <h5 class="modal-title">Sizes</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
@@ -307,7 +322,7 @@
                 <div class="modal-dialog modal-sm">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h6 class="modal-title">Quantity</h6>
+                            <h5 class="modal-title">Quantity</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
@@ -321,7 +336,7 @@
             </div>  
 
             <div class="modal fade" id="discount" tabindex="-1" aria-labelledby="discountLabel" aria-hidden="true">
-                <div class="modal-dialog">
+                <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
                         <form action="{{ route('coupon.apply') }}" method="POST" id="couponForm">
                             @csrf
@@ -477,6 +492,7 @@
             new bootstrap.Modal('#commonQtyModal').show();
         });
 
+        
         $(document).on('click', '.select-qty-option', function(e){
             e.preventDefault();
 
@@ -765,7 +781,7 @@
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },
                 success: function(response) {
-                    location.reload(); // or update totals dynamically
+                    location.reload(); 
                 }
             });
         });
