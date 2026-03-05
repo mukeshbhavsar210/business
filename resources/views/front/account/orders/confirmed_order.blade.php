@@ -4,7 +4,11 @@
     </div>
     <div class="name">
         <p><b>Confirmed</b></p>
-        <p class="date">On {{ \Carbon\Carbon::parse($order->shipped_date)->format('D, d M Y') }}</p>
+        <p class="date">
+            Arriving by 
+            {{ \Carbon\Carbon::parse($order->shipped_date)->format('d M') }} - 
+            {{ \Carbon\Carbon::parse($order->shipped_date)->format('d M') }}
+        </p>
     </div>
 </div>
 
@@ -14,105 +18,115 @@
             @include('front.account.orders.product_card')
         </a>
     @endforeach
-</div>
-
-<div class="group flex mt-3">                                            
-    <a href="#" class="btn btn-outline-dark w-50" data-bs-toggle="modal" data-bs-target="#cancelOrder_{{ $order->id }}">Cancel</a>
-    <a href="#" class="btn btn-outline-dark w-50" data-bs-toggle="modal" data-bs-target="#trackOrder">Track</a>
+    
+    <div class="product-details-link">
+        <div class="group flex">                                            
+            <a href="#" class="btn btn-outline-dark w-50" data-bs-toggle="modal" data-bs-target="#cancelOrder_{{ $order->id }}">Cancel</a>
+            <a href="#" class="btn btn-outline-dark w-50" data-bs-toggle="modal" data-bs-target="#trackOrder">Track</a>
+        </div>
+    </div>
 </div>
 
 <div class="modal fade" id="cancelOrder_{{ $order->id }}" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-        <div class="modal-header">
-            <h5 class="modal-title" id="cancelOrderLabel">Cancel Order No: {{ $order->id }}</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-header">
+                <h5 class="modal-title" id="cancelOrderLabel">Cancel Order</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form method="POST" action="{{ route('account.order.cancel', $order->id) }}">
+                @csrf
+                <div class="modal-body">    
+                    <p class="mb-1"><b>Reason for Cancellation</b></p>
+                    <p class="tiny-font">Please tell us correct reason for cancellation. This information is only used to improve our service</p>
+
+                    <hr />
+
+                    <div class="reason-group mb-3 mt-3">
+                        <label class="custom-radio">
+                            <input type="radio" name="cancel_reason" value="Incorrect size ordered" required>
+                            <span class="radio-mark"></span>
+                            Incorrect size ordered
+                        </label>
+
+                        <label class="custom-radio">
+                            <input type="radio" name="cancel_reason" value="Product not required anymore" required>
+                            <span class="radio-mark"></span>
+                            Product not required anymore
+                        </label>
+
+                        <label class="custom-radio">
+                            <input type="radio" name="cancel_reason" value="Cash issue" required>
+                            <span class="radio-mark"></span>
+                            Cash issue
+                        </label>
+
+                        <label class="custom-radio">
+                            <input type="radio" name="cancel_reason" value="Ordered by mistake">
+                            <span class="radio-mark"></span>
+                            Ordered by mistake
+                        </label>
+
+                        <label class="custom-radio">
+                            <input type="radio" name="cancel_reason" value="Wants to change style/color">
+                            <span class="radio-mark"></span>
+                            Wants to change style/color
+                        </label>
+
+                        <label class="custom-radio">
+                            <input type="radio" name="cancel_reason" value="Delayed Delivery Cancellation">
+                            <span class="radio-mark"></span>
+                            Delayed Delivery Cancellation
+                        </label>
+                    
+                        <label class="custom-radio">
+                            <input type="radio" name="cancel_reason" value="Duplicate order">
+                            <span class="radio-mark"></span>
+                            Duplicate order
+                        </label>
+                    </div>                                                                    
+                    <textarea name="cancel_comments" class="form-control" placeholder="Additional comments" rows="3"></textarea>                        
+                </div>
+
+                <div class="modal-footer">
+                    <div class="flex">
+                        <div>
+                            <p class="mt-2">Refund Details</p>                                
+                        </div>
+                        <div>
+                        <button type="submit" class="btn btn-danger mt-3">Cancel Order</button>
+                        </div>
+                    </div>                                                    
+                </div>
+            </form>
         </div>
-
-        <form method="POST" action="{{ route('account.order.cancel', $order->id) }}">
-            @csrf
-            <div class="modal-body">    
-                <h5>Select Reason for Cancellation</h5>
-                <p>Please tell us correct reason for cancellation. This information is only used to improve our service</p>
-
-                <hr />
-
-                <div class="reason-group mb-3 mt-3">
-                    <label class="custom-radio">
-                        <input type="radio" name="cancel_reason" value="Incorrect size ordered" required>
-                        <span class="radio-mark"></span>
-                        Incorrect size ordered
-                    </label>
-
-                    <label class="custom-radio">
-                        <input type="radio" name="cancel_reason" value="Product not required anymore" required>
-                        <span class="radio-mark"></span>
-                        Product not required anymore
-                    </label>
-
-                    <label class="custom-radio">
-                        <input type="radio" name="cancel_reason" value="Cash issue" required>
-                        <span class="radio-mark"></span>
-                        Cash issue
-                    </label>
-
-                    <label class="custom-radio">
-                        <input type="radio" name="cancel_reason" value="Ordered by mistake">
-                        <span class="radio-mark"></span>
-                        Ordered by mistake
-                    </label>
-
-                    <label class="custom-radio">
-                        <input type="radio" name="cancel_reason" value="Wants to change style/color">
-                        <span class="radio-mark"></span>
-                        Wants to change style/color
-                    </label>
-
-                    <label class="custom-radio">
-                        <input type="radio" name="cancel_reason" value="Delayed Delivery Cancellation">
-                        <span class="radio-mark"></span>
-                        Delayed Delivery Cancellation
-                    </label>
-                
-                    <label class="custom-radio">
-                        <input type="radio" name="cancel_reason" value="Duplicate order">
-                        <span class="radio-mark"></span>
-                        Duplicate order
-                    </label>
-                </div>                                                    
-                
-                <textarea name="cancel_comments" class="form-control" placeholder="Additional comments" rows="3"></textarea>                        
-            </div>
-
-            <div class="modal-footer">
-                <div class="flex">
-                    <div>
-                        <p class="mt-2">Refund Details</p>                                
-                    </div>
-                    <div>
-                    <button type="submit" class="btn btn-danger mt-3">Cancel Order</button>
-                    </div>
-                </div>                                                    
-            </div>
-        </form>
     </div>
-</div>
 </div>
 
 <div class="modal fade" id="trackOrder" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1" aria-labelledby="trackOrderLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-        <div class="modal-header">
-            <h5 class="modal-title" id="trackOrderLabel">Track Order</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-            ...
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary">Understood</button>
-        </div>
+            <div class="modal-header">
+                <h5 class="modal-title" id="trackOrderLabel">Track Item</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <ul class="track-placed-order">
+                    <li>
+                        <svg fill="#cccccc" width="22px" height="22px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12,2A10,10,0,1,0,22,12,10,10,0,0,0,12,2Zm5.676,8.237-6,5.5a1,1,0,0,1-1.383-.03l-3-3a1,1,0,1,1,1.414-1.414l2.323,2.323,5.294-4.853a1,1,0,1,1,1.352,1.474Z"/></svg>
+                        <p><b>Arriving</b> by 10 Mar - 12 Mar</p>
+                    </li>
+                    <li>
+                        <svg fill="#cccccc" width="22px" height="22px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12,2A10,10,0,1,0,22,12,10,10,0,0,0,12,2Zm5.676,8.237-6,5.5a1,1,0,0,1-1.383-.03l-3-3a1,1,0,1,1,1.414-1.414l2.323,2.323,5.294-4.853a1,1,0,1,1,1.352,1.474Z"/></svg>
+                        <p><b>Shipped</b> by Mon, 9 Mar</p>
+                    </li>
+                    <li class="active">
+                        <svg fill="#cccccc" width="22px" height="22px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12,2A10,10,0,1,0,22,12,10,10,0,0,0,12,2Zm5.676,8.237-6,5.5a1,1,0,0,1-1.383-.03l-3-3a1,1,0,1,1,1.414-1.414l2.323,2.323,5.294-4.853a1,1,0,1,1,1.352,1.474Z"/></svg>
+                        <p><b>Order Placed</b> on Thu, 5 Mar</p>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 </div>

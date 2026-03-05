@@ -42,7 +42,7 @@ body { background-color: #f7f9fb; font-size: 14px; }
 .btn { padding:7px 13px; font-size: 12px; height: 35px; border-radius: 4px;}
 .flexContainer { display: flex;  justify-content: end;}
 
-.table td, .table th { padding:0.5rem; font-size: 13px;}
+.table td, .table th { padding:0.5rem;}
 .table td p { margin: 0;}
 
 .page-title { display: flex; column-gap: 10px;}
@@ -54,8 +54,6 @@ body { background-color: #f7f9fb; font-size: 14px; }
 .product-title a:hover { color: var(--primary);}
 
 .small-fonts { font-size: 13px;}
-
-.table { font-size: 13px;}
 
 .chip-wrapper { display: flex; column-gap: 10px; flex-wrap: wrap; }
 .chip-wrapper .color-chip { border: 1px #e5e5e5 solid; padding:8px 10px 6px 10px; display: flex; margin-bottom: 10px; border-radius: 6px; justify-content: space-between;}

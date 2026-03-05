@@ -54,7 +54,7 @@
                                     <div class="flex-grow-1">
                                         <strong>{{ $item->product->title }}</strong>
                                         <div class="small text-muted">
-                                            Color: {{ $item->product->color->name }},
+                                            {{-- Color: {{ $item->product->color->name }}, --}}
                                             Size: {{ $item->product->size->code }}
                                         </div>
                                         <div class="small text-muted">

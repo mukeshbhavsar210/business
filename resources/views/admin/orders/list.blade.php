@@ -9,7 +9,7 @@
         <li class="nav-item" role="presentation">
             <a class="nav-link active py-2" data-bs-toggle="tab" href="#pending" role="tab" aria-selected="false" tabindex="-1">                                            
                 Pending              
-                <span class="counts">{{ $pending_orders->total() }}</span>
+                <span class="counts">{{ $confirmed_orders->total() }}</span>
             </a>
         </li>                                                
         <li class="nav-item" role="presentation">

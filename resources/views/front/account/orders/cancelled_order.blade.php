@@ -4,7 +4,7 @@
     </div>
     <div class="name">
         <p><b>Cancelled</b></p>
-        <p class="date">On {{ \Carbon\Carbon::parse($order->created_date)->format('D, d M Y') }}</p>                                                
+        <p class="text-muted tiny-font">As per your request on: {{ \Carbon\Carbon::parse($order->created_date)->format('d M Y') }}</p>
     </div>
 </div>
 
@@ -15,20 +15,22 @@
         </a>
     @endforeach                                                                                     
 </div>
-
-    {{-- Cancel Modal --}}                                        
+                                 
 <div class="modal fade" id="cancelledOrder_{{ $order->id }}" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Cancelled Order: {{ $order->id }}</h5>
+                <h5 class="modal-title">Cancelled Order</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
             <div class="modal-body">
+                
+
                 <div class="mb-3">
                     <p><strong>Reason:</strong></p>
                     <p>{{ $order->cancel_reason ?? 'No reason provided' }}</p>
+                    <p class="tiny-font text-muted">Order cancelled on: {{ \Carbon\Carbon::parse($order->cancelled_at)->format('d M Y') }}</p>
                 </div>
 
                 <div class="mb-3">
@@ -36,8 +38,10 @@
                     <p>{{ $order->cancel_comments ?? 'No reason provided' }}</p>
                 </div>
 
-                <div class="mb-3">
-                    <p>Order cancelled on: {{ \Carbon\Carbon::parse($order->cancelled_at)->format('D, d M Y') }}</p>
+                <div>
+                    <p><strong>Refund details:</strong></p>
+                    <p class="underline">Total Refund Amount: <b>1,430.00</b></p>
+                    <p class="tiny-font text-muted">Platform Fee, as applicable, will be refunded in case of full order cancellation</p>
                 </div>
             </div>
         </div>
