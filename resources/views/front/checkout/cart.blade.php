@@ -1,6 +1,6 @@
 @extends('front.layouts.app')
 
-@section('title', 'Your Bag')
+@section('title', 'SHOPPING BAG' . (Cart::count() > 0 ? ' (' . Cart::count() . ')' : ''))
 
 @section('content')    
 
@@ -11,11 +11,124 @@
             <form id="cartForm" method="POST" action="{{ route('cart.bulk.action') }}">
                 @csrf
                 <div class="row">
-                    <div class="col-md-8 col-12 left-border">               
-                        <div class="delivery-time">
-                            <div>Check delivery time & service</div>
-                            <div>Enter Pin Code</div>
-                        </div>
+                    <div class="col-md-8 col-12 left-border">                          
+                        @if (Auth::check())
+                            <div class="delivery-time">
+                                <div class="address">
+                                    @foreach($address as $value) 
+                                        @if($value->default_address == 1)
+                                            <p>Delivery to: <b>{{ $value->name }}, {{ $value->zip }}</b></p>
+                                            <p class="tiny-font mt-1">{{ $value->address }},</p>
+                                            <p class="tiny-font">{{ $value->locality }}, {{ $value->city }}, {{ $value->state->name }}</p>    
+                                        @endif                                        
+                                    @endforeach
+                                </div>
+                                <div class="btn-right">
+                                    <a href="#" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#deliveryAddress">Change Address</a>
+                                </div>                                
+                            </div>
+
+                            <div class="modal fade" id="deliveryAddress" tabindex="-1" aria-labelledby="deliveryAddressLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="deliveryAddressLabel">Select Delivery Address</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="saved-address-grey">
+                                            <h5>Saved Address</h5>
+                                            <a href="#">+ Add New Address</a>
+                                        </div>
+
+                                        <div class="modal-body">
+                                            @php
+                                                $defaultAddressId = old(
+                                                    'default_address_id',
+                                                    optional($address->firstWhere('default_address', 1))->id
+                                                );
+                                            @endphp
+
+                                            @foreach($delivery_address as $address)                                                
+                                                <div class="default-card">
+                                                    <label class="delivery-address-card">
+                                                        <div class="card-body">                                    
+                                                            <label class="custom-radio">
+                                                                <input type="radio" name="default_address_id" value="{{ $address->id }}" class="address-radio" {{ $defaultAddressId == $address->id ? 'checked' : '' }} >
+                                                                <span class="radio-mark"></span>                                    
+                                                            </label>
+
+                                                            <div class="address-content">
+                                                                <p>
+                                                                    <b>{{ $address->name }}</b>
+                                                                    <span class="text-muted">{{ $address->default_address ? '(Default)' : '(Other)' }}</span>
+                                                                    <span class="badge bg-dark text-light">
+                                                                        {{ $address->address_type }}
+                                                                    </span>
+                                                                </p>
+                                                                <p class="text-muted mb-0">{{ Str::limit($address->address, 50, '...') }}</p>
+
+                                                                <div class="d-none control-btn">
+                                                                    <p class="text-muted mb-0">{{ $address->locality }}, {{ $address->city }} - {{ $address->zip }}, {{ $address->state->name }}.</p>                                                        
+                                                                    <p class="text-muted mt-2">Mobile: <b>{{ $address->mobile }}</b></p>
+                                                                
+                                                                    <ul class="flex mt-3">
+                                                                        <li>
+                                                                            <a href="#" class="btn btn-primary caps-btn">Delivery Here</a>
+                                                                        </li>                                                                    
+                                                                        <li>
+                                                                            <a href="#"
+                                                                                class="btn btn-outline-dark caps-btn"
+                                                                                data-bs-toggle="modal"
+                                                                                data-bs-target="#editAddressModal"                                                
+                                                                                data-id="{{ $address->id }}"
+                                                                                data-name="{{ $address->name }}"
+                                                                                data-mobile="{{ $address->mobile }}"
+                                                                                data-address="{{ $address->address }}"
+                                                                                data-state="{{ $address->state_id }}">
+                                                                                Edit
+                                                                                </a>
+                                                                        </li>
+                                                                        <li>
+                                                                            <a href="#" class="btn float-end">
+                                                                                <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                                    <path d="M6 7V18C6 19.1046 6.89543 20 8 20H16C17.1046 20 18 19.1046 18 18V7M6 7H5M6 7H8M18 7H19M18 7H16M10 11V16M14 11V16M8 7V5C8 3.89543 8.89543 3 10 3H14C15.1046 3 16 3.89543 16 5V7M8 7H16" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                                                </svg>
+                                                                            </a>
+                                                                        </li>
+                                                                    </ul>                                                                                                                                    
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </label>                        
+                                                </div>                        
+                                            @endforeach  
+                                                                                
+                                            {{-- @if(!in_array('Home', $addressTypes) || !in_array('Office', $addressTypes))                    
+                                                <a href="#" class="add-address" data-bs-toggle="modal" data-bs-target="#createAddressModal">
+                                                    + Add New Address
+                                                </a>
+                                            @endif   --}}
+                                            
+                                            <button type="button" class="btn btn-primary w-100 caps-btn" data-bs-toggle="modal" data-bs-target="#createAddressModal">Add New Address</button>
+
+                                            <x-customer-address-form 
+                                                :states="$states"
+                                                :action="route('customer.address.store')" 
+                                                method="POST" 
+                                                title="Add New Address" 
+                                                buttonText="Save"
+                                                modalId="createAddressModal"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @else
+                            <div class="delivery-time">
+                                <div>Check delivery time & service</div>
+                                <div>Enter Pin Code</div>
+                            </div>    
+                        @endif
 
                         <div class="product-title-cart">                            
                             <div class="title">

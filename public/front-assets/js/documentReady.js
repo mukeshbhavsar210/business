@@ -23,10 +23,10 @@ $(document).ready(function(){
     });
 
     function updateActive() {
-        $('.card').removeClass('delivery-address');
+        $('.default-card').removeClass('delivery-address');
 
         $('.address-radio:checked')
-            .closest('.card')
+            .closest('.default-card')
             .addClass('delivery-address');
     }
 
@@ -166,5 +166,3 @@ $("#isShippingDiffernt").click(function(){
         $("#shippingForm").addClass('d-none');
     }
 });
-
-

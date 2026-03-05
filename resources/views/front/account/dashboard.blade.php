@@ -26,8 +26,8 @@
                                 {{ $user->email }}
                             </div>            
                         </div>      
-                        <div class="edit">
-                            <a href="{{ route('account.profile.edit') }}" class="btn btn-outline-dark btn-sm">Edit Profile</a>
+                        <div class="edit">                            
+                            <a href="{{ route('account.profile') }}" class="btn btn-outline-dark btn-sm">Edit Profile</a>
                         </div>                              
                     </div>
                 </div>            
@@ -73,7 +73,5 @@
 @endsection
 
 @section('customJs')
-<script>
-    
-</script>
+
 @endsection

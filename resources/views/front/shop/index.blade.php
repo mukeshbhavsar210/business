@@ -1,5 +1,11 @@
 @extends('front.layouts.app')
 
+@section('title', 'Online Fashion Shopping for Men and Women')
+
+{{-- @section('title', $product->title . ' - ' .$product->short_description . ' | Category: ' . $product->category->category_name . ' | '  . config('app.name'))
+@section('meta_description', Str::limit($product->short_description, 155))
+@section('meta_keywords', $product->title) --}}
+
 @section('content')
     
 <div class="container-fluid">

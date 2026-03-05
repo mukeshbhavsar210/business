@@ -1,5 +1,7 @@
 @extends('front.layouts.app')
 
+@section('title', 'Edit Profile')
+
 @section('content')
 
 <div class="container-small">
@@ -31,27 +33,27 @@
                 <div class="order-history">
                     <div class="individual">
                         <div class="row mb-2">
-                            <div class="col-3">Name</div>
+                            <div class="col-3 text-muted">Name</div>
                             <div class="col-9">{{ $user->name }}</div>
                         </div>
                         <div class="row mb-2">
-                            <div class="col-3">Mobile Number</div>
+                            <div class="col-3 text-muted">Mobile Number</div>
                             <div class="col-9">{{ $user->phone }}</div>
                         </div>
                         <div class="row mb-2">
-                            <div class="col-3">Email ID</div>
+                            <div class="col-3 text-muted">Email ID</div>
                             <div class="col-9">{{ $user->email }}</div>
                         </div>
                         <div class="row mb-2">
-                            <div class="col-3">Alternate Mobile</div>
+                            <div class="col-3 text-muted">Alternate Mobile</div>
                             <div class="col-9">{{ $user->mobile }}</div>
                         </div>
                         <div class="row mb-2">
-                            <div class="col-3">Gender</div>
+                            <div class="col-3 text-muted">Gender</div>
                             <div class="col-9">{{ $user->gender }}</div>
                         </div>   
                         <div class="row mb-2">
-                            <div class="col-3">Date of Birth</div>
+                            <div class="col-3 text-muted">Date of Birth</div>
                             <div class="col-9">{{ $user->birthdate }}</div>
                         </div>           
                         <div class="row mt-4">

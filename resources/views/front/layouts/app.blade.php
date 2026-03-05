@@ -3,8 +3,18 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />	
     <title>@yield('title', 'Default Title')</title>
-	<meta name="description" content="" />
+    <meta name="description" content="@yield('meta_description')">
+    <meta name="keywords" content="@yield('meta_keywords')">
+	
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, maximum-scale=1, user-scalable=no" />
+
+    {{-- <meta property="og:title" content="{{ $product->title }}">
+    <meta property="og:description" content="{{ \Illuminate\Support\Str::limit($product->description,150) }}">
+    <meta property="og:image" content="{{ asset('storage/'.$product->image) }}">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:type" content="product"> --}}
+
+    <link rel="canonical" href="{{ url()->current() }}">
 
 	<link rel="stylesheet" type="text/css" href="{{ asset('front-assets/css/slick.css') }}" />
 	<link rel="stylesheet" type="text/css" href="{{ asset('front-assets/css/slick-theme.css') }}" />

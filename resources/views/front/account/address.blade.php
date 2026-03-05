@@ -1,5 +1,7 @@
 @extends('front.layouts.app')
 
+@section('title', 'My Saved Address')
+
 @section('content')
 
 <div class="container-small">

@@ -1,5 +1,9 @@
 @extends('front.layouts.app')
 
+@section('title', $product->title . ' - ' .$product->short_description . ' | Category: ' . $product->category->category_name . ' | '  . config('app.name'))
+@section('meta_description', Str::limit($product->short_description, 155))
+@section('meta_keywords', $product->title)
+
 @section('content')
 
 <div class="container">
@@ -10,7 +14,7 @@
 
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-7 col-12">
+        <div class="col-md-7 col-12 sticky">
             <div class="row">
                 @if(request()->filled('variant') && $selectedVariant && $selectedVariant->image)
                     {{-- Show ONLY selected variant image --}}
@@ -238,7 +242,10 @@
                                 </div>
                                 <div class="right">                            
                                     <p>{{ $review->review }}</p>
-                                    <p class="customer">{{ $review->user->name ?? 'Guest' }} | {{ \Carbon\Carbon::parse($review->created_at)->format('d M Y')}}</p>
+                                    <p class="customer">
+                                        <b>{{ $review->user->name ?? 'Guest' }}</b>
+                                        | {{ \Carbon\Carbon::parse($review->created_at)->format('d M Y')}}
+                                    </p>
                                 </div>
                             </div>
                         @endforeach
@@ -256,14 +263,16 @@
         </div> 
     </div>
 
-    <div class="similar-products">
-        <h3>SIMILAR PRODUCTS</h3>
-        @foreach($relatedProducts as $product)    
-            <div class="col-md-2 col-6">
-                <x-product-card :product="$product" :showWishlist="false"/>
-            </div>
-        @endforeach       
-    </div>
+    @if($relatedProducts)
+        <div class="similar-products">
+            <h3>SIMILAR PRODUCTS</h3>
+            @foreach($relatedProducts as $product)    
+                <div class="col-md-2 col-6">
+                    <x-product-card :product="$product" :showWishlist="false"/>
+                </div>
+            @endforeach       
+        </div>
+    @endif
 </div>    
 
 @endsection
