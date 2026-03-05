@@ -1,5 +1,7 @@
 @extends('front.layouts.app')
 
+@section('title', 'My Wishlist')
+
 @section('content')
 
 <div class="container">                

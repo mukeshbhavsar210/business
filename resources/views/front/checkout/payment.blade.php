@@ -17,7 +17,7 @@
                 :action="route('customer.address.store')" 
                 method="POST" 
                 title="Add New Address" 
-                buttonText="Create Address"
+                buttonText="Save"
                 modalId="createAddressModal"
             />
 
@@ -44,14 +44,14 @@
                     );
                 @endphp
 
-                <h6>Default Address</h6>
+                <h5>Default Address</h5>
 
                 @foreach($address as $address)                                                
                     <div class="card mb-3 mt-2 default-card">
                         <label class="address-card">
                             <div class="card-body">                                    
                                 <label class="custom-radio">
-                                    <input type="radio" name="default_address_id" value="{{ $address->id }}" class="address-radio" {{ $defaultAddressId == $address->id ? 'checked' : '' }} checked>                                    <span class="radio-mark"></span>                                    
+                                    <input type="radio" name="default_address_id" value="{{ $address->id }}" class="address-radio" {{ $defaultAddressId == $address->id ? 'checked' : '' }} >                                    <span class="radio-mark"></span>                                    
                                 </label>
 
                                 <div class="address-content w-100">
@@ -64,23 +64,25 @@
                                     <p class="text-muted mb-0">{{ $address->address }}</p>
                                     <p class="text-muted mb-0">{{ $address->locality }}, {{ $address->city }} - {{ $address->zip }}, {{ $address->state->name }}.</p>                                                        
                                     <p class="text-muted mt-2">Mobile: {{ $address->mobile }}</p>
-                                                                
-                                    <ul class="flex mt-3 d-none control-btn">
-                                        <li><a href="#" class="btn btn-outline-danger btn-sm">Remove</a></li>
-                                        <li>
-                                            <a href="#"
-                                                class="btn btn-outline-dark btn-sm"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#editAddressModal"                                                
-                                                data-id="{{ $address->id }}"
-                                                data-name="{{ $address->name }}"
-                                                data-mobile="{{ $address->mobile }}"
-                                                data-address="{{ $address->address }}"
-                                                data-state="{{ $address->state_id }}">
-                                                Edit
-                                                </a>
-                                        </li>
-                                    </ul>   
+                                    
+                                    <div class="mt-3 d-none control-btn">
+                                        <ul class="flex">
+                                            <li><a href="#" class="btn btn-outline-danger btn-sm">Remove</a></li>
+                                            <li>
+                                                <a href="#"
+                                                    class="btn btn-outline-dark btn-sm"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#editAddressModal"                                                
+                                                    data-id="{{ $address->id }}"
+                                                    data-name="{{ $address->name }}"
+                                                    data-mobile="{{ $address->mobile }}"
+                                                    data-address="{{ $address->address }}"
+                                                    data-state="{{ $address->state_id }}">
+                                                    Edit
+                                                    </a>
+                                            </li>
+                                        </ul>  
+                                    </div> 
 
                                     {{-- <x-customer-address-form 
                                         :states="$states"
@@ -301,7 +303,6 @@
                 }
             })
         })
-
 
         $(document).on('change', 'input[name="default_address_id"]', function() {    
             $('.default').removeClass('active');

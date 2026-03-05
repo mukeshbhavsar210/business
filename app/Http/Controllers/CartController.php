@@ -107,11 +107,22 @@ class CartController extends Controller {
                 $q->whereNull('expires_at')
                 ->orWhere('expires_at', '>=', now());
             })
-            ->get();     
+            ->get();   
+            
+        $address = CustomerAddress::with('state')->get();
+        $addressTypes = CustomerAddress::pluck('address_type')->toArray();
+        $customerAddress = Auth::user()->address;
+        $states = State::orderBy('name', 'ASC')->get();
+
+        $delivery_address = CustomerAddress::with('state')->get();
             
         //dd(Cart::content());        
 
         return view('front.checkout.cart', [
+            'address' => $address,
+            'delivery_address' => $delivery_address,
+            'addressTypes' => $addressTypes,
+            'states' => $states,
             'cartContent' => $cartContent,
             'coupons'     => $coupons,
             'appliedCouponId'     => $appliedCouponId,

@@ -11,7 +11,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h6 class="modal-title" id="{{ $modalId }}Label">{{ $title }}</h6>
+                <h5 class="modal-title" id="{{ $modalId }}Label">{{ $title }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
@@ -25,14 +25,14 @@
                 <div class="modal-body customer-address"> 
                     <h4 class="mb-2">Contact Details</h4>
                     <div class="row">                    
-                        <div class="col-md-6 col-12">
+                        <div class="col-6">
                             <div class="form-group">
                                 <input type="text" name="name" id="name" class="form-control floating-input" value="{{ old('name', $address->name ?? '') }}" >
                                 <label class="floating-label">Name</label>
                                 <p></p>
                             </div>
                         </div>  
-                        <div class="col-md-6 col-12">
+                        <div class="col-6">
                             <div class="form-group">                                
                                 <input type="text" name="mobile" id="mobile" class="form-control" value={{ (!empty($address)) ? $address->mobile : '' }}>
                                 <label class="floating-label">Mobile</label>
@@ -42,37 +42,30 @@
                     </div>
 
                     <h4 class="mb-3">Address</h4>
-                    <div class="row">                                    
+                    <div class="row">                        
                         <div class="col-md-12">
                             <div class="form-group">
                                 <textarea name="address" id="address" cols="30" rows="3" placeholder="House Number/Tower/Block*" class="form-control floating-input" >
                                     {{ (!empty($address)) ? $address->address : '' }}
                                 </textarea>
-                                <label class="floating-label">Address</label>
+                                <label class="floating-label">House Number/Tower/Block</label>
                                 <p></p>
                             </div>
                         </div>                    
-                        <div class="col-md-6 col-12">
+                        <div class="col-md-12 col-12">
                             <div class="form-group">                                
                                 <input type="text" name="locality" id="locality" class="form-control" value={{ (!empty($address)) ? $address->locality : '' }}>
                                 <label class="floating-label">Locality, Building, Street</label>
                             </div>
                         </div>
-                        <div class="col-md-6 col-12">
+                        <div class="col-5">
                             <div class="form-group">
                                 <input type="text" name="city" id="city" class="form-control" value={{ (!empty($address)) ? $address->city : '' }}>
                                 <label class="floating-label">City</label>
                                 <p></p>
                             </div>
-                        </div>        
-                        <div class="col-md-6 col-12">
-                            <div class="form-group">                                
-                                <input type="text" name="zip" id="zip" class="form-control" value={{ (!empty($address)) ? $address->zip : '' }}>
-                                <label class="floating-label">Pin Code</label>
-                                <p></p>
-                            </div>
-                        </div>                                                               
-                        <div class="col-md-6 col-12">
+                        </div>                                                                                                                      
+                        <div class="col-4">
                             <div class="form-group">                                
                                 <select name="state_id" class="form-select">
                                     <option value="">Select State</option>
@@ -92,7 +85,14 @@
                                 <p></p>
                             </div>
                         </div>  
-                        <div class="col-md-12 col-12">
+                        <div class="col-3">
+                            <div class="form-group">                                
+                                <input type="text" name="zip" id="zip" class="form-control" value={{ (!empty($address)) ? $address->zip : '' }}>
+                                <label class="floating-label">Pin Code</label>
+                                <p></p>
+                            </div>
+                        </div> 
+                        <div class="col-12">
                             <div class="form-group">                                                    
                                 @php 
                                     $addressType = old('address_type', auth()->user()->address->address_type ?? '');
@@ -113,7 +113,7 @@
                                 <p></p>
                             </div>
                         
-                            <div class="form-check">
+                            <div class="form-check mt-3">
                                 <input type="checkbox" class="form-check-input" name="default_address" id="default_address" value="1"
                                     {{ old('default_address', optional(auth()->user()->address)->default_address) ? 'checked' : '' }}>
 
@@ -121,11 +121,12 @@
                             </div>
                         </div>
                     </div>                
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">{{ $buttonText }}</button> 
-                </div>
+                                    
+                    <div class="flex mt-3">
+                        <button type="button" class="btn btn-secondary w-50" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary w-50">{{ $buttonText }}</button> 
+                    </div>
+               </div>
             </form>
         </div>
     </div>            
