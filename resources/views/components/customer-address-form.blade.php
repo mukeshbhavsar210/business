@@ -1,5 +1,6 @@
 @props([
     'address' => null,
+    'homeExists' => false,
     'title' => '',
     'buttonText' => '',
     'modalId' => '',
@@ -67,7 +68,7 @@
                         </div>                                                                                                                      
                         <div class="col-4">
                             <div class="form-group">                                
-                                <select name="state_id" class="form-select">
+                                <select name="state_id" required class="form-select">
                                     <option value="">Select State</option>
 
                                     @foreach($states as $state)
@@ -92,30 +93,56 @@
                                 <p></p>
                             </div>
                         </div> 
-                        <div class="col-12">
-                            <div class="form-group">                                                    
-                                @php 
-                                    $addressType = old('address_type', auth()->user()->address->address_type ?? '');
-                                @endphp
-                                    
-                                <label for="City">Types of address <span class="required">*</span></label><br />                                    
-                                <label for="home">
-                                    <input type="radio" name="address_type" id="home" value="Home"
-                                    {{ old('address_type', optional(auth()->user()->address)->address_type) == 'Home' ? 'checked' : '' }}>
-                                    Home
-                                </label>
+                        <div class="col-12">                            
+                            @if(!$homeExists)
+                                <div class="form-group">                                                    
+                                    @php 
+                                        $addressType = old('address_type', auth()->user()->address->address_type ?? '');
+                                    @endphp
 
-                                <label for="office">
-                                    <input type="radio" name="address_type" id="office" value="Office"                                                            
-                                    {{ old('address_type', optional(auth()->user()->address)->address_type) == 'Office' ? 'checked' : '' }} >
-                                    Office
-                                </label>                                                                                                                                   
-                                <p></p>
-                            </div>
+                                    {{-- @php 
+                                        $addressType = old('address_type', optional(optional(auth()->user())->address)->address_type);
+                                    @endphp --}}
+
+                                    <label for="City">Types of address <span class="required">*</span></label><br /> 
+                                    <label for="home">
+                                        <input type="radio" name="address_type" id="home" value="Home"
+                                        {{ $addressType == 'Home' ? 'checked' : '' }}>
+                                        Home
+                                    </label>
+
+                                    <label for="office">
+                                        <input type="radio" name="address_type" id="office" value="Office"
+                                        {{ $addressType == 'Office' ? 'checked' : '' }}>
+                                        Office
+                                    </label>
+                                        
+                                                                       
+                                    {{-- <label for="home">
+                                        <input type="radio" name="address_type" id="home" value="Home"
+                                        {{ old('address_type', optional(auth()->user()->address)->address_type) == 'Home' ? 'checked' : '' }}>
+                                        Home
+                                    </label>
+
+                                    <label for="office">
+                                        <input type="radio" name="address_type" id="office" value="Office"                                                            
+                                        {{ old('address_type', optional(auth()->user()->address)->address_type) == 'Office' ? 'checked' : '' }} >
+                                        Office
+                                    </label> --}}
+                                </div>
+                            @else
+                                <input type="hidden" name="address_type" value="Office">
+                                <label><input type="radio" checked disabled>Office</label>
+                            @endif
+                            
                         
-                            <div class="form-check mt-3">
+                            <div class="form-check mt-3">                                   
+                                @php
+                                    $defaultAddress = old('default_address', auth()->user()?->address?->default_address);
+                                @endphp
+
                                 <input type="checkbox" class="form-check-input" name="default_address" id="default_address" value="1"
-                                    {{ old('default_address', optional(auth()->user()->address)->default_address) ? 'checked' : '' }}>
+                                    {{ $defaultAddress ? 'checked' : '' }}>
 
                                 <label class="form-check-label" for="default_address">Make this as my default Address</label>
                             </div>

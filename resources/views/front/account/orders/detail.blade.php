@@ -1,6 +1,6 @@
 @extends('front.layouts.app')
 
-@section('title', 'My Orders')
+@section('title', 'Order Details')
 
 @section('content')
 <div class="container-small">
@@ -122,9 +122,9 @@
 
                         <div class="wrapper">
                             <h3>Delivery Address</h3>
-                            <p class="mt-2"><b>{{ $order->name }} | {{ $order->mobile }}</b></p>
-                            <p class="tiny-font text-muted">{{ $order->address }}, {{ $order->locality }},<br /> 
-                                {{ $order->city }}, {{ $order->state->name }}-{{ $order->zip }}. </p>
+                            <p class="mt-2"><b>{{ $order->address->name }} | {{ $order->address->mobile }}</b></p>
+                            <p class="text-muted">{{ $order->address->address }}, {{ $order->address->locality }},<br /> 
+                                {{ $order->address->city }}, {{ $order->address->state->name }}-{{ $order->address->zip }}. </p>
                         </div>                  
 
                         <div class="wrapper">

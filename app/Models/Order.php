@@ -8,9 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model {
     use HasFactory;
 
-    protected $fillable = [ 'user_id', 'subtotal', 'shipping', 'coupon_code', 'coupon_code_id', 'discount',
-                            'grandtotal', 'payment_status', 'status', 'cancel_reason', 'cancel_comments', 'cancelled_at', 'shipped_date', 'name', 'mobile',
-                            'state_id', 'address', 'locality', 'city', 'zip', 'mobile',
+    protected $fillable = [ 'user_id', 'customer_address_id', 'subtotal', 'shipping', 'coupon_code', 'coupon_code_id', 'discount',
+                            'grandtotal', 'payment_status', 'payment_method', 'status', 'cancel_reason', 'cancel_comments', 'cancelled_at', 'shipped_date', 
+                            
     ];
 
     public function product_images(){
@@ -41,5 +41,13 @@ class Order extends Model {
 
     public function state() {
         return $this->belongsTo(State::class);
+    }
+
+    public function address() {
+        return $this->belongsTo(CustomerAddress::class, 'customer_address_id');
+    }
+
+    public function statusHistories() {
+        return $this->hasMany(OrderStatusHistory::class);
     }
 }

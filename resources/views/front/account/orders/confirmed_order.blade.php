@@ -22,7 +22,17 @@
     <div class="product-details-link">
         <div class="group flex">                                            
             <a href="#" class="btn btn-outline-dark w-50" data-bs-toggle="modal" data-bs-target="#cancelOrder_{{ $order->id }}">Cancel</a>
-            <a href="#" class="btn btn-outline-dark w-50" data-bs-toggle="modal" data-bs-target="#trackOrder">Track</a>
+            {{-- <a href="#" class="btn btn-outline-dark w-50 track-order-btn" data-order-id="{{ $order->id }}"
+                data-bs-toggle="modal"
+                data-bs-target="#orderTrackingModal">Track</a> --}}
+
+                <button 
+                    class="btn btn-outline-dark w-50 track-order-btn"
+                    data-order-id="{{ $order->id }}"
+                    data-bs-toggle="modal"
+                    data-bs-target="#orderTrackingModal">
+                    Track
+                </button>
         </div>
     </div>
 </div>
@@ -40,9 +50,7 @@
                 <div class="modal-body">    
                     <p class="mb-1"><b>Reason for Cancellation</b></p>
                     <p class="tiny-font">Please tell us correct reason for cancellation. This information is only used to improve our service</p>
-
                     <hr />
-
                     <div class="reason-group mb-3 mt-3">
                         <label class="custom-radio">
                             <input type="radio" name="cancel_reason" value="Incorrect size ordered" required>
@@ -104,29 +112,58 @@
     </div>
 </div>
 
-<div class="modal fade" id="trackOrder" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1" aria-labelledby="trackOrderLabel" aria-hidden="true">
+<div class="modal fade" id="orderTrackingModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="trackOrderLabel">Track Item</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title">Order Tracking</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
+
             <div class="modal-body">
-                <ul class="track-placed-order">
-                    <li>
-                        <svg fill="#cccccc" width="22px" height="22px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12,2A10,10,0,1,0,22,12,10,10,0,0,0,12,2Zm5.676,8.237-6,5.5a1,1,0,0,1-1.383-.03l-3-3a1,1,0,1,1,1.414-1.414l2.323,2.323,5.294-4.853a1,1,0,1,1,1.352,1.474Z"/></svg>
-                        <p><b>Arriving</b> by 10 Mar - 12 Mar</p>
-                    </li>
-                    <li>
-                        <svg fill="#cccccc" width="22px" height="22px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12,2A10,10,0,1,0,22,12,10,10,0,0,0,12,2Zm5.676,8.237-6,5.5a1,1,0,0,1-1.383-.03l-3-3a1,1,0,1,1,1.414-1.414l2.323,2.323,5.294-4.853a1,1,0,1,1,1.352,1.474Z"/></svg>
-                        <p><b>Shipped</b> by Mon, 9 Mar</p>
-                    </li>
-                    <li class="active">
-                        <svg fill="#cccccc" width="22px" height="22px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12,2A10,10,0,1,0,22,12,10,10,0,0,0,12,2Zm5.676,8.237-6,5.5a1,1,0,0,1-1.383-.03l-3-3a1,1,0,1,1,1.414-1.414l2.323,2.323,5.294-4.853a1,1,0,1,1,1.352,1.474Z"/></svg>
-                        <p><b>Order Placed</b> on Thu, 5 Mar</p>
-                    </li>
+                <ul class="track-placed-order" id="trackingTimeline">
+                    <li>Loading...</li>
                 </ul>
             </div>
         </div>
     </div>
 </div>
+
+@section('customJs')
+<script>
+    $(document).ready(function(){        
+        $('.track-order-btn').click(function(){
+            let orderId = $(this).data('order-id');
+
+            let url = "{{ route('account.order.tracking', ':id') }}";
+            url = url.replace(':id', orderId);
+
+            $.ajax({
+                url: url,
+                type: "GET",
+                success: function(response){
+                    let html = '';
+                    if(response.length === 0){
+                        html = '<li>No tracking available</li>';
+                    }else{
+                        response.forEach(function(status){
+                            html += `
+                                <li class="active">
+                                    <svg fill="#cccccc" width="22px" height="22px" viewBox="0 0 24 24">
+                                        <path d="M12,2A10,10,0,1,0,22,12,10,10,0,0,0,12,2Zm5.676,8.237-6,5.5a1,1,0,0,1-1.383-.03l-3-3a1,1,0,1,1,1.414-1.414l2.323,2.323,5.294-4.853a1,1,0,1,1,1.352,1.474Z"/>
+                                    </svg>
+                                    <p>
+                                        <b>${status.status.replaceAll('_',' ')}</b><br>
+                                        on ${status.date}
+                                    </p>
+                                </li>
+                            `;
+                        });
+                    }
+                    $('#trackingTimeline').html(html);
+                }
+            });
+        });
+    });
+</script>
+@endsection

@@ -356,8 +356,8 @@ input:checked + .slider { box-shadow:0 0 0 2px #007bff,0 0 2px #007bff; }
 
 .overflow-variant { height: 200px; overflow-y: auto; overflow-x: hidden;}
 
-.flex-details { display: flex; column-gap: 10px; margin-bottom: 2px;}
-.flex-details .label { width: 90px; margin: 0;}
+.flex-details { display: flex; column-gap: 10px; margin-bottom: 4px;}
+.flex-details .label { width: 100px; margin: 0;}
 .flex-details .right { margin: 0;}
 
 .table-text td, .table-text th { vertical-align: top; }

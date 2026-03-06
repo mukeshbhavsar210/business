@@ -34,7 +34,7 @@
 
 @include(request()->routeIs(['front.cart','front.checkout','front.checkout.thankyou']) ? 'front.layouts.cart_header' : 'front.layouts.header')
 
-<main class="{{ request()->routeIs(['front.cart','front.checkout']) ? 'main' : 'default' }}">
+<main class="{{ request()->routeIs(['front.cart','front.checkout','front.checkout.thankyou']) ? 'main' : 'default' }}">
     @yield('content')
 </main>
 
@@ -68,6 +68,9 @@
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
+
+
+    
     
     
     function addToCart(id){

@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\Order;
 use App\Models\CustomerAddress;
 use App\Models\DiscountCoupon;
+use App\Models\OrderStatusHistory;
 use App\Models\ShippingCharge;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -95,9 +96,6 @@ class CartController extends Controller {
         ]);
     }
 
-
-
-
     public function cart() {
         $cartContent = Cart::content();
         $appliedCouponId = session('applied_coupon_id'); 
@@ -111,29 +109,114 @@ class CartController extends Controller {
             
         $address = CustomerAddress::with('state')->get();
         $addressTypes = CustomerAddress::pluck('address_type')->toArray();
-        $customerAddress = Auth::user()->address;
+        $customerAddress = Auth::check() ? Auth::user()->address : [];
         $states = State::orderBy('name', 'ASC')->get();
-
         $delivery_address = CustomerAddress::with('state')->get();
+        $homeExists = CustomerAddress::where('user_id', auth()->id())
+            ->where('address_type', 'Home')
+            ->exists();
+
+        $totalQty = Cart::count(); // total items qty
+        $shipping_charge = 0;
+
+        if ($customerAddress) {
+            $shippingInfo = ShippingCharge::where('state_id', $customerAddress->state_id)->first();
+
+            if ($shippingInfo) {
+                $shipping_charge = $totalQty * $shippingInfo->amount;
+            }
+        }
+
+        $selectedIds = $request->cart_ids ?? [];
+
+        // if(empty($selectedIds)){
+        //     return back()->with('error','Please select at least one item');
+        // }
+
+        $cartItems = Cart::content()->filter(function($item) use ($selectedIds){
+            return in_array($item->rowId, $selectedIds);
+        });
+
+        // IMPORTANT: remove formatting to avoid string math
+        $price_total = $cartItems->sum(function($item){
+            return $item->price * $item->qty;
+        });
+
+        $price_discount = $cartItems->sum(function($item){
+            return $item->options->compare_price * $item->qty;
+        });
+
+        $sub_total = $price_total - $price_discount;
+        $coupon_discount = session()->get('discount', 0);
+        $total_amount = max($sub_total + $shipping_charge - $coupon_discount, 0);
             
-        //dd(Cart::content());        
+       // dd(Cart::content());        
 
         return view('front.checkout.cart', [
-            'address' => $address,
-            'delivery_address' => $delivery_address,
-            'addressTypes' => $addressTypes,
-            'states' => $states,
-            'cartContent' => $cartContent,
-            'coupons'     => $coupons,
-            'appliedCouponId'     => $appliedCouponId,
+            'price_total'       => $price_total,
+            'price_discount'    => $price_discount,
+            'sub_total'         => $sub_total,
+            'coupon_discount'   => $coupon_discount,
+            'total_amount'      => $total_amount,
+            'customerAddress'   => $customerAddress ,
+            'address'           => $address,
+            'homeExists'        => $homeExists,
+            'shipping_charge'   => $shipping_charge, 
+            'delivery_address'  => $delivery_address,
+            'addressTypes'      => $addressTypes,
+            'states'            => $states,
+            'cartContent'       => $cartContent,
+            'coupons'           => $coupons,
+            'appliedCouponId'   => $appliedCouponId,
         ]);
     }
 
 
+    public function updateDefaultAddress(Request $request) {
+        $request->validate([
+            'address_id' => 'required'
+        ]);
+        
+        $addressId = $request->address_id;
+        $userId = auth()->id();
+
+        CustomerAddress::where('user_id', $userId)->update([
+            'default_address' => 0
+        ]);
+
+        CustomerAddress::where('id', $addressId)->update([
+            'default_address' => 1
+        ]);
+
+        // DELETE ADDRESS
+        if($request->action == 'delete'){
+            $address = CustomerAddress::where('id',$addressId)
+                        ->where('user_id',$userId)
+                        ->first();
+
+            $wasDefault = $address->default_address;
+            $address->delete();
+
+            // If deleted address was default
+            if($wasDefault == 1){
+                $otherAddress = CustomerAddress::where('user_id',$userId)->first();
+                if($otherAddress){
+                    $otherAddress->update([
+                        'default_address' => 1
+                    ]);
+                }
+            }
+
+            return back()->with('success','Address deleted successfully');
+        }
+
+        return redirect()->back()->with('success','Default address updated');
+    }
+
 
     public function bulkAction(Request $request) {
         $checkedIds = $request->cart_ids ?? [];
-
+        
         foreach (Cart::content() as $item) {
             if (!in_array($item->rowId, $checkedIds)) {
                 Cart::remove($item->rowId);
@@ -180,8 +263,6 @@ class CartController extends Controller {
         return back();
     }
 
-
-
     public function payment(Request $request) {
         $selectedIds = $request->cart_ids ?? [];
 
@@ -208,6 +289,9 @@ class CartController extends Controller {
         $addressTypes = CustomerAddress::pluck('address_type')->toArray();
         $customerAddress = Auth::user()->address;
         $states = State::orderBy('name', 'ASC')->get();
+        $homeExists = CustomerAddress::where('user_id', auth()->id())
+            ->where('address_type', 'Home')
+            ->exists();
 
         $totalQty = Cart::count(); // total items qty
         $shipping_charge = 0;
@@ -234,6 +318,7 @@ class CartController extends Controller {
         $grand_total = max($sub_total + $shipping_charge - $coupon_discount, 0);
 
         return view('front.checkout.payment', [
+            'homeExists'            => $homeExists,
             'states'                => $states,
             'address'               => $address,
             'addressTypes'          => $addressTypes,
@@ -295,11 +380,14 @@ class CartController extends Controller {
         ]);
     }
 
+
+
     public function processCheckout(Request $request) {
         // Step 1: Validate selected shipping address
         $validator = Validator::make($request->all(), [
-            'default_address_id' => 'required|exists:customer_addresses,id',
-            'payment_method'     => 'required'
+            'customer_address_id' => 'required|exists:customer_addresses,id',
+            //'payment_method'     => 'required'
+            'payment_method' => 'required|in:cod,razorpay'
         ]);
 
         if ($validator->fails()) {
@@ -313,7 +401,7 @@ class CartController extends Controller {
         $user = Auth::user();
 
         // Step 2: Get Selected Address (Security Check: must belong to user)
-        $selectedAddress = CustomerAddress::where('id', $request->default_address_id)
+        $selectedAddress = CustomerAddress::where('id', $request->customer_address_id)
             ->where('user_id', $user->id)
             ->first();
 
@@ -362,6 +450,7 @@ class CartController extends Controller {
         // Step 6: Create Order
         $order = new Order;
         $order->user_id = $user->id;
+        $order->customer_address_id = $request->customer_address_id;
         $order->subtotal = $subTotal;
         $order->shipping = $shipping;
         $order->discount = $discount;
@@ -369,17 +458,15 @@ class CartController extends Controller {
         $order->coupon_code_id = $discountCodeId;
         $order->coupon_code = $promoCode;
         $order->payment_status = 'not paid';
+        $order->payment_method = $request->payment_method;
         $order->status = 'confirmed';
-
-        // Shipping Address Data
-        $order->name = $selectedAddress->name;
-        $order->mobile = $selectedAddress->mobile;
-        $order->address = $selectedAddress->address;
-        $order->locality = $selectedAddress->locality;
-        $order->city = $selectedAddress->city;
-        $order->zip = $selectedAddress->zip;
-        $order->state_id = $selectedAddress->state_id;
         $order->save();
+
+        OrderStatusHistory::create([
+            'order_id' => $order->id,
+            'status' => 'placed',
+            'status_date' => now()
+        ]);
 
         // Step 7: Store Order Items + Update Stock
         foreach (Cart::content() as $item) {
@@ -389,6 +476,7 @@ class CartController extends Controller {
             $orderItem->product_variant_id = $item->options->variant_id ?? null;
             $orderItem->size = $item->options->size ?? null;            
             $orderItem->name = $item->name;
+            $orderItem->color = $item->color;
             $orderItem->qty = $item->qty;
             $orderItem->price = $item->price;
             $orderItem->total = $item->price * $item->qty;            
@@ -424,7 +512,15 @@ class CartController extends Controller {
     }
 
     public function thankyou($id){
-        $order = Order::with(['orderItems.product', 'orderItems.product.images', 'orderItems.variant', 'state'])->findOrFail($id);
+        $order = Order::where('id', $id)
+                ->where('user_id', auth()->id()) // 🔐 security
+                ->with([
+                    'orderItems.product',
+                    'orderItems.product.images',
+                    'orderItems.variant',
+                    'address.state'
+                ])
+                ->firstOrFail();
 
         return view('front.checkout.thanks',[
             'id' => $id,

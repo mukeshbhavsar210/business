@@ -1,5 +1,7 @@
 @extends('front.layouts.app')
 
+@section('title', 'My Orders')
+
 @section('content')
 
 <div class="container-small">
@@ -22,21 +24,31 @@
 
                 <div class="part">
                     <p><span class="text-muted">Update sent to:</span></p>
-                    <p>{{ $order->mobile }}</p>
-                    <p>{{ $order->user->email }}</p>
+                    @if($order->address)
+                        <p>Mobile: {{ $order->address->mobile }}</p>
+                        <p>Email: {{ $order->user->email }}</p>
+                    @endif                    
                 </div>
 
                 <div class="part">
                     <p><span class="text-muted">Shipping address:</span></p>
-                    <p class="mt-2"><b>{{ $order->name }}</b><br>
-                        {{ $order->address }} <br>
-                        {{ $order->city }}, {{ $order->state->name ?? '' }}-{{ $order->zip }}
-                    </p>
+                    @if($order->address)
+                        <p class="mt-2 mb-2"><b>{{ $order->address->name }}</b><br>
+                            {{ $order->address->address }} <br>
+                            {{ $order->address->city }}, {{ $order->address->state->name ?? '' }}-{{ $order->address->zip }}
+                        </p>                        
+                    @endif
                 </div>       
                 
                 <div class="part">
                     <p><span class="text-muted">Payment mode:</span></p>
-                    <p class="mt-2">Cash/Pay on Delivery</p>
+                    <p class="mt-1">
+                        @if($order->payment_mode == 'cod')
+                            Cash/Pay on Delivery
+                        @else
+                            Amount paid with onine tranaction
+                        @endif
+                    </p>
                 </div>
 
                 <div class="part">

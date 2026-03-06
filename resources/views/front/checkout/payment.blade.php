@@ -4,9 +4,6 @@
 
 @section('content')
 
-<form action=" " name="orderForm" id="orderForm" method="POST">
-    @csrf
-
 <div class="container">
     <div class="row">
         <div class="col-md-8 col-12 left-border">
@@ -14,6 +11,7 @@
 
             <x-customer-address-form 
                 :states="$states"
+                :homeExists="$homeExists"
                 :action="route('customer.address.store')" 
                 method="POST" 
                 title="Add New Address" 
@@ -36,6 +34,9 @@
                         @endif
                     </div>
                 </div>
+
+                <form action=" " name="orderForm" id="orderForm" method="POST">
+                @csrf
 
                 @php
                     $defaultAddressId = old(
