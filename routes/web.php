@@ -45,6 +45,7 @@ Route::controller(CartController::class)->group(function() {
     //Update Color/Size/Qty in cart
     Route::post('/checkout/cart/common', 'updateCartOption')->name('front.updateCartOption');
     Route::post('/cart/update-item', 'updateItem')->name('front.updateCartItem');
+    Route::post('/default-address', 'updateDefaultAddress')->name('address.default');    
 
     //Route::post('/update-cart','updateCart')->name('front.updateCart');
     Route::post('/checkout/payment', 'payment')->name('checkout.payment');
@@ -90,13 +91,14 @@ Route::group(['prefix' => 'account'], function(){
             Route::get('/password','changePasswordForm')->name('account.changePassword');
             Route::post('/change-password','changePassword')->name('account.processChangePassword');
 
+            //Orders User
             Route::get('/orders','orders')->name('account.orders');
             Route::get('/order/{id}', 'viewOrder')->name('account.order.view');            
             Route::get('/order/details/{orderId}','orderDetail')->name('account.orderDetail');
-
             Route::get('/order/{order}/cancel', 'cancel')->name('account.order.cancel.form');
             Route::post('/order/{order}/cancel_order', 'cancelOrder')->name('account.order.cancel');
             Route::get('/account/order/cancelled-orders', 'cancelledOrders')->name('account.orders.cancelled');
+            Route::get('/order-tracking/{id}', 'tracking')->name('account.order.tracking');
 
             Route::get('/wishlist','wishlist')->name('account.wishlist');
             Route::post('/remove-product-from-wishlist','removeProductFromWishlist')->name('account.removeProductFromWishlist');
@@ -173,6 +175,7 @@ Route::group(['prefix' => 'admin'], function(){
             Route::get('/orders', 'index')->name('orders.index');
             Route::get('/orders/{id}', 'detail')->name('orders.detail');
             Route::post('/order/change-status/{id}', 'changeOrderStatus')->name('orders.changeOrderStatus');
+            
             Route::post('/order/send-email/{id}', 'sendInvoiceEmail')->name('orders.sendInvoiceEmail');
         });          
 

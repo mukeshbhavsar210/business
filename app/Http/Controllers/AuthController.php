@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\CustomerAddress;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\OrderStatusHistory;
 use App\Models\State;
 use App\Models\User;
 use App\Models\Wishlist;
@@ -435,12 +436,12 @@ class AuthController extends Controller
     public function orders(){
         $user = Auth::user();
         $userId = Auth::user()->id;
-        $orders = Order::with('items.product', 'items.product.color', 'items.product.size')
+        $orders = Order::with('items.product', 'items.product.color', 'items.product.size', 'statusHistories')
                     ->where('user_id', $user->id)
                     ->latest()
                     ->get();
 
-                     $userId = Auth::user()->id;        
+        $userId = Auth::user()->id;        
 
         // $orders = Order::where('user_id', auth()->id())
         //     ->where('status', 'cancelled')
@@ -461,15 +462,25 @@ class AuthController extends Controller
 
     public function viewOrder($id) {
         $userId = Auth::user()->id;        
+        // $order = Order::where('id', $id)
+        //             ->where('user_id', auth()->id()) // 🔐 security
+        //             ->with([
+        //                 'orderItems.product',
+        //                 'orderItems.product.images',
+        //                 'orderItems.variant',
+        //                 'state'
+        //             ])
+        //             ->firstOrFail();
+
         $order = Order::where('id', $id)
-                    ->where('user_id', auth()->id()) // 🔐 security
-                    ->with([
-                        'orderItems.product',
-                        'orderItems.product.images',
-                        'orderItems.variant',
-                        'state'
-                    ])
-                    ->firstOrFail();
+            ->where('user_id', auth()->id()) // 🔐 security
+            ->with([
+                'orderItems.product',
+                'orderItems.product.images',
+                'orderItems.variant',
+                'address.state'
+            ])
+            ->firstOrFail($id);
 
         return view('front.account.orders.placed_order', compact('order'));
     }
@@ -520,10 +531,28 @@ class AuthController extends Controller
 
     public function wishlist(){
         $wishlist = Wishlist::where('user_id', Auth::user()->id)->with(['product'])->get();
-        
         $data['wishlist'] = $wishlist;
 
         return view('front.account.wishlist', $data);
+    }
+
+
+    public function tracking($id) {
+        $statuses = OrderStatusHistory::where('order_id', $id)
+            ->orderBy('status_date','asc')
+            ->get();
+
+        $data = [];
+
+        foreach($statuses as $status){
+            $data[] = [
+                'status' => $status->status,
+                'date' => \Carbon\Carbon::parse($status->status_date)
+                            ->format('d M Y h:i A')
+            ];
+        }        
+
+        return response()->json($data);
     }
 
 
@@ -606,15 +635,25 @@ class AuthController extends Controller
 
     public function address_store(Request $request) {
         $validated = $request->validate([
+            'address_type' => 'required',
+            //'default_address' => 'required',
             'name' => 'required',
             'mobile' => 'required',
             'address' => 'required',
+            'locality' => 'required',
             'city' => 'required',
-            // 'state' => 'required',
+            'state_id' => 'required',
             'zip' => 'required',
         ]);
 
         $validated['user_id'] = auth()->id();
+        $validated['state_id'] = $validated['state_id'];
+
+        // If new address is default
+        if($request->default_address == 1){
+            CustomerAddress::where('user_id', auth()->id())
+                ->update(['default_address' => 0]);
+        }
 
         CustomerAddress::create($validated);
 
@@ -631,7 +670,7 @@ class AuthController extends Controller
             'mobile' => 'required',
             'address' => 'required',
             'city' => 'required',
-            // 'state' => 'required',
+            'state_id' => 'required',
             'zip' => 'required',
         ]);
 

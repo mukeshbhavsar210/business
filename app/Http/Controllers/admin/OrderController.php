@@ -5,6 +5,7 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\OrderStatusHistory;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
@@ -52,19 +53,33 @@ class OrderController extends Controller {
         ];
     }
 
+
     public function detail($orderId){
-        $order = Order::select('orders.*','states.name as stateName' )
-            ->where('orders.id',$orderId)
-            ->leftJoin('states','states.id','orders.state_id')
+        $order = Order::select(
+                'orders.*',
+                'customer_addresses.name',
+                'customer_addresses.mobile',
+                'customer_addresses.address',
+                'customer_addresses.locality',
+                'customer_addresses.city',
+                'customer_addresses.zip',
+                'states.name as stateName'
+            )
+            ->where('orders.id', $orderId)
+            ->leftJoin('customer_addresses', 'customer_addresses.id', '=', 'orders.customer_address_id')
+            ->leftJoin('states', 'states.id', '=', 'customer_addresses.state_id')
             ->first();
 
-        $orderItems = OrderItem::with('product.images')->where('order_id',$orderId)->get();
+        $orderItems = OrderItem::with('product.images')
+            ->where('order_id', $orderId)
+            ->get();
 
-        return view('admin.orders.detail',[
+        return view('admin.orders.detail', [
             'order' => $order,
             'orderItems' => $orderItems,
         ]);
     }
+
 
     public function changeOrderStatus(Request $request, $orderId){
         $order = Order::find($orderId);
@@ -81,6 +96,26 @@ class OrderController extends Controller {
             'message' => $message,
         ]);
     }
+
+    
+
+
+    public function changeTrackStatus(Request $request, $orderId){
+        $order = Order::find($orderId);
+        $order->delivery_status = $request->delivery_status;
+        $order->tracking_date = $request->tracking_date;
+        $order->save();
+
+        $message = 'Order track status updated successfully';
+
+        session()->flash('success',$message);
+
+        return response()->json([
+            'status' => true,
+            'message' => $message,
+        ]);
+    }
+
 
     public function sendInvoiceEmail(Request $request, $orderId){
         orderEmail($orderId, $request->userType);

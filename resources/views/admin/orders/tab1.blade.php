@@ -5,7 +5,8 @@
                 <tr>
                     <th class="border-top-0" width="40">ID</th>
                     <th class="border-top-0">Products details</th>
-                    <th class="border-top-0 text-end" width="100">Amount</th>                    
+                    <th class="border-top-0 text-end" width="100">Amount</th>
+                    <th class="border-top-0 text-end" width="100">Mode</th>
                     <th class="border-top-0 text-end" width="120">AWB</th>
                     <th class="border-top-0 text-end" width="100">Courier</th>                        
                     <th class="border-top-0 text-end" width="100">Order Date</th>
@@ -16,14 +17,11 @@
                 @foreach($confirmed_orders as $key => $order)
                     <tr data-bs-toggle="collapse" data-bs-target="#orderItems{{ $order->id }}" class="accordion-toggle cursor-pointer">
                         <td>
-                            <a href="{{ route('orders.detail',$order->id) }}">
-                                {{ $order->id }}
-                            </a>
                             <i class="bi bi-chevron-down me-2"></i>
-                        </td>
-                        
+                        </td>                        
                         <td>{{ $order->items->count() }} Item(s)</td>
-                        <td class="text-end">₹{{ number_format($order->grandtotal,2) }}</td>                        
+                        <td class="text-end">₹{{ number_format($order->grandtotal,2) }}</td>
+                        <td class="text-end">{{ $order->payment_method }}</td>
                         <td class="text-end">{{ \Carbon\Carbon::parse($order->created_at)->format('d M, Y') }}</td>
                         <td class="text-end">
                             @if ($order->status == 'pending')
@@ -50,7 +48,9 @@
                                     </a>
 
                                     <div class="flex-grow-1">
-                                        <strong>{{ $item->product->title }}</strong>
+                                        <a href="{{ route('orders.detail',$order->id) }}" title="{{ $order->id }}">
+                                            <strong>{{ $item->product->title }}</strong>
+                                        </a>
                                         <div class="small text-muted">
                                             {{-- Color: {{ $item->product->color->name }}, --}}
                                             Size: {{ $item->product->size->code }}

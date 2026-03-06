@@ -1,5 +1,7 @@
 @extends('front.layouts.app')
 
+@section('title', 'Order Confirmed')
+
 @section('content')    
 
 <div class="container">
@@ -16,9 +18,13 @@
 
         <div class="delivery-address">
             <p>Delivering to:</p>
-            <p class="mt-2"><b>{{ $order->name }} | {{ $order->mobile }}</b></p>
-            <p>{{ $order->address }},<br />
-            {{ $order->locality }}, {{ $order->city }}, {{ $order->state->name ?? '' }} - {{ $order->zip }}</p>
+
+            @if($order->address)
+                <p class="mt-2"><b>{{ $order->address->name }} | {{ $order->address->mobile }}</b></p>
+                <p class="small-font">{{ $order->address->address }},<br />
+                {{ $order->address->locality }}, {{ $order->address->city }}, {{ $order->address->state->name ?? '' }} - {{ $order->address->zip }}</p>
+            @endif
+
             <a href="{{ route('account.order.view', $order->id) }}" class="btn btn-outline-primary mt-3">Order Details</a>
             <hr />
             <p>You can Track/View/Modify order from orders page.</p>
