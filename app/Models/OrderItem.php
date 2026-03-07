@@ -33,4 +33,8 @@ class OrderItem extends Model {
     public function variant() {
         return $this->belongsTo(ProductVariant::class);
     }
+
+    public function history() {
+        return $this->belongsTo(OrderStatusHistory::class);
+    }
 }
