@@ -20,7 +20,6 @@
         <div class="row">
             @if (Cart::count() > 0)
                 <div class="col-md-8 col-12 left-border">
-                    {{-- <form id="cartForm" method="POST" action="{{ route('cart.bulk.action') }}"> --}}
                     <form action=" " name="orderForm" id="orderForm" method="POST">
                         @csrf
                             @php
@@ -30,21 +29,32 @@
                                 );
                             @endphp
 
-                            <div class="delivery-time">
-                                <div class="address">
-                                    @foreach($address as $value) 
-                                        @if($value->default_address == 1)
-                                            <input type="radio" name="customer_address_id" value="{{ $value->id }}" checked>
-                                            <p>Delivery to: <b>{{ $value->name }}, {{ $value->zip }}</b></p>
-                                            <p class="tiny-font mt-1">{{ $value->address }},</p>
-                                            <p class="tiny-font">{{ $value->locality }}, {{ $value->city }}, {{ $value->state->name }}</p>    
-                                        @endif                                        
-                                    @endforeach
+                            @if (Auth::check())
+                                <div class="delivery-time">
+                                    <div class="address">
+                                        @foreach($address as $value) 
+                                            @if($value->default_address == 1)
+                                                <input type="radio" name="customer_address_id" value="{{ $value->id }}" checked>
+                                                <p>Delivery to: <b>{{ $value->name }}, {{ $value->zip }}</b></p>
+                                                <p class="tiny-font mt-1">{{ $value->address }},</p>
+                                                <p class="tiny-font">{{ $value->locality }}, {{ $value->city }}, {{ $value->state->name }}</p>    
+                                            @endif                                        
+                                        @endforeach
+                                    </div>
+                                    <div class="btn-right">
+                                        <a href="#" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#deliveryAddress">Change Address</a>
+                                    </div>                                
                                 </div>
-                                <div class="btn-right">
-                                    <a href="#" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#deliveryAddress">Change Address</a>
-                                </div>                                
-                            </div>
+                            @else
+                                <div class="delivery-time">
+                                    <div class="address">
+                                        <p>Login to get delivery at your place.</p>
+                                    </div>
+                                    <div class="btn-right">
+                                        <a href="#" class="btn btn-primary float-end checkoutBtn" >Login</a>
+                                    </div> 
+                                </div>
+                            @endif
                         
                             <div class="product-title-cart">                            
                                 <div class="title">
@@ -275,27 +285,27 @@
                                         <a href="https://www.myntra.com/privacypolicy" target="_blank" class="privaryPolicyTermsOfUseStrip-base-link">Privacy Policy</a>
                                     </div>
 
-                                    @if (Auth::check())
+                                    {{-- @if (Auth::check()) --}}
                                         <div class="part">
                                             <div class="btn-group w-100 mb-3" role="group">
                                                 <input type="radio" class="btn-check" name="payment_method" id="payment_cod" value="cod" autocomplete="off" checked>
-                                                <label class="btn btn-outline-primary" for="payment_cod">COD</label>
+                                                <label class="btn btn-outline-dark" for="payment_cod">COD</label>
 
                                                 <input type="radio" class="btn-check" name="payment_method" id="payment_razorpay" value="razorpay" autocomplete="off">
-                                                <label class="btn btn-outline-primary" for="payment_razorpay">RazorPay</label>
+                                                <label class="btn btn-outline-dark" for="payment_razorpay">RazorPay</label>
                                             </div>
                                             
-                                            <button id="cod-form" class="btn-primary btn btn-block w-100" type="submit">Pay Now COD</button>
-                                            <button id="razorpay-form" class="btn-primary btn btn-block w-100 d-none" type="submit">Pay <span class="total_amount">0.00</span></button>                
+                                            <button id="cod-form" class="btn-primary btn caps-btn btn-block w-100 checkoutBtn" type="submit">Submit</button>
+                                            <button id="razorpay-form" class="btn-primary btn caps-btn btn-block w-100 d-none checkoutBtn" type="submit">Pay <span class="total_amount">0.00</span></button>                
                                         </div>
 
                                         {{-- <a href="{{ route('front.checkout') }}" class="btn btn-primary btn-block w-100">Place Order</a> --}}
                                         {{-- <button type="submit" class="btn btn-primary w-100" id="checkoutBtn" formaction="{{ route('front.processCheckout') }}">Pay <span class="total_amount">0.00</span></button> --}}
-                                    @else
+                                    {{-- @else
                                         <a class="btn btn-primary btn-block w-100" href="#" data-bs-toggle="modal" data-bs-target="#login">
                                             Login to Place Order
                                         </a>
-                                    @endif 
+                                    @endif  --}}
                                 @endif
                             </div>
                         </div>
@@ -427,7 +437,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="saved-address-grey">
-                        <h5>Saved Address</h5>
+                        <h5 class="mt-2">Saved Address</h5>
                         @if(!in_array('Home', $addressTypes) || !in_array('Office', $addressTypes))
                             <a href="#" class="btn btn-outline-dark float-end" data-bs-toggle="modal" data-bs-target="#createAddressModal">
                                 + Add New Address
@@ -472,10 +482,10 @@
                                                     <p class="text-muted mt-2">Mobile: <b>{{ $value->mobile }}</b></p>
                                                     
                                                     <ul class="flex mt-3">
-                                                        <li><button type="submit" name="action" value="default" class="btn btn-primary caps-btn">Deliver Here</button></li>                                                                        
+                                                        <li><button type="submit" name="action" value="default" class="btn btn-primary btn-sm caps-btn">Deliver Here</button></li>                                                                        
                                                         <li>
                                                             <a href="#"
-                                                                class="btn btn-outline-dark caps-btn"
+                                                                class="btn btn-outline-dark caps-btn btn-sm"
                                                                 data-bs-toggle="modal"
                                                                 data-bs-target="#editAddressModal"                                                
                                                                 data-id="{{ $value->id }}"
@@ -503,9 +513,9 @@
                                 @endforeach    
                             </form>         
                             
-                            @if(!in_array('Home', $addressTypes) || !in_array('Office', $addressTypes))
+                            {{-- @if(!in_array('Home', $addressTypes) || !in_array('Office', $addressTypes))
                                 <button type="button" class="btn btn-primary w-100 caps-btn" data-bs-toggle="modal" data-bs-target="#createAddressModal">Add New Address</button>
-                            @endif                                            
+                            @endif --}}
                     </div>
                 </div>
             </div>

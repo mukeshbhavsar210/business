@@ -7,11 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
-class AdminLoginController extends Controller
-{
-    public function index() {
-        return view('admin.login');
-    }
+class AdminLoginController extends Controller {
+   
 
     public function authenticate(Request $request){
         $validator = Validator::make($request->all(),[
@@ -20,7 +17,6 @@ class AdminLoginController extends Controller
         ]);
 
         if ($validator->passes()) {
-
             if (Auth::guard('admin')->attempt([
                 'email' => $request->email,
                 'password'=>$request->password],
@@ -35,7 +31,6 @@ class AdminLoginController extends Controller
                     return redirect()->route('admin.login')->with('error', 'You are not authorised to access this admin panel.' );
                 }
 
-
             } else {
                 return redirect()->route('admin.login')->with('error', 'Either Email/Password is Incorrect');
             }
@@ -46,6 +41,4 @@ class AdminLoginController extends Controller
             ->withInput($request->only('email'));
         }
     }
-
-
 }

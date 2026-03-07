@@ -14,11 +14,10 @@
 
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-7 col-12 sticky">
+        <div class="col-md-6 col-12 sticky">
             <div class="row">
-                @if(request()->filled('variant') && $selectedVariant && $selectedVariant->image)
-                    {{-- Show ONLY selected variant image --}}
-                    <div class="col-md-6 col-12">
+                @if(request()->filled('variant') && $selectedVariant && $selectedVariant->image)                    
+                    <div class="col-md-12 col-12">
                         <img class="w-100 h-100" src="{{ asset('uploads/product/large/'.$selectedVariant->image) }}" alt="Variant Image">
                     </div>
                 @else                    
@@ -32,7 +31,7 @@
                 @endif                          
             </div>
         </div>
-        <div class="col-md-5 col-12">
+        <div class="col-md-6 col-12">
             <div class="product-details-wrapper">
                 <h1>{{ $product->title }}</h1>
                 <p class="tag">{{ $product->short_description }}</p>
