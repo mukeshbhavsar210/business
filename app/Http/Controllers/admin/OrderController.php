@@ -8,40 +8,44 @@ use App\Models\OrderItem;
 use App\Models\OrderStatusHistory;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller {
+    
     public function index(Request $request) {
-        $statuses = ['confirmed', 'delivered', 'shipped', 'cancelled'];
-        $orders = [];
+        $orders = Order::with(array_merge($this->orderRelations(), ['latestStatus']))
+            ->latest('orders.created_at')
+            ->paginate(20);        
 
-        foreach ($statuses as $status) {
-            $query = Order::with($this->orderRelations())
-                ->where('status', $status)
-                ->latest('orders.created_at');
+        // Order counts
+        $totalOrders = Order::count();
 
-            // Apply search only for delivered (if needed)
-            if ($status === 'delivered' && $request->filled('delivered_keyword')) {
-                $keyword = $request->delivered_keyword;
+        // $confirmedCount = Order::whereHas('latestStatus', function ($q) {
+        //     $q->where('status', 'confirmed');
+        // })->count();
 
-                $query->where(function ($q) use ($keyword) {
-                    $q->whereHas('user', function ($sub) use ($keyword) {
-                        $sub->where('name', 'like', "%{$keyword}%")
-                            ->orWhere('email', 'like', "%{$keyword}%");
-                    })
-                    ->orWhere('id', 'like', "%{$keyword}%");
-                });
-            }
+        // $shippedCount = Order::whereHas('latestStatus', function ($q) {
+        //     $q->where('status', 'shipped');
+        // })->count();
 
-            $orders[$status] = $query->paginate(10, ['*'], $status . '_page');
-        }
+        // $deliveredCount = Order::whereHas('latestStatus', function ($q) {
+        //     $q->where('status', 'delivered');
+        // })->count();
+
+        // $cancelledCount = Order::whereHas('latestStatus', function ($q) {
+        //     $q->where('status', 'cancelled');
+        // })->count();
 
         return view('admin.orders.list', [
-            'confirmed_orders' => $orders['confirmed'],
-            'delivered_orders' => $orders['delivered'],            
-            'shipped_orders' => $orders['shipped'],
-            'cancelled_orders' => $orders['cancelled'],
+            'orders' => $orders,
+            'totalOrders' => $totalOrders,
+            // 'confirmedCount' => $confirmedCount,
+            // 'shippedCount' => $shippedCount,
+            // 'deliveredCount' => $deliveredCount,
+            // 'cancelledCount' => $cancelledCount,
         ]);
     }
+
 
     private function orderRelations() {
         return [
@@ -74,46 +78,56 @@ class OrderController extends Controller {
             ->where('order_id', $orderId)
             ->get();
 
+        $latestStatus = OrderStatusHistory::where('order_id',$order->id)
+                ->orderBy('date','desc')
+                ->first();
+
+        $orderHistory = OrderStatusHistory::where('order_id',$orderId)
+                ->orderBy('date','asc')
+                ->get();
+
         return view('admin.orders.detail', [
             'order' => $order,
             'orderItems' => $orderItems,
+            'latestStatus' => $latestStatus,
+            'orderHistory' => $orderHistory
         ]);
     }
 
 
-    public function changeOrderStatus(Request $request, $orderId){
-        $order = Order::find($orderId);
-        $order->status = $request->status;
-        $order->shipped_date = $request->shipped_date;
-        $order->save();
+    public function tracking($id) {
+        $statuses = OrderStatusHistory::where('order_id', $id)
+            ->orderBy('date','asc')
+            ->get();
 
-        $message = 'Order status updated successfully';
+        $data = [];
 
-        session()->flash('success',$message);
+        foreach($statuses as $status){
+            $data[] = [
+                'status' => $status->status,
+                'date' => \Carbon\Carbon::parse($status->date)
+                            ->format('d M Y h:i A')
+            ];
+        }        
 
-        return response()->json([
-            'status' => true,
-            'message' => $message,
-        ]);
+        return response()->json($data);
     }
-
-    
 
 
     public function changeTrackStatus(Request $request, $orderId){
-        $order = Order::find($orderId);
-        $order->delivery_status = $request->delivery_status;
-        $order->tracking_date = $request->tracking_date;
+        $order = new OrderStatusHistory();
+        $order->order_id = $request->order_id;
+        $order->tracking_number = $request->tracking_number;
+        $order->courier = $request->courier;
+        $order->note = $request->note;
+        $order->status = $request->status;
+        $order->date = $request->date;
         $order->save();
 
         $message = 'Order track status updated successfully';
 
-        session()->flash('success',$message);
-
-        return response()->json([
-            'status' => true,
-            'message' => $message,
-        ]);
+        session()->flash('success','Order track status updated successfully');
+        return redirect()->back();
     }
 
 

@@ -9,11 +9,7 @@ class OrderStatusHistory extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'order_id',
-        'status',
-        'status_date'
-    ];
+    protected $fillable = [ 'order_id', 'tracking_number', 'courier', 'note', 'status', 'date' ];
 
     public function order()
     {

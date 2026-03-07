@@ -539,7 +539,7 @@ class AuthController extends Controller
 
     public function tracking($id) {
         $statuses = OrderStatusHistory::where('order_id', $id)
-            ->orderBy('status_date','asc')
+            ->orderBy('date','asc')
             ->get();
 
         $data = [];
@@ -547,7 +547,7 @@ class AuthController extends Controller
         foreach($statuses as $status){
             $data[] = [
                 'status' => $status->status,
-                'date' => \Carbon\Carbon::parse($status->status_date)
+                'date' => \Carbon\Carbon::parse($status->date)
                             ->format('d M Y h:i A')
             ];
         }        

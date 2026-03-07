@@ -5,8 +5,8 @@
     <div class="card mb-0">
         <div class="card-body pb-0">
             <div class="row mb-2">
-                <div class="col-sm-10 col-12 d-flex">
-                    <h3>Order: #{{ $order->id }}</h3>
+                <div class="col-sm-10 col-12">
+                    <h3>Order: #{{ $order->id }}</h3>                    
                 </div>
                 <div class="col-sm-2 col-12">
                     <a href="{{ route('orders.index') }}" class="btn btn-primary float-end">Back to Order</a>
@@ -64,15 +64,33 @@
                                     <div class="flex-details">
                                         <p class="label">Status</p>                                        
                                         <p class="right">:
-                                            @if ($order->status == 'confirmed')
-                                                <span class="badge bg-success">Confirmed</span>
-                                            @elseif ($order->status == 'shipped')
-                                                <span class="badge bg-info">Shipped</span>
-                                            @elseif ($order->status == 'delivered')
+                                            @php
+                                                $status = $order->latestStatus->status ?? 'confirmed';
+
+                                                $badgeClasses = [
+                                                    'Confirmed'         => 'bg-secondary',
+                                                    'Shipped'           => 'bg-primary',
+                                                    'Out for Delivery'  => 'bg-warning',
+                                                    'Delivered'         => 'bg-success',
+                                                    'Cancelled'         => 'bg-danger'
+                                                ];
+                                            @endphp
+
+                                            <span class="badge {{ $badgeClasses[$status] ?? 'bg-dark' }}">
+                                                {{ ucfirst(str_replace('_',' ',$status)) }}
+                                            </span>
+
+                                            {{-- @if ($latestStatus && $latestStatus->status == 'Placed')
+                                                <span class="badge bg-success">Placed</span>
+                                            @elseif ($latestStatus && $latestStatus->status == 'Packed')
+                                                <span class="badge bg-success">Packed</span>
+                                            @elseif ($latestStatus && $latestStatus->status == 'Shipped')
+                                                <span class="badge bg-success">Shipped</span>
+                                            @elseif ($latestStatus && $latestStatus->status == 'Out for Delivery')
+                                                <span class="badge bg-success">Out for Delivery</span>
+                                            @elseif ($latestStatus && $latestStatus->status == 'Delivered')
                                                 <span class="badge bg-success">Delivered</span>
-                                            @elseif ($order->status == 'cancelled')
-                                                <span class="badge bg-danger">Cancelled</span>
-                                            @endif
+                                            @endif --}}
                                         </p>                                                                                
                                     </div>                                
                                 </div>
@@ -153,70 +171,60 @@
                     </div>
                 </div>
 
-                <div class="col-md-3 col-12">             
+                <div class="col-md-3 col-12">  
                     <div class="card border">
-                        <div class="card-body">
-                            <form action="" method="post" name="changeOrderStatusForm" id="changeOrderStatusForm">                        
+                        <div class="card-body">                            
+                            <form action="{{ route('order.changeTrackStatus',$order->id) }}" method="post">
+                                @csrf
+
                                 <h5 class="mb-2">Order Status</h4>
-                                <div class="form-group">
-                                    <label for="status">Status</label>
-                                    <select name="status" id="status" class="form-select">
-                                        <option value="confirmed" {{ ($order->status == 'confirmed') ? 'selected' : ''}}>Confirmed</option>
-                                        <option value="shipped" {{ ($order->status == 'shipped') ? 'selected' : ''}}>Shipped</option>
-                                        <option value="delivered" {{ ($order->status == 'delivered') ? 'selected' : ''}}>Delivered</option>
-                                        <option value="cancelled" {{ ($order->status == 'cancelled') ? 'selected' : ''}}>Cancelled</option>
-                                    </select>                                
-                                </div>
-                                <div class="mb-1">
-                                    <div class="form-group">
-                                        <label for="shipped_date">Shipped Date</label>
-                                        <input placeholder="Shipped Date" autocomplete="off" value="{{ $order->shipped_date }}" type="date" name="shipped_date" id="shipped_date" class="form-control">
-                                    </div>
-                                </div>
-                                <div class="mt-1">
-                                    <button class="btn btn-primary">Update</button>
-                                </div>                        
-                            </form>
-                        </div>
-                    </div>
+                                    
+                                <input type="hidden" name="order_id" value="{{ $order->id }}" />
 
-                    <div class="card border">
-                        <div class="card-body">
-                            <form action="" method="post" name="trackingForm" id="trackingForm">                        
-                                <h5 class="mb-2">Order Track</h4>
                                 <div class="form-group">                                    
-                                    <select name="delivery_status" id="delivery_status" class="form-select">
-                                        <option value="placed" {{ ($order->status == 'placed') ? 'selected' : ''}}>Placed</option>
-                                        <option value="packed" {{ ($order->status == 'packed') ? 'selected' : ''}}>Packed</option>
-                                        <option value="shipped" {{ ($order->status == 'shipped') ? 'selected' : ''}}>Shipped</option>
-                                        <option value="out_for_delivery" {{ ($order->status == 'out_for_delivery') ? 'selected' : ''}}>Out for Delivery</option>
-                                        <option value="delivered" {{ ($order->status == 'delivered') ? 'selected' : ''}}>Delivered</option>
-                                    </select>                                
+                                    <select name="status" id="delivery_status" class="form-select">
+                                        <option value="Placed" {{ ($latestStatus && $latestStatus->status == 'Placed') ? 'selected' : '' }}>Placed</option>
+                                        <option value="Packed" {{ ($latestStatus && $latestStatus->status == 'Packed') ? 'selected' : '' }}>Packed</option>
+                                        <option value="Shipped" {{ ($latestStatus && $latestStatus->status == 'Shipped') ? 'selected' : '' }}>Shipped</option>
+                                        <option value="Out for Delivery" {{ ($latestStatus && $latestStatus->status == 'Out for Delivery') ? 'selected' : '' }}>Out for Delivery</option>
+                                        <option value="Delivered" {{ ($latestStatus && $latestStatus->status == 'Delivered') ? 'selected' : '' }}>Delivered</option>
+                                        <option value="Cancelled" {{ ($latestStatus && $latestStatus->status == 'Cancelled') ? 'selected' : '' }}>Cancelled</option>
+                                    </select>                            
                                 </div>
                                 <div class="mb-1">
                                     <div class="form-group">
-                                        <input placeholder="Date" autocomplete="off" value="{{ $order->tracking_date }}" type="date" name="tracking_date" id="tracking_date" class="form-control">
+                                        <input placeholder="Date" autocomplete="off" value="{{ $latestStatus->date ?? '' }}" type="datetime-local" name="status_date" id="status_date" class="form-control">
                                     </div>
                                 </div>
+                                <div class="form-group">
+                                    <input type="text" name="tracking_number" value="{{ $latestStatus->tracking_number ?? '' }}" class="form-control" placeholder="Tracking number" />
+                                </div> 
+                                <div class="form-group">
+                                    <select name="courier" class="form-select">
+                                        <option value="Shadofax" {{ ($latestStatus && $latestStatus->courier == 'Shadofax') ? 'selected' : '' }}>Shadofax</option>
+                                        <option value="Delivery" {{ ($latestStatus && $latestStatus->courier == 'Delivery') ? 'selected' : '' }}>Delivery</option>                                        
+                                    </select>                            
+                                </div>
+                                <div class="form-group">
+                                    <textarea name="note" value="" class="form-control" placeholder="Note" cols="3" >{{ $latestStatus->note ?? '' }}</textarea>
+                                </div> 
                                 <div class="mt-1">
-                                    <button class="btn btn-primary">Update</button>
+                                    <button class="btn btn-primary caps-btn">Update</button>
                                 </div>                        
                             </form>
-                        </div>
-                    </div>
 
-                    <div class="card border">
-                        <div class="card-body">
+                            <hr />
+                            
                             <form action="" method="post" name="sendInvoiceEmail" id="sendInvoiceEmail">
-                                <h5 class="mb-2">Send Inovice Email</h5>
+                                <h5 class="mb-2">Send Inovice to Customer</h5>
                                 <select name="userType" id="userType" class="form-select">
                                     <option value="customer">Customer</option>
                                     <option value="admin">Admin</option>
                                 </select>                            
                                 <div class="mt-2">
-                                    <button class="btn btn-primary">Send Invoice</button>
+                                    <button class="btn btn-primary caps-btn">Send Invoice</button>
                                 </div>
-                            </form>   
+                            </form> 
                         </div>
                     </div>
                 </div>
@@ -227,46 +235,6 @@
 
 @section('customJs')
     <script>
-        // $(document).ready(function(){
-        //     $('#shipped_date').datetimepicker({
-        //         format:'Y-m-d H:i:s',
-        //     });
-        // });
-
-        $("#changeOrderStatusForm").submit(function(event){
-            event.preventDefault();
-            var element = $(this);
-
-            if (confirm("Are you sure you want to change status?")){
-                $.ajax({
-                    url: '{{ route("orders.changeOrderStatus",$order->id) }}',
-                    type: 'post',
-                    data: element.serializeArray(),
-                    dataType: 'json',
-                    success: function(response){
-                        window.location.href='{{ route("orders.detail",$order->id ) }}';
-                    }
-                });
-            }
-        });
-
-        $("#trackingForm").submit(function(event){
-            event.preventDefault();
-            var element = $(this);
-
-            if (confirm("Are you sure you want to change status?")){
-                $.ajax({
-                    url: '{{ route("orders.changeTrackingStatus",$order->id) }}',
-                    type: 'post',
-                    data: element.serializeArray(),
-                    dataType: 'json',
-                    success: function(response){
-                        window.location.href='{{ route("orders.detail",$order->id ) }}';
-                    }
-                });
-            }
-        });
-
         $("#sendInvoiceEmail").submit(function(event){
             event.preventDefault();
             var element = $(this);

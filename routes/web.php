@@ -177,10 +177,10 @@ Route::group(['prefix' => 'admin'], function(){
         //Orders Routes
         Route::controller(OrderController::class)->group(function() {
             Route::get('/orders', 'index')->name('orders.index');
-            Route::get('/orders/{id}', 'detail')->name('orders.detail');
-            Route::post('/order/change-status/{id}', 'changeOrderStatus')->name('orders.changeOrderStatus');
-            
+            Route::get('/orders/{id}', 'detail')->name('orders.detail');            
+            Route::post('/order/tracking/{id}', 'changeTrackStatus')->name('order.changeTrackStatus');            
             Route::post('/order/send-email/{id}', 'sendInvoiceEmail')->name('orders.sendInvoiceEmail');
+            Route::get('/order_tracking/{id}', 'tracking')->name('orders.order.tracking');
         });          
 
         //Temp image controller

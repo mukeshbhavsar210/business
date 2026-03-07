@@ -50,4 +50,10 @@ class Order extends Model {
     public function statusHistories() {
         return $this->hasMany(OrderStatusHistory::class);
     }
+
+    public function latestStatus() {
+        //return $this->hasOne(OrderStatusHistory::class)->latestOfMany('date');
+        return $this->hasOne(OrderStatusHistory::class)->latestOfMany('created_at');
+    }
+
 }

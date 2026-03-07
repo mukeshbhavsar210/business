@@ -11,23 +11,30 @@
             @if (getCategories()->isNotEmpty())
                 @foreach (getCategories() as $category)
                     <div class="col-md-3 col-6">
+                        <x-product-card :category="$category" />
+                    </div>
+                @endforeach
+            @endif
+
+            {{-- @if (getCategories()->isNotEmpty())
+                @foreach (getCategories() as $product)
+                    <div class="col-md-3 col-6">
                         <div class="product-card-home">
-                            <a href="{{ route('front.category.shop', [$category->category_slug]) }}" >                            
-                                @if ($category->image != "")
-                                    <img src="{{ asset('uploads/category/'.$category->image) }} " alt="" class="img-fluid">
+                            <a href="{{ route('front.category.shop', [$product->category_slug]) }}" >                            
+                                @if ($product->image != "")
+                                    <img src="{{ asset('uploads/category/'.$product->image) }} " alt="" class="img-fluid">
                                 @endif
                             
                                 <div class="product-card-home-body">
-                                    <h5>{{$category->category_name}}</h5>
-                                    <p>{{ $category->products_count }} Products</p>
+                                    <h5>{{$product->category_name}}</h5>
+                                    <p>{{ $product->products_count }} Products</p>
                                     <a href="#" class="btn btn-outline-dark btn-sm">Shop Now</a>
                                 </div>                                                        
                             </a>
                         </div>
                     </div>
                 @endforeach
-            @endif
+            @endif --}}
         </div>
-    </div>
-    
+    </div>    
 @endsection

@@ -64,12 +64,10 @@
         </div>
     </div>
 </div>
-    
 @endsection
 
 @section('customJs')
     <script>
-
         $('.form-check-input').on('change', function () {
             let url = new URL(window.location.href);
             let params = url.searchParams;
