@@ -54,34 +54,34 @@ class AuthController extends Controller
         }
     }
 
-    public function authenticate(Request $request){
+
+    public function authenticate(Request $request) {
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required',
         ]);
 
-        if($validator->passes()) {
-
-            if(Auth::attempt(['email' => $request->email,'password' => $request->password], $request->get('remember'))) {
-
-                if (session()->has('url.intended')) {
-                    return redirect(session()->get('url.intended'));
-                }
-
-                return redirect()->route('account.profile');
+        if ($validator->passes()) {
+            if (Auth::attempt([
+                'email' => $request->email,
+                'password' => $request->password
+            ], $request->get('remember'))) {
+                $request->session()->regenerate();                
+                return redirect()->intended(route('account.profile'))
+                ->with('toast_success','Welcome back, '.Auth::user()->name.'!');                
 
             } else {
                 return redirect()->route('front.home')
                     ->withInput($request->only('email'))
                     ->with('error','Either email/password is incorrect.');
             }
-
         } else {
             return redirect()->route('front.home')
-            ->withErrors($validator)
-            ->withInput($request->only('email'));
+                ->withErrors($validator)
+                ->withInput($request->only('email'));
         }
     }
+
 
     public function dashboard(){
         $userId = Auth::user()->id;        

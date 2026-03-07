@@ -25,9 +25,11 @@ Route::controller(FrontController::class)->group(function() {
     Route::post('/send-contact-email', 'sendContactEmail')->name('front.sendContactEmail');
 });
 
+Route::post('/set-intended-url', function (Request $request) {session(['url.intended' => $request->url]);});
+
 Route::controller(ShopController::class)->group(function() {
-    Route::get('/products/{categorySlug?}/','category')->name('front.category.shop');
     Route::get('/products/{subCategorySlug?}/{subSubCategory?}','index')->name('front.shop');
+    Route::get('/category/{categorySlug?}/','category')->name('front.category.shop');
     Route::get('/product/{slug}','product')->name('front.product');
     Route::get('/product/{id}/reviews', 'allReviews')->name('product.reviews');
     Route::post('/rate-product', 'rating_store')->name('rate.product');
@@ -74,6 +76,8 @@ Route::group(['prefix' => 'account'], function(){
             Route::post('/login','authenticate')->name('account.authenticate');
             Route::get('/register','register')->name('account.register');
             Route::post('/process-register','processRegister')->name('account.processRegister');
+
+            
         });
     });
 

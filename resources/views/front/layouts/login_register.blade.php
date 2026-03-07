@@ -1,6 +1,8 @@
 
+
+
 <div class="modal fade" id="login" tabindex="-1" aria-labelledby="loginLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="loginLabel">Login to Your Account</h5>
@@ -10,16 +12,16 @@
             <form action="{{ route('account.authenticate') }}" method="post" >
                 @csrf
                 <div class="modal-body">
-                    <div class="form-group">
-                        <label>Email</label>
-                        <input type="text" class="form-control @error('email') is-invalid @enderror" placeholder="Email" name="email" value="{{ old('email') }}">
+                    <div class="form-group">                        
+                        <input type="text" class="form-control floating-input @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}">
+                        <label class="floating-label">Email</label>
                         @error('email')
                             <p class="invalid-feedback">{{ $message }}</p>
                         @enderror
                     </div>
-                    <div class="form-group">
-                        <label>Password</label>
-                        <input type="password" class="form-control @error('password') is-invalid @enderror" placeholder="Password" name="password" >
+                    <div class="form-group">                        
+                        <input type="password" class="form-control floating-input @error('password') is-invalid @enderror" name="password" >
+                        <label class="floating-label">Password</label>
                         @error('password')
                             <p class="invalid-feedback">{{ $message }}</p>
                         @enderror
@@ -27,18 +29,13 @@
                 </div>
 
                 <div class="modal-footer">
-                    <div class="row">
-                        <div class="col-6">                        
-                            <div class="flex">
-                                <a href="#" data-bs-toggle="modal" data-bs-target="#forgot">Forgot Password?</a>
-                                <a href="#" data-bs-toggle="modal" data-bs-target="#register">Register account</a>
-                            </div>
-                        </div>
-
-                        <div class="col-6">
-                            <input type="submit" class="btn btn-dark btn-block btn-lg" value="Login">
-                        </div>
+                    <div>                        
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#forgot" class="btn btn-outline-dark">Forgot Password?</a>                        
                     </div>
+                    <div>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#register" class="btn btn-outline-dark caps-btn">Register</a>
+                        <input type="submit" class="btn btn-primary caps-btn checkoutBtn" value="Login">
+                    </div>                    
                 </div> 
             </form>            
         </div>
@@ -46,7 +43,7 @@
 </div>
 
 <div class="modal fade" id="register" tabindex="-1" aria-labelledby="registerLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="registerLabel">Register Account</h5>
@@ -56,19 +53,22 @@
             <form action="" method="post" name="registrationForm" id="registrationForm">                    
                 <div class="modal-body">
                     <div class="form-group">
-                        <input type="text" class="form-control" placeholder="Name" id="name" name="name">
+                        <input type="text" class="form-control floating-input" id="name" name="name">
+                        <label class="floating-label">Name</label>
                         <p></p>
                     </div>
                     <div class="row">
-                        <div class="col-6">
+                        <div class="col-12">
                             <div class="form-group">
-                                <input type="text" class="form-control" placeholder="Email" id="email" name="email">
+                                <input type="text" class="form-control floating-input" placeholder="Email" id="email" name="email">
+                                <label class="floating-label">Email</label>
                                 <p></p>
                             </div>
                         </div>
-                        <div class="col-6">
+                        <div class="col-12">
                             <div class="form-group">
-                                <input type="text" class="form-control" placeholder="Phone" id="phone" name="phone">
+                                <input type="text" class="form-control floating-input" id="phone" name="phone">
+                                <label class="floating-label">Phone</label>
                                 <p></p>
                             </div>
                         </div>
@@ -76,21 +76,23 @@
                     <div class="row">
                         <div class="col-6">
                             <div class="form-group">
-                                <input type="password" class="form-control" placeholder="Password" id="password" name="password">
+                                <input type="password" class="form-control floating-input" id="password" name="password">
+                                <label class="floating-label">Password</label>
                                 <p></p>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="form-group">
-                                <input type="password" class="form-control" placeholder="Confirm Password" id="password_confirmation" name="password_confirmation">
+                                <input type="password" class="form-control floating-input" id="password_confirmation" name="password_confirmation">
+                                <label class="floating-label">Confirmed Password</label>
                                 <p></p>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <a href="#" data-bs-toggle="modal" data-bs-target="#login">Login</a>
-                    <input type="submit" class="btn btn-dark btn-block btn-lg" value="Register Account">
+                    <a href="#" class="btn btn-outline-dark checkoutBtn">Login</a>
+                    <input type="submit" class="btn btn-primary" value="Register Account">
                 </div> 
             </form>    
         </div>
@@ -98,7 +100,7 @@
 </div>
 
 <div class="modal fade" id="forgot" tabindex="-1" aria-labelledby="forgotLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="forgotLabel">Forgot Password</h5>
@@ -107,11 +109,15 @@
 
             <form action="" method="post" name="forgotPasswordForm" id="forgotPasswordForm">                    
                 <div class="modal-body">
-                  
+                    <div class="form-group">
+                        <input type="text" class="form-control floating-input" placeholder="Email" id="email" name="email">
+                        <label class="floating-label">Email</label>
+                        <p></p>
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <a href="#" data-bs-toggle="modal" data-bs-target="#login">Login</a>
-                    <input type="submit" class="btn btn-dark btn-block btn-lg" value="Register Account">
+                    <a href="#" class="btn btn-primary checkoutBtn">Login</a>
+                    <input type="submit" class="btn btn-primary" value="Send Reset Link">
                 </div> 
             </form>    
         </div>

@@ -32,6 +32,20 @@
 </head>
 <body data-instant-intensity="mousedown">
 
+    @if(session('success'))
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    {{ session('success') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+@endif
+
+@if(session('error'))
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ session('error') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+@endif
+
 @include(request()->routeIs(['front.cart','front.checkout','front.checkout.thankyou']) ? 'front.layouts.cart_header' : 'front.layouts.header')
 
 <main class="{{ request()->routeIs(['front.cart','front.checkout','front.checkout.thankyou']) ? 'main' : 'default' }}">
@@ -51,6 +65,29 @@
 <script src="{{ asset('front-assets/js/ion.rangeSlider.min.js') }}"></script>
 <script src="{{ asset('front-assets/js/documentReady.js') }}"></script>
 <script>
+    $('.checkoutBtn').click(function () {            
+        $.ajax({
+            url: "/set-intended-url",
+            method: "POST",
+            data: {
+                _token: "{{ csrf_token() }}",
+                url: window.location.href
+            }
+        });
+        $('#login').modal('show');
+    });
+
+    @if(session('toast_success'))
+        var toastMessage = "{{ session('toast_success') }}";
+        $('#cartToastMessage').text(toastMessage);
+        var toast = new bootstrap.Toast($('#cartToast')[0]);
+        toast.show();
+    @endif
+
+    setTimeout(function(){
+        $('.alert').fadeOut('slow');
+    },5000);
+
 	window.onscroll = function() {myFunction()};
 	var navbar = document.getElementById("navbar");
 	var sticky = navbar.offsetTop;
@@ -68,10 +105,6 @@
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
-
-
-    
-    
     
     function addToCart(id){
         if(selectedSize == ''){

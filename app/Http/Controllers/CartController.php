@@ -335,7 +335,7 @@ class CartController extends Controller {
     public function checkout() {
         if (Cart::count() == 0) {
             return redirect()->route('front.cart');
-        }
+        }        
 
         if (!Auth::check()) {
             if (!session()->has('url.intended')) {

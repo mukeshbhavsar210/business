@@ -36,76 +36,76 @@
                 </div>
 
                 <form action=" " name="orderForm" id="orderForm" method="POST">
-                @csrf
+                    @csrf
 
-                @php
-                    $defaultAddressId = old(
-                        'default_address_id',
-                        optional($address->firstWhere('default_address', 1))->id
-                    );
-                @endphp
+                    @php
+                        $defaultAddressId = old(
+                            'default_address_id',
+                            optional($address->firstWhere('default_address', 1))->id
+                        );
+                    @endphp
 
-                <h5>Default Address</h5>
+                    <h5>Default Address</h5>
 
-                @foreach($address as $address)                                                
-                    <div class="card mb-3 mt-2 default-card">
-                        <label class="address-card">
-                            <div class="card-body">                                    
-                                <label class="custom-radio">
-                                    <input type="radio" name="default_address_id" value="{{ $address->id }}" class="address-radio" {{ $defaultAddressId == $address->id ? 'checked' : '' }} >                                    <span class="radio-mark"></span>                                    
-                                </label>
+                    @foreach($address as $address)                                                
+                        <div class="card mb-3 mt-2 default-card">
+                            <label class="address-card">
+                                <div class="card-body">                                    
+                                    <label class="custom-radio">
+                                        <input type="radio" name="default_address_id" value="{{ $address->id }}" class="address-radio" {{ $defaultAddressId == $address->id ? 'checked' : '' }} >                                    <span class="radio-mark"></span>                                    
+                                    </label>
 
-                                <div class="address-content w-100">
-                                    <h5 class="mb-2">
-                                        <b>{{ $address->name }}</b>
-                                        <span class="badge bg-dark text-light">
-                                            {{ $address->address_type }}
-                                        </span>
-                                    </h5>
-                                    <p class="text-muted mb-0">{{ $address->address }}</p>
-                                    <p class="text-muted mb-0">{{ $address->locality }}, {{ $address->city }} - {{ $address->zip }}, {{ $address->state->name }}.</p>                                                        
-                                    <p class="text-muted mt-2">Mobile: {{ $address->mobile }}</p>
-                                    
-                                    <div class="mt-3 d-none control-btn">
-                                        <ul class="flex">
-                                            <li><a href="#" class="btn btn-outline-danger btn-sm">Remove</a></li>
-                                            <li>
-                                                <a href="#"
-                                                    class="btn btn-outline-dark btn-sm"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#editAddressModal"                                                
-                                                    data-id="{{ $address->id }}"
-                                                    data-name="{{ $address->name }}"
-                                                    data-mobile="{{ $address->mobile }}"
-                                                    data-address="{{ $address->address }}"
-                                                    data-state="{{ $address->state_id }}">
-                                                    Edit
-                                                    </a>
-                                            </li>
-                                        </ul>  
-                                    </div> 
+                                    <div class="address-content w-100">
+                                        <h5 class="mb-2">
+                                            <b>{{ $address->name }}</b>
+                                            <span class="badge bg-dark text-light">
+                                                {{ $address->address_type }}
+                                            </span>
+                                        </h5>
+                                        <p class="text-muted mb-0">{{ $address->address }}</p>
+                                        <p class="text-muted mb-0">{{ $address->locality }}, {{ $address->city }} - {{ $address->zip }}, {{ $address->state->name }}.</p>                                                        
+                                        <p class="text-muted mt-2">Mobile: {{ $address->mobile }}</p>
+                                        
+                                        <div class="mt-3 d-none control-btn">
+                                            <ul class="flex">
+                                                <li><a href="#" class="btn btn-outline-danger btn-sm">Remove</a></li>
+                                                <li>
+                                                    <a href="#"
+                                                        class="btn btn-outline-dark btn-sm"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#editAddressModal"                                                
+                                                        data-id="{{ $address->id }}"
+                                                        data-name="{{ $address->name }}"
+                                                        data-mobile="{{ $address->mobile }}"
+                                                        data-address="{{ $address->address }}"
+                                                        data-state="{{ $address->state_id }}">
+                                                        Edit
+                                                        </a>
+                                                </li>
+                                            </ul>  
+                                        </div> 
 
-                                    {{-- <x-customer-address-form 
-                                        :states="$states"
-                                        :action="route('customer.address.update', $address->id)" 
-                                        method="PUT" 
-                                        title="Edit Address" 
-                                        buttonText="Edit Address"
-                                        modalId="editAddressModal"
-                                    /> --}}
+                                        {{-- <x-customer-address-form 
+                                            :states="$states"
+                                            :action="route('customer.address.update', $address->id)" 
+                                            method="PUT" 
+                                            title="Edit Address" 
+                                            buttonText="Edit Address"
+                                            modalId="editAddressModal"
+                                        /> --}}
 
-                                </div>                                 
-                            </div>
-                        </label>                        
-                    </div>                        
-                @endforeach          
+                                    </div>                                 
+                                </div>
+                            </label>                        
+                        </div>                        
+                    @endforeach          
                 
-                <x-customer-address-form 
-                    :states="$states"
-                    action=""
-                    method="PUT"
-                    modalId="editAddressModal"
-                />
+                    <x-customer-address-form 
+                        :states="$states"
+                        action=""
+                        method="PUT"
+                        modalId="editAddressModal"
+                    />
                 
                 @if(!in_array('Home', $addressTypes) || !in_array('Office', $addressTypes))                    
                     <a href="#" class="add-address" data-bs-toggle="modal" data-bs-target="#createAddressModal">
