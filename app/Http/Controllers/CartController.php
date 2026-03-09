@@ -213,7 +213,6 @@ class CartController extends Controller {
         return redirect()->back()->with('success','Default address updated');
     }
 
-
     public function bulkAction(Request $request) {
         $checkedIds = $request->cart_ids ?? [];
         
@@ -330,7 +329,6 @@ class CartController extends Controller {
             'grand_total'           => $grand_total
         ]);        
     }
-    
 
     public function checkout() {
         if (Cart::count() == 0) {
@@ -379,8 +377,6 @@ class CartController extends Controller {
             'grandTotal'          => $grandTotal
         ]);
     }
-
-
 
     public function processCheckout(Request $request) {
         // Step 1: Validate selected shipping address
@@ -497,6 +493,10 @@ class CartController extends Controller {
             }
         }
 
+        if($order->coupon_id){
+            DiscountCoupon::where('id',$order->coupon_id)->increment('used_count');
+        }
+
         // Step 8: Send Order Confirmation Email
         orderEmail($order->id, 'customer');
 
@@ -527,7 +527,6 @@ class CartController extends Controller {
             'order' => $order,
         ]);
     }
-
 
     public function updateCartOption(Request $request) {
         $rowId = $request->rowId;
@@ -587,7 +586,6 @@ class CartController extends Controller {
             'message' => 'Cart updated successfully.'
         ]);
     }
-
     
     public function updateItem(Request $request) {
         $rowId = $request->rowId;
@@ -677,7 +675,6 @@ class CartController extends Controller {
         ]);
     }
 
-
     public function moveToWishlist(Request $request){
         $rowId = $request->rowId;
         $itemInfo = Cart::get($rowId);
@@ -710,7 +707,6 @@ class CartController extends Controller {
             "message"=> "Item moved to wishlist successfully.",
         ]);
     }
-
 
     public function checkout_old(){
         $discount = 0;
@@ -766,7 +762,6 @@ class CartController extends Controller {
     }
 
     public function getOrderSummary(Request $request){
-
         $subTotal = Cart::subtotal(2,'.','');
         $discount = 0;
         $discountString = '';

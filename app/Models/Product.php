@@ -67,4 +67,13 @@ class Product extends Model {
     public function subcategory() {
         return $this->belongsTo(SubCategory::class);
     }
+
+   public function coupons() {
+        return $this->belongsToMany(
+            DiscountCoupon::class,
+            'coupon_product',
+            'product_id',
+            'discount_coupons_id'
+        );
+    }
 }

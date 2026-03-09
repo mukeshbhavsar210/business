@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Color;
+use App\Models\DiscountCoupon;
 use App\Models\Product;
 use App\Models\Rating;
 use App\Models\Review;
@@ -201,6 +202,23 @@ class ShopController extends Controller {
             $filtersApplied = true;
         }
 
+
+        //$products = Product::query();        
+
+        // Coupon filter
+        if ($request->coupon) {
+
+            $coupon = DiscountCoupon::where('code', $request->coupon)->first();
+
+            if ($coupon) {
+                $products->whereHas('coupons', function ($q) use ($coupon) {
+                    $q->where('discount_coupons.id', $coupon->id);
+                });
+            } else {
+                $products->whereRaw('0=1'); // show nothing if invalid coupon
+            }
+        }
+
         $products = $products->paginate(10);
 
         $data['categories'] = $categories;
@@ -226,13 +244,38 @@ class ShopController extends Controller {
         return view('front.shop.index',$data);
     }
 
-    
-
 
     public function product($slug, Request $request){        
         $product = Product::where('slug',$slug)->with(['product_images', 'variants', 'subSubCategory.subCategory.category'])->first();
         $colors = Color::get();
         $sizes = Size::get();
+
+        $products = Product::query();
+
+        if($request->coupon){
+
+            $coupon = DiscountCoupon::where('code',$request->coupon)->first();
+
+            if($coupon){
+                $products->whereHas('coupons', function($q) use ($coupon){
+                    $q->where('discount_coupons.id',$coupon->id);
+                });
+            }
+        }
+                    
+        $coupon = $request->coupon;        
+        if($request->coupon){
+            $coupon = DiscountCoupon::where('code', $request->coupon)->first();
+
+            if(!$coupon){
+                abort(404);
+            }
+            // check if coupon valid for this product
+            if(!$product->coupons()->where('discount_coupons_id',$coupon->id)->exists()){
+                abort(404);
+            }
+            session(['coupon'=>$coupon]);
+        }
 
         $selectedVariant = null;
 
@@ -296,6 +339,7 @@ class ShopController extends Controller {
         $totalReviews = Review::where('product_id', $product->id)->count();         
        
         $data['product'] = $product;
+        $data['coupon'] = $coupon;
         $data['selectedVariant'] = $selectedVariant;
         $data['ratings'] = $ratings;
         $data['totalRatings'] = $totalRatings;
@@ -311,6 +355,23 @@ class ShopController extends Controller {
 
         return view('front.products.index',$data);
     }
+    
+
+    // public function coupon_product($slug, $coupon, $request) {
+    //     $product = Product::findOrFail($slug);
+
+    //     if($request->coupon){
+    //         $coupon = DiscountCoupon::where('code',$request->coupon)
+    //                         ->whereDate('expiry_date','>=',now())
+    //                         ->first();
+    //         if(!$coupon || !$product->coupons()->where('coupon_id',$coupon->id)->exists()){
+    //             abort(404);
+    //         }
+    //         session(['coupon'=>$coupon]);
+    //     }
+
+    //     return view('front.products.index', compact('product'));
+    // }
 
 
     public function allReviews($id) {

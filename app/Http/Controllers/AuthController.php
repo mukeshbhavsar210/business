@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CustomerAddress;
+use App\Models\DiscountCoupon;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\OrderStatusHistory;
@@ -13,9 +14,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
 
-class AuthController extends Controller
-{
+class AuthController extends Controller {
     public function login(Request $request){
         return view('front.account.login');
     }
@@ -54,22 +55,21 @@ class AuthController extends Controller
         }
     }
 
-
     public function authenticate(Request $request) {
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required',
-        ]);
+        ]);       
 
         if ($validator->passes()) {
             if (Auth::attempt([
                 'email' => $request->email,
-                'password' => $request->password
+                'password' => $request->password,
+                'is_active' => 1
             ], $request->get('remember'))) {
                 $request->session()->regenerate();                
                 return redirect()->intended(route('account.profile'))
-                ->with('toast_success','Welcome back, '.Auth::user()->name.'!');                
-
+                ->with('toast_success','Welcome back, '.Auth::user()->name.'!'); 
             } else {
                 return redirect()->route('front.home')
                     ->withInput($request->only('email'))
@@ -82,7 +82,6 @@ class AuthController extends Controller
         }
     }
 
-
     public function dashboard(){
         $userId = Auth::user()->id;        
         $user = User::where('id',$userId)->first();        
@@ -91,8 +90,6 @@ class AuthController extends Controller
             'user' => $user,                        
         ]);
     }
-
-    
 
     public function address(){
         $userId = Auth::user()->id;
@@ -271,18 +268,7 @@ class AuthController extends Controller
         }
     }
 
-     public function cards(){
-        $userId = Auth::user()->id;
-        $countries = State::orderBy('name','ASC')->get();
-        $user = User::where('id',$userId)->first();
-        $address = CustomerAddress::where('user_id',$userId)->first();
-
-        return view('front.account.cards',[
-            'user' => $user,
-            'countries' => $countries,
-            'address' => $address
-        ]);
-    }
+    
 
     public function profile(){
         $userId = Auth::user()->id;
@@ -433,10 +419,10 @@ class AuthController extends Controller
     }
 
 
-    public function orders(){
+    public function orders(Request $request){
         $user = Auth::user();
         $userId = Auth::user()->id;
-        $orders = Order::with('items.product', 'items.product.color', 'items.product.size', 'statusHistories')
+        $orders = Order::with('items.product', 'items.product.color', 'items.product.size', 'statusHistories', 'latestStatus')
                     ->where('user_id', $user->id)
                     ->latest()
                     ->get();
@@ -452,8 +438,49 @@ class AuthController extends Controller
         $totalCancelledItems = $orders->sum(function ($order) {
             return $order->items->sum('quantity');
         });
+
+        $orders = Order::query();
+
+        $statuses = [
+            '' => 'All',
+            'Out for Delivery' => 'On the way',
+            'delivered' => 'Delivered',
+            'cancelled' => 'Cancelled',
+            'returned' => 'Returned'
+        ];
+
+        $time = [
+            'anytime' => 'Anytime',
+            '30_days' => 'Last 30 days',
+            '6_months' => 'Last 6 months',
+            '1_year' => 'Last year'
+        ];
+
+        // Status Filter
+        if ($request->status) {
+            $orders->whereHas('latestStatus', function ($q) use ($request) {
+                $q->where('status', $request->status);
+            });
+        }
+
+        // Time Filter
+        if ($request->time == '30_days') {
+            $orders->where('created_at', '>=', Carbon::now()->subDays(30));
+        }
+
+        if ($request->time == '6_months') {
+            $orders->where('created_at', '>=', Carbon::now()->subMonths(6));
+        }
+
+        if ($request->time == '1_year') {
+            $orders->where('created_at', '>=', Carbon::now()->subYear());
+        }
+
+        $orders = $orders->with('latestStatus')->latest()->get();
         
-        $data['orders'] = $orders;        
+        $data['orders'] = $orders;
+        $data['time'] = $time;
+        $data['statuses'] = $statuses;
         $data['totalCancelledItems'] = $totalCancelledItems; 
 
         return view('front.account.orders.index', $data);
@@ -488,7 +515,7 @@ class AuthController extends Controller
     public function orderDetail($id){
         $user = Auth::user();
         $userId = Auth::user()->id;
-        $order = Order::where('user_id',$user->id)->where('id',$id)->first();
+        $order = Order::with('latestStatus')->where('user_id',$user->id)->where('id',$id)->first();
         $data['order'] = $order;
 
         $orderItems = OrderItem::where('order_id',$id)->get();
@@ -677,6 +704,70 @@ class AuthController extends Controller
         $address->update($validated);
 
         return back()->with('success', 'Shipping Address updated successfully');
+    }
+
+
+    public function cards(){
+        $userId = Auth::user()->id;
+        $countries = State::orderBy('name','ASC')->get();
+        $user = User::where('id',$userId)->first();
+        $address = CustomerAddress::where('user_id',$userId)->first();
+
+        return view('front.account.cards',[
+            'user' => $user,
+            'countries' => $countries,
+            'address' => $address
+        ]);
+    }
+
+    public function coupons(Request $request){
+        $coupons = DiscountCoupon::orderBy('name','ASC')->get();        
+
+        $query = DiscountCoupon::query();
+            switch ($request->sort) {
+                case 'trending':
+                    $query->orderBy('used_count', 'DESC'); 
+                    break;
+
+                case 'discount':
+                    $query->orderBy('discount_amount', 'DESC');
+                    break;
+
+                case 'expiring':
+                    $query->orderBy('expires_at', 'ASC');
+                    break;
+
+                default:
+                    $query->orderBy('name', 'ASC'); // All
+                    break;
+            }
+
+            $coupons = $query->get();
+
+        return view('front.account.coupon',[
+            'coupons' => $coupons,
+        ]);
+    }
+
+
+    public function delete_account(){   
+        return view('front.account.delete');
+    }
+
+    public function delete_account_action(Request $request) {
+        $request->validate([
+            'agree' => 'required'
+        ]);
+
+        $user = auth()->user();
+
+        // deactivate account
+        $user->is_active = 0;
+        $user->save();
+
+        auth()->logout();
+
+        return redirect('/')->with('success','Your account has been deactivated.');
     }
 
 }
