@@ -8,7 +8,7 @@
     <div class="row">
         @foreach($products as $product)         
             <div class="col-md-3 col-6">
-                <x-product-card :product="$product" />
+                <x-product-card :product="$product" :slider="true" :hover="true" />
             </div>
         @endforeach
 

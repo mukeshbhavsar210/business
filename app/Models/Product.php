@@ -54,11 +54,7 @@ class Product extends Model {
 
     public function variants() {
         return $this->hasMany(ProductVariant::class);
-    }
-
-    public function subSubCategory() {
-        return $this->belongsTo(SubSubCategory::class);
-    }
+    }    
 
     public function category() {
         return $this->belongsTo(Category::class);
@@ -66,6 +62,14 @@ class Product extends Model {
 
     public function subcategory() {
         return $this->belongsTo(SubCategory::class);
+    }
+
+    public function subcategory_id() {
+        return $this->belongsTo(SubCategory::class,'sub_category_id');
+    }
+
+    public function subSubCategory() {
+        return $this->belongsTo(SubSubCategory::class);
     }
 
    public function coupons() {

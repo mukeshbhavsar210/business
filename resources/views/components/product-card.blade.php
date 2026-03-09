@@ -1,7 +1,9 @@
 @props([
     'product' => null,
     'category' => null,
-    'showWishlist' => true    
+    'showWishlist' => true,
+    'slider' => true,
+    'hover' => true
 ])
 
 <div class="product-card">                                
@@ -33,42 +35,68 @@
                     </svg>
                 </p>
             @endif
-                
+
             <div class="product-slider">
-                {{-- @php
-                    $productImage = $product->product_images->first();
-                @endphp --}}
+                @if($slider)
+                    @if ($product->images && $product->images->count() > 0)
+                        @foreach($product->images as $image)
+                            <div class="slider-item">
+                                <a href="{{ route('front.product',$product->slug) }}" class="product-img" target="_blank">
+                                    <img src="{{ asset('uploads/product/small/'.$image->image) }}" class="img-fluid" alt="{{ $product->title }}" >
+                                </a>
+                            </div>
+                        @endforeach
+                    @else
+                        <img class="card-img-top" src="{{ asset('admin-assets/img/default-150x150.png') }}" alt="" />
+                    @endif
+                @else
+                    @php
+                        $productImage = $product->product_images->first();
+                    @endphp                                    
+                    <a href="{{ route('front.product',$product->slug) }}" class="product-img" target="_blank">
+                        <img src="{{ asset('uploads/product/small/'.$productImage->image) }}" class="img-fluid" alt="{{ $product->title }}" >
+                    </a>                                    
+                @endif
+            </div>            
+            
+            @if($hover)
+                <div class="hover-product">
+                    @if (Auth::check())
+                        <a onclick="addToWishlist({{ $product->id }})" class="btn btn-outline" href="javascript:void(0)">
+                            <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="none" viewBox="0 0 24 24" style="font-size: 20px;" stroke="none"><g clip-path="url(#header_icon_wishlist_svg__a)"><path stroke="#303030" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 20S3 14.91 3 8.727c0-1.093.375-2.152 1.06-2.997a4.672 4.672 0 0 1 2.702-1.638 4.639 4.639 0 0 1 3.118.463A4.71 4.71 0 0 1 12 6.909a4.71 4.71 0 0 1 2.12-2.354 4.639 4.639 0 0 1 3.118-.463 4.672 4.672 0 0 1 2.701 1.638A4.756 4.756 0 0 1 21 8.727C21 14.91 12 20 12 20Z"></path></g><defs><clipPath id="header_icon_wishlist_svg__a"><path fill="#fff" d="M0 0h24v24H0z"></path></clipPath></defs></svg>
+                            Wishlist
+                        </a>
+                    @else
+                        <a class="btn btn-outline" href="#" data-bs-toggle="modal" data-bs-target="#login">
+                            <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="none" viewBox="0 0 24 24" style="font-size: 20px;" stroke="none"><g clip-path="url(#header_icon_wishlist_svg__a)"><path stroke="#303030" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 20S3 14.91 3 8.727c0-1.093.375-2.152 1.06-2.997a4.672 4.672 0 0 1 2.702-1.638 4.639 4.639 0 0 1 3.118.463A4.71 4.71 0 0 1 12 6.909a4.71 4.71 0 0 1 2.12-2.354 4.639 4.639 0 0 1 3.118-.463 4.672 4.672 0 0 1 2.701 1.638A4.756 4.756 0 0 1 21 8.727C21 14.91 12 20 12 20Z"></path></g><defs><clipPath id="header_icon_wishlist_svg__a"><path fill="#fff" d="M0 0h24v24H0z"></path></clipPath></defs></svg>
+                            Wishlist
+                        </a>
+                    @endif
+                    <p class="show-size">Size: {{ $product->size->code ?? '' }}</p>
+                </div>  
 
-                @if ($product->images && $product->images->count() > 0)
-                    @foreach($product->images as $image)
-                        <div class="slider-item">
-                            <a href="{{ route('front.product',$product->slug) }}" class="product-img" target="_blank">
-                                <img src="{{ asset('uploads/product/small/'.$image->image) }}" class="img-fluid" alt="{{ $product->title }}" >
+                <div class="product-info">
+                    <h2>{{ Str::limit($product->title, 27, '...') }}</h2>
+                    <p class="short">{{ Str::limit($product->short_description, 30, '...') }}</p>         
+                </div>
+            @else
+                <div class="product-info">
+                    <div class="flex-end">
+                        <h2>{{ Str::limit($product->title, 27, '...') }}</h2>
+                        @if (Auth::check())
+                            <a onclick="addToWishlist({{ $product->id }})" href="javascript:void(0)">
+                                <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="none" viewBox="0 0 24 24" style="font-size: 20px;" stroke="none"><g clip-path="url(#header_icon_wishlist_svg__a)"><path stroke="#303030" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 20S3 14.91 3 8.727c0-1.093.375-2.152 1.06-2.997a4.672 4.672 0 0 1 2.702-1.638 4.639 4.639 0 0 1 3.118.463A4.71 4.71 0 0 1 12 6.909a4.71 4.71 0 0 1 2.12-2.354 4.639 4.639 0 0 1 3.118-.463 4.672 4.672 0 0 1 2.701 1.638A4.756 4.756 0 0 1 21 8.727C21 14.91 12 20 12 20Z"></path></g><defs><clipPath id="header_icon_wishlist_svg__a"><path fill="#fff" d="M0 0h24v24H0z"></path></clipPath></defs></svg>
                             </a>
-                        </div>
-                    @endforeach
-                @else
-                    <img class="card-img-top" src="{{ asset('admin-assets/img/default-150x150.png') }}" alt="" />
-                @endif            
-            </div>
-                        
-            <div class="hover-product">
-                @if (Auth::check())
-                    <a onclick="addToWishlist({{ $product->id }})" class="btn btn-outline" href="javascript:void(0)">
-                        <i class="far fa-heart"></i> Wishlist
-                    </a>
-                @else
-                    <a class="btn btn-outline" href="#" data-bs-toggle="modal" data-bs-target="#login">
-                        <i class="far fa-heart"></i> Wishlist
-                    </a>
-                @endif                        
-                <p class="show-size">Size: {{ $product->size->code ?? '' }}</p>
-            </div>             
-
-            <div class="product-info">
-                <h2>{{ Str::limit($product->title, 27, '...') }}</h2>
-                <p class="short">{{ Str::limit($product->short_description, 30, '...') }}</p>         
-            </div>
+                        @else
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#login">
+                                <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="none" viewBox="0 0 24 24" style="font-size: 20px;" stroke="none"><g clip-path="url(#header_icon_wishlist_svg__a)"><path stroke="#303030" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 20S3 14.91 3 8.727c0-1.093.375-2.152 1.06-2.997a4.672 4.672 0 0 1 2.702-1.638 4.639 4.639 0 0 1 3.118.463A4.71 4.71 0 0 1 12 6.909a4.71 4.71 0 0 1 2.12-2.354 4.639 4.639 0 0 1 3.118-.463 4.672 4.672 0 0 1 2.701 1.638A4.756 4.756 0 0 1 21 8.727C21 14.91 12 20 12 20Z"></path></g><defs><clipPath id="header_icon_wishlist_svg__a"><path fill="#fff" d="M0 0h24v24H0z"></path></clipPath></defs></svg>
+                            </a>
+                        @endif
+                    </div>
+                    
+                    <p class="short">{{ Str::limit($product->short_description, 30, '...') }}</p>         
+                </div>                
+            @endif            
 
             <div class="price">
                 <span class="dark">₹{{ $product->price }}</span>
