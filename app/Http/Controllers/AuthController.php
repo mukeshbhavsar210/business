@@ -7,6 +7,7 @@ use App\Models\DiscountCoupon;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\OrderStatusHistory;
+use App\Models\Product;
 use App\Models\State;
 use App\Models\User;
 use App\Models\Wishlist;
@@ -512,20 +513,36 @@ class AuthController extends Controller {
         return view('front.account.orders.placed_order', compact('order'));
     }
     
-    public function orderDetail($id){
+    public function orderDetail($id) {
         $user = Auth::user();
-        $userId = Auth::user()->id;
-        $order = Order::with('latestStatus')->where('user_id',$user->id)->where('id',$id)->first();
+
+        $order = Order::with('latestStatus')
+            ->where('user_id',$user->id)
+            ->where('id',$id)
+            ->firstOrFail();
+
+        $orderItems = OrderItem::with('product')->where('order_id',$id)->get();
+
         $data['order'] = $order;
-
-        $orderItems = OrderItem::where('order_id',$id)->get();
         $data['orderItems'] = $orderItems;
+        $data['orderItemsCount'] = $orderItems->count();
 
-        $orderItemsCount = OrderItem::where('order_id',$id)->count();        
+        // Get first product from order items
+        $product = $orderItems->first()->product ?? null;
 
-        $data['orderItemsCount'] = $orderItemsCount;        
+        $relatedProducts = [];
 
-        return view('front.account.orders.detail',$data);
+        if ($product && $product->related_products != '') {
+            $productArray = explode(',', $product->related_products);
+            $relatedProducts = Product::whereIn('id', $productArray)
+                ->where('status',1)
+                ->with('product_images')
+                ->get();
+        }
+
+        $data['relatedProducts'] = $relatedProducts;
+
+        return view('front.account.orders.detail', $data);
     }
 
     public function cancelOrder(Request $request, Order $order) {

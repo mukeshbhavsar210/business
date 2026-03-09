@@ -18,6 +18,10 @@ class OrderItem extends Model {
         return $this->belongsTo(Product::class);
     }
 
+    public function subcategory() {
+        return $this->belongsTo(SubCategory::class);
+    }
+
     public function color() {
         return $this->belongsTo(Color::class);
     }
