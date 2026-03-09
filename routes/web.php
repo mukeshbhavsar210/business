@@ -30,7 +30,7 @@ Route::post('/set-intended-url', function (Request $request) {session(['url.inte
 Route::controller(ShopController::class)->group(function() {
     Route::get('/products/{subCategorySlug?}/{subSubCategory?}','index')->name('front.shop');
     Route::get('/category/{categorySlug?}/','category')->name('front.category.shop');
-    Route::get('/product/{slug}','product')->name('front.product');
+    Route::get('/product/{slug}','product')->name('front.product');    
     Route::get('/product/{id}/reviews', 'allReviews')->name('product.reviews');
     Route::post('/rate-product', 'rating_store')->name('rate.product');
 });
@@ -84,16 +84,20 @@ Route::group(['prefix' => 'account'], function(){
     Route::group(['middleware' => 'auth'], function(){
         Route::controller(AuthController::class)->group(function() {
             Route::get('/dashboard','dashboard')->name('account.dashboard');
-            Route::post('/address/store', 'address_store')->name('customer.address.store');
-            Route::put('/address/{id}', 'address_update')->name('customer.address.update');
-            Route::get('/address','address')->name('account.address');
-            Route::get('/cards','cards')->name('account.cards');
             Route::get('/profile','profile')->name('account.profile');
             Route::get('/profile/edit','profileEdit')->name('account.profile.edit');
             Route::post('/update-profile','updateProfile')->name('account.updateProfile');
             Route::post('/update-address','updateAddress')->name('account.updateAddress');
             Route::get('/password','changePasswordForm')->name('account.changePassword');
             Route::post('/change-password','changePassword')->name('account.processChangePassword');
+
+            Route::post('/address/store', 'address_store')->name('customer.address.store');
+            Route::put('/address/{id}', 'address_update')->name('customer.address.update');
+            Route::get('/address','address')->name('account.address');
+            Route::get('/cards','cards')->name('account.cards');
+            Route::get('/coupons','coupons')->name('account.coupons');
+            Route::get('/delete-account','delete_account')->name('account.delete_account');
+            Route::post('/delete-account','delete_account_action')->name('account.delete');
 
             //Orders User
             Route::get('/orders','orders')->name('account.orders');

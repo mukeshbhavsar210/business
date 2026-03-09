@@ -51,9 +51,7 @@ class Order extends Model {
         return $this->hasMany(OrderStatusHistory::class);
     }
 
-    public function latestStatus() {
-        //return $this->hasOne(OrderStatusHistory::class)->latestOfMany('date');
+    public function latestStatus() {        
         return $this->hasOne(OrderStatusHistory::class)->latestOfMany('created_at');
-    }
-
+    }   
 }

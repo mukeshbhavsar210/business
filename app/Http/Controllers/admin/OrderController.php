@@ -15,7 +15,7 @@ class OrderController extends Controller {
     public function index(Request $request) {
         $orders = Order::with(array_merge($this->orderRelations(), ['latestStatus']))
             ->latest('orders.created_at')
-            ->paginate(20);        
+            ->paginate(20);
 
         // Order counts
         $totalOrders = Order::count();

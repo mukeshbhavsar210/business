@@ -15,8 +15,19 @@
                 @include('front.account.common.sidebar')
             </div>
         </div>
-        <div class="col-md-9 col-12">
-            <div class="orders-details">                   
+        <div class="col-md-9 col-12">            
+            @php
+                $status = $order->latestStatus->status ?? 'Confirmed';
+                $badgeClasses = [
+                    'Confirmed'         => 'confirmed',
+                    'Shipped'           => 'shipped',
+                    'Out for Delivery'  => 'out_delivery',
+                    'Delivered'         => 'delivered',
+                    'Cancelled'         => 'cancelled'
+                ];
+            @endphp
+
+            <div class="orders-details {{ $badgeClasses[$status] }}">                   
                 <div class="showcase">
                     <div class="product">
                         @foreach ($orderItems as $item)                        
@@ -33,8 +44,7 @@
                                             <img src="{{ asset('admin-assets/img/default-150x150.png') }}" alt="" />
                                         @endif
                                     </a>
-                                </div>                        
-                                
+                                </div>                                                        
                                 <h3 class="product-title">{{ $item->name }}</h3>
                                 <p>
                                     Size: {{ $item->product->size?->code ?? 'N/A' }},                                                                 
@@ -45,40 +55,17 @@
                             </div>              
                         @endforeach                       
                     </div>
-                                                     
-                    @if ($order->status == 'pending')
-                        <div class="delivery-status pending">
-                            <div class="icon-left"></div>
-                            <div class="status">
-                                <h4>Pending</h4>
-                                <p class="date">On {{ \Carbon\Carbon::parse($order->created_at)->format('D, d M Y') }}</p>
-                            </div>
+
+                    <div class="delivery-status {{ $badgeClasses[$status] }}">
+                        <div class="icon-left"></div>
+                        <div class="status">
+                            <h4>{{ ucfirst(str_replace('_',' ',$status)) }}</h4>
+                            @if(ucfirst($status) == 'Cancelled')
+                                <p class="date" >As per your request on: {{ \Carbon\Carbon::parse($order->created_date)->format('d M Y') }}</p>
+                            @endif                            
+                            <p class="date {{ $status == 'cancelled' ? $badgeClasses[$status] : 'd-none' }}">On {{ \Carbon\Carbon::parse($order->created_at)->format('D, d M Y') }}</p>
                         </div>
-                    @elseif ($order->status == 'shipped')
-                        <div class="delivery-status shipped">
-                            <div class="icon-left"></div>
-                            <div class="status">
-                                <h4>Shipped</h4>
-                                <p class="date">On {{ \Carbon\Carbon::parse($order->created_at)->format('D, d M Y') }}</p>
-                            </div>
-                        </div>
-                    @elseif ($order->status == 'delivered')
-                        <div class="delivery-status delivered">
-                            <div class="icon-left"></div>
-                            <div class="status">
-                                <h4>Delivered</h4>
-                                <p class="date">On {{ \Carbon\Carbon::parse($order->created_at)->format('D, d M Y') }}</p>
-                            </div>
-                        </div>
-                    @elseif ($order->status == 'cancelled')
-                        <div class="delivery-status cancelled">
-                            <div class="icon-left"></div>
-                            <div class="status">
-                                <h4>Cancelled</h4>
-                                <p class="date">On {{ \Carbon\Carbon::parse($order->created_at)->format('D, d M Y') }}</p>
-                            </div>
-                        </div>
-                    @endif                    
+                    </div>
                 </div>
                 
                 {{-- <time>
@@ -89,10 +76,9 @@
                     @endif
                 </time> --}}
                 
-                @if ($order->status == 'delivered' || $order->status == 'confirmed')
+                @if (ucfirst($status) == 'Confirmed' || ucfirst($status) == 'Shipped' || ucfirst($status) == 'Delivered' || ucfirst($status) == 'Out for Delivery')
                     <div class="gray-back">
-
-                        @if ($order->status == 'delivered')
+                        @if (ucfirst($status) == 'Delivered')
                             <div class="wrapper">
                                 <p>Exchange/Return window closed on Sun, 2 Mar 2025</p>
                             </div>
@@ -130,8 +116,8 @@
                         <div class="wrapper">
                             <div class="flex-end">
                                 <h3>Total Order Price</h3>
-                                <a type="button" class="amount" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                                    ₹ {{ number_format($order->grandtotal,2) }}
+                                <a type="button" class="amount" data-bs-toggle="modal" data-bs-target="#paidMoney">
+                                    ₹{{ number_format($order->grandtotal,2) }}
                                 </a>
                             </div>
                             <div class="paid-with">Paid by UPI</div>
@@ -149,11 +135,11 @@
                     </div>
                 @endif
 
-                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal fade" id="paidMoney" tabindex="-1" aria-labelledby="paidMoneyLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">Payment Information</h5>
+                            <h5 class="modal-title" id="paidMoneyLabel">Payment Information</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">

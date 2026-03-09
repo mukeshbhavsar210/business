@@ -84,6 +84,7 @@ h2 { font-size: 26px; font-family: var(--body-font); }
 h3 { font-size: 24px; font-family: var(--body-font); }
 h4 { font-size: 20px; font-family: var(--body-font); }
 h5 { font-size: 16px; font-family: var(--body-font); }
+h6 { font-size: 14px; font-family: var(--body-font); }
 
 a { text-decoration: none; color: var(--primary); }
 a:hover { text-decoration: none; color: var(--black); }
@@ -286,14 +287,15 @@ a:hover { text-decoration: none; color: var(--black); }
 .orders-details .showcase .cancelled { background-color: var(--gray-dark);}
 .orders-details .showcase .cancelled .icon-left { background-color: var(--gray);}
 .orders-details .showcase .delivered .icon-left { background-color: var(--white);}
-
-.orders-details .showcase .delivery-status { width: 100%; text-align: left; margin-top: 15px; display: flex; column-gap: 10px; padding: 13px 15px 15px 15px; border-radius: 5px; }
-.orders-details .showcase .delivery-status .icon-left { width: 35px; height: 35px; border-radius: 100px; margin-top: 4px;}
+.orders-details .showcase .delivery-status { width: 100%; text-align: left; margin-top: 10px; display: flex; column-gap: 10px; padding: 7px 12px 9px 12px; border-radius: 5px; font-size: 13px; }
+.orders-details .showcase .delivery-status .icon-left { width: 35px; height: 35px; border-radius: 100px; margin-top: 4px; background-color: var(--white);}
 .orders-details .showcase .delivery-status .status h4 { font-weight: bold; font-size: 14px;}
 .orders-details .showcase .delivery-status .status .date { font-size: 12px;}
-.orders-details .showcase .pending { background-color: red; padding: 10px 15px; color: var(--white); border-radius: 3px;}
-.orders-details .showcase .shipped { background-color: yellow; padding: 10px 15px; border-radius: 3px; }
-.orders-details .showcase .delivered { background-color: var(--green); padding: 8px 15px 10px 15px; color: var(--white); border-radius: 3px;}
+.orders-details .showcase .pending { background-color: red; color: var(--white);}
+.orders-details .showcase .shipped { background-color: var(--primary); color: var(--white); }
+.orders-details .showcase .delivered,
+.orders-details .showcase .out_delivery,
+.orders-details .showcase .confirmed { background-color: var(--green); color: var(--white); }
 .orders-details .gray-back { background-color: #f5f5f5; padding: 4px;}
 .orders-details .wrapper { padding: 20px; background-color: var(--white); margin-top: 5px; }
 .orders-details .wrapper h3 { font-weight: bold; font-size: 15px;}
@@ -317,19 +319,23 @@ a:hover { text-decoration: none; color: var(--black); }
 .details-accounts .order-history { background-color: #f5f5f5; padding: 10px; margin-top: 15px;}
 .details-accounts .order-history .reason-radio { margin-top: 20px; font-size: 14px;}
 .details-accounts .order-history .individual { background-color: var(--white); padding: 15px 20px 20px 20px; margin-bottom: 10px;}
+.details-accounts .order-history .individual ul { margin-top: 20px;}
+.details-accounts .order-history .individual ul li { margin-bottom: 20px;}
 .details-accounts .order-history .individual .reason-group .custom-radio { font-size: 14px; margin-bottom: 10px;}
 .details-accounts .order-history .individual .status { display: flex; column-gap: 10px;}
-.details-accounts .order-history .individual .status .icon { border-radius: 100px; height:35px; width:35px; position: relative; margin-top: 4px; text-align: center; padding-top:4px;}
-.details-accounts .order-history .individual .cancelled .icon { background-color: rgb(212, 213, 217);}
-.details-accounts .order-history .individual .confirmed .icon { background-color: var(--green-dark);}
-.details-accounts .order-history .individual .confirmed .name { color: var(--green-dark); }
-.details-accounts .order-history .individual .delivered .icon { background-color: var(--black); position: relative;}
-.details-accounts .order-history .individual .delivered .icon .delivery-tick { background-color: var(--green-dark); height: 15px; width: 15px; border-radius: 100px; border:1px #fff solid; position: absolute; top:22px; left:22px;}
-.details-accounts .order-history .individual .delivered .name { color: var(--green-dark); font-weight: bold;}
-.details-accounts .order-history .individual .shipped .icon { background-color: var(--primary);}
-.details-accounts .order-history .individual .shipped .name { color: var(--primary);}
+.details-accounts .order-history .individual .status .icon { border-radius: 100px; height:35px; width:35px; position: relative; margin-top: 4px; text-align: center; padding-top:4px; background-color: var(--black);}
+.details-accounts .order-history .cancelled .icon { background-color: rgb(212, 213, 217) !important;}
+.details-accounts .order-history .confirmed .icon { background-color: var(--black);}
+.details-accounts .order-history .confirmed .name { color: var(--green-dark); }
+.details-accounts .order-history .delivered .icon { background-color: var(--black); position: relative;}
+.details-accounts .order-history .delivered .icon .delivery-tick { position: absolute; top:22px; left:22px;}
+.details-accounts .order-history .delivered .name,
+.details-accounts .order-history .out_delivery .name { color: var(--green-dark); }
+.details-accounts .order-history .shipped .icon { background-color: var(--black);}
+.details-accounts .order-history .shipped .name { color: var(--primary);}
 .details-accounts .order-history .individual .status .date { color: var(--gray); font-size: 13px; }
 .details-accounts .order-history .individual .product-details {  margin-top: 10px; background-color: #f5f5f5; }
+.details-accounts .order-history .individual .product-details .track-button { color: var(--black); padding: 12px 10px 10px 15px; display: flex; column-gap: 20px; width: 100%; border-bottom: 1px #fff solid; }
 .details-accounts .order-history .individual .product-details .product-details-link { color: var(--black); padding: 12px 10px 10px 15px; display: inline-block; width: 100%; border-bottom: 1px #fff solid; }
 .details-accounts .order-history .individual .product-details .product-details-link .next-arrow { margin-top: 18px; float: right;  }
 .details-accounts .order-history .individual .product-details .product-details-link:hover { background: var(--gray-dark);}
@@ -349,8 +355,17 @@ a:hover { text-decoration: none; color: var(--black); }
 .list-group-item .discount-text { color: var(--green);}
 
 .modal-header { border: none; padding-bottom: 0;}
+.modal-footer { color: var(--black); padding: 12px 10px 10px 15px; display: flex; column-gap: 20px; width: 100%; border-bottom: 1px #fff solid; }
 .modal-content { border-radius: 6px; border: none; box-shadow: 0 10px 10px 0 #0000005f;}
 .modal-backdrop { background: #3e4152; opacity: .6 !important; }
+
+.modal-scroll { height: 320px; overflow-y: auto; overflow-x: hidden; }
+.modal-scroll .custom-radio { font-size: 14px; margin-bottom: 5px;}
+
+.sort-coupon { margin-bottom: 30px;}
+.sort-coupon ul { display: flex; column-gap: 10px;}
+.sort-coupon ul li a { border-radius: 100px; padding:6px 15px; color: var(--black); border: 1px solid var(--gray); font-size: 13px; font-weight: bold;}
+.sort-coupon ul li a.active { border:2px solid var(--primary); color: var(--primary);}
 
 .track-placed-order { margin-bottom: 10px; margin-top: 5px; font-size: 13px;  }
 .track-placed-order li { margin-bottom: 23px; display: flex; column-gap: 8px; position: relative;}
@@ -437,8 +452,6 @@ a:hover { text-decoration: none; color: var(--black); }
 
 .user-details-repeate .col-md-8 .row { padding: 10px 0; font-size: 15px;} 
 .user-details-repeate .col-md-8 h5 { border-bottom: 1px #ccc solid; padding-bottom: 10px; font-weight: bold;} 
-
-.modal-scroll { height: 350px; overflow-y: auto; overflow-x: hidden;}
 .paid-by { padding: 15px 20px 17px 20px; background-color: #f5f5f5; border-radius: 5px;}
 
 .product-details-wrapper { display: inline-block;}
@@ -702,7 +715,7 @@ a:hover { text-decoration: none; color: var(--black); }
 .radio-mark {
     width: 20px;
     height: 20px;
-    border: 2px solid #555;
+    border: 2px solid #ccc;
     border-radius: 50%;
     position: relative;
     transition: 0.3s;

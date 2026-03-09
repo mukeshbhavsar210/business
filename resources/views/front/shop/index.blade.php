@@ -1,6 +1,6 @@
 @extends('front.layouts.app')
 
-@section('title', 'Online Fashion Shopping for Men and Women')
+@section('title', 'Products')
 
 {{-- @section('title', $product->title . ' - ' .$product->short_description . ' | Category: ' . $product->category->category_name . ' | '  . config('app.name'))
 @section('meta_description', Str::limit($product->short_description, 155))
@@ -14,7 +14,8 @@
             <div class="light-font">
                 <ol class="breadcrumb primary-color">
                     <li class="breadcrumb-item"><a href="{{ route('front.home') }}">Home</a></li>
-                    <li class="breadcrumb-item active">{{ $selectedCategory->category_name }} {{ $selectedSubCategory->sub_category_name }}</li>
+                    <li class="breadcrumb-item active">Products</li>
+                    {{-- <li class="breadcrumb-item active">{{ $selectedCategory->category_name }} {{ $selectedSubCategory->sub_category_name }}</li> --}}
                 </ol>
             </div>
         </div>
@@ -23,7 +24,7 @@
             <div class="row">
                 <div class="col-md-10 col-12">
                     <h6 class="h6">
-                        <b>{{ $selectedCategory->category_name }} {{ $selectedSubCategory->sub_category_name }}</b> -
+                        {{-- <b>{{ $selectedCategory->category_name }} {{ $selectedSubCategory->sub_category_name }}</b> - --}}
                         <span class="text-muted">{{ $products->total() }} items</span>
                     </h6>                    
                 </div>
