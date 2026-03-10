@@ -1,13 +1,15 @@
 @props([
     'product' => null,
     'category' => null,
+    'wishlist' => null,
+    'class' => null,
     'showWishlist' => true,
     'slider' => true,
-    'hover' => true
+    'hover' => true,    
 ])
 
 <div class="product-card">                                
-    <div class="product-image-wrapper">
+    <div class="product-image-wrapper {{ $class }}">
         @if($product)
             @php
                 $rating = $product->average_rating ?? 0;
@@ -111,7 +113,7 @@
                 @endif           
             </div> 
             
-        @elseif($category)    
+        @elseif($category)
             <a href="{{ route('front.category.shop', [$category->category_slug]) }}" >
                 @if ($category->image != "")
                     <img src="{{ asset('uploads/category/'.$category->image) }} " alt="" class="product-img rounded">
@@ -129,6 +131,52 @@
             
             <div class="price">
                 <p class="text-muted"><b>{{ $category->products_count }} Products</b></p>
+            </div>
+
+        @elseif($wishlist)
+            @if ($wishlist->product->qty < 1)
+                <div class="out-stock"><span>Out of Stock</span></div>
+            @endif   
+
+            @php
+                $image = $wishlist->product->images->first();
+            @endphp
+
+            <button onclick="removeProduct({{ $wishlist->product_id }})" class="remove-wishlst-item" type="button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 24 24"><path fill="#282C3F" fill-rule="nonzero" d="M15.854 8.146a.495.495 0 0 0-.703 0L12 11.296l-3.15-3.15a.495.495 0 0 0-.704 0 .495.495 0 0 0 0 .703L11.297 12l-3.15 3.15a.5.5 0 1 0 .35.85.485.485 0 0 0 .349-.146l3.15-3.15 3.151 3.15a.5.5 0 0 0 .35.147.479.479 0 0 0 .35-.147.495.495 0 0 0 0-.703L12.702 12l3.15-3.15a.495.495 0 0 0 0-.704z"></path></svg>
+            </button>
+            
+            <a href="{{ route('front.product', $wishlist->product->slug) }}" target="_blank" class="product-img">
+                @if($image)
+                    <img src="{{ asset('uploads/product/small/'.$image->image) }}" class="rounded" alt="{{ $wishlist->product->title }}">
+                @else
+                    <img src="{{ asset('admin-assets/img/default-150x150.png') }}" class="rounded">
+                @endif
+            </a>              
+            
+            <div class="hover-product">      
+                <button onclick="removeProduct({{ $wishlist->product_id }})" class="btn btn-outline-danger btn-sm" type="button">
+                    <i class="fas fa-trash-alt me-2"></i> Move to Bag
+                </button>
+                <p class="show-size">Size: {{ $wishlist->product->size->code ?? '' }}</p>
+            </div>
+
+            <div class="product-info">
+                <h2>{{ Str::limit($wishlist->product->title, 25, '...') }}</h2>
+                <p class="short">{{ Str::limit($wishlist->product->short_description, 30, '...') }}</p>                                                                
+            </div>
+
+            <div class="price">
+                <span class="dark">₹ {{ $wishlist->product->price }}</span>
+                @if ($wishlist->product->compare_price > 0)
+                    <span class="h6 text-underline">
+                        <del>₹ {{ $wishlist->product->compare_price }}</del>
+                    </span>
+                    @php
+                        $discount = round((($wishlist->product->compare_price - $wishlist->product->price) / $wishlist->product->compare_price) * 100);
+                    @endphp
+                    <span class="discount">{{ $discount }}% OFF</span>
+                @endif                                        
             </div>
         @endif
     </div>

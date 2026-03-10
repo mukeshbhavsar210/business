@@ -454,14 +454,14 @@ class CartController extends Controller {
         $order->coupon_code_id = $discountCodeId;
         $order->coupon_code = $promoCode;
         $order->payment_status = 'not paid';
-        $order->payment_method = $request->payment_method;
-        $order->status = 'confirmed';
+        $order->payment_method = $request->payment_method;        
         $order->save();
 
         OrderStatusHistory::create([
             'order_id' => $order->id,
-            'status' => 'placed',
-            'status_date' => now()
+            'courier' => 'Shadofox',
+            'status' => 'confirmed',
+            'date' => now()
         ]);
 
         // Step 7: Store Order Items + Update Stock

@@ -430,17 +430,11 @@ class AuthController extends Controller {
 
         $userId = Auth::user()->id;        
 
-        // $orders = Order::where('user_id', auth()->id())
-        //     ->where('status', 'cancelled')
-        //     ->with('items.product')
-        //     ->latest()
-        //     ->get();
-
         $totalCancelledItems = $orders->sum(function ($order) {
             return $order->items->sum('quantity');
         });
 
-        $orders = Order::query();
+        $query = Order::query();
 
         $statuses = [
             '' => 'All',
@@ -477,7 +471,12 @@ class AuthController extends Controller {
             $orders->where('created_at', '>=', Carbon::now()->subYear());
         }
 
-        $orders = $orders->with('latestStatus')->latest()->get();
+        $orders = Order::with('latestStatus')
+            ->where('user_id', auth()->id())
+            ->latest()
+            ->paginate(10);
+
+        $orders = $query->latest()->paginate(5); 
         
         $data['orders'] = $orders;
         $data['time'] = $time;
@@ -508,7 +507,7 @@ class AuthController extends Controller {
                 'orderItems.variant',
                 'address.state'
             ])
-            ->firstOrFail($id);
+            ->firstOrFail($id);       
 
         return view('front.account.orders.placed_order', compact('order'));
     }
@@ -573,9 +572,11 @@ class AuthController extends Controller {
             ->with('success', 'Order cancelled successfully.');
     }
 
+    
     public function wishlist(){
-        $wishlist = Wishlist::where('user_id', Auth::user()->id)->with(['product'])->get();
-        $data['wishlist'] = $wishlist;
+        $wishlists = Wishlist::where('user_id', Auth::user()->id)->with(['product'])->get();
+
+        $data['wishlists'] = $wishlists;
 
         return view('front.account.wishlist', $data);
     }
