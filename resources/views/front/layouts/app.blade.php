@@ -107,9 +107,12 @@
     });
     
     function addToCart(id){
-        if(selectedSize == ''){
-            alert('Please select size');
-            return;
+        if(selectedSize == '' || selectedSize == null){
+            $('.size-list li').addClass('shake');
+            setTimeout(function(){
+                $('.size-list li').removeClass('shake');
+            },400);
+            return false;
         }
         
         let urlParams = new URLSearchParams(window.location.search);

@@ -7,70 +7,17 @@
 <div class="container">                
     <h5 class="h5 mb-4 mt-3">
         My Wishlist
-        <span class="text-muted">- {{ $wishlist->count() }} items</span>
+        <span class="text-muted">- {{ $wishlists->count() }} items</span>
     </h5>
     
     @include('front.account.common.message')
 
     <div class="row">
-        @if ($wishlist->isNotEmpty())
-            @foreach ($wishlist as $value)
-                <div class="col-md-3 col-6">
-                    <div class="product-card m-0">                                
-                        <div class="product-image-wrapper">                                    
-                            @if ($value->product->qty < 1)
-                                <div class="out-stock"><span>Out of Stock</span></div>
-                            @endif                                    
-                            
-                            <div class="product-slider">
-                                @php
-                                    $image = $value->product->images->first();
-                                @endphp
-
-                                @if ($value->product->images && $value->product->images->count() > 0)
-                                    @foreach($value->product->images as $image)
-                                        <div class="slider-item">
-                                            <a href="{{ route('front.product', $value->product->slug) }}" target="_blank" class="product-img">
-                                                @if($image)
-                                                    <img src="{{ asset('uploads/product/small/'.$image->image) }}" class="img-fluid" alt="{{ $value->product->title }}">
-                                                @else
-                                                    <img src="{{ asset('admin-assets/img/default-150x150.png') }}" class="img-fluid">
-                                                @endif
-                                            </a>     
-                                        </div>
-                                    @endforeach                                            
-                                @else
-                                    <img class="card-img-top" src="{{ asset('admin-assets/img/default-150x150.png') }}" alt="" class="product-img" />
-                                @endif                                       
-                            </div>            
-                                    
-                            <div class="hover-product">      
-                                <button onclick="removeProduct({{ $value->product_id }})" class="btn btn-outline-danger btn-sm" type="button">
-                                    <i class="fas fa-trash-alt me-2"></i> Remove
-                                </button>
-                                <p class="show-size">Size: {{ $value->product->size->code ?? '' }}</p>
-                            </div>
-
-                            <div class="product-info">
-                                <h2>{{ Str::limit($value->product->title, 25, '...') }}</h2>
-                                <p class="short">{{ Str::limit($value->product->short_description, 30, '...') }}</p>                                                                
-                            </div>
-
-                            <div class="price">
-                                <span class="dark">₹ {{ $value->product->price }}</span>
-                                @if ($value->product->compare_price > 0)
-                                    <span class="h6 text-underline">
-                                        <del>₹ {{ $value->product->compare_price }}</del>
-                                    </span>
-                                    @php
-                                        $discount = round((($value->product->compare_price - $value->product->price) / $value->product->compare_price) * 100);
-                                    @endphp
-                                    <span class="discount">{{ $discount }}% OFF</span>
-                                @endif                                        
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        @if ($wishlists->isNotEmpty())
+            @foreach ($wishlists as $wishlist)
+                <div class="col-md-3 col-6">                    
+                    <x-product-card :wishlist="$wishlist" :slider="false" :hover="false" class="wishlist" />
+                </div>            
             @endforeach
         @else
             <div class="row">

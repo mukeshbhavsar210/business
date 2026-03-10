@@ -152,6 +152,19 @@
                     @endif      
                     
                     <div class="wrapper">
+                        <p class="mb-3"><b>Item in this order</b></p>
+
+                        <div class="product-card">
+                            @foreach($order->orderItems as $item)
+                                <a href="{{ route('account.orderDetail',$order->id) }}" class="details">
+                                    <div class="image">
+                                        <img src="{{ asset('uploads/product/small/'.$item->product->images->first()->image ?? '') }}"  class="img-fluid">
+                                    </div>
+                                    <div>{{ $item->product->title }} </div>
+                                </a>
+                            @endforeach
+                        </div>                         
+                    
                         <h6>On this item you saved a total of ₹24,000</h6>
                     </div>
 
@@ -162,9 +175,18 @@
                                 ₹{{ number_format($order->grandtotal,2) }}
                             </a>
                         </div>
-                        <div class="paid-with">Paid by UPI</div>
+                        <div class="paid-with">
+                            @if($order->payment_mode == 'cod')
+                                Cash/Pay on Delivery
+                            @else
+                                Amount paid with onine tranaction
+                            @endif 
+                        </div>
+                        
                         <a href="#" class="btn btn-outline-dark w-100 mt-2">Get Invoice</a>
                     </div>
+
+                     
 
                     <div class="wrapper">
                         <h6>Updates sent to</h6>
