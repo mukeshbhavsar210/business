@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class SettingController extends Controller {
+
     public function brand_index(Request $request){
         $brands = Brand::latest('id');
         if ($request->get('keyword')){
@@ -321,7 +322,13 @@ class SettingController extends Controller {
                         'summer_class' => '',
                         'label' => 'Description',
                         'id'    => 'description',
-                        'col' => 'col-md-12 col-12'
+                        'col' => 'col-md-8 col-12'
+                    ],
+                    [
+                        'type' => 'file',
+                        'name' => 'image',
+                        'label' => 'Image',
+                        'col' => 'col-md-4 col-12'
                     ],
                     
                 ]

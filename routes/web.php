@@ -44,6 +44,8 @@ Route::controller(CartController::class)->group(function() {
     Route::post('/move-to-wishlist', 'moveToWishlist')->name('front.moveToWishlist.cart');    
     Route::post('/cart/bulk-action', 'bulkAction')->name('cart.bulk.action');    
 
+    Route::post('/cart/select-item','selectItem');
+
     //Update Color/Size/Qty in cart
     Route::post('/checkout/cart/common', 'updateCartOption')->name('front.updateCartOption');
     Route::post('/cart/update-item', 'updateItem')->name('front.updateCartItem');
@@ -52,7 +54,7 @@ Route::controller(CartController::class)->group(function() {
     //Route::post('/update-cart','updateCart')->name('front.updateCart');
     Route::post('/checkout/payment', 'payment')->name('checkout.payment');
     Route::get('/checkout/address','checkout')->name('front.checkout');
-    Route::post('/process-checkout','processCheckout')->name('front.processCheckout');
+    Route::post('/checkout/process','processCheckout')->name('front.processCheckout');
     Route::get('/thanks/{orderId}','thankyou')->name('front.checkout.thankyou');
     Route::post('/get-order-summary','getOrderSummary')->name('front.getOrderSummary');
 
@@ -100,8 +102,7 @@ Route::group(['prefix' => 'account'], function(){
             Route::post('/delete-account','delete_account_action')->name('account.delete');
 
             //Orders User
-            Route::get('/orders','orders')->name('account.orders');
-            Route::get('/order/{id}', 'viewOrder')->name('account.order.view');            
+            Route::get('/orders','orders')->name('account.orders');                
             Route::get('/order/details/{orderId}','orderDetail')->name('account.orderDetail');
             Route::get('/order/{order}/cancel', 'cancel')->name('account.order.cancel.form');
             Route::post('/order/{order}/cancel_order', 'cancelOrder')->name('account.order.cancel');

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Color;
+use App\Models\Discount;
 use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\ProductVariant;
@@ -55,7 +56,6 @@ class ProductController extends Controller {
     }
 
 
-
     public function store(Request $request){
         $rules = [
             'title' => 'required',
@@ -80,8 +80,7 @@ class ProductController extends Controller {
             $product->description = $request->description;
             $product->short_description = $request->short_description;$product->shipping_returns = $request->shipping_returns;
             $product->related_products = (!empty($request->related_products)) ? implode(',',$request->related_products) : '';
-            $product->price = $request->price;
-            $product->compare_price = $request->compare_price;
+            $product->price = $request->price;            
             $product->category_id = $request->category;
             $product->sub_category_id = $request->sub_category;
             $product->sub_sub_category_id = $request->sub_sub_category;
@@ -103,6 +102,15 @@ class ProductController extends Controller {
             $product->delivery_max_days = Carbon::now()->addDays(7);
             $product->status = $request->status;
             $product->save();
+
+            if($request->discount_percent > 0){
+                Discount::create([
+                    'product_id' => $product->id,
+                    'discount_percent' => $request->discount_percent,
+                    'start_date' => Carbon::now(),
+                    'end_date' => Carbon::now()->addDays(30),
+                ]);
+            }
 
             // 3️⃣ Save Variants
             if ($request->variants) {
@@ -246,8 +254,7 @@ class ProductController extends Controller {
             $product->description = $request->description;
             $product->short_description = $request->short_description;$product->shipping_returns = $request->shipping_returns;
             $product->related_products = (!empty($request->related_products)) ? implode(',',$request->related_products) : '';
-            $product->price = $request->price;
-            $product->compare_price = $request->compare_price;
+            $product->price = $request->price;            
             $product->category_id = $request->category;
             $product->sub_category_id = $request->sub_category;
             $product->sub_sub_category_id = $request->sub_sub_category;
@@ -269,6 +276,15 @@ class ProductController extends Controller {
             $product->delivery_max_days = Carbon::now()->addDays(7);
             $product->status = $request->status;
             $product->save();
+
+            if($request->discount_percent > 0){
+                Discount::create([
+                    'product_id' => $product->id,
+                    'discount_percent' => $request->discount_percent,
+                    'start_date' => Carbon::now(),
+                    'end_date' => Carbon::now()->addDays(30),
+                ]);
+            }
 
             // 3️⃣ Save Variants
             if ($request->filled('variant_image_array') && is_array($request->variant_image_array)) {

@@ -1,5 +1,5 @@
 <div class="modal fade" id="{{ $form['modal_id'] }}" tabindex="-1" aria-labelledby="{{ $form['modal_id'] }}Label" aria-hidden="true" data-bs-keyboard="true">
-    <div class="modal-dialog {{ $form['modal_size'] ?? '' }}">
+    <div class="modal-dialog modal-dialog-centered {{ $form['modal_size'] ?? '' }}" >
         <div class="modal-content">            
             <form action="{{ $form['action'] }}" method="POST" class="ajax-form" enctype="multipart/form-data">
                 @csrf

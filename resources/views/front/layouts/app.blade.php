@@ -32,19 +32,9 @@
 </head>
 <body data-instant-intensity="mousedown">
 
-    @if(session('success'))
-<div class="alert alert-success alert-dismissible fade show" role="alert">
-    {{ session('success') }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+<div class="container">    
+    @include('front.layouts.toast')
 </div>
-@endif
-
-@if(session('error'))
-<div class="alert alert-danger alert-dismissible fade show" role="alert">
-    {{ session('error') }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-</div>
-@endif
 
 @include(request()->routeIs(['front.cart','front.checkout','front.checkout.thankyou']) ? 'front.layouts.cart_header' : 'front.layouts.header')
 
@@ -77,16 +67,26 @@
         $('#login').modal('show');
     });
 
-    @if(session('toast_success'))
-        var toastMessage = "{{ session('toast_success') }}";
-        $('#cartToastMessage').text(toastMessage);
-        var toast = new bootstrap.Toast($('#cartToast')[0]);
+
+    function showAlert(message, type = 'success'){
+        let toastEl = $('#commonToast');
+        toastEl.removeClass('bg-success bg-danger bg-warning');
+
+        if(type === 'error'){
+            toastEl.addClass('bg-danger');
+        }else{
+            toastEl.addClass('bg-success');
+        }
+
+        $('#commonToastMessage').text(message);
+
+        let toast = new bootstrap.Toast(document.getElementById('commonToast'));
         toast.show();
-    @endif
+    }
 
     setTimeout(function(){
-        $('.alert').fadeOut('slow');
-    },5000);
+        $('.toast').fadeOut('slow');
+    },3000);
 
 	window.onscroll = function() {myFunction()};
 	var navbar = document.getElementById("navbar");
@@ -130,22 +130,11 @@
             dataType: 'json',
             success: function(response){
                 if(response.status == true){
-                    // ✅ Update cart count
                     $('#cartCount').text(response.cartCount);
-
-                    $('#cartToastMessage').text(response.message);
-
-                    let toast = new bootstrap.Toast(
-                        document.getElementById('cartToast')
-                    );
-
-                    toast.show();
-
-                    // Optional: Reset selections
+                    showAlert(response.message,'success');
                     selectedSize = '';
-
-                } else {
-                    alert(response.message);
+                }else{
+                    showAlert(response.message,'error');
                 }
             },
             error: function(){
@@ -155,12 +144,9 @@
     }
 
 
-
     $("#registrationForm").submit(function(event){
         event.preventDefault();
-
         $("button[type='submit']").prop('disabled', true);
-
         $.ajax({
             url: '{{ route("account.processRegister") }}',
             type: 'post',
@@ -213,7 +199,6 @@
     });
 
 
-
     function addToWishlist(id){
         $.ajax({
             url: '{{ route("front.addToWishlist") }}',
@@ -226,9 +211,10 @@
             success: function(response){
                 if(response.status == true){
                     $("#wishlistToastBody").html(response.message);
-                    var toastEl = document.getElementById('wishlistToast');
-                    var toast = new bootstrap.Toast(toastEl);
-                    toast.show();
+                    showAlert(response.message,'success');
+                    // var toastEl = document.getElementById('wishlistToast');
+                    // var toast = new bootstrap.Toast(toastEl);
+                    // toast.show();
                 } else {
                     window.location.href= "{{ route('front.home') }}";
                 }

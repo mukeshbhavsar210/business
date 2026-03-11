@@ -10,7 +10,7 @@
 ])
 
 <div class="modal fade" id="{{ $modalId }}" tabindex="-1">
-    <div class="modal-dialog modal-sm">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
         <div class="modal-content">
 
             <div class="modal-header">

@@ -9,7 +9,7 @@ class Product extends Model {
     use HasFactory;
 
     protected $fillable = [ 'title', 'slug', 'description', 'short_description', 'shipping_returns', 'related_products', 
-        'price', 'compare_price', 'category_id', 'sub_category_id', 'sub2_category_id', 'brand_id', 'is_featured', 'sku', 'barcode', 
+        'price', 'category_id', 'sub_category_id', 'sub2_category_id', 'brand_id', 'is_featured', 'sku', 'barcode', 
         'track_qty', 'qty', 'recommended', 'views', 'discount_percentage', 'average_rating', 'cod', 'is_returnable', 'return_days', 
         'delivery_min_days', 'delivery_max_days', 'status', 
     ];
@@ -70,6 +70,22 @@ class Product extends Model {
 
     public function subSubCategory() {
         return $this->belongsTo(SubSubCategory::class);
+    }
+
+    public function discount_filter(){
+        return $this->belongsTo(DiscountPercentage::class,'discount_percentage_id');
+    }
+
+    public function discount(){
+        return $this->hasOne(Discount::class);
+    }
+
+    public function getDiscountPriceAttribute() {
+        if ($this->discount) {
+            return $this->price - ($this->price * $this->discount->discount_percent / 100);
+        }
+
+        return $this->price;
     }
 
    public function coupons() {

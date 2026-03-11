@@ -25,14 +25,14 @@
                 {{ $order->address->locality }}, {{ $order->address->city }}, {{ $order->address->state->name ?? '' }} - {{ $order->address->zip }}</p>
             @endif
 
-            <a href="{{ route('account.order.view', $order->id) }}" class="btn btn-outline-primary mt-3">Order Details</a>
+            <a href="{{ route('account.orderDetail', $order->id) }}" class="btn btn-outline-primary mt-3">Order Details</a>
             <hr />
             <p>You can Track/View/Modify order from orders page.</p>
         </div>
 
         <div class="btn-action">
-            <a href="#" class="btn btn-outline-primary">Continue Shopping</a>
-            <a href="#" class="btn btn-primary">View Order</a>
+            <a href="{{ route('front.home') }}" class="btn btn-outline-primary">Continue Shopping</a>
+            <a href="{{ route('account.orderDetail', $order->id) }}" class="btn btn-primary">View Order</a>
         </div>
     </div>
 
