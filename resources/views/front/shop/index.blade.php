@@ -48,7 +48,40 @@
 
     <div class="row">
         <div class="col-md-2 col-12 sticky">
-           @include('front.shop.filters')
+            <div class="flex-end">
+                <h4>Filters</h4>
+                @if($filtersApplied)                    
+                    <a href="{{ url()->current() }}" class="btn btn-outline-dark btn-sm">Clear All</a>                    
+                @endif
+            </div>                                    
+
+            @if($selectedSubCategory)                    
+                @foreach($subSubCategories as $sub2)
+                    <x-filter-checkbox  :items="$subSubCategories" type="sub2" valueField="sub2_category_slug" labelField="sub2_category_name" nameClass="name" title="Categories" :showColor="false" />
+
+                    {{-- <div class="form-check">
+                        <a href="javascript:0;" class="link">
+                            <label class="form-check-label" for="sub2-{{ $sub2->id }}">
+                                <input {{ (request()->get('sub2') && in_array($sub2->sub2_category_slug, explode(',', request()->get('sub2')))) ? 'checked' : '' }}
+                                class="form-check-input sub2-label" type="checkbox" value="{{ $sub2->sub2_category_slug }}" id="sub2-{{ $sub2->id }}">
+                                <span class="name">{{ $sub2->sub2_category_name }}</span>
+                                <span class="text-muted">({{ $sub2->products_count }})</span>                            
+                            </label>
+                        </a>
+                    </div> --}}
+                @endforeach
+            @endif            
+
+            <x-filter-checkbox  :items="$brands" type="brand" valueField="slug" labelField="name" nameClass="name" title="Brands" :showColor="false" :limit="20" />
+
+            <div class="filter-group">
+                <h5 class="h5 mb-2">Price</h5>
+                <input type="text" class="js-range-slider" name="my_range" value="" />
+            </div>
+
+            <x-filter-checkbox :items="$sizes" type="size" valueField="name" labelField="name" title="Sizes" :showColor="false" />
+            <x-filter-checkbox :items="$colors" type="color" valueField="name" labelField="name" title="Color" :showColor="true" />
+            <x-filter-checkbox :items="$discounts" type="discount" valueField="name" labelField="name" title="Discount" :showColor="false" />
         </div>
 
         <div class="col-md-10 col-12">
@@ -101,8 +134,9 @@
 
         $(".sub2-label").on('change', apply_category_filters);
         $(".brand-label").on('change', apply_brand_filters);
-        $(".color-label").on('change', apply_color_filters);
         $(".size-label").on('change', apply_size_filters);
+        $(".color-label").on('change', apply_color_filters);        
+        $(".discount-label").on('change', apply_discount_filters);
         $("#sortFilter").on('change', apply_sort_filters);
 
         function apply_brand_filters(){
@@ -137,6 +171,24 @@
             window.location.href = '{{ url()->current() }}?' + params.toString();
         }
 
+
+        function apply_discount_filters(){
+            var discount = [];
+            $(".discount-label:checked").each(function(){
+                discount.push($(this).val());
+            });
+
+            var params = new URLSearchParams(window.location.search);
+
+            if (discount.length > 0) {
+                params.set('discount', discount.join(','));
+            } else {
+                params.delete('discount');
+            }
+            window.location.href = '{{ url()->current() }}?' + params.toString();
+        }
+
+        
         function apply_size_filters(){
             var sizes = [];
 

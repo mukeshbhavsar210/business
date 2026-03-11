@@ -93,8 +93,19 @@
                         </div>
                         <div class="col-md-3 col-6">
                             <div class="form-group">
-                                <label for="compare_price">Discount Price</label>
-                                <input type="text" name="compare_price" id="compare_price" class="form-control" placeholder="Discount Price" value="{{ old('compare_price', $product->compare_price ?? '') }}">
+                                <label for="compare_price">Discount</label>
+                                <select name="discount_percent" class="form-select">
+                                    <option value="0">No Discount</option>
+                                    <option value="10">10%</option>
+                                    <option value="20">20%</option>
+                                    <option value="30">30%</option>
+                                    <option value="40">40%</option>
+                                    <option value="50">50%</option>
+                                    <option value="60">60%</option>
+                                    <option value="70">70%</option>
+                                    <option value="80">80%</option>
+                                    <option value="90">90%</option>
+                                </select>
                             </div>
                         </div>
                         <div class="col-md-3 col-6">

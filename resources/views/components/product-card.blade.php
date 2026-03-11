@@ -101,17 +101,20 @@
             @endif            
 
             <div class="price">
-                <span class="dark">₹{{ $product->price }}</span>
-                @if ($product->compare_price > 0)
-                    <span class="text-underline">
-                        <del>₹{{ $product->compare_price }}</del>
-                    </span>
+                @if($product->discount)
                     @php
-                        $discount = round((($product->compare_price - $product->price) / $product->compare_price) * 100);
+                        $discountPrice = $product->price - ($product->price * $product->discount->discount_percent / 100);
                     @endphp
-                    <span class="discount">{{ $discount }}% OFF</span>
-                @endif           
-            </div> 
+
+                    <span class="dark">₹{{ $discountPrice }}</span>
+                    <span class="mrp">MRP 
+                        <del>₹{{ $product->price }}</del>
+                    </span>
+                    <span class="discount">{{ $product->discount->discount_percent }}% OFF</span>
+                @else
+                    <span class="dark">₹{{ $product->price }}</span>                    
+                @endif
+            </div>  
             
         @elseif($category)
             <a href="{{ route('front.category.shop', [$category->category_slug]) }}" >

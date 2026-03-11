@@ -278,7 +278,7 @@ class AuthController extends Controller {
         $address = CustomerAddress::where('user_id',$userId)->first();
 
         $data = [
-            'user'          => $user,        
+            'user' => $user,        
             
             'profileFormConfig' => [
                 'title' => 'Edit Profile',
@@ -350,6 +350,7 @@ class AuthController extends Controller {
                 'title' => 'Change Password',
                 'modal_id' => 'editPasswordModal',   
                 'action' => route('account.processChangePassword'),
+                'modal_size' => 'modal-sm',
                 'method' => 'POST',
                 'button' => 'Update Password',
                 'button_class' => 'w-100',
@@ -365,13 +366,13 @@ class AuthController extends Controller {
                         'type' => 'password',
                         'name' => 'new_password',
                         'label' => 'New Password',
-                        'col' => 'col-6'
+                        'col' => 'col-12'
                     ],
                     [
                         'type' => 'password',
                         'name' => 'new_password_confirmation',
                         'label' => 'Confirm Password',
-                        'col' => 'col-6'
+                        'col' => 'col-12'
                     ],
                 ]
             ]
@@ -486,31 +487,6 @@ class AuthController extends Controller {
         return view('front.account.orders.index', $data);
     }
 
-
-    public function viewOrder($id) {
-        $userId = Auth::user()->id;        
-        // $order = Order::where('id', $id)
-        //             ->where('user_id', auth()->id()) // 🔐 security
-        //             ->with([
-        //                 'orderItems.product',
-        //                 'orderItems.product.images',
-        //                 'orderItems.variant',
-        //                 'state'
-        //             ])
-        //             ->firstOrFail();
-
-        $order = Order::where('id', $id)
-            ->where('user_id', auth()->id()) // 🔐 security
-            ->with([
-                'orderItems.product',
-                'orderItems.product.images',
-                'orderItems.variant',
-                'address.state'
-            ])
-            ->firstOrFail($id);       
-
-        return view('front.account.orders.placed_order', compact('order'));
-    }
     
     public function orderDetail($id) {
         $user = Auth::user();

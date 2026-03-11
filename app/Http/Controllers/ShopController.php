@@ -6,6 +6,7 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Color;
 use App\Models\DiscountCoupon;
+use App\Models\DiscountPercentage;
 use App\Models\Product;
 use App\Models\Rating;
 use App\Models\Review;
@@ -19,6 +20,7 @@ class ShopController extends Controller {
         $brandsArray = [];
         $colorsArray = [];
         $sizesArray = [];
+        $discountArray = [];
         
         $categories = Category::orderBy("category_name","ASC")->with(['sub_category'])->where('status',1)->get();               
         $products = Product::with('ratings')->where('status',1);
@@ -103,6 +105,20 @@ class ShopController extends Controller {
         ->orderBy('name','ASC')
         ->get();
 
+        $discounts = DiscountPercentage::withCount([
+            'products as products_count' => function($query) use ($selectedCategory, $selectedSubCategory) {
+                $query->where('status', 1);
+                if ($selectedCategory) {
+                    $query->where('category_id', $selectedCategory->id);
+                }
+                if ($selectedSubCategory) {
+                    $query->where('sub_category_id', $selectedSubCategory->id);
+                }
+            }
+        ])
+        ->orderBy('name','ASC')
+        ->get();
+
         // brands filters
         if (!empty($request->get('brand'))) {
             $brandSlugs = explode(',', $request->get('brand'));
@@ -134,6 +150,17 @@ class ShopController extends Controller {
 
             $sizesArray = $sizeCode; 
             $products = $products->whereIn('size_id', $sizeIds);
+        }
+
+        // size filters
+        if (!empty($request->get('discount'))) {
+            $discountCode = explode(',', $request->get('discount'));
+            $discountIds = DiscountPercentage::whereIn('name', $discountCode)
+                ->pluck('id')
+                ->toArray();
+
+            $discountArray = $discountCode; 
+            $products = $products->whereIn('discount_percentage_id', $discountIds);
         }
 
         // Price slider
@@ -197,6 +224,7 @@ class ShopController extends Controller {
             $request->filled('price_min') ||
             $request->filled('price_max') ||
             $request->filled('sort') ||
+            $request->filled('discount') ||
             $request->filled('search')
         ) {
             $filtersApplied = true;
@@ -207,9 +235,7 @@ class ShopController extends Controller {
 
         // Coupon filter
         if ($request->coupon) {
-
             $coupon = DiscountCoupon::where('code', $request->coupon)->first();
-
             if ($coupon) {
                 $products->whereHas('coupons', function ($q) use ($coupon) {
                     $q->where('discount_coupons.id', $coupon->id);
@@ -228,6 +254,8 @@ class ShopController extends Controller {
         $data['colorsArray'] = $colorsArray;
         $data['sizes'] = $sizes;
         $data['sizesArray'] = $sizesArray;
+        $data['discounts'] = $discounts;
+        $data['discountArray'] = $discountArray;
         $data['products'] = $products;
         $data['productCount '] = $productCount;
         $data['selectedCategory'] = $selectedCategory;
