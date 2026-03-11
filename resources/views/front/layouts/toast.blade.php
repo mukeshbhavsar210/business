@@ -1,9 +1,9 @@
-{{-- @if (Session::has('success'))    
+@if (Session::has('success'))    
     <div class="toast toast-cart fade show" role="alert" data-bs-delay="2000">        
         <div class="toast-body">{!! Session::get('success') !!}</div>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>        
     </div>    
-@endif --}}
+@endif
 
 <div id="commonToast" class="toast toast-cart" role="alert">        
     <div class="toast-body" id="commonToastMessage"></div>

@@ -147,6 +147,8 @@ a:hover { text-decoration: none; color: var(--black); }
 .checkout-steps .step1 { margin: 0 5px 0 0; }
 .checkout-steps .step { display: inline-block; }
 
+.remove_coupon { background:none; border:1px red solid; border-radius: 100px; padding: 1px 2px 1px 3px; height: 20px; width: 20px; cursor: pointer;}
+
 .navbar-nav { gap: 10px;}
 .navbar { padding:0; margin: 0;}
 .navbar .nav-link { padding:27px 0; text-transform: uppercase; color: var(--black); font-size: 15px; font-weight: bold; border-bottom: 3px transparent solid; letter-spacing: 1px; word-spacing: 2px; }
@@ -464,7 +466,7 @@ a:hover { text-decoration: none; color: var(--black); }
 .breadcrumb .breadcrumb-item.active { font-weight: bold; color: var(--black);}
 
 .toast { width: auto !important;}
-.toast-cart { display: flex; column-gap: 10px; background-color: var(--black); color: var(--white); position: fixed; top:90px; right:105px; padding:0 12px 3px 6px; border-radius:6px; font-size: 14px; z-index: 99; }
+.toast-cart { display: flex; column-gap: 10px; background-color: var(--black); color: var(--white); position: fixed; top:7px; right:105px; padding:0 12px 3px 6px; border-radius:6px; font-size: 14px; z-index: 99; }
 .toast-cart .btn-close { color: var(--white); position: relative; top:12px;}
 
 .toast-message { display: flex; column-gap: 10px; background-color: var(--black); color: var(--white); position: fixed; top:90px; right:105px; padding:0 12px 3px 6px; border-radius: 6px; font-size: 14px; z-index: 99; }
@@ -639,7 +641,7 @@ a:hover { text-decoration: none; color: var(--black); }
 .delivery-address .card-header { display: block !important; background-color: var(--primary-light);}
 .delivery-address .control-btn { display: block !important; }
 .address-card { font-size: 14px;}
-.address-card .card-body { padding: 20px; display: flex; column-gap: 30px; }
+.address-card .card-body { padding: 20px; display: flex; column-gap: 20px; }
 .address-card .card-body .address-radio { margin: 0; }
 
 .saved-address-grey { display: flex; column-gap: 20px; background-color: color-mix(in srgb, var(--gray-light) 80%, white); margin: 20px 0 5px 0; padding: 10px 20px; justify-content: space-between; }

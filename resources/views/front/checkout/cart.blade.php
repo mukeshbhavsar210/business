@@ -13,13 +13,13 @@
             buttonText="Save"
             modalId="createAddressModal"
         />
-        
+
         <div class="row">
             @if (Cart::count() > 0)
                 <div class="col-md-8 col-12 left-border">                   
                     @php
                         $defaultAddressId = old(
-                            'default_address_id',
+                            'customer_address_id',
                             optional($address->firstWhere('default_address', 1))->id
                         );
                     @endphp
@@ -28,8 +28,7 @@
                         <div class="delivery-time">
                             <div class="address">
                                 @foreach($address as $value) 
-                                    @if($value->default_address == 1)
-                                        <input type="radio" name="customer_address_id" value="{{ $value->id }}" checked>
+                                    @if($value->default_address == 1)                                        
                                         <p>Delivery to: <b>{{ $value->name }}, {{ $value->zip }}</b></p>
                                         <p class="tiny-font mt-1">{{ $value->address }},</p>
                                         <p class="tiny-font">{{ $value->locality }}, {{ $value->city }}, {{ $value->state->name }}</p>    
@@ -191,7 +190,22 @@
                 </div>
 
                 <div class="col-md-4 col-12">
-                    @include('front.checkout.summary')                   
+                    <form name="orderForm" id="orderForm" method="POST">
+                        @csrf
+
+                        @foreach($address as $value) 
+                            @if($value->default_address == 1)                                        
+                                <input type="radio" name="customer_address_id" value="{{ $value->id }}" class="address-radio d-none" {{ $defaultAddressId == $value->id ? 'checked' : '' }} checked >
+                            @endif                                        
+                        @endforeach
+                        
+                        <x-order-summary 
+                            :shippingCharge="$shipping_charge"
+                            :couponDiscount="$coupon_discount ?? 0"
+                            :couponCode="$coupon_code ?? ''"
+                            buttonType="pay"
+                        />                        
+                    </form>                  
                 </div>                  
             </div>
         @else
@@ -339,6 +353,85 @@
                 </div>
             </div>
         </div>
+
+        <div class="modal fade" id="discount" tabindex="-1" aria-labelledby="discountLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <form action="{{ route('coupon.apply') }}" method="POST" id="couponForm">
+                        @csrf
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="discountLabel">Apply Coupon</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="apply-coupan mb-2">
+                                <input type="text" placeholder="Enter coupon Code" class="form-control" name="discount_code" id="discount_code" value="{{ old('discount_code', session('coupon_code')) }}">
+                            </div>
+                            
+                            <div class="scroll-body">
+                                @php
+                                    $selectedCoupon = session('coupon_discount.id');
+                                @endphp
+
+                                @foreach($coupons as $coupon)
+                                    <div class="coupon-box {{ old('coupon_id', $selectedCoupon) == $coupon->id ? 'active' : '' }}">
+                                    <label>
+                                        <div class="left">
+                                            <label class="custom-radio">
+                                                <input 
+                                                    type="radio"
+                                                    name="coupon_id"
+                                                    value="{{ $coupon->id }}"
+                                                    data-code="{{ $coupon->code }}"
+                                                    {{ old('coupon_id', $selectedCoupon) == $coupon->id ? 'checked' : '' }}
+                                                >
+                                                <span class="radio-mark"></span>
+                                            </label>
+                                        </div>
+
+                                        <div class="right">
+                                            <div class="code-details">
+                                                <div class="code">{{ $coupon->code }}</div>
+                                            </div>
+
+                                            <p class="title">{{ $coupon->name }}</p>
+
+                                            <p class="text-muted">
+                                                @if($coupon->type == 'percent')
+                                                    {{ $coupon->discount_amount }}% off
+                                                @else
+                                                    ₹{{ $coupon->discount_amount }} off
+                                                @endif
+                                                on minimum purchase of <b>₹{{ $coupon->min_amount }}</b>.
+                                            </p>
+
+                                            <p class="text-muted">
+                                                Expire on:
+                                                {{ \Carbon\Carbon::parse($coupon->expires_at)->format('jS F Y | h:i A') }}
+                                            </p>
+                                        </div>
+                                    </label>
+                                </div>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <div class="modal-footer-extra">                                
+                            <div class="max-savings">
+                                <p>Maximum savings:</p> 
+                                @if(session()->has('coupon_discount'))
+                                    {{-- ({{ session('coupon_discount.code') }}) --}}
+                                    <p class="discount-text">₹{{ number_format(session('coupon_discount.discount'),2) }}</p>
+                                @endif
+                            </div>
+                            <div>
+                                <button class="btn btn-primary btn-big" type="submit" data-bs-dismiss="modal">Apply</button>
+                            </div>                                
+                        </div>                                    
+                    </form>
+                </div>
+            </div>
+        </div>   
 @endsection
 
 @section('customJs')
@@ -355,6 +448,33 @@
                 $("#cod-form").addClass('d-none');
                 $("#razorpay-form").removeClass('d-none');
             }
+        });
+
+        $("#orderForm").submit(function(event){            
+            event.preventDefault();
+
+            $('button[type="submit"]').prop('disabled', true);
+
+            $.ajax({
+                url: '{{ route("front.processCheckout") }}',
+                type: 'POST',
+                data: $(this).serialize(),
+                dataType: 'json',
+
+                success:function(response){
+                    $('button[type="submit"]').prop('disabled', false);
+                    if(response.status == false){
+                        console.log(response.errors);
+                    }else{
+                        window.location.href = "{{ url('thanks') }}/"+response.orderId;
+                    }
+                },
+
+                error:function(xhr){
+                    console.log(xhr.responseText);
+                    $('button[type="submit"]').prop('disabled', false);
+                }
+            });
         });
     
         let currentRowId = '';
@@ -656,7 +776,7 @@
                 let mrp_total = 0;
                 let price_discount = 0;
                 let selectedCount = 0;
-
+                let shipping_cost = 0;
                 let coupon_discount = parseFloat($('#coupon_discount').val()) || 0;
                 let shipping_charge = parseFloat($('#shipping_charge').val()) || 0;
 
@@ -680,41 +800,34 @@
 
                 if(afterCoupon < 0){
                     afterCoupon = 0;
-                }
+                }                
 
                 // add shipping
-                let total_amount = afterCoupon + shipping_charge;
+                let total_amount = afterCoupon;
 
                 // Show / hide price box
                 if(selectedCount > 0){
-                    $('.priceDetailsBox').removeClass('d-none');
+                    total_amount += shipping_charge;
+                    $('.priceDetailsBox').removeClass('d-none');                    
                 }else{
-                    $('.priceDetailsBox').addClass('d-none');
+                    shipping_charge = 0;
+                    $('.priceDetailsBox').addClass('d-none');                    
                 }
 
                 // Update UI
                 $('#selectedCount').text(selectedCount);
                 $('.selected-items').text(selectedCount);
-
                 $('.mrp_total').text(mrp_total.toFixed(2));
                 $('.price_discount').text(price_discount.toFixed(2));
                 $('.coupon_discount').text(coupon_discount.toFixed(2));
-                $('.shipping_charge').text(shipping_charge.toFixed(2));
+                $('.shipping_charge').text(shipping_cost.toFixed(2));
                 $('.total_amount').text(total_amount.toFixed(2));
 
                 // Disable checkout if nothing selected
-                $('#placeOrderBtn').prop('disabled', selectedCount === 0);
+                $('.placeOrderBtn').prop('disabled', selectedCount === 0);
             }            
 
-            // Individual checkbox change
-            // $(document).on('change', '.item-checkbox', function(){
-            //     if(!this.checked){
-            //         $('#selectAll').prop('checked', false);
-            //     }
-            //     updateCartSummary();
-            // });
-
-
+           
             $(document).on('change', '.item-checkbox', function(){
                 let rowId = $(this).data('rowid');
                 let checked = $(this).is(':checked');
@@ -737,12 +850,7 @@
                 updateCartSummary();
             });
 
-            // Select All
-            // $('#selectAll').on('change', function(){
-            //     $('.item-checkbox').prop('checked', this.checked);
-            //     updateCartSummary();
-            // });
-
+           
             $('#selectAll').on('change', function(){
                 let checked = this.checked;
 

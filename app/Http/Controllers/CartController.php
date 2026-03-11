@@ -114,39 +114,37 @@ class CartController extends Controller {
                 ->orWhere('expires_at', '>=', now());
             })
             ->get();   
-            
-        $address = CustomerAddress::with('state')->get();
-        $addressTypes = CustomerAddress::pluck('address_type')->toArray();
-        $states = State::orderBy('name', 'ASC')->get();
+        
+        if(auth()->check()){
+            $address = auth()->user()->addresses()->with('state')->get();
+            $customerAddress = Auth::user()->address;
+        }else{
+            $address = collect(); // empty collection
+        }
+        $addressTypes = CustomerAddress::pluck('address_type')->toArray();        
+        $states = State::orderBy('name', 'ASC')->get(); 
+
+        // $address = CustomerAddress::with('state')->get();
+        // $addressTypes = CustomerAddress::pluck('address_type')->toArray();
+        //$states = State::orderBy('name', 'ASC')->get();
         $delivery_address = CustomerAddress::with('state')->get();
         $homeExists = CustomerAddress::where('user_id', auth()->id())
             ->where('address_type', 'Home')
-            ->exists();
-        //$customerAddress = Auth::check() ? Auth::user()->address : [];
+            ->exists();        
 
         $totalQty = Cart::count(); // total items qty
         $selectedIds = $request->cart_ids ?? [];
+        $shipping_charge = 0;
+        $customerAddress = CustomerAddress::where('user_id', Auth::id())->first();        
 
-        $totalShippingCharge = 0;
-        $customerAddress = CustomerAddress::where('user_id', Auth::id())->first();
+        if($customerAddress){
+            $shippingInfo = ShippingCharge::where('state_id', $customerAddress->state_id)->first();
 
-        if($customerAddress != '' ){
-            $userState = $customerAddress->state_id;
-            $shippingInfo = ShippingCharge::where('state_id', $userState)->first();
-
-            $totalQty = 0;
-            $shipping_charge = 0;
-            $grandTotal = 0;
-            foreach (Cart::content() as $item){
-                $totalQty += $item->qty;
+            if($shippingInfo && Cart::count() > 0){
+                $shipping_charge = $shippingInfo->amount;
             }
-
-            $shipping_charge = $totalQty*$shippingInfo->amount;
-            $grandTotal = Cart::subtotal(2,'.','')+$shipping_charge;
-        } else {
-            $grandTotal = Cart::subtotal(2,'.','');
-            $shipping_charge = 0;
-        }  
+        }
+        //$grandTotal = Cart::subtotal(2,'.','') + $shipping_charge;  
 
         // if(empty($selectedIds)){
         //     return back()->with('error','Please select at least one item');
@@ -159,9 +157,9 @@ class CartController extends Controller {
         // IMPORTANT: remove formatting to avoid string math
         $cartItems = Cart::content();
 
-        $price_total = $cartItems->sum(function($item){
-            return $item->price * $item->qty;
-        });
+        // $price_total = $cartItems->sum(function($item){
+        //     return $item->price * $item->qty;
+        // });
 
         $discount_price = $cartItems->sum(function ($item) {
             return ($item->options->discount_price ?? 0) * $item->qty;
@@ -170,33 +168,23 @@ class CartController extends Controller {
         $discount_percentage = $cartItems->sum(function ($item) {
             return ($item->options->discount_percent ?? 0) * $item->qty;
         });
-        
-        $subTotal = $price_total;
+                
         $discountPrice = $discount_price;
         $discountPercent = $discount_percentage;
         $coupon_discount = session()->get('coupon_discount.discount', 0);
-        $coupon_code = session()->get('coupon_discount.code', 0);
-        $total_amount = max($subTotal + $totalShippingCharge - $coupon_discount, 0);        
+        $coupon_code = session()->get('coupon_discount.code', 0);        
             
         //dd(Cart::content());
-        //dd(session('coupon_discount.id'));
-        //dd($appliedCouponId);
+        //dd(session('coupon_code'));        
 
         return view('front.checkout.cart', [
-            'price_total'           => $price_total,
-            //'price_discount'    => $price_discount,
-            'grandTotal'            => $grandTotal,
-            'subTotal'              => $subTotal,
             'discountPrice'         => $discountPrice,
             'discountPercent'       => $discountPercent,
             'coupon_code'           => $coupon_code,
             'coupon_discount'       => $coupon_discount,
-            'total_amount'          => $total_amount,
-            'customerAddress'       => $customerAddress ,
-            'address'               => $address,
-            'homeExists'            => $homeExists,
-            'totalShippingCharge'   => $totalShippingCharge, 
+            'homeExists'            => $homeExists,            
             'delivery_address'      => $delivery_address,
+            'address'               => $address,
             'addressTypes'          => $addressTypes,
             'states'                => $states,
             'cartContent'           => $cartContent,
@@ -221,43 +209,39 @@ class CartController extends Controller {
         $address = auth()->user()->addresses()->with('state')->get();
         $addressTypes = CustomerAddress::pluck('address_type')->toArray();
         $customerAddress = Auth::user()->address;
-        $states = State::orderBy('name', 'ASC')->get();
-        $totalQty = Cart::count();
-        $totalShippingCharge = 0;
+        $states = State::orderBy('name', 'ASC')->get();        
 
-        if ($customerAddress) {
+        $shipping_charge = 0;
+        if($customerAddress){
             $shippingInfo = ShippingCharge::where('state_id', $customerAddress->state_id)->first();
 
-            if ($shippingInfo) {
-                $totalShippingCharge = $totalQty * $shippingInfo->amount;
+            if($shippingInfo && Cart::count() > 0){
+                $shipping_charge = $shippingInfo->amount;
             }
         }
 
-        // IMPORTANT: remove formatting to avoid string math
-        $subTotal = (float) Cart::subtotal(2, '.', '');
+        // IMPORTANT: remove formatting to avoid string math        
+        $coupon_code = session()->get('coupon_discount.code', 0);
         $coupon_discount = session()->get('coupon_discount.discount', 0);
-        $grandTotal = max($subTotal + $totalShippingCharge - $coupon_discount, 0);    
-        
         $coupons = DiscountCoupon::where('status', 1)
-        ->where(function ($q) {
-            $q->whereNull('expires_at')
-            ->orWhere('expires_at', '>=', now());
-        })
-        ->get();  
+            ->where(function ($q) {
+                $q->whereNull('expires_at')
+                ->orWhere('expires_at', '>=', now());
+            })
+            ->get();  
 
         //dd(session('coupon_discount'));
-        //dd($coupon_discount);
+        //dd($coupon_code);
         //dd(session('cart'));
 
         return view('front.checkout.address', [
             'coupons'             => $coupons,
+            'coupon_code'         => $coupon_code,
             'states'              => $states,
             'address'             => $address,
             'addressTypes'        => $addressTypes,
-            'shipping_charge' => $totalShippingCharge,
-            'coupon_discount'     => $coupon_discount,            
-            'subTotal'            => $subTotal,
-            'grandTotal'          => $grandTotal
+            'shipping_charge'     => $shipping_charge,
+            'coupon_discount'     => $coupon_discount,                        
         ]);
     }
 
@@ -266,7 +250,6 @@ class CartController extends Controller {
         // Step 1: Validate selected shipping address
         $validator = Validator::make($request->all(), [
             'customer_address_id' => 'required|exists:customer_addresses,id',
-            //'payment_method'     => 'required'
             'payment_method' => 'required|in:cod,razorpay'
         ]);
 
@@ -300,17 +283,17 @@ class CartController extends Controller {
         $promoCode = '';
 
         // Step 4: Apply Coupon (if exists)
-        if (session()->has('code')) {
-            $code = session()->get('code');
+        if(session()->has('coupon_discount')){
+            $coupon = session('coupon_discount');
 
-            if ($code->type == 'percent') {
-                $discount = ($code->discount_amount / 100) * $subTotal;
-            } else {
-                $discount = $code->discount_amount;
+            if($coupon['type'] == 'percent'){
+                $discount = ($coupon['value'] / 100) * $subTotal;
+            }else{
+                $discount = $coupon['value'];
             }
 
-            $discountCodeId = $code->id;
-            $promoCode = $code->code;
+            $discountCodeId = $coupon['id'];
+            $promoCode = $coupon['code'];
         }
 
         // Step 5: Calculate Shipping Based On Selected Address State
@@ -319,7 +302,7 @@ class CartController extends Controller {
         $shippingInfo = ShippingCharge::where('state_id', $selectedAddress->state_id)->first();
 
         if ($shippingInfo) {
-            $shipping = $totalQty * $shippingInfo->amount;
+            $shipping = $shippingInfo->amount ?? 0;
         } else {
             $restState = ShippingCharge::where('state_id', 'rest_of_state')->first();
             $shipping = $totalQty * ($restState->amount ?? 0);
@@ -344,6 +327,7 @@ class CartController extends Controller {
         OrderStatusHistory::create([
             'order_id' => $order->id,
             'courier' => 'Shadofox',
+            'note' => 'note',
             'status' => 'confirmed',
             'date' => now()
         ]);
@@ -353,13 +337,13 @@ class CartController extends Controller {
             $orderItem = new OrderItem;
             $orderItem->order_id = $order->id;
             $orderItem->product_id = $item->id;            
-            $orderItem->product_variant_id = $item->options->variant_id ?? null;
-            $orderItem->size = $item->options->size ?? null;            
             $orderItem->name = $item->name;
-            $orderItem->color = $item->color;
             $orderItem->qty = $item->qty;
             $orderItem->price = $item->price;
             $orderItem->total = $item->price * $item->qty;            
+            $orderItem->product_variant_id = $item->options->variant_id ?? null;
+            $orderItem->size = $item->options->size ?? null;                        
+            $orderItem->color = $item->options->color;
             $orderItem->save();
 
             // Update Variant Stock
@@ -411,7 +395,6 @@ class CartController extends Controller {
             'order' => $order,
         ]);
     }
-
     
     public function updateDefaultAddress(Request $request) {
         $request->validate([
@@ -764,59 +747,7 @@ class CartController extends Controller {
             "status"=> true,
             "message"=> "Item moved to wishlist successfully.",
         ]);
-    }
-
-    public function checkout_old(){
-        $discount = 0;
-        //if cart is empty redirect to cart page
-        if (Cart::count() == 0) {
-            return redirect()->route('front.cart');
-        }
-
-        //if user is not logged in then redirect to login page
-        if (Auth::check() == false) {
-            if (!session()->has('url.intended')) {
-                session(['url.intended' => url()->current()]);
-            }
-
-            return redirect()->route('account.login');
-        }
-        
-        $customerAddress = CustomerAddress::where('user_id', Auth::id())->first();
-        
-        session()->forget('url.intended');
-
-        $states = State::orderBy('name','ASC')->get();
-
-        //Calcuting shipping charges
-        if($customerAddress != '' ){
-            $userState = $customerAddress->state_id;
-            $shippingInfo = ShippingCharge::where('state_id', $userState)->first();
-
-            //echo $shippingInfo->amount;
-            $totalQty = 0;
-            $shipping_charge = 0;
-            $grandTotal = 0;
-            foreach (Cart::content() as $item){
-                $totalQty += $item->qty;
-            }
-
-            $shipping_charge = $totalQty*$shippingInfo->amount;
-            $grandTotal = Cart::subtotal(2,'.','')+$shipping_charge;
-
-        } else {
-            $grandTotal = Cart::subtotal(2,'.','');
-            $shipping_charge = 0;
-        }                        
-
-        return view('front.checkout.index',[
-            'states' => $states,
-            'customerAddress' => $customerAddress,
-            'shipping_charge' => $shipping_charge,
-            'discount' => $discount,
-            'grandTotal' => $grandTotal
-        ]);
-    }
+    }   
 
     public function getOrderSummary(Request $request){
         $subTotal = Cart::subtotal(2,'.','');
