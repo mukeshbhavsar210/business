@@ -66,15 +66,19 @@
             @if(session()->has('coupon_discount'))
                 <div class="repeate-row priceDetailsBox">
                     <div class="left">
+                        <div class="flex">
                         Coupon Discount ({{ $coupon_code }})                                        
                         <form action="{{ route('front.removeCoupon') }}" method="POST">
                             @csrf
-                            <button type="submit" class="btn btn-danger btn-sm">Remove</button>
-                        </form>                                        
+                            <button type="submit" class="remove_coupon">
+                                <svg fill="#ff0000" width="11px" height="11px" viewBox="-3.5 0 19 19" xmlns="http://www.w3.org/2000/svg" class="cf-icon-svg"><path d="M11.383 13.644A1.03 1.03 0 0 1 9.928 15.1L6 11.172 2.072 15.1a1.03 1.03 0 1 1-1.455-1.456l3.928-3.928L.617 5.79a1.03 1.03 0 1 1 1.455-1.456L6 8.261l3.928-3.928a1.03 1.03 0 0 1 1.455 1.456L7.455 9.716z"></path></svg>
+                            </button>
+                        </form>           
+                        </div>                             
                     </div>
                     <div class="right">
-                         <input type="hidden" id="coupon_discount" value="{{ $coupon_discount }}">
-                        <span class="compare-discount" id="discount_value">- ₹{{ $coupon_discount }}</span>
+                        <input type="hidden" id="coupon_discount" value="{{ $coupon_discount }}">
+                        <span class="compare-discount">- ₹{{ $coupon_discount }}</span>
                     </div>
                 </div>                               
             @else
@@ -90,14 +94,13 @@
                 <div class="repeate-row priceDetailsBox" >
                     <div class="left">Platform Fee</div>
                     <input type="hidden" id="shipping_charge" value="{{ $shipping_charge }}">
-                    <div class="right" id="shippingAmount">₹{{ number_format($shipping_charge,2) }}</div>
+                    <div class="right">₹{{ number_format($shipping_charge,2) }}</div>
                 </div> 
             @endif            
 
             <div class="repeate-row total-amount">
                 <div class="left">Total Amount</div>
-                <div class="right">₹ <span class="total_amount">0.00</span></div>
-                {{-- <div class="right"><strong id="grandTotal">₹{{ number_format($grandTotal,2) }}</strong></div> --}}
+                <div class="right">₹ <span class="total_amount">0.00</span></div>                
             </div> 
         @endif
     </div> 
@@ -111,86 +114,10 @@
             <label class="btn btn-outline-primary" for="payment_razorpay">RazorPay</label>
         </div>
         
-        <button id="cod-form" class="btn-primary btn btn-block w-100" type="submit">Pay on COD</button>
-        <button id="razorpay-form" class="btn-primary btn btn-block w-100 d-none" type="submit">Pay ₹{{ number_format($grandTotal,2) }}</button>                
-    </div>                            
+        <button id="cod-form" class="btn-primary btn btn-block w-100 placeOrderBtn" type="submit">Pay on COD</button>
+        <button id="razorpay-form" class="btn-primary btn btn-block w-100 d-none placeOrderBtn" type="submit">Pay ₹{{ number_format($grandTotal,2) }}</button>
+    </div>    
+    
+    <a href="{{ route('front.checkout') }}" class="btn btn-primary w-100">Proceed to Checkout</a>
 </div>
 
-<div class="modal fade" id="discount" tabindex="-1" aria-labelledby="discountLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <form action="{{ route('coupon.apply') }}" method="POST" id="couponForm">
-                @csrf
-                <div class="modal-header">
-                    <h5 class="modal-title" id="discountLabel">Apply Coupon</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="apply-coupan mb-2">
-                        <input type="text" placeholder="Enter coupon Code" class="form-control" name="discount_code" id="discount_code" value="{{ old('discount_code', session('coupon_code')) }}">
-                    </div>
-                    
-                    <div class="scroll-body">
-                        @php
-                            $selectedCoupon = session('coupon_discount.id');
-                        @endphp
-
-                        @foreach($coupons as $coupon)
-                            <div class="coupon-box {{ old('coupon_id', $selectedCoupon) == $coupon->id ? 'active' : '' }}">
-                            <label>
-                                <div class="left">
-                                    <label class="custom-radio">
-                                        <input 
-                                            type="radio"
-                                            name="coupon_id"
-                                            value="{{ $coupon->id }}"
-                                            data-code="{{ $coupon->code }}"
-                                            {{ old('coupon_id', $selectedCoupon) == $coupon->id ? 'checked' : '' }}
-                                        >
-                                        <span class="radio-mark"></span>
-                                    </label>
-                                </div>
-
-                                <div class="right">
-                                    <div class="code-details">
-                                        <div class="code">{{ $coupon->code }}</div>
-                                    </div>
-
-                                    <p class="title">{{ $coupon->name }}</p>
-
-                                    <p class="text-muted">
-                                        @if($coupon->type == 'percent')
-                                            {{ $coupon->discount_amount }}% off
-                                        @else
-                                            ₹{{ $coupon->discount_amount }} off
-                                        @endif
-                                        on minimum purchase of <b>₹{{ $coupon->min_amount }}</b>.
-                                    </p>
-
-                                    <p class="text-muted">
-                                        Expire on:
-                                        {{ \Carbon\Carbon::parse($coupon->expires_at)->format('jS F Y | h:i A') }}
-                                    </p>
-                                </div>
-                            </label>
-                        </div>
-                        @endforeach
-                    </div>
-                </div>
-
-                <div class="modal-footer-extra">                                
-                    <div class="max-savings">
-                        <p>Maximum savings:</p> 
-                        @if(session()->has('coupon_discount'))
-                            {{-- ({{ session('coupon_discount.code') }}) --}}
-                            <p class="discount-text">₹{{ number_format(session('coupon_discount.discount'),2) }}</p>
-                        @endif
-                    </div>
-                    <div>
-                        <button class="btn btn-primary btn-big" type="submit" data-bs-dismiss="modal">Apply</button>
-                    </div>                                
-                </div>                                    
-            </form>
-        </div>
-    </div>
-</div>   
