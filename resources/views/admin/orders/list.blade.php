@@ -21,8 +21,8 @@
                     <thead class="table-light">
                         <tr>
                             <th class="border-top-0" width="65">ID</th>
-                            <th class="border-top-0">Product details</th>                            
-                            <th class="border-top-0 text-end" width="150">Amount</th>
+                            <th class="border-top-0">Product details</th>   
+                            <th class="border-top-0 text-end" width="130">Amount</th>
                             <th class="border-top-0 text-end" width="100">Discount</th>
                             <th class="border-top-0 text-end" width="130">Date</th>
                             <th class="border-top-0 text-end" width="150">Courier</th>
@@ -62,29 +62,35 @@
                                             @endforeach
                                         </div>
                                     </div>
-                                </td>                                  
+                                </td>                         
                                 <td class="text-end">
-                                    <h5 class="mb-0">₹{{ number_format($order->grandtotal,2) }}</h5>                                
-                                    <p class="m-0 text-muted tiny-font">{{ $order->payment_method }}</p>
+                                    <h5 class="mb-0">₹{{ number_format(optional($order->items->first())->grandtotal,2) }}</h5>                                    
+                                    {{-- <h5 class="mb-0">₹{{ number_format($order->grandtotal,2) }}</h5> --}}
+                                    <p class="m-0 text-muted tiny-font">
+                                        Price: ₹{{ number_format(optional($order->items->first())->price,2) }}
+                                        Price: ₹{{ number_format(optional($order->items->first())->subtotal,2) }}
+                                        {{-- {{ $order->payment_method == 'cod' ? 'COD' : 'Razorpay' }} --}}
+                                    </p>
                                 </td>   
                                 <td class="text-end">
-                                    <h5 class="mb-0">₹{{ number_format($order->discount,2) }}</h5>                                
+                                    <h5 class="mb-0">{{ number_format(optional($order->items->first())->discount,2) }}</h5>
+                                    {{-- <h5 class="mb-0">₹{{ number_format($order->discount,2) }}</h5>                                 --}}
                                     <p class="m-0 text-muted tiny-font">
-                                        ({{ $order->coupon_code }})
+                                        {{ optional($order->items->first())->coupon_code }}
+                                        {{-- ({{ $order->coupon_code }}) --}}
                                     </p>
                                 </td>
                                 <td class="text-end">
                                     <p class="m-0">
-                                        {{ \Carbon\Carbon::parse($order->created_at)->format('d M, Y') }}
+                                        {{ \Carbon\Carbon::parse(optional($order->items->first())->created_at)->format('d M, Y') }}
+                                        {{-- {{ \Carbon\Carbon::parse($order->created_at)->format('d M, Y') }} --}}
                                     </p>
                                 </td>                                                      
                                 <td class="text-end">
                                     <h5 class="mb-0">{{ $order->latestStatus->courier ?? '-' }}</h5>
-                                    <p class="m-0 text-muted tiny-font">Tracking: {{ $order->latestStatus->tracking_number ?? '-' }}</p>
-                                    <p class="m-0 text-muted tiny-font">                                        
-                                        @if($order->latestStatus->note)
-                                            {{ Str::limit($order->latestStatus->note, 20, '...') }}    
-                                        @endif                                        
+                                    <p class="m-0 text-muted tiny-font">
+                                        Shipping: ₹{{ number_format(optional($order->items->first())->shipping,2) }}<br />
+                                        {{ $order->latestStatus->tracking_number ?? 'No Tracking' }}
                                     </p>
                                 </td>                                                                
                                 <td class="text-end">
@@ -101,9 +107,13 @@
                                                 ];
                                             @endphp
 
-                                            <span class="badge {{ $badgeClasses[$status] ?? 'bg-dark' }}">
-                                                {{ ucfirst(str_replace('_',' ',$status)) }}
-                                            </span>
+                                            <p>
+                                                <span class="badge {{ $badgeClasses[$status] ?? 'bg-dark' }}">
+                                                    {{ ucfirst(str_replace('_',' ',$status)) }}
+                                                </span>
+                                            </p>
+                                            <p class="tiny-font">{{ optional($order->items->first())->payment_method == 'cod' ? 'COD' : 'Razorpay' }}</p>
+                                            
 
                                             @if($order->latestStatus->cancel_comments)
                                                 <p class="mt-0">{{ $order->latestStatus->cancel_comments }}</p>

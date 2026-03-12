@@ -69,6 +69,8 @@ Route::controller(CartController::class)->group(function() {
     Route::get('checkout/payment-success','razorpaySuccess')->name('checkout.success');
     Route::get('checkout/payment-failed', 'razorpayFailed')->name('checkout.failed');  
     Route::post('checkout/verify-payment', 'verifyPayment')->name('verify.payment');  
+    Route::get('checkout/payment-failed', 'failed')->name('order.failed');
+    Route::post('checkout/get-order-summary','getOrderSummary')->name('front.getOrderSummary');
 });
 
 //User realted
