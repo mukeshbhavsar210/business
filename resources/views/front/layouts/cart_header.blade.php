@@ -11,8 +11,6 @@
                     <ol class="checkout-steps">
                         <li class="{{ request()->routeIs('front.cart') ? 'active' : '' }}" >BAG</li>
                         <li class="divider"></li>
-                        <li class="{{ request()->routeIs('front.checkout') ? 'active' : '' }}">ADDRESS</li>
-                        <li class="divider"></li>
                         <li>PAYMENT</li>
                     </ol>
                 </div>

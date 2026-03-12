@@ -53,6 +53,7 @@
 <script src="{{ asset('front-assets/js/lazyload.17.6.0.min.js') }}"></script>
 <script src="{{ asset('front-assets/js/slick.min.js') }}"></script>
 <script src="{{ asset('front-assets/js/ion.rangeSlider.min.js') }}"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script src="{{ asset('front-assets/js/documentReady.js') }}"></script>
 <script>
     $('.checkoutBtn').click(function () {            
@@ -66,7 +67,6 @@
         });
         $('#login').modal('show');
     });
-
 
     function showAlert(message, type = 'success'){
         let toastEl = $('#commonToast');
@@ -106,6 +106,7 @@
         }
     });
     
+
     function addToCart(id){
         if(selectedSize == '' || selectedSize == null){
             $('.size-list li').addClass('shake');
@@ -143,6 +144,31 @@
         });
     }
 
+    function addToWishlist(id){
+        $.ajax({
+            url: '{{ route("front.addToWishlist") }}',
+            type: 'POST',
+            data: {
+                id: id,
+                _token: '{{ csrf_token() }}' 
+            },
+            dataType: 'json',
+            success: function(response){
+                if(response.status == true){
+                    $("#wishlistToastBody").html(response.message);
+                    showAlert(response.message,'success');
+                    // var toastEl = document.getElementById('wishlistToast');
+                    // var toast = new bootstrap.Toast(toastEl);
+                    // toast.show();
+                } else {
+                    window.location.href= "{{ route('front.home') }}";
+                }
+            },
+            error: function(xhr){
+                console.log(xhr.responseText); // So you can see real error
+            }
+        })
+    } 
 
     $("#registrationForm").submit(function(event){
         event.preventDefault();
@@ -197,33 +223,6 @@
             }
         })
     });
-
-
-    function addToWishlist(id){
-        $.ajax({
-            url: '{{ route("front.addToWishlist") }}',
-            type: 'POST',
-            data: {
-                id: id,
-                _token: '{{ csrf_token() }}' 
-            },
-            dataType: 'json',
-            success: function(response){
-                if(response.status == true){
-                    $("#wishlistToastBody").html(response.message);
-                    showAlert(response.message,'success');
-                    // var toastEl = document.getElementById('wishlistToast');
-                    // var toast = new bootstrap.Toast(toastEl);
-                    // toast.show();
-                } else {
-                    window.location.href= "{{ route('front.home') }}";
-                }
-            },
-            error: function(xhr){
-                console.log(xhr.responseText); // So you can see real error
-            }
-        })
-    }    
 </script>
 
 @yield('customJs')
