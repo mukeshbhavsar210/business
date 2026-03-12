@@ -81,10 +81,15 @@
                                 <td class="text-end">
                                     <h5 class="mb-0">{{ $order->latestStatus->courier ?? '-' }}</h5>
                                     <p class="m-0 text-muted tiny-font">
-                                        {{ $order->latestStatus->tracking_number ?? '-' }}                                        
+                                        @if($order->latestStatus->note)
+                                            {{ Str::limit($order->latestStatus->note, 20, '...') }}    
+                                        @endif
+                                        {{ $order->latestStatus->tracking_number ?? '-' }}
                                     </p>
                                     <p class="m-0 text-muted tiny-font">
-                                        {{ Str::limit($order->latestStatus->note, 20, '...') }}                                        
+                                        @if($order->latestStatus->note)
+                                            {{ Str::limit($order->latestStatus->note, 20, '...') }}    
+                                        @endif
                                     </p>
                                 </td>                                                                
                                 <td class="text-end">

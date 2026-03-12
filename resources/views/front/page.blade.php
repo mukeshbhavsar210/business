@@ -66,7 +66,6 @@
             </div>
         </div>
     </section>
-
 @else
 
 <section class="section-10">
@@ -76,7 +75,6 @@
     </div>
 </section>
 @endif
-
 @endsection
 
 @section('customJs')

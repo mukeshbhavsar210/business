@@ -59,63 +59,64 @@
 
     <div class="part">                            
         <h5>Price Details (<span class="selected-items">0</span> <span>items</span>)</h5>
+        
         @if (Cart::count() > 0)
 
-        <div class="repeate-row">
-            <div class="left">Total MRP</div>
-            <div class="right">₹<span class="mrp_total">0.00</span></div>
-        </div>
-
-        <div class="repeate-row priceDetailsBox">
-            <div class="left">Discount on MRP</div>
-            <div class="right">
-                <span class="compare-discount">- ₹<span class="price_discount">0.00</span></span>
+            <div class="repeate-row">
+                <div class="left">Total MRP</div>
+                <div class="right">₹<span class="mrp_total">0.00</span></div>
             </div>
-        </div>
 
-        @if($couponDiscount)
             <div class="repeate-row priceDetailsBox">
-                <div class="left">
-                    <div class="flex">
-                        Coupon Discount
-                        <form action="{{ route('front.removeCoupon') }}" method="POST">
-                            @csrf
-                            <button type="submit" class="remove_coupon">
-                                <svg fill="#ff0000" width="11px" height="11px" viewBox="-3.5 0 19 19">
-                                    <path d="M11.383 13.644A1.03 1.03 0 0 1 9.928 15.1L6 11.172 2.072 15.1a1.03 1.03 0 1 1-1.455-1.456l3.928-3.928L.617 5.79a1.03 1.03 0 1 1 1.455-1.456L6 8.261l3.928-3.928a1.03 1.03 0 0 1 1.455 1.456L7.455 9.716z"></path>
-                                </svg>
-                            </button>
-                        </form>
+                <div class="left">Discount on MRP</div>
+                <div class="right">
+                    <span class="compare-discount">- ₹<span class="price_discount">0.00</span></span>
+                </div>
+            </div>
+
+            @if($couponDiscount)
+                <div class="repeate-row priceDetailsBox">
+                    <div class="left">
+                        <div class="flex">
+                            Coupon Discount
+                            <form action="{{ route('front.removeCoupon') }}" method="POST">
+                                @csrf
+                                <button type="submit" class="remove_coupon">
+                                    <svg fill="#ff0000" width="11px" height="11px" viewBox="-3.5 0 19 19">
+                                        <path d="M11.383 13.644A1.03 1.03 0 0 1 9.928 15.1L6 11.172 2.072 15.1a1.03 1.03 0 1 1-1.455-1.456l3.928-3.928L.617 5.79a1.03 1.03 0 1 1 1.455-1.456L6 8.261l3.928-3.928a1.03 1.03 0 0 1 1.455 1.456L7.455 9.716z"></path>
+                                    </svg>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="right">
+                        <input type="hidden" id="coupon_discount" value="{{ $couponDiscount }}">
+                        <span class="compare-discount">- ₹<span class="coupon_discount">{{ $couponDiscount }}</span></span>
                     </div>
                 </div>
+            @else
+                <div class="repeate-row">
+                    <div class="left">Coupon Discount</div>
+                    <div class="right">
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#discount">Apply Discount</a>
+                    </div>
+                </div>
+            @endif
 
-                <div class="right">
-                    <input type="hidden" id="coupon_discount" value="{{ $couponDiscount }}">
-                    <span class="compare-discount">- ₹<span class="coupon_discount">{{ $couponDiscount }}</span></span>
+            @auth
+                <div class="repeate-row priceDetailsBox">
+                    <div class="left">Platform Fee</div>
+                    <input type="hidden" id="shipping_charge" value="{{ $shippingCharge }}">
+                    <div class="right">₹{{ number_format($shippingCharge,2) }}</div>
                 </div>
-            </div>
-        @else
-            <div class="repeate-row">
-                <div class="left">Coupon Discount</div>
-                <div class="right">
-                    <a href="#" data-bs-toggle="modal" data-bs-target="#discount">Apply Discount</a>
-                </div>
+            @endauth
+
+            <div class="repeate-row total-amount">
+                <div class="left">Total Amount</div>
+                <div class="right">₹ <span class="total_amount">0.00</span></div>
             </div>
         @endif
-
-        @auth
-            <div class="repeate-row priceDetailsBox">
-                <div class="left">Platform Fee</div>
-                <input type="hidden" id="shipping_charge" value="{{ $shippingCharge }}">
-                <div class="right">₹{{ number_format($shippingCharge,2) }}</div>
-            </div>
-        @endauth
-
-        <div class="repeate-row total-amount">
-            <div class="left">Total Amount</div>
-            <div class="right">₹ <span class="total_amount">0.00</span></div>
-        </div>
-    @endif
 
     <div class="order-btn mt-3">
         @if($buttonType === 'checkout')
