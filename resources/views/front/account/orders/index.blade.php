@@ -9,6 +9,12 @@
             <p>{{ currentUserName() }}</p>
         </div>
         
+        @if(session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
+
         <div class="row">            
             <div class="col-md-3 col-12">                
                 @include('front.account.common.sidebar')  
@@ -175,7 +181,7 @@
                                             </div>  
                                         @endif                                        
                                         
-                                        @if(ucfirst($status) == 'Shipped')
+                                        @if(ucfirst($status) == 'Confirmed' || ucfirst($status) == 'Shipped')
                                             <div class="track-button">
                                                 <a href="#" class="btn btn-outline-dark w-50" data-bs-toggle="modal" data-bs-target="#cancelOrder_{{ $order->id }}">Cancel</a>
                                                 {{-- <a href="#" class="btn btn-outline-dark w-50 track-order-btn" data-order-id="{{ $order->id }}"

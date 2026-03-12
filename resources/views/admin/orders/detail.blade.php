@@ -191,6 +191,12 @@
                                         <option value="Cancelled" {{ ($latestStatus && $latestStatus->status == 'Cancelled') ? 'selected' : '' }}>Cancelled</option>
                                     </select>                            
                                 </div>
+
+                                @if($latestStatus->cancel_comments)
+                                    <p class="mb-0">Cancel reason:</p>
+                                    <p class="mt-0">{{ $latestStatus->cancel_comments }}</p>
+                                @endif                                
+
                                 <div class="mb-1">
                                     <div class="form-group">
                                         <input placeholder="Date" autocomplete="off" value="{{ $latestStatus->date ?? '' }}" type="datetime-local" name="status_date" id="status_date" class="form-control">
@@ -206,7 +212,7 @@
                                     </select>                            
                                 </div>
                                 <div class="form-group">
-                                    <textarea name="note" value="" class="form-control" placeholder="Note" cols="3" >{{ $latestStatus->note ?? '' }}</textarea>
+                                    <textarea name="note" value="" class="form-control" placeholder="Note" cols="3" >{{ $latestStatus->note ?? '' }}</textarea>                                    
                                 </div> 
                                 <div class="mt-1">
                                     <button class="btn btn-primary caps-btn">Update</button>

@@ -21,99 +21,55 @@
         <div class="col-md-9 col-12">
             <div class="orders-details">
                 @include('front.account.common.message')
+                @include('front.layouts.address_modal')
 
-                {{-- @include('front.account.common.modal', [
-                    'form' => $createAddress,
-                    'model' => $user
-                ])
-
-                @include('front.account.common.modal', [
-                    'form' => $EditAddress,
-                    'model' => null
-                ]) --}}
-
-                <div class="user-details-repeate">
-                    <div class="row justify-content-center">
-                        <div class="col-md-12">                        
-                            <div class="row">
-                                <div class="col-md-6 col-6">
-                                    <h5 class="h5 mb-4">Saved Address</h5>
-                                </div>
-                                <div class="col-md-6 col-6">
-                                    @if(!in_array('Home', $addressTypes) || !in_array('Office', $addressTypes))
-                                        <button type="button" class="btn btn-outline-dark float-end" data-bs-toggle="modal" data-bs-target="#createAddressModal">
-                                            + Add New Address
-                                        </button>
-                                        {{-- <button type="button" class="btn btn-outline-dark float-end" data-bs-toggle="modal" data-bs-target="#createAddressModal">+ Add New Address</button> --}}
-                                    @endif
-                                </div>
-                            </div>
-
-                            @php
-                                $defaultAddressId = old(
-                                    'default_address_id',
-                                    optional($address->firstWhere('default_address', 1))->id
-                                );
-                            @endphp
-                                                        
-                            @foreach($address as $value)                                                            
-                                <div class="card mb-3">
-                                    <div class="card-header {{ $defaultAddressId == $value->id ? '' : 'd-none' }}">
-                                        <p><b>{{ $defaultAddressId == $value->id ? 'Default address for shipping' : '' }}</b></p>
-                                        {{-- {{ $defaultAddressId == $value->id ? 'Default' : 'Home' }} --}}
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-md-10 col-8">
-                                                <label class="address-card {{ $defaultAddressId == $value->id ? 'active' : '' }}">
-                                                    {{-- <input type="radio"
-                                                        name="default_address_id"
-                                                        value="{{ $value->id }}"
-                                                        class="address-radio me-3"
-                                                        {{ old('default_address_id', 
-                                                                $value->where('default_address', 1)->first()->id ?? ''
-                                                            ) == $value->id ? 'checked' : '' }}> --}}
-
-                                                    <div class="address-content w-100">
-                                                        <h6><b>{{ $value->name }}</b> 
-                                                            <span>{{ $value->address_type }}</span>
-                                                        </h6>
-                                                        <p class="text-muted mb-0">{{ $value->address }}</p>
-                                                        <p class="text-muted mb-0">{{ $value->locality }}, {{ $value->city }} - {{ $value->zip }}, {{ $value->state->name }}.</p>                                                        
-                                                        <p class="text-muted mt-2">Mobile: {{ $value->mobile }}</p>
-                                                    </div>
-                                                </label>
-                                            </div>
-                                            <div class="col-md-2 col-4">
-                                                <div class="btn-group-sm">
-                                                    <button type="button" class="btn btn-outline-danger">R</button>
-                                                    <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#editPasswordModal">
-                                                        Edit Address
-                                                    </button>
-                                                    {{-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editAddress_{{ $value->id }}">Edit</button> --}}
-                                                </div>        
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endforeach 
-                        </div>
-                    </div>            
+                <div class="flex-end">
+                    <h5 class="h5">Saved Address</h5>
+                    <a href="#" class=" btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#deliveryAddress">Change Default Address</a>
+                    @if(!in_array('Home', $addressTypes) || !in_array('Office', $addressTypes))
+                        <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#createAddressModal">
+                            + Add New Address
+                        </button>                    
+                    @endif
                 </div>
-            </div>             
-        </div>            
+
+                @php
+                    $defaultAddressId = old(
+                        'default_address_id',
+                        optional($address->firstWhere('default_address', 1))->id
+                    );
+                @endphp                
+
+                <x-customer-address-form     
+                    :states="$states"
+                    :action="route('customer.address.store')" 
+                    method="POST" 
+                    title="Add New Address" 
+                    buttonText="Create Address"
+                    modalId="createAddressModal"
+                />
+                                
+                <div class="mt-3 ">
+                    @foreach($address as $value)                            
+                        <div class="card mb-3 {{ $value->default_address == 1 ? 'default-address' : 'other' }}">
+                            <div class="card-header">
+                                <p class="title">{{ $value->default_address == 1 ? 'Default Address' : 'Other Address' }}</p>
+                            </div>
+                            <div class="card-body">                                
+                                <h6>{{ $value->name }} - {{ $value->mobile }}</h6>
+                                <p class="small-font">
+                                    <b>{{ $value->address_type == 'Home' ? 'Home' : 'Office' }}:</b>
+                                    {{ $value->address }}, {{ $value->locality }},
+                                    {{ $value->city }}-{{ $value->zip }}, {{ $value->state->name }}.
+                                </p>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>                                    
+        </div>
     </div>
 </div>
-
-
-<x-customer-address-form     
-    :states="$states"
-    :action="route('customer.address.store')" 
-    method="POST" 
-    title="Add New Address" 
-    buttonText="Create Address"
-    modalId="createAddressModal"
-/>
 
 @endsection
 
