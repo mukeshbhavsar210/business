@@ -373,6 +373,9 @@ input:checked + .slider { box-shadow:0 0 0 2px #007bff,0 0 2px #007bff; }
 .img-group .counts { position: absolute; top:16px; left:-26px; display: block; height: 23px; width: 23px; text-align: center; background-color: var(--gray); color: var(--white); padding: 2px 5px; font-size: 11px; border-radius: 100px; border: 1px #fff solid; z-index: 9;}
 .thumb-md { height: 60px; width: 60px;;}
 
+.flex { display: flex; column-gap: 20px;}
+.flex .img-group { width: 100px;}
+
 .track-placed-order { margin-bottom: 0; margin-top: 5px; font-size: 13px; padding: 0;  }
 .track-placed-order li { margin-bottom: 10px; display: flex; column-gap: 8px; position: relative;}
 .track-placed-order li::after { content: ""; border-left: 2px var(--gray-dark) solid; position: absolute; left:10px; top:25px; height: 37px;}

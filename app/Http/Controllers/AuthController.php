@@ -95,15 +95,25 @@ class AuthController extends Controller {
     public function address(){
         $userId = Auth::user()->id;
         $user = User::where('id',$userId)->first();        
-        $address = auth()->user()->addresses()->with('state')->get();
-        $addressTypes = CustomerAddress::pluck('address_type')->toArray();  
-        $states = State::orderBy('name','ASC')->get();
+        $address = auth()->user()->addresses()->with('state')->get();                
+        $addressTypes = CustomerAddress::pluck('address_type')->toArray();        
+        $states = State::orderBy('name', 'ASC')->get(); 
+        $delivery_address = CustomerAddress::with('state')->get();
+        $defaultAddress = CustomerAddress::where('user_id', auth()->id())
+            ->where('default_address', 1)
+            ->exists(); 
+        $homeExists = CustomerAddress::where('user_id', auth()->id())
+            ->where('address_type', 'Home')
+            ->exists();        
         
         $data = [
             'user'   => $user,       
             'states' => $states,
             'address' => $address,
-            'addressTypes' => $addressTypes,        
+            'defaultAddress' => $defaultAddress,
+            'homeExists' => $homeExists,
+            'addressTypes' => $addressTypes, 
+            'delivery_address' => $delivery_address       
             
         //     'createAddress' => [
         //         'title' => 'Create Address',
@@ -421,28 +431,24 @@ class AuthController extends Controller {
     }
 
 
-    public function orders(Request $request){
+    public function orders(Request $request) {
         $user = Auth::user();
-        $userId = Auth::user()->id;
-        $orders = Order::with('items.product', 'items.product.color', 'items.product.size', 'statusHistories', 'latestStatus')
-                    ->where('user_id', $user->id)
-                    ->latest()
-                    ->get();
 
-        $userId = Auth::user()->id;        
-
-        $totalCancelledItems = $orders->sum(function ($order) {
-            return $order->items->sum('quantity');
-        });
-
-        $query = Order::query();
+        $query = Order::with([
+            'items.product',
+            'items.product.color',
+            'items.product.size',
+            'statusHistories',
+            'latestStatus'
+        ])->where('user_id', $user->id);
 
         $statuses = [
             '' => 'All',
             'Out for Delivery' => 'On the way',
             'delivered' => 'Delivered',
             'cancelled' => 'Cancelled',
-            'returned' => 'Returned'
+            'returned' => 'Returned',
+            'exchanged' => 'Exchanged'
         ];
 
         $time = [
@@ -454,37 +460,38 @@ class AuthController extends Controller {
 
         // Status Filter
         if ($request->status) {
-            $orders->whereHas('latestStatus', function ($q) use ($request) {
+            $query->whereHas('latestStatus', function ($q) use ($request) {
                 $q->where('status', $request->status);
             });
         }
 
         // Time Filter
         if ($request->time == '30_days') {
-            $orders->where('created_at', '>=', Carbon::now()->subDays(30));
+            $query->where('created_at', '>=', Carbon::now()->subDays(30));
         }
 
         if ($request->time == '6_months') {
-            $orders->where('created_at', '>=', Carbon::now()->subMonths(6));
+            $query->where('created_at', '>=', Carbon::now()->subMonths(6));
         }
 
         if ($request->time == '1_year') {
-            $orders->where('created_at', '>=', Carbon::now()->subYear());
+            $query->where('created_at', '>=', Carbon::now()->subYear());
         }
 
-        $orders = Order::with('latestStatus')
-            ->where('user_id', auth()->id())
-            ->latest()
-            ->paginate(10);
+        // Get Orders
+        $orders = $query->latest()->paginate(10);
 
-        $orders = $query->latest()->paginate(5); 
-        
-        $data['orders'] = $orders;
-        $data['time'] = $time;
-        $data['statuses'] = $statuses;
-        $data['totalCancelledItems'] = $totalCancelledItems; 
+        // Cancelled Items Count
+        // $totalCancelledItems = $orders->sum(function ($order) {
+        //     return $order->items->sum('qty');
+        // });
 
-        return view('front.account.orders.index', $data);
+        return view('front.account.orders.index', [
+            'orders' => $orders,
+            'time' => $time,
+            'statuses' => $statuses,
+            //'totalCancelledItems' => $totalCancelledItems
+        ]);
     }
 
     
@@ -520,27 +527,54 @@ class AuthController extends Controller {
         return view('front.account.orders.detail', $data);
     }
 
+    // public function cancelOrder(Request $request, Order $order) {
+    //     // Security check
+    //     if ($order->user_id !== auth()->id()) {
+    //         abort(403);
+    //     }
+
+    //     // Prevent cancelling shipped/completed orders
+    //     // if (!in_array($order->status, ['pending', 'processing'])) {
+    //     //     return back()->with('error', 'Order cannot be cancelled.');
+    //     // }
+
+    //     $request->validate([
+    //         'cancel_reason' => 'required|string',
+    //         'cancel_comments' => 'nullable|string|max:500',
+    //     ]);
+
+    //     $order->update([
+    //         'status' => 'cancelled',
+    //         'cancel_reason' => $request->cancel_reason,
+    //         'cancel_comments' => $request->cancel_comments,
+    //         'cancelled_at' => now(),
+    //     ]);
+
+    //     return redirect()
+    //         ->route('account.orders')
+    //         ->with('success', 'Order cancelled successfully.');
+    // }
+
+
     public function cancelOrder(Request $request, Order $order) {
         // Security check
         if ($order->user_id !== auth()->id()) {
             abort(403);
         }
 
-        // Prevent cancelling shipped/completed orders
-        // if (!in_array($order->status, ['pending', 'processing'])) {
-        //     return back()->with('error', 'Order cannot be cancelled.');
-        // }
-
         $request->validate([
             'cancel_reason' => 'required|string',
             'cancel_comments' => 'nullable|string|max:500',
         ]);
 
-        $order->update([
+        // Store cancellation in order_status_histories
+        OrderStatusHistory::create([
+            'order_id' => $order->id,
             'status' => 'cancelled',
             'cancel_reason' => $request->cancel_reason,
             'cancel_comments' => $request->cancel_comments,
-            'cancelled_at' => now(),
+            'courier' => null,
+            'date' => now()
         ]);
 
         return redirect()
