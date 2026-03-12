@@ -13,36 +13,16 @@ use Illuminate\Support\Facades\DB;
 class OrderController extends Controller {
     
     public function index(Request $request) {
-        $orders = Order::with(array_merge($this->orderRelations(), ['latestStatus']))
+        $orders = Order::with(array_merge($this->orderRelations(), ['latestStatus', 'items']))            
             ->latest('orders.created_at')
             ->paginate(20);
 
         // Order counts
         $totalOrders = Order::count();
 
-        // $confirmedCount = Order::whereHas('latestStatus', function ($q) {
-        //     $q->where('status', 'confirmed');
-        // })->count();
-
-        // $shippedCount = Order::whereHas('latestStatus', function ($q) {
-        //     $q->where('status', 'shipped');
-        // })->count();
-
-        // $deliveredCount = Order::whereHas('latestStatus', function ($q) {
-        //     $q->where('status', 'delivered');
-        // })->count();
-
-        // $cancelledCount = Order::whereHas('latestStatus', function ($q) {
-        //     $q->where('status', 'cancelled');
-        // })->count();
-
         return view('admin.orders.list', [
             'orders' => $orders,
-            'totalOrders' => $totalOrders,
-            // 'confirmedCount' => $confirmedCount,
-            // 'shippedCount' => $shippedCount,
-            // 'deliveredCount' => $deliveredCount,
-            // 'cancelledCount' => $cancelledCount,
+            'totalOrders' => $totalOrders,            
         ]);
     }
 

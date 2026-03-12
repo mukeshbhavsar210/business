@@ -18,7 +18,6 @@
 
         <div class="delivery-address">
             <p>Delivering to:</p>
-
             @if($order->address)
                 <p class="mt-2"><b>{{ $order->address->name }} | {{ $order->address->mobile }}</b></p>
                 <p class="small-font">{{ $order->address->address }},<br />
@@ -31,7 +30,7 @@
         </div>
 
         <div class="btn-action">
-            <a href="{{ route('front.home') }}" class="btn btn-outline-primary">Continue Shopping</a>
+            <a href="{{ route('front.home') }}" class="btn btn-outline-primary">Continue Shopping <span id="countdown">10</span> seconds</a>
             <a href="{{ route('account.orderDetail', $order->id) }}" class="btn btn-primary">View Order</a>
         </div>
     </div>
@@ -99,6 +98,23 @@
             <h5>Grand Total: ₹{{ number_format($order->grandtotal,2) }}</h5>
         </div> --}}
           
+        
     </div> 
 </div>   
+@endsection
+
+@section('customJs')
+<script>
+    let seconds = 10;
+
+    let timer = setInterval(function(){
+        seconds--;
+        document.getElementById("countdown").innerText = seconds;
+
+        if(seconds <= 0){
+            clearInterval(timer);
+            window.location.href = "{{ route('front.home') }}";
+        }
+    },1000);
+</script>
 @endsection

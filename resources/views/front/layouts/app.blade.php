@@ -53,7 +53,6 @@
 <script src="{{ asset('front-assets/js/lazyload.17.6.0.min.js') }}"></script>
 <script src="{{ asset('front-assets/js/slick.min.js') }}"></script>
 <script src="{{ asset('front-assets/js/ion.rangeSlider.min.js') }}"></script>
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script src="{{ asset('front-assets/js/documentReady.js') }}"></script>
 <script>
     $('.checkoutBtn').click(function () {            
@@ -88,9 +87,9 @@
         $('.toast').fadeOut('slow');
     },3000);
 
-	window.onscroll = function() {myFunction()};
-	var navbar = document.getElementById("navbar");
-	var sticky = navbar.offsetTop;
+	//window.onscroll = function() {myFunction()};
+	// var navbar = document.getElementById("navbar");
+	// var sticky = navbar.offsetTop;
 
 	function myFunction() {
 		if (window.pageYOffset >= sticky) {

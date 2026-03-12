@@ -13,190 +13,187 @@
             buttonText="Save"
             modalId="createAddressModal"
         />
-        
+
         <div class="row">
             @if (Cart::count() > 0)
-                <div class="col-md-8 col-12 left-border">
-                    <div class="left-summary">
-                        @include('front.layouts.toast')
+                <div class="col-md-8 col-12 left-border"> 
+                    <div class="left-summary">                  
+                    @php
+                        $defaultAddressId = old(
+                            'customer_address_id',
+                            optional($address->firstWhere('default_address', 1))->id
+                        );
+                    @endphp
 
-                        @php
-                            $defaultAddressId = old(
-                                'default_address_id',
-                                optional($address->firstWhere('default_address', 1))->id
-                            );
-                        @endphp
-
-                        @if (Auth::check())
-                            <div class="delivery-time">
-                                <div class="address">
-                                    @foreach($address as $value) 
-                                        @if($value->default_address == 1)                                        
-                                            <p class="mb-1">Delivery to:</p>
-                                            <h6>{{ $value->name }} - {{ $value->mobile }}</h6>
-                                            <p>{{ $value->address }}, {{ $value->locality }},
-                                            {{ $value->city }}-{{ $value->zip }}, {{ $value->state->name }}. </p>
-                                        @endif                                        
-                                    @endforeach
-                                </div>
-                                <div class="btn-right">
-                                    <a href="#" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#deliveryAddress">Change Address</a>
-                                </div>                                
+                    @if (Auth::check())
+                        <div class="delivery-time">
+                            <div class="address">
+                                @foreach($address as $value) 
+                                    @if($value->default_address == 1)                                        
+                                        <p>Delivery to: <b>{{ $value->name }}, {{ $value->zip }}</b></p>
+                                        <p class="tiny-font mt-1">{{ $value->address }},</p>
+                                        <p class="tiny-font">{{ $value->locality }}, {{ $value->city }}, {{ $value->state->name }}</p>    
+                                    @endif                                        
+                                @endforeach
                             </div>
-                        @else
-                            <div class="delivery-time">
-                                <div class="address">
-                                    <p>Login to get delivery at your place.</p>
-                                </div>
-                                <div class="btn-right">
-                                    <a href="#" class="btn btn-primary float-end checkoutBtn" >Login</a>
-                                </div> 
-                            </div>
-                        @endif
-                    
-                        <div class="product-title-cart">                            
-                            <div class="title">
-                                <label class="custom-checkbox">
-                                    <input type="checkbox" id="selectAll" checked >
-                                    <span class="checkmark"></span>
-                                    <span id="selectedCount">0</span>/{{ Cart::count() }} Items Selected
-                                </label>                                
-                            </div>
-
-                            <div class="btn-group">
-                                <button type="submit" name="action" value="remove" class="btn bulk-action">Remove</button>
-                                <button type="submit" name="action" value="wishlist" class="btn">Move to Wishlist</button>
-                            </div>                            
+                            <div class="btn-right">
+                                <a href="#" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#deliveryAddress">Change Address</a>
+                            </div>                                
                         </div>
-                    
-                        @foreach($cartContent as $item)
-                            <div class="product-repeate"> 
-                                <div class="checkbox">
-                                    <label class="custom-checkbox">
-                                        <input type="checkbox" name="cart_ids[]" value="{{ $item->rowId }}" class="item-checkbox" checked
-                                            data-rowid="{{ $item->rowId }}"                                                
-                                            data-price="{{ $item->price }}"
-                                            data-qty="{{ $item->qty }}"
-                                            data-discount_percentage="{{ $item->options->discount_percent }}"
-                                            >
-                                        <span class="checkmark"></span>
-                                    </label>
-                                </div>                                                                   
-                                <div class="photo">   
-                                    @if ($item->options->productImage)
-                                        <img src="{{ asset('uploads/product/large/'.$item->options->productImage) }}" >
-                                    @else
-                                        <img src="{{ asset('admin-assets/img/default-150x150.png') }}" alt="" />
+                    @else
+                        <div class="delivery-time">
+                            <div class="address">
+                                <p>Login to get delivery at your place.</p>
+                            </div>
+                            <div class="btn-right">
+                                <a href="#" class="btn btn-primary float-end checkoutBtn" >Login</a>
+                            </div> 
+                        </div>
+                    @endif
+                
+                    <div class="product-title-cart">                            
+                        <div class="title">
+                            <label class="custom-checkbox">
+                                <input type="checkbox" id="selectAll" checked >
+                                <span class="checkmark"></span>
+                                <span id="selectedCount">0</span>/{{ Cart::count() }} items selected
+                            </label>                                
+                        </div>
+
+                        <div class="btn-group">
+                            <button type="submit" name="action" value="remove" class="btn bulk-action">Remove</button>
+                            <button type="submit" name="action" value="wishlist" class="btn">Move to Wishlist</button>
+                        </div>                            
+                    </div>
+                
+                    @foreach($cartContent as $item)
+                        <div class="product-repeate"> 
+                            <div class="checkbox">
+                                <label class="custom-checkbox">
+                                    <input type="checkbox" name="cart_ids[]" value="{{ $item->rowId }}" class="item-checkbox" checked
+                                        data-rowid="{{ $item->rowId }}"                                                
+                                        data-price="{{ $item->price }}"
+                                        data-qty="{{ $item->qty }}"
+                                        data-discount_percentage="{{ $item->options->discount_percent }}"
+                                        >
+                                    <span class="checkmark"></span>
+                                </label>
+                            </div>                                                                   
+                            <div class="photo">   
+                                @if ($item->options->productImage)
+                                    <img src="{{ asset('uploads/product/large/'.$item->options->productImage) }}" >
+                                @else
+                                    <img src="{{ asset('admin-assets/img/default-150x150.png') }}" alt="" />
+                                @endif
+                            </div>
+                            <div class="details">                                
+                                <h3>{{ $item->name }}</h3>
+                                <p class="short-desc">{{ $item->options->short_description ?? '' }}</p>
+
+                                <div class="manuplate">                                    
+                                    <div class="select">                                    
+                                        <a href="javascript:void(0);" class="update-size" data-type="size" data-rowid="{{ $item->rowId }}" data-selected="{{ $item->options->size }}">
+                                            <b>
+                                                Size: {{ $item->options->size }}
+                                                <span class="caret"></span>
+                                            </b>
+                                        </a>
+                                    </div>
+                                    <div class="select">                                
+                                        <a href="javascript:void(0);" class="update-qty" data-type="qty" data-rowid="{{ $item->rowId }}" data-selected="{{ $item->qty }}">
+                                            <b>
+                                                Qty: {{ $item->qty }}
+                                                <span class="caret"></span>
+                                            </b>
+                                        </a>
+                                    </div>
+                                </div>
+                                
+                                <div class="price">
+                                    @php
+                                        $discountPrice = $item->price - ($item->price * $item->options->discount_percent / 100);
+                                    @endphp
+
+                                    <span class="dark">
+                                        ₹{{ $discountPrice }}
+                                    </span>
+
+                                    @if($item->options->discount_percent)
+                                        <span class="mrp">MRP <del>₹{{ $item->price }}</del></span>    
+
+                                        <span class="discount">
+                                        {{ $item->options->discount_percent }}% OFF
+                                        </span>
                                     @endif
                                 </div>
-                                <div class="details">                                
-                                    <h3>{{ $item->name }}</h3>
-                                    <p class="short-desc">{{ $item->options->short_description ?? '' }}</p>
-
-                                    <div class="manuplate">                                    
-                                        <div class="select">                                    
-                                            <a href="javascript:void(0);" class="update-size" data-type="size" data-rowid="{{ $item->rowId }}" data-selected="{{ $item->options->size }}">
-                                                <b>
-                                                    Size: {{ $item->options->size }}
-                                                    <span class="caret"></span>
-                                                </b>
-                                            </a>
-                                        </div>
-                                        <div class="select">                                
-                                            <a href="javascript:void(0);" class="update-qty" data-type="qty" data-rowid="{{ $item->rowId }}" data-selected="{{ $item->qty }}">
-                                                <b>
-                                                    Qty: {{ $item->qty }}
-                                                    <span class="caret"></span>
-                                                </b>
-                                            </a>
-                                        </div>
-                                    </div>
-
-                                    <div class="price">
-                                        @php
-                                            $discountPrice = $item->price - ($item->price * $item->options->discount_percent / 100);
-                                        @endphp
-
-                                        <span class="dark">₹{{ $discountPrice }}</span>                                        
-
-                                        @if($item->options->discount_percent)
-                                            <span class="mrp">MRP <del>₹{{ $item->price }}</del></span>    
-
-                                            <span class="discount">
-                                            {{ $item->options->discount_percent }}% OFF
-                                            </span>
-                                        @endif
-                                    </div>
-
-                                    @if($item->options->return_days)
-                                        <div class="return-notice">
-                                            <p><b>{{ $item->options->return_days ?? '' }}</b> return available</p>
-                                        </div>
-                                    @endif
-
-                                    <div class="delivery-notice">                                        
-                                        @php                                            
-                                            $minDate = $item->options->delivery_min_days;
-                                            $maxDate = $item->options->delivery_max_days;
-                                        @endphp
-
-                                        <p>Delivery between: {{ \Carbon\Carbon::parse($minDate)->format('d')}} - {{ \Carbon\Carbon::parse($maxDate)->format('d M')}}</p>
-                                    </div>
+                                
+                                <div class="return-notice">
+                                    <p><b>{{ $item->options->return_days ?? '' }}</b> return available</p>
                                 </div>
 
-                                <div class="remove">                                
-                                    <a href="#" data-bs-toggle="modal" data-bs-target="#removeItemModal_{{ $item->id }}">
-                                        <svg fill="#666666" width="23px" height="23px" viewBox="-3.5 0 19 19" xmlns="http://www.w3.org/2000/svg" class="cf-icon-svg"><path d="M11.383 13.644A1.03 1.03 0 0 1 9.928 15.1L6 11.172 2.072 15.1a1.03 1.03 0 1 1-1.455-1.456l3.928-3.928L.617 5.79a1.03 1.03 0 1 1 1.455-1.456L6 8.261l3.928-3.928a1.03 1.03 0 0 1 1.455 1.456L7.455 9.716z"/></svg>
-                                    </a>                                    
-                                </div>
+                                <div class="delivery-notice">                                        
+                                    @php                                            
+                                        $minDate = $item->options->delivery_min_days;
+                                        $maxDate = $item->options->delivery_max_days;
+                                    @endphp
 
-                                <div class="modal fade" id="removeItemModal_{{ $item->id }}" tabindex="-1" aria-labelledby="removeItemModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-centered item-remove-modal">
-                                        <div class="modal-content">                                
-                                            <div class="modal-body">
-                                                <div class="item-remove-cart">
-                                                    <div class="image">                                            
-                                                        @if ($item->options->productImage)
-                                                            <img src="{{ asset('uploads/product/large/'.$item->options->productImage) }}" class="photo" >
-                                                        @else
-                                                            <img src="{{ asset('admin-assets/img/default-150x150.png') }}" alt="" />
-                                                        @endif
-                                                    </div>
-                                                    <div class="text">
-                                                        <h5>Move from Bag</h5>
-                                                        <p>Are you sure you want to move this item from bag?</p>
-                                                    </div>
-                                                    <div class="close">
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                    </div>
+                                    <p>Delivery between {{ \Carbon\Carbon::parse($minDate)->format('d M')}} - {{ \Carbon\Carbon::parse($maxDate)->format('d M')}}</p>
+                                </div>
+                            </div>
+
+                            <div class="remove">                                
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#removeItemModal_{{ $item->id }}">
+                                    <svg fill="#666666" width="23px" height="23px" viewBox="-3.5 0 19 19" xmlns="http://www.w3.org/2000/svg" class="cf-icon-svg"><path d="M11.383 13.644A1.03 1.03 0 0 1 9.928 15.1L6 11.172 2.072 15.1a1.03 1.03 0 1 1-1.455-1.456l3.928-3.928L.617 5.79a1.03 1.03 0 1 1 1.455-1.456L6 8.261l3.928-3.928a1.03 1.03 0 0 1 1.455 1.456L7.455 9.716z"/></svg>
+                                </a>                                    
+                            </div>
+
+                            <div class="modal fade" id="removeItemModal_{{ $item->id }}" tabindex="-1" aria-labelledby="removeItemModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered item-remove-modal">
+                                    <div class="modal-content">                                
+                                        <div class="modal-body">
+                                            <div class="item-remove-cart">
+                                                <div class="image">                                            
+                                                    @if ($item->options->productImage)
+                                                        <img src="{{ asset('uploads/product/large/'.$item->options->productImage) }}" class="photo" >
+                                                    @else
+                                                        <img src="{{ asset('admin-assets/img/default-150x150.png') }}" alt="" />
+                                                    @endif
+                                                </div>
+                                                <div class="text">
+                                                    <h5>Move from Bag</h5>
+                                                    <p>Are you sure you want to move this item from bag?</p>
+                                                </div>
+                                                <div class="close">
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                 </div>
                                             </div>
-                                            <div class="btn-group-details">                                                
-                                                <a href="#" class="btn btn-link text-secondary w-50" onclick="deleteItem('{{ $item->rowId}}' );" data-bs-dismiss="modal">
-                                                    Remove
-                                                </a>
-
-                                                @auth
-                                                    <a href="#" class="btn btn-link text-secondary w-50" onclick="moveToWishlist('{{ $item->rowId }}')" data-bs-dismiss="modal">
-                                                        Move to Wishlist
-                                                    </a>
-                                                @else
-                                                    <a href="#" class="btn btn-link text-secondary" data-bs-toggle="modal" data-bs-target="#login" >
-                                                        Login to Move Wishlist
-                                                    </a>
-                                                @endauth
-                                            </div>                                        
                                         </div>
+                                        <div class="btn-group-details">                                                
+                                            <a href="#" class="btn btn-link text-secondary w-50" onclick="deleteItem('{{ $item->rowId}}' );" data-bs-dismiss="modal">
+                                                Remove
+                                            </a>
+
+                                            @auth
+                                                <a href="#" class="btn btn-link text-secondary w-50" onclick="moveToWishlist('{{ $item->rowId }}')" data-bs-dismiss="modal">
+                                                    Move to Wishlist
+                                                </a>
+                                            @else
+                                                <a href="#" class="btn btn-link text-secondary" data-bs-toggle="modal" data-bs-target="#login" >
+                                                    Login to Move Wishlist
+                                                </a>
+                                            @endauth
+                                        </div>                                        
                                     </div>
                                 </div>
                             </div>
-                        @endforeach  
-                    </div>
+                        </div>
+                    @endforeach  
                 </div>
+            </div>
 
                 <div class="col-md-4 col-12">
                     <div class="cart-summery">
-                        <form name="orderForm" id="orderForm" method="POST" >
+                        <form name="orderForm" id="orderForm" method="POST">
                             @csrf
 
                             @foreach($address as $value) 
@@ -204,7 +201,7 @@
                                     <input type="radio" name="customer_address_id" value="{{ $value->id }}" class="address-radio d-none" {{ $defaultAddressId == $value->id ? 'checked' : '' }} checked >
                                 @endif                                        
                             @endforeach
-                            
+
                             @if($store_discount)
                                 <div class="part">
                                     <h5>Coupon</h5>
@@ -317,10 +314,9 @@
                                         <div class="left">Total Amount</div>
                                         <div class="right">₹<span class="grand_total">0.00</span></div>
                                     </div>
-                                @endif                                                                                            
-                                                                       
+                                @endif
                             </div>
-                            
+
                             <div class="terms">
                                 By placing the order, you agree to Myntra's <a href="https://www.myntra.com/termsofuse" target="_blank" class="privaryPolicyTermsOfUseStrip-base-link">Terms of Use</a> and 
                                 <a href="https://www.myntra.com/privacypolicy" target="_blank" class="privaryPolicyTermsOfUseStrip-base-link">Privacy Policy</a>
@@ -338,11 +334,15 @@
                                 <div class="mt-2">
                                     <button id="cod-form" class="btn-primary btn btn-block w-100 {{ Auth::check() ? '' : 'checkoutBtn' }}" type="submit">Pay on COD</button>
                                     <button id="razorpay-form" class="btn-primary btn btn-block w-100 d-none {{ Auth::check() ? 'placeOrderBtn' : 'checkoutBtn' }}" type="submit">Pay ₹<span class="grand_total">0.00</span></button>
-                                </div>                                            
-                            </div> 
-                        </form>
+                                </div>  
+                                
+                                {{-- <input type="hidden" name="amount" id="grand_total" value="{{ number_format($grandTotal, 2, '.', '') }}" class="form-control" readonly> --}}                                    
+                                {{-- <button type="submit" class="btn btn-primary w-100" id="payment-btn" >Make Payment</button> --}}
+                                 
+                            </div>                             
+                        </form>                  
                     </div>
-                </div>                  
+                </div>
             </div>
         @else
             <div class="card mt-4">
@@ -365,7 +365,7 @@
             </div>
         @endif
         
-        @include('front.layouts.address_modal')       
+        @include('front.layouts.address_modal') 
 @endsection
 
 @section('customJs')
@@ -384,70 +384,7 @@
             }
         });
 
-        $('#razorpay-form').on('click', function(){
-            let amount = parseFloat($('.grand_total').text()) || 0;
-            amount = amount * 100; // Razorpay requires paise
-
-            var options = {
-                "key": "{{ config('services.razorpay.key') }}",
-                "amount": amount,
-                "currency": "INR",
-                "name": "Your Store",
-                "description": "Order Payment",
-
-                "handler": function (response){
-
-                    $.ajax({
-                        url: "{{ route('verify.payment') }}",
-                        type: "POST",
-                        data: {
-                            _token: "{{ csrf_token() }}",
-                            razorpay_payment_id: response.razorpay_payment_id
-                        },
-                        success: function(res){
-
-                            if(res.status){
-                                window.location.href = "/order-success/"+res.order_id;
-                            }
-
-                        }
-                    });
-
-                },
-
-                "theme": {
-                    "color": "#3399cc"
-                }
-            };
-
-            var rzp = new Razorpay(options);
-            rzp.open();
-
-        });
-
-
-
-        function removeCoupon() {
-            $.ajax({
-                url: "{{ route('front.removeCoupon') }}",
-                type: "POST",
-                data: {
-                    _token: "{{ csrf_token() }}"
-                },
-                success: function(response){
-                    if(response.status == true){
-                        showAlert(response.message,'success');
-                        setTimeout(function(){
-                            location.reload();
-                        },200);
-                    }else{
-                        showAlert(response.message,'error');
-                    }
-                }
-            });
-        }
-
-       $("#orderForm").submit(function(event){
+        $("#orderForm").submit(function(event){            
             event.preventDefault();
 
             $('button[type="submit"]').prop('disabled', true);
@@ -463,15 +400,7 @@
                     if(response.status == false){
                         console.log(response.errors);
                     }else{
-                        // COD ORDER
-                        if(response.payment_method === 'cod'){
-                            window.location.href = "{{ url('thanks') }}/"+response.orderId;
-                        }
-
-                        // RAZORPAY ORDER
-                        if(response.payment_method === 'razorpay'){
-                            openRazorpay(response);
-                        }
+                        window.location.href = "{{ url('thanks') }}/"+response.orderId;
                     }
                 },
 
@@ -481,45 +410,7 @@
                 }
             });
         });
-
-
-        function openRazorpay(response){
-            var options = {
-                "key": response.razorpay_key,
-                "amount": response.amount,
-                "currency": "INR",
-                "name": "Your Store",
-                "description": "Order Payment",
-                "order_id": response.razorpay_order_id,
-                "handler": function (payment){
-                    $.ajax({
-                        url: "{{ route('verify.payment') }}",
-                        type: "POST",
-                        data: {
-                            _token: "{{ csrf_token() }}",
-                            razorpay_payment_id: payment.razorpay_payment_id,
-                            razorpay_order_id: payment.razorpay_order_id,
-                            razorpay_signature: payment.razorpay_signature
-                        },
-
-                        success:function(res){
-                            if(res.status){
-                                window.location.href = "{{ url('thanks') }}/"+response.orderId;
-                            }
-                        }
-                    });
-                },
-
-                "theme": {
-                    "color": "#3399cc"
-                }
-            };
-
-            var rzp = new Razorpay(options);
-            rzp.open();
-        }
-
-
+    
         let currentRowId = '';
         let currentType = '';          
        
@@ -623,7 +514,6 @@
                 }
             });
         });          
-
         
         function deleteItem(rowId){            
             $.ajax({
@@ -636,13 +526,16 @@
                 dataType: 'json',
                 success: function(response){
                     if(response.status){
-                        window.location.href='{{ route("front.cart") }}';
-                        var toast = new bootstrap.Toast($('.toast-cart')[0], {
-                            delay: 2000
-                        });
-                        toast.show();                        
+                        //window.location.href='{{ route("front.cart") }}';
+                        showAlert(response.message,'success');
+                        location.reload();
+                        // var toast = new bootstrap.Toast($('.toast-cart')[0], {
+                        //     delay: 2000
+                        // });
+                        // toast.show();                        
                     } else {
-                        alert(response.message);
+                        //alert(response.message);
+                        showAlert(response.message,'error');
                     }
                 }
             })            
@@ -658,11 +551,16 @@
                 },
                 dataType: 'json',
                 success: function(response){
-                    if(response.status){
-                        window.location.href='{{ route("front.cart") }}';
-                    } else {
-                        alert(response.message);
+                    if(response.status == true){
+                        showAlert(response.message,'success');
+                    }else{
+                        showAlert(response.message,'error');
                     }
+                    // if(response.status){
+                    //     window.location.href='{{ route("front.cart") }}';
+                    // } else {
+                    //     alert(response.message);
+                    // }
                 }
             })            
         } 
@@ -913,8 +811,6 @@
                 updateCartSummary();
             });
 
-
-            // Run on page load
             updateCartSummary();
         });
 
@@ -930,7 +826,7 @@
             // $('.item-checkbox').change(function() {
             //     $('#cartForm').submit();
             // });
-        });
+        });       
 
     </script>
 @endsection
