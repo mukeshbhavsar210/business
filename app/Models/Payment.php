@@ -8,16 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Payment extends Model {
     use HasFactory;
 
-     protected $fillable = [
-        'order_id',
-        'product_id',
-        'razorpay_payment_id',
-        'razorpay_order_id',
-        'payment_mode',
-        'status',
-        'amount',        
-        'currency',
-        'payment_data',        
+     protected $fillable = [ 'payment_id', 'order_id', 'product_id', 'variant_id', 'status', 'amount'
     ];    
 
     protected $casts = [

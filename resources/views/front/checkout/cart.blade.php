@@ -333,12 +333,9 @@
 
                                 <div class="mt-2">
                                     <button id="cod-form" class="btn-primary btn btn-block w-100 {{ Auth::check() ? '' : 'checkoutBtn' }}" type="submit">Pay on COD</button>
-                                    <button id="razorpay-form" class="btn-primary btn btn-block w-100 d-none {{ Auth::check() ? 'placeOrderBtn' : 'checkoutBtn' }}" type="submit">Pay ₹<span class="grand_total">0.00</span></button>
+                                    <input type="hidden" name="grand_total" id="grand_total_input">
+                                    <button id="razorpay-form" class="btn-primary btn btn-block w-100 d-none {{ Auth::check() ? 'placeOrderBtn' : 'checkoutBtn' }}" type="submit">Pay <span class="grand_total_button"></span></button>
                                 </div>  
-                                
-                                {{-- <input type="hidden" name="amount" id="grand_total" value="{{ number_format($grandTotal, 2, '.', '') }}" class="form-control" readonly> --}}                                    
-                                {{-- <button type="submit" class="btn btn-primary w-100" id="payment-btn" >Make Payment</button> --}}
-                                 
                             </div>                             
                         </form>                  
                     </div>
@@ -384,8 +381,37 @@
             }
         });
 
-        $("#orderForm").submit(function(event){            
+        // $("#orderForm").submit(function(event){            
+        //     event.preventDefault();
+
+        //     $('button[type="submit"]').prop('disabled', true);
+
+        //     $.ajax({
+        //         url: '{{ route("front.processCheckout") }}',
+        //         type: 'POST',
+        //         data: $(this).serialize(),
+        //         dataType: 'json',
+
+        //         success:function(response){
+        //             $('button[type="submit"]').prop('disabled', false);
+        //             if(response.status == false){
+        //                 console.log(response.errors);
+        //             }else{
+        //                 window.location.href = "{{ url('thanks') }}/"+response.orderId;
+        //             }
+        //         },
+
+        //         error:function(xhr){
+        //             console.log(xhr.responseText);
+        //             $('button[type="submit"]').prop('disabled', false);
+        //         }
+        //     });
+        // });
+    
+
+        $("#orderForm").submit(function(event){
             event.preventDefault();
+            let paymentMethod = $('input[name="payment_method"]:checked').val();
 
             $('button[type="submit"]').prop('disabled', true);
 
@@ -399,8 +425,34 @@
                     $('button[type="submit"]').prop('disabled', false);
                     if(response.status == false){
                         console.log(response.errors);
-                    }else{
+                        return;
+                    }
+
+                    // COD PAYMENT
+                    if(paymentMethod === 'cod'){
                         window.location.href = "{{ url('thanks') }}/"+response.orderId;
+                    }
+
+                    // RAZORPAY PAYMENT
+                    if(paymentMethod === 'razorpay'){
+                        var options = {
+                            "key": response.key,
+                            "amount": response.amount,                            
+                            "currency": "INR",
+                            "name": "Your Store",
+                            "description": "Order Payment",
+                            "order_id": response.razorpay_order_id,
+
+                            "handler": function (paymentResponse){
+                                window.location.href = "{{ url('thanks') }}/"+response.orderId;
+                            },
+                            "theme": {
+                                "color": "#0d6efd"
+                            }
+                        };
+
+                        var rzp = new Razorpay(options);
+                        rzp.open();
                     }
                 },
 
@@ -410,7 +462,8 @@
                 }
             });
         });
-    
+
+
         let currentRowId = '';
         let currentType = '';          
        
@@ -749,7 +802,8 @@
                     $('.priceDetailsBox').addClass('d-none');
                 }
 
-                let grand_total = afterCoupon + appliedShipping;
+                let total = afterCoupon + appliedShipping;
+
 
                 // Update UI
                 $('#selectedCount').text(selectedCount);
@@ -759,7 +813,9 @@
                 $('.price_discount').text(price_discount.toFixed(2));
                 $('.coupon_discount').text(coupon_discount.toFixed(2));
                 $('.shipping_charge').text(appliedShipping.toFixed(2));    
-                $('.grand_total').text(grand_total.toFixed(2));
+                $('.grand_total').text(total.toFixed(2));
+                $('.grand_total_button').text(total.toFixed(2));
+                $('#grand_total_input').val($('.grand_total').text().trim());                
 
                 // Disable checkout if nothing selected
                 $('.placeOrderBtn').prop('disabled', selectedCount === 0);
@@ -787,6 +843,8 @@
                 updateCartSummary();
             });
 
+            
+
 
             $('#selectAll').on('change', function(){
                 let checked = this.checked;
@@ -805,14 +863,15 @@
                             checked: checked
                         }
                     });
-
                 });
 
                 updateCartSummary();
             });
-
+            
             updateCartSummary();
         });
+
+       
 
 
         $(document).ready(function(){

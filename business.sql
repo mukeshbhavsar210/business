@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 09, 2026 at 09:45 AM
+-- Generation Time: Mar 13, 2026 at 02:47 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -154,7 +154,32 @@ CREATE TABLE `customer_addresses` (
 --
 
 INSERT INTO `customer_addresses` (`id`, `user_id`, `address_type`, `default_address`, `name`, `mobile`, `address`, `locality`, `city`, `state_id`, `zip`, `created_at`, `updated_at`) VALUES
-(1, 7, 'Home', 1, 'Dhruv Bhavsar', '9978812345', 'Shlok Heights, Next to Mirada Banquet hall, Mansarovar road, New Chandkheda', 'Gandhinagar', 'Ahmedabad', 7, '382424', NULL, '2026-03-06 00:11:50');
+(1, 7, 'Home', 1, 'Dhruv Bhavsar', '9978812345', 'Shlok Heights, Next to Mirada Banquet hall, Mansarovar road, New Chandkheda', 'Gandhinagar', 'Ahmedabad', 7, '382424', NULL, '2026-03-12 07:01:08'),
+(19, 7, 'Office', 0, 'Priyanka', '9538135005', 'E-508, Keerthi Royal Palms', 'Service Road, Banglore', 'Banglore', 11, '560100', '2026-03-12 06:46:42', '2026-03-12 07:01:08');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `discounts`
+--
+
+CREATE TABLE `discounts` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `product_id` bigint(20) UNSIGNED NOT NULL,
+  `discount_percent` int(11) NOT NULL,
+  `start_date` date DEFAULT NULL,
+  `end_date` date DEFAULT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `discounts`
+--
+
+INSERT INTO `discounts` (`id`, `product_id`, `discount_percent`, `start_date`, `end_date`, `status`, `created_at`, `updated_at`) VALUES
+(2, 14, 20, '2026-03-10', '2026-05-31', 1, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -189,6 +214,34 @@ INSERT INTO `discount_coupons` (`id`, `code`, `image`, `name`, `description`, `m
 (4, 'IND30', 'coupon1.jpg', 'Save 161', '30%  off on minimum purchase of Rs. 300 .', '10', '3', 'percent', 10.00, 999.00, 1, 1, '2023-11-27 11:36:57', '2026-03-31 11:36:59', '2023-11-28 06:07:01', '2023-11-29 02:18:46'),
 (5, 'IND99', 'coupon2.jpg', 'Independence Day', '50%  off on minimum purchase of Rs. 300 .', '10', '2', 'fixed', 90.00, 1000.00, NULL, 1, '2023-11-28 11:39:33', '2026-04-30 11:36:59', '2023-11-28 06:09:46', '2023-11-29 02:17:51'),
 (13, 'IND999', 'coupon2.jpg', 'Independence Day', '50%  off on minimum purchase of Rs. 300 .', '10', '2', 'fixed', 90.00, 1000.00, NULL, 1, '2023-11-28 11:39:33', '2026-04-30 11:36:59', '2023-11-28 06:09:46', '2023-11-29 02:17:51');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `discount_percentages`
+--
+
+CREATE TABLE `discount_percentages` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` int(11) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `discount_percentages`
+--
+
+INSERT INTO `discount_percentages` (`id`, `name`, `created_at`, `updated_at`) VALUES
+(1, 10, NULL, NULL),
+(2, 20, NULL, NULL),
+(3, 30, NULL, NULL),
+(4, 40, NULL, NULL),
+(5, 50, NULL, NULL),
+(6, 60, NULL, NULL),
+(7, 70, NULL, NULL),
+(8, 80, NULL, NULL),
+(9, 90, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -274,7 +327,13 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (49, '2026_02_25_124841_add_variant_fields_to_order_items_table', 41),
 (50, '2026_03_06_104029_add_customer_address_id_to_properties_table', 42),
 (51, '2026_03_06_122940_create_order_status_histories_table', 43),
-(52, '2026_03_09_065212_create_coupon_product_table', 44);
+(52, '2026_03_09_065212_create_coupon_product_table', 44),
+(53, '2026_03_10_124112_create_discounts_table', 45),
+(54, '2026_03_11_041927_create_discount_percentages_table', 46),
+(55, '2026_03_11_043119_add_discount_percentage_id_to_products_table', 47),
+(56, '2026_03_12_130417_create_payments_table', 48),
+(57, '2026_03_13_101312_add_product_variant_id_to_orders_table', 49),
+(58, '2026_03_13_102116_add_product_variant_id_to_orders_table', 50);
 
 -- --------------------------------------------------------
 
@@ -285,6 +344,8 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 CREATE TABLE `orders` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `user_id` bigint(20) UNSIGNED NOT NULL,
+  `product_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `product_variant_id` bigint(20) UNSIGNED DEFAULT NULL,
   `customer_address_id` bigint(20) UNSIGNED DEFAULT NULL,
   `subtotal` double(10,2) NOT NULL,
   `shipping` double(10,2) NOT NULL,
@@ -294,11 +355,6 @@ CREATE TABLE `orders` (
   `grandtotal` double(10,2) NOT NULL,
   `payment_status` enum('Paid','Not Paid') NOT NULL DEFAULT 'Not Paid',
   `payment_method` varchar(25) DEFAULT NULL,
-  `status` enum('confirmed','shipped','delivered','cancelled') NOT NULL DEFAULT 'confirmed',
-  `cancel_reason` varchar(100) DEFAULT NULL,
-  `cancel_comments` text DEFAULT NULL,
-  `cancelled_at` date DEFAULT NULL,
-  `shipped_date` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -307,11 +363,20 @@ CREATE TABLE `orders` (
 -- Dumping data for table `orders`
 --
 
-INSERT INTO `orders` (`id`, `user_id`, `customer_address_id`, `subtotal`, `shipping`, `coupon_code`, `coupon_code_id`, `discount`, `grandtotal`, `payment_status`, `payment_method`, `status`, `cancel_reason`, `cancel_comments`, `cancelled_at`, `shipped_date`, `created_at`, `updated_at`) VALUES
-(59, 7, 1, 1590.00, 50.00, '', NULL, 0.00, 1640.00, 'Not Paid', NULL, 'confirmed', NULL, NULL, NULL, NULL, '2026-03-06 05:32:53', '2026-03-06 05:32:53'),
-(61, 7, 1, 1590.00, 50.00, '', NULL, 0.00, 1640.00, 'Not Paid', NULL, 'confirmed', NULL, NULL, NULL, NULL, '2026-03-06 06:07:54', '2026-03-06 06:07:54'),
-(62, 7, 1, 2889.00, 100.00, '', NULL, 0.00, 2989.00, 'Not Paid', 'online', 'confirmed', NULL, NULL, NULL, NULL, '2026-03-06 06:26:18', '2026-03-06 06:49:21'),
-(63, 7, 1, 1590.00, 50.00, '', NULL, 0.00, 1640.00, 'Not Paid', 'cod', 'confirmed', NULL, NULL, NULL, NULL, '2026-03-06 23:54:08', '2026-03-06 23:54:08');
+INSERT INTO `orders` (`id`, `user_id`, `product_id`, `product_variant_id`, `customer_address_id`, `subtotal`, `shipping`, `coupon_code`, `coupon_code_id`, `discount`, `grandtotal`, `payment_status`, `payment_method`, `created_at`, `updated_at`) VALUES
+(165, 7, 14, NULL, 1, 1272.00, 50.00, '', NULL, 0.00, 1322.00, 'Not Paid', 'cod', '2026-03-13 06:32:28', '2026-03-13 06:32:28'),
+(166, 7, 14, NULL, 1, 1272.00, 50.00, '', NULL, 0.00, 1322.00, 'Not Paid', 'cod', '2026-03-13 06:49:36', '2026-03-13 06:49:36'),
+(167, 7, 14, NULL, 1, 1272.00, 50.00, '', NULL, 0.00, 1322.00, 'Not Paid', 'cod', '2026-03-13 06:53:55', '2026-03-13 06:53:55'),
+(168, 7, 14, NULL, 1, 1272.00, 50.00, '', NULL, 0.00, 1322.00, 'Not Paid', 'razorpay', '2026-03-13 06:54:05', '2026-03-13 06:54:05'),
+(169, 7, 14, NULL, 1, 1272.00, 50.00, '', NULL, 0.00, 1322.00, 'Not Paid', 'razorpay', '2026-03-13 06:55:43', '2026-03-13 06:55:43'),
+(170, 7, 14, NULL, 1, 1272.00, 50.00, '', NULL, 0.00, 1322.00, 'Not Paid', 'razorpay', '2026-03-13 06:56:57', '2026-03-13 06:56:57'),
+(171, 7, 14, NULL, 1, 1272.00, 50.00, '', NULL, 0.00, 1322.00, 'Not Paid', 'razorpay', '2026-03-13 07:02:18', '2026-03-13 07:02:18'),
+(172, 7, 14, NULL, 1, 1272.00, 50.00, '', NULL, 0.00, 1322.00, 'Not Paid', 'razorpay', '2026-03-13 07:38:24', '2026-03-13 07:38:24'),
+(173, 7, 14, NULL, 1, 1272.00, 50.00, '', NULL, 0.00, 1322.00, 'Not Paid', 'razorpay', '2026-03-13 07:39:08', '2026-03-13 07:39:08'),
+(174, 7, 14, NULL, 1, 1272.00, 50.00, '', NULL, 0.00, 1322.00, 'Not Paid', 'razorpay', '2026-03-13 07:45:26', '2026-03-13 07:45:26'),
+(177, 7, NULL, NULL, 1, 1272.00, 50.00, '', NULL, 0.00, 1322.00, 'Not Paid', 'cod', '2026-03-13 07:48:46', '2026-03-13 07:48:46'),
+(178, 7, NULL, NULL, 1, 1272.00, 50.00, '', NULL, 0.00, 1322.00, 'Not Paid', 'razorpay', '2026-03-13 07:49:03', '2026-03-13 07:49:03'),
+(179, 7, NULL, NULL, 1, 1272.00, 50.00, '', NULL, 0.00, 1322.00, 'Not Paid', 'cod', '2026-03-13 08:16:56', '2026-03-13 08:16:56');
 
 -- --------------------------------------------------------
 
@@ -324,7 +389,6 @@ CREATE TABLE `order_items` (
   `order_id` bigint(20) UNSIGNED NOT NULL,
   `product_id` bigint(20) UNSIGNED NOT NULL,
   `product_variant_id` bigint(20) UNSIGNED DEFAULT NULL,
-  `name` varchar(255) NOT NULL,
   `color` varchar(20) DEFAULT NULL,
   `size` varchar(255) DEFAULT NULL,
   `qty` int(11) NOT NULL,
@@ -338,12 +402,20 @@ CREATE TABLE `order_items` (
 -- Dumping data for table `order_items`
 --
 
-INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `product_variant_id`, `name`, `color`, `size`, `qty`, `price`, `total`, `created_at`, `updated_at`) VALUES
-(85, 59, 14, NULL, 'Men Yellow', NULL, 'M', 1, 1590.00, 1590.00, '2026-03-06 05:32:53', '2026-03-06 05:32:53'),
-(87, 61, 14, NULL, 'Men Yellow', NULL, 'M', 1, 1590.00, 1590.00, '2026-03-06 06:07:54', '2026-03-06 06:07:54'),
-(88, 62, 14, NULL, 'Men Yellow', NULL, 'M', 1, 1590.00, 1590.00, '2026-03-06 06:26:18', '2026-03-06 06:26:18'),
-(89, 62, 13, NULL, 'Men Black', NULL, 'XL', 1, 1299.00, 1299.00, '2026-03-06 06:26:18', '2026-03-06 06:26:18'),
-(90, 63, 14, NULL, 'Men Yellow', NULL, 'M', 1, 1590.00, 1590.00, '2026-03-06 23:54:08', '2026-03-06 23:54:08');
+INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `product_variant_id`, `color`, `size`, `qty`, `price`, `total`, `created_at`, `updated_at`) VALUES
+(5, 165, 14, NULL, NULL, 'M', 1, 1590.00, 1272.00, '2026-03-13 06:32:29', '2026-03-13 06:32:29'),
+(6, 166, 14, NULL, NULL, 'S', 1, 1590.00, 1272.00, '2026-03-13 06:49:37', '2026-03-13 06:49:37'),
+(7, 167, 14, NULL, NULL, 'S', 1, 1590.00, 1272.00, '2026-03-13 06:53:55', '2026-03-13 06:53:55'),
+(8, 168, 14, NULL, NULL, 'L', 1, 1590.00, 1272.00, '2026-03-13 06:54:05', '2026-03-13 06:54:05'),
+(9, 169, 14, NULL, NULL, 'M', 1, 1590.00, 1272.00, '2026-03-13 06:55:43', '2026-03-13 06:55:43'),
+(10, 170, 14, NULL, NULL, 'M', 1, 1590.00, 1272.00, '2026-03-13 06:56:57', '2026-03-13 06:56:57'),
+(11, 171, 14, NULL, NULL, 'L', 1, 1590.00, 1272.00, '2026-03-13 07:02:18', '2026-03-13 07:02:18'),
+(12, 172, 14, NULL, NULL, 'M', 1, 1590.00, 1272.00, '2026-03-13 07:38:24', '2026-03-13 07:38:24'),
+(13, 173, 14, NULL, NULL, 'M', 1, 1590.00, 1272.00, '2026-03-13 07:39:09', '2026-03-13 07:39:09'),
+(14, 174, 14, NULL, NULL, 'M', 1, 1590.00, 1272.00, '2026-03-13 07:45:27', '2026-03-13 07:45:27'),
+(15, 177, 14, NULL, NULL, 'M', 1, 1590.00, 1272.00, '2026-03-13 07:48:46', '2026-03-13 07:48:46'),
+(16, 178, 14, NULL, NULL, 'M', 1, 1590.00, 1272.00, '2026-03-13 07:49:03', '2026-03-13 07:49:03'),
+(17, 179, 14, NULL, NULL, 'S', 1, 1590.00, 1272.00, '2026-03-13 08:16:56', '2026-03-13 08:16:56');
 
 -- --------------------------------------------------------
 
@@ -357,6 +429,8 @@ CREATE TABLE `order_status_histories` (
   `tracking_number` varchar(20) DEFAULT NULL,
   `courier` varchar(50) DEFAULT NULL,
   `note` text DEFAULT NULL,
+  `cancel_reason` varchar(60) DEFAULT NULL,
+  `cancel_comments` text DEFAULT NULL,
   `status` enum('Confirmed','Placed','Packed','Shipped','Out for Delivery','Delivered','Cancelled','Returned','Exchanged') NOT NULL DEFAULT 'Confirmed',
   `date` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -367,20 +441,20 @@ CREATE TABLE `order_status_histories` (
 -- Dumping data for table `order_status_histories`
 --
 
-INSERT INTO `order_status_histories` (`id`, `order_id`, `tracking_number`, `courier`, `note`, `status`, `date`, `created_at`, `updated_at`) VALUES
-(11, 63, NULL, NULL, NULL, 'Packed', '2026-03-07 06:52:00', '2026-03-07 01:22:40', '2026-03-07 01:22:40'),
-(12, 63, NULL, NULL, NULL, 'Shipped', '2026-03-07 06:52:00', '2026-03-07 02:20:29', '2026-03-07 02:20:29'),
-(14, 63, NULL, NULL, NULL, 'Out for Delivery', '2026-03-07 06:52:00', '2026-03-07 02:24:04', '2026-03-07 02:24:04'),
-(15, 63, NULL, NULL, NULL, 'Delivered', '2026-03-07 06:52:00', '2026-03-07 02:24:16', '2026-03-07 02:24:16'),
-(16, 59, NULL, NULL, NULL, 'Cancelled', '2026-03-07 06:52:00', '2026-03-07 02:24:16', '2026-03-07 02:24:16'),
-(19, 61, '99999', 'Shadofax', 'test', 'Out for Delivery', '2026-03-07 06:52:00', '2026-03-07 03:00:07', '2026-03-07 03:00:07'),
-(21, 61, '123456789', 'Shadofax', 'delivered at home', 'Delivered', NULL, '2026-03-07 07:26:39', '2026-03-07 07:26:39'),
-(22, 63, '789789', 'Shadofax', 'test', 'Shipped', NULL, '2026-03-07 07:47:58', '2026-03-07 07:47:58'),
-(23, 61, '12345', 'Shadofax', 'test', 'Out for Delivery', NULL, '2026-03-07 07:49:57', '2026-03-07 07:49:57'),
-(24, 61, '99999', 'Shadofax', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release', 'Delivered', NULL, '2026-03-07 07:51:14', '2026-03-07 07:51:14'),
-(25, 62, '858585', 'Shadofax', 'test', 'Shipped', NULL, '2026-03-07 07:52:47', '2026-03-07 07:52:47'),
-(26, 62, '85858512', 'Delivery', 'test123', 'Shipped', NULL, '2026-03-07 07:53:04', '2026-03-07 07:53:04'),
-(27, 63, NULL, 'Shadofax', 'cancelled by admin', 'Confirmed', NULL, '2026-03-09 08:06:50', '2026-03-07 08:06:50');
+INSERT INTO `order_status_histories` (`id`, `order_id`, `tracking_number`, `courier`, `note`, `cancel_reason`, `cancel_comments`, `status`, `date`, `created_at`, `updated_at`) VALUES
+(132, 165, NULL, 'Shadofox', 'note', NULL, NULL, 'Confirmed', '2026-03-13 06:32:29', '2026-03-13 06:32:29', '2026-03-13 06:32:29'),
+(133, 166, NULL, 'Shadofox', 'note', NULL, NULL, 'Confirmed', '2026-03-13 06:49:37', '2026-03-13 06:49:37', '2026-03-13 06:49:37'),
+(134, 167, NULL, 'Shadofox', 'note', NULL, NULL, 'Confirmed', '2026-03-13 06:53:55', '2026-03-13 06:53:55', '2026-03-13 06:53:55'),
+(135, 168, NULL, 'Shadofox', 'note', NULL, NULL, 'Confirmed', '2026-03-13 06:54:05', '2026-03-13 06:54:05', '2026-03-13 06:54:05'),
+(136, 169, NULL, 'Shadofox', 'note', NULL, NULL, 'Confirmed', '2026-03-13 06:55:43', '2026-03-13 06:55:43', '2026-03-13 06:55:43'),
+(137, 170, NULL, 'Shadofox', 'note', NULL, NULL, 'Confirmed', '2026-03-13 06:56:57', '2026-03-13 06:56:57', '2026-03-13 06:56:57'),
+(138, 171, NULL, 'Shadofox', 'note', NULL, NULL, 'Confirmed', '2026-03-13 07:02:18', '2026-03-13 07:02:18', '2026-03-13 07:02:18'),
+(139, 172, NULL, 'Shadofox', 'note', NULL, NULL, 'Confirmed', '2026-03-13 07:38:24', '2026-03-13 07:38:24', '2026-03-13 07:38:24'),
+(140, 173, NULL, 'Shadofox', 'note', NULL, NULL, 'Confirmed', '2026-03-13 07:39:08', '2026-03-13 07:39:08', '2026-03-13 07:39:08'),
+(141, 174, NULL, 'Shadofox', 'note', NULL, NULL, 'Confirmed', '2026-03-13 07:45:27', '2026-03-13 07:45:27', '2026-03-13 07:45:27'),
+(142, 177, NULL, 'Shadofox', 'note', NULL, NULL, 'Confirmed', '2026-03-13 07:48:46', '2026-03-13 07:48:46', '2026-03-13 07:48:46'),
+(143, 178, NULL, 'Shadofox', 'note', NULL, NULL, 'Confirmed', '2026-03-13 07:49:03', '2026-03-13 07:49:03', '2026-03-13 07:49:03'),
+(144, 179, NULL, 'Shadofox', 'note', NULL, NULL, 'Confirmed', '2026-03-13 08:16:56', '2026-03-13 08:16:56', '2026-03-13 08:16:56');
 
 -- --------------------------------------------------------
 
@@ -427,15 +501,11 @@ CREATE TABLE `password_reset_tokens` (
 
 CREATE TABLE `payments` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `payment_id` varchar(255) NOT NULL,
-  `product_name` varchar(255) NOT NULL,
-  `quantity` varchar(255) NOT NULL,
-  `amount` varchar(255) NOT NULL,
-  `currency` varchar(255) NOT NULL,
-  `customer_name` varchar(255) NOT NULL,
-  `customer_email` varchar(255) NOT NULL,
-  `payment_status` varchar(255) NOT NULL,
-  `payment_method` varchar(255) NOT NULL,
+  `order_id` bigint(20) UNSIGNED NOT NULL,
+  `product_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `variant_id` bigint(20) DEFAULT NULL,
+  `status` varchar(255) NOT NULL DEFAULT 'pending',
+  `amount` decimal(10,2) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -474,13 +544,13 @@ CREATE TABLE `products` (
   `shipping_returns` text DEFAULT NULL,
   `related_products` text DEFAULT NULL,
   `price` double(10,2) NOT NULL,
-  `compare_price` double(10,2) DEFAULT NULL,
   `category_id` bigint(20) UNSIGNED NOT NULL,
   `sub_category_id` bigint(20) UNSIGNED DEFAULT NULL,
   `sub_sub_category_id` bigint(20) UNSIGNED DEFAULT NULL,
   `brand_id` bigint(20) UNSIGNED DEFAULT NULL,
   `color_id` bigint(20) UNSIGNED DEFAULT NULL,
   `size_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `discount_percentage_id` bigint(20) UNSIGNED DEFAULT NULL,
   `is_featured` enum('Yes','No') NOT NULL DEFAULT 'No',
   `sku` varchar(25) NOT NULL,
   `barcode` varchar(25) DEFAULT NULL,
@@ -504,10 +574,10 @@ CREATE TABLE `products` (
 -- Dumping data for table `products`
 --
 
-INSERT INTO `products` (`id`, `title`, `slug`, `description`, `short_description`, `shipping_returns`, `related_products`, `price`, `compare_price`, `category_id`, `sub_category_id`, `sub_sub_category_id`, `brand_id`, `color_id`, `size_id`, `is_featured`, `sku`, `barcode`, `track_qty`, `qty`, `recommended`, `views`, `discount_percentage`, `average_rating`, `cod`, `is_returnable`, `return_days`, `delivery_min_days`, `delivery_max_days`, `status`, `created_at`, `updated_at`) VALUES
-(13, 'Men Black', 'men-black', '<p><span style=\"color: rgb(40, 44, 63); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;\">Black solid T-shirt, has a round neck, short sleeves</span></p><div class=\"pdp-sizeFitDesc\" style=\"box-sizing: inherit; border: none; margin-top: 12px; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><h4 class=\"pdp-sizeFitDescTitle pdp-product-description-title\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; font-weight: 700; text-transform: capitalize; border: none; padding-bottom: 5px;\">Size &amp; Fit</h4><p class=\"pdp-sizeFitDescContent pdp-product-description-content\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); line-height: 1.4; font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; width: 461.734px;\">The model (height 6\') is wearing a size M</p></div><div class=\"pdp-sizeFitDesc\" style=\"box-sizing: inherit; border: none; margin-top: 12px; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><h4 class=\"pdp-sizeFitDescTitle pdp-product-description-title\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; font-weight: 700; text-transform: capitalize; border: none; padding-bottom: 5px;\">Material &amp; Care</h4><p class=\"pdp-sizeFitDescContent pdp-product-description-content\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); line-height: 1.4; font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; width: 461.734px;\">100% cotton<br style=\"box-sizing: inherit;\">Machine-wash</p></div><div class=\"index-sizeFitDesc\" style=\"box-sizing: inherit; border: none; margin-top: 12px; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><h4 class=\"index-sizeFitDescTitle index-product-description-title\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; font-weight: 700; padding-bottom: 12px; border: none; text-transform: capitalize;\">Specifications</h4></div>', NULL, NULL, '', 1299.00, 99.00, 82, NULL, 1, 22, NULL, 3, 'Yes', 'tshirt_01', 'tshirt_000001', 'Yes', 91, NULL, NULL, NULL, NULL, 0, 0, '7 days', '2026-03-06', '2026-03-13', 1, '2023-11-24 00:08:01', '2026-03-06 06:26:18'),
-(14, 'Men Yellow', 'men-yellow', '<div style=\"box-sizing: inherit; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><p class=\"pdp-product-description-content\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); line-height: 1.4; font-size: 16px; margin-top: 12px; width: 430.953px;\">Keep this hip this season with the HRX Men\'s Athleisure T-shirt. This versatile T-shirt can be styled any way you like for the ultimate gym-to-street look.<br style=\"box-sizing: inherit;\"><br style=\"box-sizing: inherit;\"><span style=\"box-sizing: inherit; font-weight: 700; display: inline-block; margin-top: 16px;\">Features</span></p><ul style=\"box-sizing: inherit; list-style: none; padding: 0px; margin-right: 0px; margin-bottom: 10px; margin-left: 0px;\"><li style=\"box-sizing: inherit;\">Athleisure T-shirt can be paired with tracks, khakis or jeans</li><li style=\"box-sizing: inherit;\">Style: Round Neck</li><li style=\"box-sizing: inherit;\">Sleeve: Short Sleeves</li><li style=\"box-sizing: inherit;\">Colour: Yellow</li><li style=\"box-sizing: inherit;\">Print: Typography</li><li style=\"box-sizing: inherit;\">Fit: Regular</li></ul><p></p></div><div class=\"pdp-sizeFitDesc\" style=\"box-sizing: inherit; border: none; margin-top: 12px; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><h4 class=\"pdp-sizeFitDescTitle pdp-product-description-title\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; font-weight: 700; text-transform: capitalize; border: none; padding-bottom: 5px;\">Size &amp; Fit</h4><p class=\"pdp-sizeFitDescContent pdp-product-description-content\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); line-height: 1.4; font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; width: 461.734px;\">The model height 6\' is wearing a size M</p></div><div class=\"pdp-sizeFitDesc\" style=\"box-sizing: inherit; border: none; margin-top: 12px; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><h4 class=\"pdp-sizeFitDescTitle pdp-product-description-title\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; font-weight: 700; text-transform: capitalize; border: none; padding-bottom: 5px;\">Material &amp; Care</h4><p class=\"pdp-sizeFitDescContent pdp-product-description-content\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); line-height: 1.4; font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; width: 461.734px;\">100% cotton<br style=\"box-sizing: inherit;\">Machine-wash</p></div>', 'Embroidered Logo V-Neck Cotton Lounge T-shirts', NULL, '', 1590.00, 200.00, 82, 6, 1, 20, NULL, 4, 'Yes', 'tshirt_02', 'tshirt_000002', 'Yes', 66, NULL, NULL, NULL, NULL, 1, 1, '7 days', '2026-03-03', '2026-03-10', 1, '2023-11-24 00:11:49', '2026-03-06 23:54:08'),
-(49, 'Men Yellow Printed Cotton Pure Cotton T-shirt 2', 'men-yellow-printed-cotton-pure-cotton-t-shirt-2', '<div style=\"box-sizing: inherit; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><p class=\"pdp-product-description-content\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); line-height: 1.4; font-size: 16px; margin-top: 12px; width: 430.953px;\">Keep this hip this season with the HRX Men\'s Athleisure T-shirt. This versatile T-shirt can be styled any way you like for the ultimate gym-to-street look.<br style=\"box-sizing: inherit;\"><br style=\"box-sizing: inherit;\"><span style=\"box-sizing: inherit; font-weight: 700; display: inline-block; margin-top: 16px;\">Features</span></p><ul style=\"box-sizing: inherit; list-style: none; padding: 0px; margin-right: 0px; margin-bottom: 10px; margin-left: 0px;\"><li style=\"box-sizing: inherit;\">Athleisure T-shirt can be paired with tracks, khakis or jeans</li><li style=\"box-sizing: inherit;\">Style: Round Neck</li><li style=\"box-sizing: inherit;\">Sleeve: Short Sleeves</li><li style=\"box-sizing: inherit;\">Colour: Yellow</li><li style=\"box-sizing: inherit;\">Print: Typography</li><li style=\"box-sizing: inherit;\">Fit: Regular</li></ul><p></p></div><div class=\"pdp-sizeFitDesc\" style=\"box-sizing: inherit; border: none; margin-top: 12px; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><h4 class=\"pdp-sizeFitDescTitle pdp-product-description-title\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; font-weight: 700; text-transform: capitalize; border: none; padding-bottom: 5px;\">Size &amp; Fit</h4><p class=\"pdp-sizeFitDescContent pdp-product-description-content\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); line-height: 1.4; font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; width: 461.734px;\">The model height 6\' is wearing a size M</p></div><div class=\"pdp-sizeFitDesc\" style=\"box-sizing: inherit; border: none; margin-top: 12px; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><h4 class=\"pdp-sizeFitDescTitle pdp-product-description-title\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; font-weight: 700; text-transform: capitalize; border: none; padding-bottom: 5px;\">Material &amp; Care</h4><p class=\"pdp-sizeFitDescContent pdp-product-description-content\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); line-height: 1.4; font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; width: 461.734px;\">100% cotton<br style=\"box-sizing: inherit;\">Machine-wash</p></div>', 'Embroidered Logo V-Neck Cotton Lounge T-shirts', NULL, '', 314.00, 699.00, 82, NULL, NULL, 18, 1, 4, 'Yes', 'tshirt_02', 'tshirt_000002', 'Yes', 5, NULL, NULL, NULL, NULL, 0, 0, NULL, NULL, NULL, 1, '2023-11-24 00:11:49', '2026-02-28 07:38:56');
+INSERT INTO `products` (`id`, `title`, `slug`, `description`, `short_description`, `shipping_returns`, `related_products`, `price`, `category_id`, `sub_category_id`, `sub_sub_category_id`, `brand_id`, `color_id`, `size_id`, `discount_percentage_id`, `is_featured`, `sku`, `barcode`, `track_qty`, `qty`, `recommended`, `views`, `discount_percentage`, `average_rating`, `cod`, `is_returnable`, `return_days`, `delivery_min_days`, `delivery_max_days`, `status`, `created_at`, `updated_at`) VALUES
+(13, 'Men Black', 'men-black', '<p><span style=\"color: rgb(40, 44, 63); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;\">Black solid T-shirt, has a round neck, short sleeves</span></p><div class=\"pdp-sizeFitDesc\" style=\"box-sizing: inherit; border: none; margin-top: 12px; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><h4 class=\"pdp-sizeFitDescTitle pdp-product-description-title\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; font-weight: 700; text-transform: capitalize; border: none; padding-bottom: 5px;\">Size &amp; Fit</h4><p class=\"pdp-sizeFitDescContent pdp-product-description-content\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); line-height: 1.4; font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; width: 461.734px;\">The model (height 6\') is wearing a size M</p></div><div class=\"pdp-sizeFitDesc\" style=\"box-sizing: inherit; border: none; margin-top: 12px; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><h4 class=\"pdp-sizeFitDescTitle pdp-product-description-title\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; font-weight: 700; text-transform: capitalize; border: none; padding-bottom: 5px;\">Material &amp; Care</h4><p class=\"pdp-sizeFitDescContent pdp-product-description-content\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); line-height: 1.4; font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; width: 461.734px;\">100% cotton<br style=\"box-sizing: inherit;\">Machine-wash</p></div><div class=\"index-sizeFitDesc\" style=\"box-sizing: inherit; border: none; margin-top: 12px; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><h4 class=\"index-sizeFitDescTitle index-product-description-title\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; font-weight: 700; padding-bottom: 12px; border: none; text-transform: capitalize;\">Specifications</h4></div>', NULL, NULL, '', 1299.00, 82, NULL, 1, 22, NULL, 3, 2, 'Yes', 'tshirt_01', 'tshirt_000001', 'Yes', 70, NULL, NULL, NULL, NULL, 0, 0, '7 days', '2026-03-12', '2026-03-19', 1, '2023-11-24 00:08:01', '2026-03-13 06:28:20'),
+(14, 'Men Yellow', 'men-yellow', '<div style=\"box-sizing: inherit; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><p class=\"pdp-product-description-content\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); line-height: 1.4; font-size: 16px; margin-top: 12px; width: 430.953px;\">Keep this hip this season with the HRX Men\'s Athleisure T-shirt. This versatile T-shirt can be styled any way you like for the ultimate gym-to-street look.<br style=\"box-sizing: inherit;\"><br style=\"box-sizing: inherit;\"><span style=\"box-sizing: inherit; font-weight: 700; display: inline-block; margin-top: 16px;\">Features</span></p><ul style=\"box-sizing: inherit; list-style: none; padding: 0px; margin-right: 0px; margin-bottom: 10px; margin-left: 0px;\"><li style=\"box-sizing: inherit;\">Athleisure T-shirt can be paired with tracks, khakis or jeans</li><li style=\"box-sizing: inherit;\">Style: Round Neck</li><li style=\"box-sizing: inherit;\">Sleeve: Short Sleeves</li><li style=\"box-sizing: inherit;\">Colour: Yellow</li><li style=\"box-sizing: inherit;\">Print: Typography</li><li style=\"box-sizing: inherit;\">Fit: Regular</li></ul><p></p></div><div class=\"pdp-sizeFitDesc\" style=\"box-sizing: inherit; border: none; margin-top: 12px; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><h4 class=\"pdp-sizeFitDescTitle pdp-product-description-title\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; font-weight: 700; text-transform: capitalize; border: none; padding-bottom: 5px;\">Size &amp; Fit</h4><p class=\"pdp-sizeFitDescContent pdp-product-description-content\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); line-height: 1.4; font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; width: 461.734px;\">The model height 6\' is wearing a size M</p></div><div class=\"pdp-sizeFitDesc\" style=\"box-sizing: inherit; border: none; margin-top: 12px; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><h4 class=\"pdp-sizeFitDescTitle pdp-product-description-title\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; font-weight: 700; text-transform: capitalize; border: none; padding-bottom: 5px;\">Material &amp; Care</h4><p class=\"pdp-sizeFitDescContent pdp-product-description-content\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); line-height: 1.4; font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; width: 461.734px;\">100% cotton<br style=\"box-sizing: inherit;\">Machine-wash</p></div>', 'Embroidered Logo V-Neck Cotton Lounge T-shirts', NULL, '', 1590.00, 82, NULL, 1, 20, NULL, 4, 3, 'Yes', 'tshirt_02', 'tshirt_000002', 'Yes', 96, NULL, NULL, NULL, NULL, 1, 1, '7 days', '2026-03-13', '2026-03-20', 1, '2023-11-24 00:11:49', '2026-03-13 08:16:56'),
+(49, 'Men Yellow Printed Cotton Pure Cotton T-shirt 2', 'men-yellow-printed-cotton-pure-cotton-t-shirt-2', '<div style=\"box-sizing: inherit; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><p class=\"pdp-product-description-content\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); line-height: 1.4; font-size: 16px; margin-top: 12px; width: 430.953px;\">Keep this hip this season with the HRX Men\'s Athleisure T-shirt. This versatile T-shirt can be styled any way you like for the ultimate gym-to-street look.<br style=\"box-sizing: inherit;\"><br style=\"box-sizing: inherit;\"><span style=\"box-sizing: inherit; font-weight: 700; display: inline-block; margin-top: 16px;\">Features</span></p><ul style=\"box-sizing: inherit; list-style: none; padding: 0px; margin-right: 0px; margin-bottom: 10px; margin-left: 0px;\"><li style=\"box-sizing: inherit;\">Athleisure T-shirt can be paired with tracks, khakis or jeans</li><li style=\"box-sizing: inherit;\">Style: Round Neck</li><li style=\"box-sizing: inherit;\">Sleeve: Short Sleeves</li><li style=\"box-sizing: inherit;\">Colour: Yellow</li><li style=\"box-sizing: inherit;\">Print: Typography</li><li style=\"box-sizing: inherit;\">Fit: Regular</li></ul><p></p></div><div class=\"pdp-sizeFitDesc\" style=\"box-sizing: inherit; border: none; margin-top: 12px; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><h4 class=\"pdp-sizeFitDescTitle pdp-product-description-title\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; font-weight: 700; text-transform: capitalize; border: none; padding-bottom: 5px;\">Size &amp; Fit</h4><p class=\"pdp-sizeFitDescContent pdp-product-description-content\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); line-height: 1.4; font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; width: 461.734px;\">The model height 6\' is wearing a size M</p></div><div class=\"pdp-sizeFitDesc\" style=\"box-sizing: inherit; border: none; margin-top: 12px; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><h4 class=\"pdp-sizeFitDescTitle pdp-product-description-title\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; font-weight: 700; text-transform: capitalize; border: none; padding-bottom: 5px;\">Material &amp; Care</h4><p class=\"pdp-sizeFitDescContent pdp-product-description-content\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); line-height: 1.4; font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; width: 461.734px;\">100% cotton<br style=\"box-sizing: inherit;\">Machine-wash</p></div>', 'Embroidered Logo V-Neck Cotton Lounge T-shirts', NULL, '', 314.00, 82, NULL, NULL, 18, 1, 4, NULL, 'Yes', 'tshirt_02', 'tshirt_000002', 'Yes', 4, NULL, NULL, NULL, NULL, 0, 0, NULL, NULL, NULL, 1, '2023-11-24 00:11:49', '2026-03-10 00:53:28');
 
 -- --------------------------------------------------------
 
@@ -918,7 +988,7 @@ CREATE TABLE `wishlists` (
 
 INSERT INTO `wishlists` (`id`, `user_id`, `product_id`, `created_at`, `updated_at`) VALUES
 (50, 3, 13, '2026-03-02 06:27:19', '2026-03-02 06:27:19'),
-(51, 7, 13, '2026-03-06 01:21:42', '2026-03-06 01:21:42');
+(52, 7, 14, '2026-03-10 01:17:12', '2026-03-10 01:17:12');
 
 --
 -- Indexes for dumped tables
@@ -959,9 +1029,22 @@ ALTER TABLE `customer_addresses`
   ADD KEY `customer_addresses_state_id_foreign` (`state_id`);
 
 --
+-- Indexes for table `discounts`
+--
+ALTER TABLE `discounts`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `discounts_product_id_foreign` (`product_id`);
+
+--
 -- Indexes for table `discount_coupons`
 --
 ALTER TABLE `discount_coupons`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `discount_percentages`
+--
+ALTER TABLE `discount_percentages`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -983,16 +1066,18 @@ ALTER TABLE `migrations`
 ALTER TABLE `orders`
   ADD PRIMARY KEY (`id`),
   ADD KEY `orders_user_id_foreign` (`user_id`),
-  ADD KEY `orders_customer_address_id_foreign` (`customer_address_id`);
+  ADD KEY `orders_customer_address_id_foreign` (`customer_address_id`),
+  ADD KEY `orders_product_id_foreign` (`product_id`),
+  ADD KEY `orders_product_variant_id_foreign` (`product_variant_id`);
 
 --
 -- Indexes for table `order_items`
 --
 ALTER TABLE `order_items`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `orders_items_order_id_foreign` (`order_id`),
-  ADD KEY `orders_items_product_id_foreign` (`product_id`),
-  ADD KEY `order_items_product_variant_id_foreign` (`product_variant_id`);
+  ADD KEY `order_id` (`order_id`),
+  ADD KEY `product_id` (`product_id`),
+  ADD KEY `product_variant_id` (`product_variant_id`);
 
 --
 -- Indexes for table `order_status_histories`
@@ -1017,7 +1102,8 @@ ALTER TABLE `password_reset_tokens`
 -- Indexes for table `payments`
 --
 ALTER TABLE `payments`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `payments_order_id_foreign` (`order_id`);
 
 --
 -- Indexes for table `personal_access_tokens`
@@ -1037,7 +1123,8 @@ ALTER TABLE `products`
   ADD KEY `products_brand_id_foreign` (`brand_id`),
   ADD KEY `products_sub_sub_category_id_foreign` (`sub_sub_category_id`),
   ADD KEY `products_color_id_foreign` (`color_id`),
-  ADD KEY `products_size_id_foreign` (`size_id`);
+  ADD KEY `products_size_id_foreign` (`size_id`),
+  ADD KEY `products_discount_percentage_id_foreign` (`discount_percentage_id`);
 
 --
 -- Indexes for table `product_images`
@@ -1172,13 +1259,25 @@ ALTER TABLE `coupon_product`
 -- AUTO_INCREMENT for table `customer_addresses`
 --
 ALTER TABLE `customer_addresses`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+
+--
+-- AUTO_INCREMENT for table `discounts`
+--
+ALTER TABLE `discounts`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `discount_coupons`
 --
 ALTER TABLE `discount_coupons`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+
+--
+-- AUTO_INCREMENT for table `discount_percentages`
+--
+ALTER TABLE `discount_percentages`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `failed_jobs`
@@ -1190,25 +1289,25 @@ ALTER TABLE `failed_jobs`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=59;
 
 --
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=65;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=180;
 
 --
 -- AUTO_INCREMENT for table `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=91;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `order_status_histories`
 --
 ALTER TABLE `order_status_histories`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=145;
 
 --
 -- AUTO_INCREMENT for table `pages`
@@ -1310,7 +1409,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `wishlists`
 --
 ALTER TABLE `wishlists`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
 
 --
 -- Constraints for dumped tables
@@ -1331,19 +1430,27 @@ ALTER TABLE `customer_addresses`
   ADD CONSTRAINT `customer_addresses_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
+-- Constraints for table `discounts`
+--
+ALTER TABLE `discounts`
+  ADD CONSTRAINT `discounts_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE;
+
+--
 -- Constraints for table `orders`
 --
 ALTER TABLE `orders`
   ADD CONSTRAINT `orders_customer_address_id_foreign` FOREIGN KEY (`customer_address_id`) REFERENCES `customer_addresses` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `orders_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `orders_product_variant_id_foreign` FOREIGN KEY (`product_variant_id`) REFERENCES `product_variants` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   ADD CONSTRAINT `orders_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `order_items`
 --
 ALTER TABLE `order_items`
-  ADD CONSTRAINT `order_items_product_variant_id_foreign` FOREIGN KEY (`product_variant_id`) REFERENCES `product_variants` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
-  ADD CONSTRAINT `orders_items_order_id_foreign` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `orders_items_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `order_items_order_id_foreign` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `order_items_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `order_items_product_variant_id_foreign` FOREIGN KEY (`product_variant_id`) REFERENCES `product_variants` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
 -- Constraints for table `order_status_histories`
@@ -1352,12 +1459,19 @@ ALTER TABLE `order_status_histories`
   ADD CONSTRAINT `order_status_histories_order_id_foreign` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE;
 
 --
+-- Constraints for table `payments`
+--
+ALTER TABLE `payments`
+  ADD CONSTRAINT `payments_order_id_foreign` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE;
+
+--
 -- Constraints for table `products`
 --
 ALTER TABLE `products`
   ADD CONSTRAINT `products_brand_id_foreign` FOREIGN KEY (`brand_id`) REFERENCES `brands` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `products_category_id_foreign` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `products_color_id_foreign` FOREIGN KEY (`color_id`) REFERENCES `colors` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `products_discount_percentage_id_foreign` FOREIGN KEY (`discount_percentage_id`) REFERENCES `discount_percentages` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `products_size_id_foreign` FOREIGN KEY (`size_id`) REFERENCES `sizes` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   ADD CONSTRAINT `products_sub_category_id_foreign` FOREIGN KEY (`sub_category_id`) REFERENCES `sub_categories` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `products_sub_sub_category_id_foreign` FOREIGN KEY (`sub_sub_category_id`) REFERENCES `sub_sub_categories` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;

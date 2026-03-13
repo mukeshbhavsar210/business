@@ -96,6 +96,24 @@
                                                 <hr />
                                             @endif
 
+                                            <div class="social-btns">                            
+                                                <h5>Login with your accounts</h5>
+                                                <div class="groups">
+                                                    <div>
+                                                        <a href="{{ url('auth/google') }}" class="google-btn account-btn">
+                                                            <span class="sprites"></span>
+                                                            Login with Google
+                                                        </a>
+                                                    </div>
+                                                    <div>
+                                                        <a href="{{ url('auth/facebook') }}" class="facebook-btn account-btn">
+                                                            <span class="sprites"></span>
+                                                            Log in with Facebook
+                                                        </a>
+                                                    </div>                  
+                                                </div>          
+                                            </div>
+
                                             @php
                                                 $guestAttr = 'data-bs-toggle=modal data-bs-target=#login href=javascript:void(0)';
                                             @endphp

@@ -10,9 +10,11 @@ use App\Http\Controllers\admin\ProductImageController;
 use App\Http\Controllers\admin\ProductSubCategoryController;
 use App\Http\Controllers\admin\SettingController;
 use App\Http\Controllers\admin\TempImagesController;
+use App\Http\Controllers\Auth\SocialController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\FrontController;
+use App\Http\Controllers\RazorpayController;
 use App\Http\Controllers\ShopController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -35,6 +37,13 @@ Route::controller(ShopController::class)->group(function() {
     Route::post('/rate-product', 'rating_store')->name('rate.product');
 });
 
+// Route::controller(SocialController::class)->group(function() {
+//     Route::get('auth/google', 'redirectToGoogle');
+//     Route::get('auth/google/callback', 'handleGoogleCallback');
+//     Route::get('auth/facebook', 'redirectToFacebook');
+//     Route::get('auth/facebook/callback', 'handleFacebookCallback');
+// });
+
 Route::controller(CartController::class)->group(function() {
     //Bag
     Route::get('/checkout/cart','cart')->name('front.cart');
@@ -47,22 +56,17 @@ Route::controller(CartController::class)->group(function() {
     Route::post('/cart/select-item','selectItem');
 
     //Update Color/Size/Qty in cart
+    Route::post('/apply-coupon', 'applyCoupon')->name('coupon.apply');
     Route::post('/checkout/cart/common', 'updateCartOption')->name('front.updateCartOption');
     Route::post('/cart/update-item', 'updateItem')->name('front.updateCartItem');
     Route::post('/default-address', 'updateDefaultAddress')->name('address.default');    
 
-    //Route::post('/update-cart','updateCart')->name('front.updateCart');
+    Route::get('/coupon/remove', 'removeCoupon')->name('coupon.remove');
     Route::post('/checkout/payment', 'payment')->name('checkout.payment');
     Route::get('/checkout/address','checkout')->name('front.checkout');
     Route::post('/checkout/process','processCheckout')->name('front.processCheckout');
     Route::get('/thanks/{orderId}','thankyou')->name('front.checkout.thankyou');
     Route::post('/get-order-summary','getOrderSummary')->name('front.getOrderSummary');
-
-    //Discount apply
-    Route::post('/apply-coupon', 'applyCoupon')->name('coupon.apply');
-    Route::post('/apply-discount','applyDiscount')->name('front.applyDiscount');
-    Route::post('/remove-discount','removeCoupon')->name('front.removeCoupon');
-    Route::get('/coupon/remove', 'removeCoupon')->name('coupon.remove');
 
     //Payment routes
     Route::post('checkout/razorpay', 'razorpayPayment')->name('checkout.razorpay');
@@ -71,6 +75,11 @@ Route::controller(CartController::class)->group(function() {
     Route::post('checkout/verify-payment', 'verifyPayment')->name('verify.payment');  
     Route::get('checkout/payment-failed', 'failed')->name('order.failed');
     Route::post('checkout/get-order-summary','getOrderSummary')->name('front.getOrderSummary');
+});
+
+Route::controller(CartController::class)->group(function() {
+    Route::get('/razorpay','index');
+    Route::post('/payment','payment')->name('payment');
 });
 
 //User realted

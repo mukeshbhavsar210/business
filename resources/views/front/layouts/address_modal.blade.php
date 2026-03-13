@@ -126,8 +126,7 @@
                     <h5 class="modal-title" id="discountLabel">Apply Coupon</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    
+                <div class="modal-body">                    
                     <div class="scroll-body">
                         @foreach($coupons as $coupon)
                             <div class="coupon-box {{ old('coupon_discount.id', session('coupon_discount.id')) == $coupon->id ? 'active' : '' }}">

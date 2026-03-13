@@ -205,7 +205,6 @@ class CartController extends Controller {
         ]);
     }
 
-
     // Verify Payment
      public function verifyPayment(Request $request) {
         $amount = $request->amount ?? 0;
@@ -489,6 +488,8 @@ class CartController extends Controller {
         // Step 6: Create Order
         $order = new Order;
         $order->user_id = $user->id;
+        //$order->product_id = $order->id;
+        $order->product_variant_id = $item->options->variant_id ?? null;
         $order->customer_address_id = $request->customer_address_id;
         $order->subtotal = $subTotal;
         $order->shipping = $shipping;
@@ -518,14 +519,7 @@ class CartController extends Controller {
             $orderItem->product_variant_id = $item->options->variant_id ?? null;
             $orderItem->size = $item->options->size ?? null;                        
             $orderItem->color = $item->options->color;
-            $orderItem->subtotal = $subTotal;
-            $orderItem->shipping = $shipping;
-            $orderItem->discount = $discount;
-            $orderItem->grandtotal = $grandTotal;
-            $orderItem->coupon_code_id = $discountCodeId;
-            $orderItem->coupon_code = $promoCode;
-            $orderItem->payment_status = 'not paid';
-            $orderItem->payment_method = $request->payment_method;  
+            $orderItem->total = $subTotal;  
             $orderItem->save();
 
             // Update Variant Stock
@@ -554,25 +548,36 @@ class CartController extends Controller {
         Cart::destroy();
         session()->forget('coupon_discount');
 
-        // Setp 10: Razorpay payment
-        $api = new Api(config('services.razorpay.key'), config('services.razorpay.secret'));
+        // Step 10: Handle COD
+        if($request->payment_method == 'cod'){
+            return response()->json([
+                'status' => true,
+                'orderId' => $order->id,
+                'payment_method' => 'cod'
+            ]);
+        }
+
+        // Setp 11: Razorpay payment
+        $grandTotal = $request->grand_total;
+        
+        $api = new Api(config('razorpay.key'),config('razorpay.secret'));        
 
         $orderData = [
             'receipt'         => 'order_'.$order->id,
             'amount'          => $grandTotal * 100, // Razorpay uses paise
-            'currency'        => 'INR',
-            'payment_capture' => 1
+            'currency'        => 'INR',            
         ];
 
-        //$razorpayOrder = $api->order->create($orderData);
+        $razorpayOrder = $api->order->create($orderData);
 
-        // return response()->json([
-        //     'status' => true,
-        //     'order_id' => $order->id,
-        //     'razorpay_order_id' => $razorpayOrder['id'],
-        //     'amount' => $orderData['amount'],
-        // ]);
-
+        return response()->json([
+            'status' => true,
+            'orderId' => $order->id,
+            'razorpay_order_id' => $razorpayOrder['id'],
+            'amount' => $orderData['amount'],
+            'key' => config('razorpay.key')
+        ]);
+       
         return response()->json([
             'message' => 'Order placed successfully.',
             'orderId' => $order->id,
@@ -598,7 +603,7 @@ class CartController extends Controller {
             'order' => $order,
         ]);
     }
-    
+
     public function updateDefaultAddress(Request $request) {
         $request->validate([
             'address_id' => 'required'
