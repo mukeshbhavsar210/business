@@ -6,7 +6,7 @@
     <ul class="nav nav-tabs" role="tablist">
         <li class="nav-item" role="presentation">
             <a class="nav-link fw-semibold active py-2" data-bs-toggle="tab" href="#documents" role="tab" aria-selected="true">
-                Category      
+                Category   22    
                 <span class="counts">{{ $categories->total() }}</span>                  
             </a>
         </li>
