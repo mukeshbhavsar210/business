@@ -329,15 +329,13 @@ class SettingController extends Controller {
                         'name' => 'image',
                         'label' => 'Image',
                         'col' => 'col-md-4 col-12'
-                    ],
-                    
+                    ],                    
                 ]
             ]
         ];       
 
         return view('admin.settings.coupon.index', $data);
     }  
-
 
     public function showChangePasswordForm(){
         return view("admin.change-password");
@@ -471,7 +469,6 @@ class SettingController extends Controller {
                         'status' => false,
                         'errors' => ['expires_at' => 'Expiry date must be greator than start date.']
                     ]);
-
                 }
             }
 
@@ -504,6 +501,8 @@ class SettingController extends Controller {
             ]);
         }
     }
+
+
 
     public function coupon_destroy(Request $request, $id){
         $discountCode = DiscountCoupon::find($id);
@@ -594,9 +593,9 @@ class SettingController extends Controller {
                 ]
             ]
         ];       
-
         return view('admin.settings.pages.index', $data);
     }  
+
 
     public function page_create(){
         return view("admin.settings.pages.create");
@@ -675,7 +674,6 @@ class SettingController extends Controller {
             'message' => $message
         ]);
     }
-
 
     public function page_destroy($id){
         $page = Page::find($id);
@@ -803,7 +801,6 @@ class SettingController extends Controller {
         return view('admin.settings.users.index', $data);
     }   
     
-
     public function users_store(Request $request){
         $validator = Validator::make($request->all(), [
             'name' => 'required',
@@ -856,7 +853,6 @@ class SettingController extends Controller {
         ]);
     }
 
-
     public function users_update(Request $request, $id){
         $user = User::find($id);
         if($user == null){
@@ -900,7 +896,6 @@ class SettingController extends Controller {
             ]);
         }
     }
-
 
     public function users_destroy($id){
         $user = User::find($id);

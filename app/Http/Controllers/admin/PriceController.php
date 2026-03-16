@@ -5,8 +5,7 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class PriceController extends Controller
-{
+class PriceController extends Controller {
     public function calculatePrice(Request $request)
     {
         $text = $request->input('text', '');

@@ -22,7 +22,6 @@ use Intervention\Image\Drivers\Gd\Driver;
 use Carbon\Carbon;
 
 class ProductController extends Controller {
-
     public function index(Request $request){
         $products = Product::latest('id')->with(['product_images','variant_images']);
 
@@ -226,9 +225,6 @@ class ProductController extends Controller {
 
         return view('admin.products.edit',$data);
     }
-
-
-
 
     public function update($id, Request $request){
         $product = Product::find($id);
@@ -455,7 +451,5 @@ class ProductController extends Controller {
             'tags' => $tempProduct,
             'status' => true,
         ]);
-
-
     }
 }

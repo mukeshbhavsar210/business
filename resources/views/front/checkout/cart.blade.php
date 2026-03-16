@@ -67,9 +67,9 @@
                     </div>
                 
                     @foreach($cartContent as $item)
-                        <div class="product-repeate"> 
+                        <div class="product-repeate" id="cart-item-{{ $item->rowId }}"> 
                             <div class="checkbox">
-                                <label class="custom-checkbox">
+                                <label class="custom-checkbox">                                    
                                     <input type="checkbox" name="cart_ids[]" value="{{ $item->rowId }}" class="item-checkbox" checked
                                         data-rowid="{{ $item->rowId }}"                                                
                                         data-price="{{ $item->price }}"
@@ -609,6 +609,7 @@
                     }else{
                         showAlert(response.message,'error');
                     }
+                    location.reload();
                     // if(response.status){
                     //     window.location.href='{{ route("front.cart") }}';
                     // } else {
@@ -623,20 +624,7 @@
             $(this).closest('.coupon-box').addClass('active');
         });
 
-        $(document).ready(function () {
-            $('#selectAll').on('click', function() {
-                $('.item-checkbox').prop('checked', $(this).prop('checked'));
-            });
-
-            // Individual Checkbox Click
-            $('.item-checkbox').on('change', function() {
-                if ($('.item-checkbox:checked').length == $('.item-checkbox').length) {
-                    $('#selectAll').prop('checked', true);
-                } else {
-                    $('#selectAll').prop('checked', false);
-                }
-            });
-           
+        $(document).ready(function () {          
             function updateSelectedCount() {
                 let count = $('.item-checkbox:checked').length;
                 $('#selectedCount').text(count);
@@ -651,13 +639,7 @@
                 } else {
                     $('.price-details').show();
                 }
-            }
-            
-            // Select All
-            $('#selectAll').on('click', function() {
-                $('.item-checkbox').prop('checked', $(this).prop('checked'));
-                updateSelectedCount();
-            });
+            }                   
 
             // Individual Checkbox
             $('.item-checkbox').on('change', function() {
@@ -676,27 +658,42 @@
             function updateSelectedCount() {
                 let count = $('.item-checkbox:checked').length;
                 $('#selectedCount').text(count);
-            }
+            }           
 
-            // Select All
-            $('#selectAll').on('click', function() {
-                $('.item-checkbox').prop('checked', $(this).prop('checked'));
-                updateSelectedCount();
-            });
+            $('.bulk-action').on('click', function(e) {
+                e.preventDefault();
 
-        
-           // When main checkbox clicked
-            $('#selectAll').on('change', function() {
-                $('.item-checkbox').prop('checked', $(this).prop('checked'));
-            });
+                let selected = $('.item-checkbox:checked');
 
-            // When individual checkbox clicked
-            $('.item-checkbox').on('change', function() {
-                if ($('.item-checkbox:checked').length > 0) {
-                    $('#selectAll').prop('checked', true);
-                } else {
-                    $('#selectAll').prop('checked', false);
+                if (selected.length === 0) {
+                    alert('Select any item to remove from bag.');
+                    return;
                 }
+
+                $.ajax({
+                    url: "{{ route('cart.bulk.action') }}",
+                    type: "POST",
+                    data: $('#cartForm').serialize(),
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        // ✅ Remove selected items from UI
+                        selected.each(function(){
+                            let rowId = $(this).data('rowid');
+                            $("#cart-item-" + rowId).fadeOut(300, function(){
+                                $(this).remove();
+                            });
+                            location.reload();
+                        });
+
+                        // ✅ Update cart count
+                        $('#cartCount').text(response.cartCount);
+
+                        // ✅ Optional: show toast
+                        showAlert(response.message, 'success');
+                    }
+                });
             });
 
             function updateMainCheckbox() {
@@ -722,29 +719,14 @@
                         .prop('indeterminate', true);
                 }
             }
-
-            // When main checkbox clicked
-            $('#selectAll').on('change', function() {
-                $('.item-checkbox')
-                    .prop('checked', $(this).prop('checked'));
-                updateMainCheckbox();
-            });
-
+           
             // When individual checkbox changes
-            $('.item-checkbox').on('change', function() {
-                updateMainCheckbox();
-            });
+            // $('.item-checkbox').on('change', function() {
+            //     updateMainCheckbox();
+            // });
 
             // Initial load
-            updateMainCheckbox();
-
-            //without select checkbox show alert
-            $('.bulk-action').on('click', function(e) {
-                if ($('.item-checkbox:checked').length === 0) {
-                    e.preventDefault();
-                    alert('Select any item to remove from bag.');
-                }
-            });
+            updateMainCheckbox();            
 
             $('input[name="coupon_id"]').on('change', function () {
                 let code = $(this).data('code');
@@ -804,11 +786,9 @@
 
                 let total = afterCoupon + appliedShipping;
 
-
                 // Update UI
                 $('#selectedCount').text(selectedCount);
                 $('.selected-items').text(selectedCount);
-
                 $('.mrp_total').text(mrp_total.toFixed(2));
                 $('.price_discount').text(price_discount.toFixed(2));
                 $('.coupon_discount').text(coupon_discount.toFixed(2));
@@ -843,17 +823,11 @@
                 updateCartSummary();
             });
 
-            
-
-
             $('#selectAll').on('change', function(){
                 let checked = this.checked;
-
                 $('.item-checkbox').each(function(){
                     $(this).prop('checked', checked);
-
                     let rowId = $(this).data('rowid');
-
                     $.ajax({
                         url: "/cart/select-item",
                         method: "POST",
@@ -871,9 +845,6 @@
             updateCartSummary();
         });
 
-       
-
-
         $(document).ready(function(){
             $('#checkoutForm').on('submit', function(e){
                 if($('.item-checkbox:checked').length === 0){
@@ -885,7 +856,6 @@
             // $('.item-checkbox').change(function() {
             //     $('#cartForm').submit();
             // });
-        });       
-
+        });
     </script>
 @endsection

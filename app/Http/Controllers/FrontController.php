@@ -51,7 +51,7 @@ class FrontController extends Controller {
 
         return response()->json([
             'status' => true,
-            'message' => '<div class="alert alert-success"><strong>"'.$product->title.'"</strong> added in yout wishlist!</div>'
+            'message' => $product->title.' added in yout wishlist!'
         ]);
     }
 

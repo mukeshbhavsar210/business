@@ -11,7 +11,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller {
-    
     public function index(Request $request) {
         $orders = Order::with(array_merge($this->orderRelations(), ['latestStatus', 'items']))            
             ->latest('orders.created_at')
