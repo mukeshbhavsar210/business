@@ -18,57 +18,21 @@ use Illuminate\Validation\Rule;
 
 class CategoryController extends Controller {
 
-    public function index(Request $request) {
-        $categories = Category::orderBy('menu_order', 'asc');
+    public function index(Request $request) {        
+        $categories = Category::withCount('subCategories')
+            ->with(['subCategories' => function ($q) {
+                $q->withCount('subSubCategories')
+                ->with('subSubCategories');
+            }])
+            ->orderBy('menu_order', 'asc')
+            ->paginate(10);        
 
         if ($request->filled('keyword')) {
             $categories->where('category_name', 'like', '%' . $request->keyword . '%');
-        }
-
-        $categories = $categories->paginate(10);
-
-        $subCategories = SubCategory::select(
-                'sub_categories.*',
-                'categories.category_name as categoryName'
-            )
-            ->leftJoin('categories', 'categories.id', 'sub_categories.category_id')
-            ->latest('sub_categories.id');
-
-        if ($request->filled('keyword2')) {
-            $keyword = $request->keyword;
-
-            $subCategories->where(function ($query) use ($keyword) {
-                $query->where('sub_categories.sub_category_name', 'like', "%$keyword%")
-                    ->orWhere('categories.sub_category_name', 'like', "%$keyword%");
-            });
-        }
-
-        $subCategories = $subCategories->paginate(10);
-        $sub2Categories = SubSubCategory::select(
-                'sub_sub_categories.*',
-                'sub_categories.sub_category_name as subCategoryName',
-                'categories.category_name as categoryName'
-            )
-            ->leftJoin('sub_categories', 'sub_categories.id', '=', 'sub_sub_categories.sub_category_id')
-            ->leftJoin('categories', 'categories.id', '=', 'sub_sub_categories.category_id')
-            ->latest('sub_sub_categories.id');
-
-        if ($request->filled('keyword3')) {
-            $keyword = $request->keyword;
-
-            $sub2Categories->where(function ($query) use ($keyword) {
-                $query->where('sub_sub_categories.sub_category_name', 'like', "%$keyword%")
-                    ->orWhere('sub_categories.sub_category_name', 'like', "%$keyword%")
-                    ->orWhere('categories.sub_category_name', 'like', "%$keyword%");
-            });
-        }
-
-        $sub2Categories = $sub2Categories->paginate(10);
-
+        }        
+       
         return view('admin.category.index', compact(
-            'categories',
-            'subCategories',
-            'sub2Categories'
+            'categories',            
         ));
     }
 

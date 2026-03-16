@@ -105,6 +105,100 @@ class CartController extends Controller {
         ]);
     }
 
+    public function wishlistToCart(Request $request) {
+        $product = Product::with(['product_images','variants'])
+            ->find($request->product_id);
+
+        if (!$product) {
+            return response()->json([
+                "status" => false,
+                "message" => "Product not found"
+            ]);
+        }
+
+        $variantId = $request->variant_id;
+        $size      = $request->size ?? 'Default Size';
+        $color     = $request->color ?? null;
+
+        // Get selected variant (if exists)
+        $variant = null;
+        if (!empty($variantId)) {
+            $variant = $product->variants->where('id', $variantId)->first();
+        }
+
+        // Determine correct image
+        $image = $variant && $variant->image
+                    ? $variant->image
+                    : optional($product->product_images->first())->image;
+
+        // Unique rowId check (product + variant + size)
+        $alreadyExists = false;
+
+        foreach (Cart::content() as $item) {
+            if (
+                $item->id == $product->id &&
+                $item->options->variant_id == $variantId &&
+                $item->options->size == $size
+            ) {
+                $alreadyExists = true;
+                break;
+            }
+        }
+
+        if (!$alreadyExists) {
+
+            $discount_price = $product->price;
+
+            if ($product->discount) {
+                $discount_price = $product->price -
+                    ($product->price * $product->discount->discount_percent / 100);
+            }
+
+            Cart::add([
+                'id'      => $product->id,
+                'name'    => $product->title,
+                'qty'     => 1,                
+                'price'   => $product->price,
+                'weight'  => 0,
+                'options' => [
+                    'discount_price'    => $discount_price,
+                    'discount_percent'  => $product->discount->discount_percent ?? 0,
+                    'short_description' => $product->short_description,                    
+                    'productImage'      => $image,
+                    'variant_id'        => $variantId,
+                    'size'              => $size,
+                    'color'             => $color,
+                    'return_days'       => $product->return_days,
+                    'delivery_min_days' => $product->delivery_min_days,
+                    'delivery_max_days' => $product->delivery_max_days,
+                ]
+            ]);
+
+            // ✅ Remove from wishlist
+            Wishlist::where('user_id', auth()->id())
+                ->where('product_id', $product->id)
+                ->delete();
+
+            $status  = true;
+            $message = $product->title . ' added to Bag.';
+            session()->flash('success', $message);
+
+        } else {
+
+            $status  = false;
+            $message = $product->title.' already added in bag';
+        }
+        
+        return response()->json([
+            "status"    => $status,
+            "message"   => $message,
+            "cartCount" => Cart::count(),
+            "wishlistCount" => Wishlist::where('user_id', auth()->id())->count()
+        ]);
+    }
+
+
+
     public function cart() {
         $cartContent = Cart::content();
         $appliedCouponId = session('coupon_discount.id'); 

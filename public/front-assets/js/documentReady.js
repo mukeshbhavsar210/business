@@ -1,4 +1,24 @@
 $(document).ready(function(){
+    
+    $('.nav-item.dropdown').hover(
+        function(){
+            $('body').addClass('active');
+            $(this).addClass('active_menu');
+        },
+        function(){
+            $('body').removeClass('active');
+            $(this).removeClass('active_menu');
+        }
+    );
+
+     $(window).on("scroll", function(){
+        if($(window).scrollTop() > 100){
+            $(".header").addClass("sticky");
+        }else{
+            $(".header").removeClass("sticky");
+        }
+    });
+
     function checkValue(element){
         if($(element).val() !== ''){
             $(element).closest('.form-group').addClass('active');
