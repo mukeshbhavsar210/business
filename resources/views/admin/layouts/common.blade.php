@@ -14,50 +14,6 @@
     @endif
 </div>
 
-<div class="card mb-0">
-    <div class="card-body pb-0">            
-        <div class="row">                
-            <div class="col-sm-7 col-12">
-                <div class="page-title">
-                    <h4>{{ $title }}</h4>
-                    <span class="counts">{{ $total  }}</span>
-                </div>
-            </div>
-            <div class="col-sm-5 col-12 float-end">
-                <div class="flexContainer">
-                    <form action="" method="get" >
-                        <div class="d-flex">
-                            <div class="card-title">
-                                <button type="button" onclick="window.location.href='{{ $refresh }}'" class="btn btn-default btn-sm">
-                                    <?xml version="1.0" encoding="utf-8"?>
-                                        <svg width="20px" height="20px" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg">
-                                        <g fill="none" fill-rule="evenodd" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" transform="matrix(0 1 1 0 2.5 2.5)">
-                                        <path d="m3.98652376 1.07807068c-2.38377179 1.38514556-3.98652376 3.96636605-3.98652376 6.92192932 0 4.418278 3.581722 8 8 8s8-3.581722 8-8-3.581722-8-8-8"/>
-                                        <path d="m4 1v4h-4" transform="matrix(1 0 0 -1 0 6)"/>
-                                        </g>
-                                    </svg>
-                                </button>
-                            </div>
-        
-                            <div class="card-tools">
-                                <div class="input-group input-group searchMain" >
-                                    <input value="{{ Request::get('keyword') }}" type="text" name="keyword" class="form-control float-right" placeholder="Search">
-                                    <div class="input-group-append">
-                                        <button type="submit" class="btn">
-                                            <i class="iconoir-search"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                    <button type="button" class="btn btn-primary float-end" data-bs-toggle="modal" data-bs-target="#{{ $modal_id }}">{{ $button_name }}</button>                            
-                </div>
-            </div>
-        </div>                        
-    </div>
-</div>
-
 <div class="modal fade" id="{{ $modal_id }}" tabindex="-1" aria-labelledby="{{ $modal_id }}Label" aria-hidden="true" data-bs-keyboard="true">
     <div class="modal-dialog {{ $formConfig['modal_size'] ?? '' }}">
         <div class="modal-content">            
@@ -115,16 +71,36 @@
                                             <label class="floating-label" for="{{ $field['name'] }}">{{ $field['label'] }}</label>
                                         </div>
 
+                                    @elseif($field['type'] == 'dropzone')
+                                        <div class="form-group">
+                                            {{-- <input type="hidden" id="{{ $field['image_id'] }}" name="{{ $field['image_id'] }}" value=" "> --}}
+                                            <input type="hidden" id="image_id" name="image_id" value=" ">
+                                            <label for="image">Image</label>
+                                            <div id="image" class="dropzone dz-clickable">
+                                                <div class="dz-message needsclick">
+                                                    <br>Drop files here or click to upload.<br><br>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                     @elseif($field['type'] == 'select')
                                         <div class="form-group">
                                             <label for="{{ $field['name'] }}">{{ $field['label'] }}</label>
-                                            <select name="{{ $field['name'] }}" class="form-select">
+                                            <select name="{{ $field['name'] }}" class="form-select" id="{{ $field['name'] }}">
                                                 @foreach($field['options'] as $value => $label)
                                                     <option value="{{ $value }}">
                                                         {{ $label }}
                                                     </option>
                                                 @endforeach
                                             </select>                                                    
+                                        </div>
+
+                                    @elseif($field['type'] == 'category')
+                                        <div class="form-group">
+                                            <label for="sub_category">Sub Category</label>
+                                            <select name="sub_category_id" id="sub_category" class="form-select" >
+                                                <option value="">Sub Category</option>
+                                            </select>
                                         </div>
                                     @endif
                             </div>                        
@@ -210,6 +186,60 @@
                 if (response.status) {
                     form.find(target).val(response.slug);
                 }
+            }
+        });
+    });
+
+
+    Dropzone.autoDiscover = false;
+    const dropzone = $("#image").dropzone({
+        init: function() {
+            this.on('addedfile', function(file) {
+                if (this.files.length > 1) {
+                    this.removeFile(this.files[0]);
+                }
+            });
+        },
+        url:  "{{ route('temp-images.create') }}",
+        maxFiles: 1,
+        paramName: 'image',
+        addRemoveLinks: true,
+        acceptedFiles: "image/jpeg,image/png,image/gif",
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }, success: function(file, response){
+            $("#image_id").val(response.image_id);
+            console.log(response)
+        }
+    });
+
+   $(document).ready(function () {        
+        $(document).on('change', '#category_id', function () {            
+            var categoryID = $(this).val();
+
+            if (categoryID) {
+                $('#sub_category').html('<option>Loading...</option>');
+
+                $.ajax({
+                        url: "{{ route('get.subcategories', ':id') }}".replace(':id', categoryID),
+                    type: 'GET',
+                    success: function (data) {
+
+                        $('#sub_category').html('<option value="">Select Sub Category</option>');
+
+                        $.each(data, function (key, value) {
+                            $('#sub_category').append(
+                                '<option value="' + value.id + '">' + value.sub_category_name + '</option>'
+                            );
+                        });
+                    },
+                    error: function (xhr) {
+                        console.log(xhr.responseText);
+                    }
+                });
+
+            } else {
+                $('#sub_category').html('<option value="">Select Sub Category</option>');
             }
         });
     });

@@ -105,7 +105,7 @@ class CartController extends Controller {
         ]);
     }
 
-    public function wishlistToCart(Request $request) {
+    public function wishlistToCart(Request $request) { 
         $product = Product::with(['product_images','variants'])
             ->find($request->product_id);
 
@@ -146,7 +146,6 @@ class CartController extends Controller {
         }
 
         if (!$alreadyExists) {
-
             $discount_price = $product->price;
 
             if ($product->discount) {
@@ -175,25 +174,21 @@ class CartController extends Controller {
             ]);
 
             // ✅ Remove from wishlist
-            Wishlist::where('user_id', auth()->id())
-                ->where('product_id', $product->id)
-                ->delete();
+            Wishlist::where('id', $request->wishlist_id)
+                    ->where('user_id', auth()->id())
+                    ->delete();
 
             $status  = true;
             $message = $product->title . ' added to Bag.';
             session()->flash('success', $message);
-
         } else {
-
             $status  = false;
-            $message = $product->title.' already added in bag';
+            $message = $product->title.' already added in cart';
         }
-        
         return response()->json([
             "status"    => $status,
             "message"   => $message,
             "cartCount" => Cart::count(),
-            "wishlistCount" => Wishlist::where('user_id', auth()->id())->count()
         ]);
     }
 
@@ -739,7 +734,8 @@ class CartController extends Controller {
         return redirect()->back()->with('success','Default address updated');
     }
 
-    public function bulkAction(Request $request) {
+    public function bulkAction(Request $request) {        
+
         $checkedIds = $request->cart_ids ?? [];
         
         foreach (Cart::content() as $item) {

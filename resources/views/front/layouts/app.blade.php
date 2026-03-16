@@ -156,10 +156,7 @@
             success: function(response){
                 if(response.status == true){
                     $("#wishlistToastBody").html(response.message);
-                    showAlert(response.message,'success');
-                    // var toastEl = document.getElementById('wishlistToast');
-                    // var toast = new bootstrap.Toast(toastEl);
-                    // toast.show();
+                    showAlert(response.message,'success');                   
                 } else {
                     window.location.href= "{{ route('front.home') }}";
                 }
@@ -169,6 +166,32 @@
             }
         })
     } 
+
+    function wishlistToCart(wishlistId, productId){
+        $.ajax({
+            url: '{{ route("front.wishlistToCart") }}',
+            type: 'POST',
+            data: {
+                wishlist_id: wishlistId,
+                product_id: productId,
+                _token: '{{ csrf_token() }}'
+            },
+            success:function(response){
+                if(response.status){
+                    // remove from UI
+                    $("#wishlist-item-"+wishlistId).fadeOut(300,function(){
+                        $(this).remove();
+                    });
+                    $(".cart-count").text(response.cartCount);
+                    $(".wishlist-count").text(response.wishlistCount);
+                    showAlert(response.message,'success');
+                    location.reload();
+                }else{
+                    showAlert(response.message,'error');
+                }
+            }
+        });
+    }
 
     $("#registrationForm").submit(function(event){
         event.preventDefault();

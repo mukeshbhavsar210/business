@@ -10,7 +10,6 @@ use App\Http\Controllers\admin\ProductImageController;
 use App\Http\Controllers\admin\ProductSubCategoryController;
 use App\Http\Controllers\admin\SettingController;
 use App\Http\Controllers\admin\TempImagesController;
-use App\Http\Controllers\Auth\SocialController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\FrontController;
@@ -37,12 +36,6 @@ Route::controller(ShopController::class)->group(function() {
     Route::post('/rate-product', 'rating_store')->name('rate.product');
 });
 
-// Route::controller(SocialController::class)->group(function() {
-//     Route::get('auth/google', 'redirectToGoogle');
-//     Route::get('auth/google/callback', 'handleGoogleCallback');
-//     Route::get('auth/facebook', 'redirectToFacebook');
-//     Route::get('auth/facebook/callback', 'handleFacebookCallback');
-// });
 
 Route::controller(CartController::class)->group(function() {
     //Bag
@@ -161,10 +154,10 @@ Route::group(['prefix' => 'admin'], function(){
             Route::delete('/category/sub/{subCategory}', 'sub_category_destroy')->name('sub_category.delete');
             
             //sub2 category edit and update
-            Route::post('/category/sub2-category/', 'sub2_category_store')->name('sub2_category.store');
-            Route::get('/category/sub2/{subCategory}/edit', 'sub2_category_edit')->name('sub2_category.edit');
-            Route::put('/category/sub2/{subCategory}', 'sub2_category_update')->name('sub2_category.update');
-            Route::delete('/category/sub2/{sub2Category}', 'sub2_category_destroy')->name('sub2_category.delete');
+            Route::post('/category/sub2-category/', 'sub_sub_category_store')->name('sub_sub_category.store');
+            Route::get('/category/sub2/{subCategory}/edit', 'sub_sub_category_edit')->name('sub_sub_category.edit');
+            Route::put('/category/sub2/{subCategory}', 'sub_sub_category_update')->name('sub_sub_category.update');
+            Route::delete('/category/sub2/{sub2Category}', 'sub_sub_category_destroy')->name('sub_sub_category.delete');
 
             Route::get('/get-subcategories/{id}', 'getSubCategories')->name('get.subcategories');
         });       

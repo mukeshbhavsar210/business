@@ -164,6 +164,30 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script type="text/javascript">
+    $(document).ready(function () {            
+        // Toggle dropdown manually
+        $('#dropdownMenuBtn').click(function (e) {
+            e.stopPropagation();
+            $('#dropdownMenu').toggleClass('show');
+        });
+
+        // Close dropdown when clicking outside
+        $(document).click(function () {
+            $('#dropdownMenu').removeClass('show');
+        });
+
+        // Open modal on click
+        $('.open-modal').click(function (e) {
+            e.preventDefault();
+            let targetModal = $(this).data('target');
+            // Close dropdown
+            $('#dropdownMenu').removeClass('show');
+            $(targetModal).modal('show');
+        });
+    });
+
+
+
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
