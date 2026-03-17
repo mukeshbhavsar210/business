@@ -33,20 +33,19 @@ class CategoryController extends Controller {
 
         $categoryTotal = Category::count();        
 
-        $data = [
-            'title'         => 'Category',
-            'button_name'   => 'Create Category',            
-            'refresh'       => route('brands.index'),
+        $data = [                                 
+            'refresh'       => route('categories.index'),
             'total'         => $categoryTotal,
-
-            'modals' => [                
+            'modals' => [
                 'category' => [
+                    'title'      => 'Create Category',
                     'modal_id'   => 'categoryModal',
                     'form_id'    => 'categoryForm',
+                    'method_id'  => 'category_method',
                     'formConfig' => [
                         'action' => '',
                         'method' => 'POST',
-                        'button' => 'Save Category',
+                        'button' => 'Submit',
                         'fields' => [
                             [
                                 'type' => 'text',
@@ -59,7 +58,7 @@ class CategoryController extends Controller {
                                 'data'  => [
                                     'target' => '#slug'
                                 ],
-                                'col' => 'col-md-12 col-12'
+                                'col' => 'col-md-6 col-12'
                             ],
                             [
                                 'type' => 'text',
@@ -83,17 +82,7 @@ class CategoryController extends Controller {
                                     7 => 7,
                                     8 => 8,
                                 ],
-                                'col' => 'col-md-4 col-6'
-                            ],
-                            [
-                                'type' => 'select',
-                                'name' => 'showHome',
-                                'label' => 'showHome',
-                                'options' => [
-                                    'Yes' => 'Yes',
-                                    'No' => 'No'
-                                ],
-                                'col' => 'col-md-4 col-6'
+                                'col' => 'col-md-3 col-6'
                             ],
                             [
                                 'type' => 'select',
@@ -103,7 +92,7 @@ class CategoryController extends Controller {
                                     1 => 'Active',
                                     0 => 'Block'
                                 ],
-                                'col' => 'col-md-4 col-6'
+                                'col' => 'col-md-3 col-6'
                             ],
                             [
                                 'type' => 'dropzone',
@@ -116,29 +105,30 @@ class CategoryController extends Controller {
 
                 // Create Sub Category
                 'subcategory' => [
-                    'modal_id' => 'subCategoryModal',
-                    'form_id' => 'subCategoryForm',
+                    'title'      => 'Create Sub Category',
+                    'modal_id'   => 'subCategoryModal',
+                    'form_id'    => 'subCategoryForm',
+                    'method_id'  => 'subcategory_method',
                     'formConfig' => [
                         'action' => '',
                         'method' => 'POST',
-                        'button' => 'Save Sub Category',
+                        'button' => 'Submit',
                         'fields' => [                            
                             [
                                 'type' => 'select',
                                 'name' => 'category_id',
-                                'label' => 'Select Category',
-                                'options' => ['' => 'Select Category'] + $categories->pluck('category_name','id')->toArray(),
-                                'placeholder' => 'Select a Category',
+                                'label' => 'Select Parent Category',
+                                'options' => ['Select Category' => 'Select Category'] + $categories->pluck('category_name','id')->toArray(),
                                 'col' => 'col-md-12 col-12'
                             ],   
                             [
                                 'type' => 'text',
                                 'name' => 'sub_category_name',
                                 'label' => 'Sub Category Name',
+                                'id' => 'sub_category_name',
                                 'placeholder' => 'Enter Category name',
                                 'slug_create' => 'slug-source',
-                                'class' => 'slug-source',
-                                
+                                'class' => 'slug-source',                                
                                 'data'  => [
                                     'target' => '#slug_2'
                                 ],
@@ -166,17 +156,7 @@ class CategoryController extends Controller {
                                     7 => 7,
                                     8 => 8,
                                 ],
-                                'col' => 'col-md-4 col-6'
-                            ],
-                            [
-                                'type' => 'select',
-                                'name' => 'showHome',
-                                'label' => 'showHome',
-                                'options' => [
-                                    'Yes' => 'Yes',
-                                    'No' => 'No'
-                                ],
-                                'col' => 'col-md-4 col-6'
+                                'col' => 'col-md-6 col-6'
                             ],
                             [
                                 'type' => 'select',
@@ -186,32 +166,33 @@ class CategoryController extends Controller {
                                     1 => 'Active',
                                     0 => 'Block'
                                 ],
-                                'col' => 'col-md-4 col-6'
+                                'col' => 'col-md-6 col-6'
                             ],
                         ]
                     ]
                 ],               
                 
                 'subsubcategory' => [
+                    'title'      => 'Create Sub Sub Category',
                     'modal_id' => 'subSubCategoryModal',
                     'form_id' => 'subSubCategoryForm',
+                    'method_id'  => 'subsubcategory_method',
                     'formConfig' => [
                         'action' => '',
                         'method' => 'POST',
-                        'button' => 'Save Sub Sub Category',
+                        'button' => 'Submit',
                         'fields' => [
                             [
                                 'type' => 'select',
                                 'name' => 'category_id',                                
-                                'label' => 'Select Category',
-                                'options' => ['' => 'Select Category'] + $categories->pluck('category_name','id')->toArray(),
-                                'placeholder' => 'Select a Category',
+                                'label' => 'Select Parent Category',
+                                'options' => ['Select Category' => 'Select Category'] + $categories->pluck('category_name','id')->toArray(),                                
                                 'col' => 'col-md-12 col-12'
                             ],
                             [
                                 'type' => 'category',
                                 'name' => 'sub_category_id',
-                                'label' => 'Sub Category',                                
+                                'label' => 'Select Parent Sub Category',                                
                                 'col' => 'col-md-12 col-12'
                             ],
                             [
@@ -239,25 +220,22 @@ class CategoryController extends Controller {
                 ],
             ],     
                          
-            'delete' => [
-                'modal_id' => 'deleteCategoryModal',
-                'form_id' => 'deleteCategoryModalForm',
-                'formConfig' => [
-                    'action' => '',
-                    'method' => 'DELETE',
-                    'button' => 'Delete',
-                    'fields' => []
-                ]
-            ],
+            // 'delete' => [
+            //     'modal_id' => 'deleteCategoryModal',
+            //     'form_id' => 'deleteCategoryModalForm',
+            //     'formConfig' => [
+            //         'action' => '',
+            //         'method' => 'DELETE',
+            //         'button' => 'Delete',
+            //         'fields' => []
+            //     ]
+            // ],
 
             'categories' => $categories
-        ];
-
-          
+        ];          
 
         return view('admin.category.index', $data);       
     }
-
 
     public function category_store(Request $request){
         $validator = Validator::make($request->all(), [
@@ -270,8 +248,7 @@ class CategoryController extends Controller {
             $category = new Category();
             $category->category_name = $request->category_name;
             $category->category_slug = $request->category_slug;
-            $category->status = $request->status;
-            $category->showHome = $request->showHome;
+            $category->status = $request->status;            
             $category->menu_order = $request->menu_order;
             $category->save();
 
@@ -309,18 +286,7 @@ class CategoryController extends Controller {
                 'errors' => $validator->errors()
             ]);
         }
-    }
-
-    public function category_edit($categoryId, Request $request){
-        $category = Category::find($categoryId);
-
-        if (empty($category)) {
-            return redirect()->route('categories.index');
-        }
-
-        return view('admin.category.category_edit', compact('category'));
-    }
-
+    }    
 
     public function category_update($categoryId, Request $request){
         $category = Category::find($categoryId);
@@ -342,8 +308,7 @@ class CategoryController extends Controller {
         if ($validator->passes()) {
             $category->category_name = $request->category_name;
             $category->category_slug = $request->category_slug;
-            $category->status = $request->status;
-            $category->showHome = $request->showHome;
+            $category->status = $request->status;            
             $category->menu_order = $request->menu_order;
             $category->save();
 
@@ -397,6 +362,85 @@ class CategoryController extends Controller {
         }
     }
 
+    public function subCategory_update($subCategoryId, Request $request){
+        $subCategory = SubCategory::find($subCategoryId);
+
+        if(empty($subCategory)){
+            $request->session()->flash('error','Record not found');
+            return response([
+                'status' => false,
+                'notFound' => true,
+            ]);
+        }
+
+        $validator = Validator::make($request->all(), [
+            // 'sub_category_name' => 'required',
+            // 'sub_category_slug' => 'required|unique:sub_categories,sub_category_slug,'.$subCategory->id.',id',
+            // 'category' => 'required',
+            // 'status' => 'required',
+        ]);
+
+        if ($validator->passes()) {
+            $subCategory->sub_category_name = $request->sub_category_name;
+            $subCategory->sub_category_slug = $request->sub_category_slug;
+            $subCategory->status = $request->status;            
+            $subCategory->category_id = $request->category;
+            $subCategory->save();
+
+            $request->session()->flash('success', 'Sub Category updated successfully');
+
+            return response([
+                'status' => true,
+                'message' => 'Sub Category updated successfully',
+            ]);
+
+        } else {
+            return response([
+                'status' => false,
+                'errors' => $validator->errors()
+            ]);
+        }
+    }    
+
+    public function subSubCategory_update($subSubCategoryId, Request $request){
+        $sub2Category = SubSubCategory::find($subSubCategoryId);
+
+        if(empty($sub2Category)){
+            $request->session()->flash('error','Record not found');
+            return response([
+                'status' => false,
+                'notFound' => true,
+            ]);
+        }
+
+        $validator = Validator::make($request->all(), [
+            //'sub2_category_name' => 'required',
+            //'slug' => 'required|unique:sub_sub_categories,slug,'.$sub2Category->id.',id',
+            //'category' => 'required',                        
+        ]);
+
+        if ($validator->passes()) {
+            $sub2Category->category_id = $request->category_id;
+            $sub2Category->sub_category_id = $request->sub_category_id;
+            $sub2Category->sub2_category_name = $request->sub2_category_name;
+            $sub2Category->sub2_category_slug = $request->sub2_category_slug;                   
+            $sub2Category->save();
+
+            $request->session()->flash('success', 'Sub2 Category updated successfully');
+
+            return response([
+                'status' => true,
+                'message' => 'Sub2 Category updated successfully',
+            ]);
+
+        } else {
+            return response([
+                'status' => false,
+                'errors' => $validator->errors()
+            ]);
+        }
+    }
+
     public function category_destroy($categoryId, Request $request){
         $category = Category::find($categoryId);
 
@@ -423,11 +467,7 @@ class CategoryController extends Controller {
         ]);
     }
 
-    
-
-
-
-    public function sub_category_store(Request $request){
+    public function subCategory_store(Request $request){
         $validator = Validator::make($request->all(), [
             'sub_category_name' => 'required',             
             // 'slug' => 'required|unique:sub_categories',
@@ -466,8 +506,7 @@ class CategoryController extends Controller {
         }
     }
 
-
-    public function sub_sub_category_store(Request $request){
+    public function subSubCategory_store(Request $request){
         $validator = Validator::make($request->all(), [
             'sub_sub_category_name' => 'required',
             // 'slug' => [
@@ -509,10 +548,7 @@ class CategoryController extends Controller {
         return SubCategory::where('category_id', $id)->get();
     }
 
-    
-
-
-    public function sub_category_destroy ($id, Request $request){
+    public function subCategory_destroy ($id, Request $request){
         $subCategory = SubCategory::find($id);
 
         if(empty($subCategory)){
@@ -533,10 +569,7 @@ class CategoryController extends Controller {
         ]);
     }
 
-
-
-
-    public function sub_sub_category_destroy($id, Request $request){
+    public function subSubCategory_destroy($id, Request $request){
         $sub2Category = SubSubCategory::find($id);
 
         if(empty($sub2Category)){
@@ -557,115 +590,5 @@ class CategoryController extends Controller {
         ]);
     }
 
-
-
-     public function sub_category_edit($id, Request $request){
-        $subCategory = SubCategory::find($id);
-        if(empty($subCategory)){
-            $request->session()->flash('error','Record not found');
-            return redirect()->route('sub-categories.index');
-        }
-
-        $categories = Category::orderBy('category_name','ASC')->get();
-        $data['categories'] = $categories;
-        $data['subCategory'] = $subCategory;
-        return view("admin.category.subcategory_edit", $data);
-    }
-
-
-    public function sub_category_update($id, Request $request){
-        $subCategory = SubCategory::find($id);
-
-        if(empty($subCategory)){
-            $request->session()->flash('error','Record not found');
-            return response([
-                'status' => false,
-                'notFound' => true,
-            ]);
-        }
-
-        $validator = Validator::make($request->all(), [
-            'sub_category_name' => 'required',
-            'sub_category_slug' => 'required|unique:sub_categories,sub_category_slug,'.$subCategory->id.',id',
-            'category' => 'required',
-            'status' => 'required',
-        ]);
-
-        if ($validator->passes()) {
-            $subCategory->sub_category_name = $request->sub_category_name;
-            $subCategory->sub_category_slug = $request->sub_category_slug;
-            $subCategory->status = $request->status;
-            $subCategory->showHome = $request->showHome;
-            $subCategory->category_id = $request->category;
-            $subCategory->save();
-
-            $request->session()->flash('success', 'Sub Category updated successfully');
-
-            return response([
-                'status' => true,
-                'message' => 'Sub Category updated successfully',
-            ]);
-
-        } else {
-            return response([
-                'status' => false,
-                'errors' => $validator->errors()
-            ]);
-        }
-    }
-
-
-
-    public function sub_sub_category_edit($id, Request $request) {
-        $sub2Category = SubSubCategory::findOrFail($id);
-        $categories = Category::orderBy('category_name','ASC')->get();
-        // Load subcategories of selected category
-        $subCategories = SubCategory::where('category_id', $sub2Category->category_id)->get();
-
-        return view("admin.category.sub2category_edit", compact(
-            'sub2Category',
-            'categories',
-            'subCategories'
-        ));
-    }
-
-
-    public function sub_sub_category_update($id, Request $request){
-        $sub2Category = SubSubCategory::find($id);
-
-        if(empty($sub2Category)){
-            $request->session()->flash('error','Record not found');
-            return response([
-                'status' => false,
-                'notFound' => true,
-            ]);
-        }
-
-        $validator = Validator::make($request->all(), [
-            //'sub2_category_name' => 'required',
-            //'slug' => 'required|unique:sub_sub_categories,slug,'.$sub2Category->id.',id',
-            //'category' => 'required',                        
-        ]);
-
-        if ($validator->passes()) {
-            $sub2Category->category_id = $request->category_id;
-            $sub2Category->sub_category_id = $request->sub_category_id;
-            $sub2Category->sub2_category_name = $request->sub2_category_name;
-            $sub2Category->sub2_category_slug = $request->sub2_category_slug;                   
-            $sub2Category->save();
-
-            $request->session()->flash('success', 'Sub2 Category updated successfully');
-
-            return response([
-                'status' => true,
-                'message' => 'Sub2 Category updated successfully',
-            ]);
-
-        } else {
-            return response([
-                'status' => false,
-                'errors' => $validator->errors()
-            ]);
-        }
-    }
+    
 }

@@ -25,88 +25,62 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
 
-                <input type="hidden" name="_method" id="form_method" value="POST">
-
                 <div class="modal-body py-3">
+                    <input type="text" name="_method" id="{{ $method_id }}" value="POST" class="form-control">
+                    
                     <div class="row">
                         @foreach($formConfig['fields'] as $field)                        
-                            <div class="{{ $field['col'] ?? 'col-md-12' }}">                                
-                                @if($field['type'] == 'text')
-                                    <div class="form-group">
-                                        <label for="{{ $field['name'] }}">{{ $field['label'] }}</label>
+                            <div class="{{ $field['col'] ?? 'col-md-12' }}">
+                                <div class="form-group">
+                                    <label for="{{ $field['name'] }}">{{ $field['label'] }}</label>
+
+                                    @if($field['type'] == 'text')                                                                            
                                         <input type="{{ $field['type'] }}" name="{{ $field['name'] }}" id="{{ $field['id'] ?? '' }}" value="{{ old($field['name']) }}" class="form-control {{ $field['animate_label'] ?? '' }} {{ $field['class'] ?? '' }}" 
                                             @if(isset($field['data']))
                                                 @foreach($field['data'] as $key => $value)
                                                     data-{{ $key }}="{{ $value }}"
                                                 @endforeach
                                             @endif 
-                                        >                                        
-                                    </div>                               
+                                        >                                                                            
+
+                                    @elseif($field['type'] == 'email')                                                                                    
+                                        <input type="{{ $field['type'] }}" id="{{ $field['name'] }}" name="{{ $field['name'] }}" class="form-control" placeholder="{{ $field['placeholder'] ?? '' }}">                                            
 
                                     @elseif($field['type'] == 'textarea')
-                                        <div class="form-group">
-                                            <textarea name="{{ $field['name'] }}" class="form-control {{ $field['summer_class'] }}" rows="4"></textarea>                                        
-                                            <label class="floating-label" for="{{ $field['name'] }}">{{ $field['label'] }}</label>
-                                        </div>
+                                        <textarea name="{{ $field['name'] }}" class="form-control {{ $field['summer_class'] }}" rows="4"></textarea>                                                                                
                                         
-                                    @elseif($field['type'] == 'color')
-                                        <div class="form-group">
-                                            <label for="{{ $field['name'] }}">{{ $field['label'] }}</label>
-                                            <input type="{{ $field['type'] }}" id="{{ $field['name'] }}" name="{{ $field['name'] }}" class="form-control" placeholder="{{ $field['placeholder'] ?? '' }}">                                            
-                                        </div>
+                                    @elseif($field['type'] == 'color')                                        
+                                        <input type="{{ $field['type'] }}" id="{{ $field['name'] }}" name="{{ $field['name'] }}" class="form-control" placeholder="{{ $field['placeholder'] ?? '' }}">                                            
 
-                                    @elseif($field['type'] == 'email')
-                                        <div class="form-group">
-                                            <input type="{{ $field['type'] }}" id="{{ $field['name'] }}" name="{{ $field['name'] }}" class="form-control" placeholder="{{ $field['placeholder'] ?? '' }}">
-                                            <label class="floating-label" for="{{ $field['name'] }}">{{ $field['label'] }}</label>
-                                        </div>
+                                    @elseif($field['type'] == 'date')                                        
+                                        <input type="{{ $field['type'] }}" id="{{ $field['name'] }}" name="{{ $field['name'] }}" class="form-control" placeholder="{{ $field['placeholder'] ?? '' }}">                                            
 
-                                    @elseif($field['type'] == 'date')
-                                        <div class="form-group">
-                                            <label for="{{ $field['name'] }}">{{ $field['label'] }}</label>
-                                            <input type="{{ $field['type'] }}" id="{{ $field['name'] }}" name="{{ $field['name'] }}" class="form-control" placeholder="{{ $field['placeholder'] ?? '' }}">                                            
-                                        </div>
+                                    @elseif($field['type'] == 'file')                                        
+                                        <input type="{{ $field['type'] }}" id="{{ $field['name'] }}" name="{{ $field['name'] }}" class="form-control" placeholder="{{ $field['placeholder'] ?? '' }}">                                        
 
-                                    @elseif($field['type'] == 'file')
-                                        <div class="form-group">
-                                            <input type="{{ $field['type'] }}" id="{{ $field['name'] }}" name="{{ $field['name'] }}" class="form-control" placeholder="{{ $field['placeholder'] ?? '' }}">
-                                            <label class="floating-label" for="{{ $field['name'] }}">{{ $field['label'] }}</label>
-                                        </div>
-
-                                    @elseif($field['type'] == 'dropzone')
-                                        <div class="form-group">
-                                            {{-- <input type="hidden" id="{{ $field['image_id'] }}" name="{{ $field['image_id'] }}" value=" "> --}}
-                                            <input type="hidden" id="image_id" name="image_id" value=" ">
-                                            <label for="image">Image</label>
-                                            <div id="image" class="dropzone dz-clickable">
-                                                <div class="dz-message needsclick">
-                                                    <br>Drop files here or click to upload.<br><br>
-                                                </div>
+                                    @elseif($field['type'] == 'select')                                                                                
+                                        <select name="{{ $field['name'] }}" class="form-select" id="{{ $field['name'] }}">
+                                            @foreach($field['options'] as $value => $label)
+                                                <option value="{{ $value }}">{{ $label }}</option>
+                                            @endforeach
+                                        </select>                                                    
+                                        
+                                    @elseif($field['type'] == 'category')                                                                                
+                                        <select name="sub_category_id" id="sub_category" class="form-select" >
+                                            <option value="">Sub Category</option>
+                                        </select>    
+                                        
+                                    @elseif($field['type'] == 'dropzone')                                                                                
+                                        <input type="hidden" id="image_id" name="image_id" value=" ">                                        
+                                        <div id="image" class="dropzone dz-clickable">
+                                            <div class="dz-message needsclick">
+                                                <br>Drop files here or click to upload.<br><br>
                                             </div>
-                                        </div>
-
-                                    @elseif($field['type'] == 'select')
-                                        <div class="form-group">
-                                            <label for="{{ $field['name'] }}">{{ $field['label'] }}</label>
-                                            <select name="{{ $field['name'] }}" class="form-select" id="{{ $field['name'] }}">
-                                                @foreach($field['options'] as $value => $label)
-                                                    <option value="{{ $value }}">
-                                                        {{ $label }}
-                                                    </option>
-                                                @endforeach
-                                            </select>                                                    
-                                        </div>
-
-                                    @elseif($field['type'] == 'category')
-                                        <div class="form-group">
-                                            <label for="sub_category">Sub Category</label>
-                                            <select name="sub_category_id" id="sub_category" class="form-select" >
-                                                <option value="">Sub Category</option>
-                                            </select>
-                                        </div>
+                                        </div> 
                                     @endif
-                            </div>                        
-                        @endforeach
+                                </div>
+                            </div>
+                        @endforeach                        
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -244,16 +218,21 @@
         });
     });
 
+    //Store
+    const store_category        = "{{ route('category.store') }}";
+    const store_subcategory     = "{{ route('subCategory.store') }}";
+    const store_subsubcategory  = "{{ route('subSubCategory.store') }}";
+    const store_discount        = "{{ route('coupons.store') }}";
 
-    const store_category = "{{ route('category.store') }}";
-    const store_subcategory = "{{ route('sub_category.store') }}";
-    const store_subsubcategory = "{{ route('sub_sub_category.store') }}";
-    const update_category = "{{ url('admin/category') }}";
-    const update_subCategory = "{{ url('admin/category/sub/{subCategory}') }}";
-    const update_subSubCategory = "{{ url('admin/category/sub2/{subCategory}') }}";
+    //Update    
+    const update_category       = "{{ url('admin/category') }}";
+    const update_subCategory    = "{{ url('admin/subcategory/') }}";
+    const update_subSubCategory = "{{ url('admin/subsubcategory/') }}";
+    const update_discount       = "{{ url('admin/settings/coupons/{coupon}') }}";
 
 
     function createCategoryModal() {
+        document.querySelector('#categoryModal .modal-title').innerText = 'Create Category';
         let form = document.getElementById('categoryForm');
         form.reset();
         form.action = store_category;
@@ -279,22 +258,22 @@
 
     function editCategoryModal(button) {
         let id = button.dataset.id;
-
         let category_name = button.dataset.category_name;
         let status = button.dataset.status;
         let showHome = button.dataset.showHome;
         let menu_order = button.dataset.menu_order;
 
+        document.querySelector('#categoryModal .modal-title').innerText = 'Edit Category';
         let form = document.getElementById('categoryForm');
 
         // Set action
         form.action = `${update_category}/${id}`;
-        document.getElementById('form_method').value = 'PUT';
+        document.getElementById('category_method').value = 'PUT';
 
         // Fill values
         document.getElementById('category_name').value = category_name;
         document.getElementById('menu_order').value = menu_order;
-        document.getElementById('category_status').value = status;
+        document.getElementById('status').value = (status == 'Active') ? 1 : 0;
         document.getElementById('showHome').value = showHome;
         document.getElementById('form_submit_btn').innerText = 'Update Category';
     }
@@ -303,21 +282,33 @@
         document.getElementById('categoryForm').reset();
     });
 
+    
+    // function editSubCategoryModal(button) {
+    //     let id = button.dataset.id;
+
+    //     let form = document.getElementById('subCategoryForm');
+
+    //     form.action = `${update_subCategory}/${id}`;
+
+    //     document.getElementById('subcategory_method').value = 'PUT';
+
+    //     document.getElementById('sub_category_name').value = button.dataset.sub_category_name;
+    //     document.getElementById('menu_order').value = button.dataset.menuOrder;        
+    //     document.getElementById('status').value = button.dataset.status;
+    // }
 
     function editSubCategoryModal(button) {
         let id = button.dataset.id;
 
         let form = document.getElementById('subCategoryForm');
 
-        form.action = `${update_subcategory}/${id}`;
-        document.getElementById('form_method').value = 'PUT';
+        form.action = `${update_subCategory}/${id}`;
+        document.getElementById('subcategory_method').value = 'PUT';
 
         // Fill values
-        document.getElementById('category_name').value = button.dataset.categoryName;
-        document.getElementById('menu_order').value = button.dataset.menuOrder;
-        document.getElementById('showHome').value = button.dataset.showHome;
-        document.getElementById('category_status').value = button.dataset.status;
+        document.getElementById('sub_category_name').value = button.dataset.sub_category_name;                    
 
+        document.querySelector('#subCategoryModal .modal-title').innerText = 'Edit Sub Category';
         document.getElementById('form_submit_btn').innerText = 'Update Category';
     }
 
@@ -325,26 +316,33 @@
         document.getElementById('subCategoryForm').reset();
     });
 
-    // function editSubCategory(button) {
-    //     let id = button.dataset.id;
-    //     let sub_category_name = button.dataset.sub_category_name;
-    //     let status = button.dataset.status;
-    //     let showHome = button.dataset.showHome;
-    //     let menu_order = button.dataset.menu_order;                
-    //     let form = document.getElementById('editSubCategoryForm');
 
-    //     // Set action URL
-    //     form.action = `/admin/sub-category/${id}`;
+    //Discount
+    function createDiscountModal() {
+        document.querySelector('#discountModal .modal-title').innerText = 'Create Discount';
+        let form = document.getElementById('discountForm');
+        form.reset();
+        form.action = store_discount;
+        document.getElementById('form_method').value = 'POST';
+        document.getElementById('form_submit_btn').innerText = 'Create Discount';
+    }
 
-    //     // Fill inputs
-    //     document.getElementById('sub_category_name').value = sub_category_name;
-    //     document.getElementById('status').value = (status == 1) ? 1 : 0;
-    //     document.getElementById('menu_order').value = menu_order;        
-    //     document.getElementById('showHome').value = (status == 'Yes') ? 'Yes' : 'No';                
-    // }
+    function editDiscountModal(button) {
+        let id = button.dataset.id;
+        let form = document.getElementById('discountForm');
 
-    // document.getElementById('editSubCategory').addEventListener('hidden.bs.modal', function () {
-    //     document.getElementById('editSubCategoryForm').reset();
-    // });
+        form.action = `${update_discount}/${id}`;
+        document.getElementById('form_method').value = 'PUT';
+
+        // Fill values
+        document.getElementById('code').value = button.dataset.code;        
+        document.querySelector('#discountModal .modal-title').innerText = 'Edit Discount';
+        document.getElementById('form_submit_btn').innerText = 'Update Discount';
+    }
+
+    document.getElementById('discountModal').addEventListener('hidden.bs.modal', function () {
+        document.getElementById('discountForm').reset();
+    });
+
 </script>
 @endsection
