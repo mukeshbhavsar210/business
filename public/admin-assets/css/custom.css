@@ -1,32 +1,4 @@
-@import url('https://www.neonattack.com/cdn/shop/t/126/assets/product-font-file.css');
 
-@font-face { font-family: 'Passionate'; src: url('/front-assets/fonts/neon/Brittanysignature.ttf') format('truetype'); } 
-@font-face { font-family: 'Dreamy'; src: url('/front-assets/fonts/neon/Heliopride.ttf') format('truetype'); }
-@font-face { font-family: 'Flowy'; src: url('/front-assets/fonts/neon/Freeflow.ttf') format('truetype'); }
-@font-face { font-family: 'Original'; src: url('/front-assets/fonts/neon/Neoneon.ttf') format('truetype'); }
-@font-face { font-family: 'Classic'; src: url('/front-assets/fonts/neon/Maya-sans.ttf') format('truetype'); }
-@font-face { font-family: 'Boujee'; src: url('/front-assets/fonts/neon/Handestonie.ttf') format('truetype');}
-@font-face { font-family: 'Funky'; src: url('/front-assets/fonts/neon/Funky-signature.ttf') format('truetype');}
-@font-face { font-family: 'Chic'; src: url('/front-assets/fonts/neon/Amandavinola.ttf') format('truetype'); }
-@font-face { font-family: 'Delight'; src: url('/front-assets/fonts/neon/Butterland.ttf') format('truetype'); }
-@font-face { font-family: 'Classy'; src: url('/front-assets/fonts/neon/Bastogne.ttf') format('truetype'); }
-@font-face { font-family: 'Romantic'; src: url('/front-assets/fonts/neon/Sebastrian-script.ttf') format('truetype'); }
-@font-face { font-family: 'Robo'; src: url('/front-assets/fonts/neon/Barques-regular.ttf') format('truetype'); }
-@font-face { font-family: 'Charming'; src: url('/front-assets/fonts/neon/Foundry-font-pack.ttf') format('truetype'); }
-@font-face { font-family: 'Quirky'; src: url('/front-assets/fonts/neon/Cosmodrome-monoline.ttf') format('truetype'); }
-@font-face { font-family: 'Stylish'; src: url('/front-assets/fonts/neon/Geraldyne.ttf') format('truetype'); }
-@font-face { font-family: 'Sassy'; src: url('/front-assets/fonts/neon/Rocket-clouds.ttf') format('truetype'); }
-@font-face { font-family: 'Glam'; src: url('/front-assets/fonts/neon/Golden-hopes.ttf') format('truetype'); }
-@font-face { font-family: 'DOPE'; src: url('/front-assets/fonts/neon/Lovelo-linebold.ttf') format('truetype'); }
-@font-face { font-family: 'Chemistry'; src: url('/front-assets/fonts/neon/Chemistry.ttf') format('truetype'); }
-@font-face { font-family: 'Acoustic'; src: url('/front-assets/fonts/neon/Acoustica.ttf') format('truetype'); }
-@font-face { font-family: 'Sparky'; src: url('/front-assets/fonts/neon/Callifornia.ttf') format('truetype'); }
-@font-face { font-family: 'Vibey'; src: url('/front-assets/fonts/neon/Boarding-regular.ttf') format('truetype'); }
-@font-face { font-family: 'LoFi'; src: url('/front-assets/fonts/neon/Harmonia.ttf') format('truetype'); }
-@font-face { font-family: 'Bossy'; src: url('/front-assets/fonts/neon/Whitening.ttf') format('truetype'); }
-@font-face { font-family: 'ICONIC'; src: url('/front-assets/fonts/neon/Zorate.ttf') format('truetype'); }
-@font-face { font-family: 'Jolly'; src: url('/front-assets/fonts/neon/Melon.ttf') format('truetype'); }
-@font-face { font-family: 'MODERN'; src: url('/front-assets/fonts/neon/Hexore.ttf') format('truetype'); }
 
 :root{--primary:#0d6efd;--primary-light:#e7f6fd;--secondary:#6c757d;--white:#fff;--black:#212529;--gray:#6c757d; --green:rgb(3, 166, 133); 
   --gray-light:#efeeee; --gray-dark:#e5e5e5; --green-dark:#137c51; --success:#198754;--info:#0dcaf0;--warning:#ffc107;--danger:#dc3545;--light:#f8f9fa;--body-font:"Open Sans",sans-serif;--title-font:Manrope,Arial,Sans-serif; --bs-font-sans-serif:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans","Liberation Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";--bs-font-monospace:SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;--bs-gradient:linear-gradient(180deg,#ffffff26,#fff0);--bs-body-font-family:var(--bs-font-sans-serif);--bs-body-font-size:1rem;--bs-body-font-weight:400;--bs-body-line-height:1.5;--bs-body-color:#212529;--bs-body-bg:#fff}
@@ -44,7 +16,7 @@ ul,li { padding: 0; margin: 0;}
 
 .content-header { padding:0px;}
 .content-header h1 { font-size: 1.6rem; }
-.btn { padding:7px 13px; font-size: 12px; height: 35px; border-radius: 4px;}
+.btn { padding:7px 13px; font-size: 12px; height: 35px; border-radius: 4px; font-weight: bold; text-transform: uppercase;}
 .flexContainer { display: flex;  justify-content: end;}
 
 .table td, .table th { padding:0.5rem;}
@@ -376,7 +348,7 @@ input:checked + .slider { box-shadow:0 0 0 2px #007bff,0 0 2px #007bff; }
 .flex { display: flex; column-gap: 5px;}
 .flex .img-group { width: 100px;}
 
-.category-card { display: flex; column-gap: 10px; justify-content: space-between; align-items: center; width: 100%; padding-right: 10px;}
+.category-card { display: flex; column-gap: 10px;  align-items: center; width: 100%; padding-right: 10px;}
 .category-card h5 {  font-size: 18px; margin: 0 0 2px 0;}
 .category-card .counts { background-color: #666;
   color: #fff;
@@ -389,8 +361,20 @@ input:checked + .slider { box-shadow:0 0 0 2px #007bff,0 0 2px #007bff; }
   width: 24px; }
 
 .category-card .counts_small { background-color: #e5e5e5; color: #000; padding: 2px 4px; border-radius: 100px; font-size: 11px; text-align: center; display: block; height: 20px; width: 20px; }
-.chip { border: #e5e5e5 1px solid; color: #000; padding:5px 8px 4px 12px; border-radius: 100px; font-size: 13px; text-align: center; display: flex; column-gap: 8px; }
+.chip { border: #e5e5e5 1px solid; color: #000; padding:6px 8px 3px 12px; border-radius: 5px; font-size: 13px; text-align: center; display: flex; column-gap: 12px; }
 .chip:hover { border-color: #666;}
+
+.flex-justify { display: flex; justify-content: space-between;}
+.flex-justify h5 { display: flex; column-gap: 5px; }
+.flex-justify .counts { background-color: #666;
+  color: #fff;
+  padding: 3px 5px;
+  border-radius: 100px;
+  font-size: 12px;
+  text-align: center;
+  display: block;
+  height: 22px;
+  width: 22px; }
 
 .track-placed-order { margin-bottom: 0; margin-top: 5px; font-size: 13px; padding: 0;  }
 .track-placed-order li { margin-bottom: 10px; display: flex; column-gap: 8px; position: relative;}

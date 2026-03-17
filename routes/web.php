@@ -141,23 +141,22 @@ Route::group(['prefix' => 'admin'], function(){
         //Category Routes
         Route::controller(CategoryController::class)->group(function() {
             Route::get('/category', 'index')->name('categories.index');
-            Route::get('/category/create', 'create')->name('categories.create');
+
+            //Category
             Route::post('/category/cat', 'category_store')->name('category.store');
-            Route::get('/category/{category}/edit', 'category_edit')->name('category.edit');
             Route::put('/category/{category}', 'category_update')->name('category.update');
             Route::delete('/category/cat/{category}', 'category_destroy')->name('category.delete');
             
-            //sub category edit and update
-            Route::post('/category/sub-category/', 'sub_category_store')->name('sub_category.store');
-            Route::get('/category/sub/{subCategory}/edit', 'sub_category_edit')->name('sub_category.edit');
-            Route::put('/category/sub/{subCategory}', 'sub_category_update')->name('sub_category.update');
-            Route::delete('/category/sub/{subCategory}', 'sub_category_destroy')->name('sub_category.delete');
+            //Sub category
+            Route::post('/subcategory/subcat', 'subCategory_store')->name('subCategory.store');
+            Route::put('/subcategory/{subcategory}', 'subCategory_update')->name('sub_category.update');
+            //Route::put('/category/subcategory/{subCategory}', 'sub_category_update')->name('sub_category.update');
+            Route::delete('/category/subcategory/{subCategory}', 'subCategory_destroy')->name('sub_category.delete');
             
-            //sub2 category edit and update
-            Route::post('/category/sub2-category/', 'sub_sub_category_store')->name('sub_sub_category.store');
-            Route::get('/category/sub2/{subCategory}/edit', 'sub_sub_category_edit')->name('sub_sub_category.edit');
-            Route::put('/category/sub2/{subCategory}', 'sub_sub_category_update')->name('sub_sub_category.update');
-            Route::delete('/category/sub2/{sub2Category}', 'sub_sub_category_destroy')->name('sub_sub_category.delete');
+            //Sub2 category
+            Route::post('/subsubcategory/subsubcat', 'subSubCategory_store')->name('subSubCategory.store');            
+            Route::put('/subsubcategory/{subsubcategory}', 'subSubCategory_update')->name('sub_sub_category.update');
+            Route::delete('/subsubcategory/{subsubcategory}', 'subSubCategory_destroy')->name('sub_sub_category.delete');
 
             Route::get('/get-subcategories/{id}', 'getSubCategories')->name('get.subcategories');
         });       

@@ -39,14 +39,14 @@
                             </div>
                         </div>
                     </form>
-                    <button type="button" class="btn btn-primary float-end" data-bs-toggle="modal" data-bs-target="#{{ $modal_id }}">{{ $button_name }}</button>                            
+                    {{-- <button type="button" class="btn btn-primary float-end" data-bs-toggle="modal" data-bs-target="#{{ $modal_id }}">{{ $button_name }}</button> --}}
+                    <button type="button" class="btn btn-primary float-end" onclick="createDiscountModal()" data-bs-toggle="modal" data-bs-target="#discountModal">{{ $button_name }}</button>
+                    
                 </div>
             </div>
         </div>                        
     </div>
 </div>
-
-    @include('admin.layouts.common')
 
     <div class="card custom-card">
         <div class="card-body">
@@ -92,9 +92,19 @@
                                         </svg>
                                         @endif
 
-                                        <a href="{{ route('coupons.edit', $discountCoupon->id ) }}">
+                                        <a href="javascript:0" 
+                                            data-id="{{ $discountCoupon->id }}"
+                                            data-code="{{ $discountCoupon->code }}"                                                                                       
+                                            onclick="editDiscountModal(this)"                                                
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#discountModal"                                                
+                                            >
                                             <i class="las la-pen text-secondary fs-18"></i>
                                         </a>
+
+                                        {{-- <a href="{{ route('coupons.edit', $discountCoupon->id ) }}">
+                                            <i class="las la-pen text-secondary fs-18"></i>
+                                        </a> --}}
                                         <a href="#" onclick="deleteCoupon({{ $discountCoupon->id }})" class="text-danger w-4 h-4">
                                            <i class="las la-trash-alt text-secondary fs-18"></i>
                                         </a>
@@ -112,6 +122,17 @@
         </div>
     </div>   
     {{ $discountCoupons->links() }}    
+
+@foreach($modals as $key => $modal)
+    @include('admin.layouts.common', [
+        'modal_id' => $modal['modal_id'],
+        'form_id' => $modal['form_id'],
+        'method_id' => $modal['method_id'],
+        'formConfig' => $modal['formConfig'],
+        'title' => $modal['title'] ?? 'Modal'
+    ])
+@endforeach
+
 @endsection
 
 @section('customJs')

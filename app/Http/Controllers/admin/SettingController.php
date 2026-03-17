@@ -31,6 +31,8 @@ class SettingController extends Controller {
             'title'         => 'Brands',
             'button_name'   => 'Create Brand',
             'modal_id'      => 'createBrandModal',
+            'form_id'       => 'Brands',
+            'method_id'     => '',
             'refresh'       => route('brands.index'),
             'button_route'  => null,
             'brands'        => $brands,
@@ -139,6 +141,8 @@ class SettingController extends Controller {
         $data = [
             'title'         => 'Colors',
             'button_name'   => 'Create Color',
+            'form_id'       => 'Colors',
+            'method_id'     => '',
             'modal_id'      => 'createColorModal',
             'refresh'       => route('colors.index'),
             'button_route'  => null,
@@ -229,106 +233,113 @@ class SettingController extends Controller {
 
         $data = [
             'title'         => 'Discount Coupon',
-            'button_name'   => 'Create Discount',
-            'modal_id'      => 'createPageModal',
+            'button_name'   => 'Create Discount',            
             'refresh'       => route('coupons.index'),
             'button_route'  => null,
             'discountCoupons' => $discountCoupons,
             'total'         => $discountTotal,
 
-            'formConfig' => [
-                'action' => route('coupons.store'),
-                'modal_size' => 'modal-lg',
-                'method' => 'POST',
-                'button' => 'Create Page',
-                'fields' => [
-                    [
-                        'type' => 'text',
-                        'name' => 'code',
-                        'label' => 'Code',                                                                   
-                        'col' => 'col-md-4 col-6'
-                    ],
-                    [
-                        'type' => 'text',
-                        'name' => 'name',
-                        'id' => 'name',
-                        'label' => 'Name',
-                        'col' => 'col-md-4 col-6'
-                    ],
-                    [
-                        'type' => 'text',
-                        'name' => 'max_uses',
-                        'id' => 'max_uses',
-                        'label' => 'Max Uses',
-                        'col' => 'col-md-4 col-6'
-                    ],
-                    [
-                        'type' => 'text',
-                        'name' => 'max_uses_user',
-                        'id' => 'max_uses_user',
-                        'label' => 'Max Users Use',
-                        'col' => 'col-md-4 col-6'
-                    ],
-                    [
-                        'type' => 'text',
-                        'name' => 'discount_amount',
-                        'id' => 'discount_amount',
-                        'label' => 'Discount Amount',
-                        'col' => 'col-md-4 col-6'
-                    ],
-                    [
-                        'type' => 'text',
-                        'name' => 'min_amount',
-                        'id' => 'min_amount',
-                        'label' => 'Min Amount',
-                        'col' => 'col-md-4 col-6'
-                    ],
-                    [
-                        'type' => 'date',
-                        'name' => 'starts_at',
-                        'label' => 'Starts At',
-                        'col' => 'col-md-4 col-6'
-                    ],
-                    [
-                        'type' => 'date',
-                        'name' => 'expires_at',
-                        'label' => 'Expires At',
-                        'col' => 'col-md-4 col-6'
-                    ],
-                    [
-                        'type' => 'select',
-                        'name' => 'type',
-                        'label' => 'Discount Type',
-                        'options' => [
-                            'Percent' => 'Percent',
-                            'Fixed' => 'Fixed',
-                        ],
-                        'col' => 'col-md-2 col-6'
-                    ],
-                    [
-                        'type' => 'select',
-                        'name' => 'status',
-                        'label' => 'Status',
-                        'options' => [
-                            1 => 'Active',
-                            0 => 'Block',
-                        ],
-                        'col' => 'col-md-2 col-12'
-                    ],
-                    [
-                        'type' => 'textarea',
-                        'name' => 'description',
-                        'summer_class' => '',
-                        'label' => 'Description',
-                        'id'    => 'description',
-                        'col' => 'col-md-8 col-12'
-                    ],
-                    [
-                        'type' => 'file',
-                        'name' => 'image',
-                        'label' => 'Image',
-                        'col' => 'col-md-4 col-12'
-                    ],                    
+            'modals' => [
+                'discount' => [
+                    'title'      => 'Create Discount',
+                    'modal_id'   => 'discountModal',
+                    'form_id'    => 'discountForm',
+                    'method_id'  => '1',
+                    'formConfig' => [
+                        'action' => '',
+                        'modal_size' => 'modal-lg',
+                        'method' => 'POST',
+                        'button' => 'Submit',
+                        'fields' => [
+                            [
+                                'type' => 'text',
+                                'name' => 'code',
+                                'label' => 'Code',                                                                   
+                                'col' => 'col-md-4 col-6'
+                            ],
+                            [
+                                'type' => 'text',
+                                'name' => 'name',
+                                'id' => 'name',
+                                'label' => 'Name',
+                                'col' => 'col-md-4 col-6'
+                            ],
+                            [
+                                'type' => 'text',
+                                'name' => 'max_uses',
+                                'id' => 'max_uses',
+                                'label' => 'Max Uses',
+                                'col' => 'col-md-4 col-6'
+                            ],
+                            [
+                                'type' => 'text',
+                                'name' => 'max_uses_user',
+                                'id' => 'max_uses_user',
+                                'label' => 'Max Users Use',
+                                'col' => 'col-md-4 col-6'
+                            ],
+                            [
+                                'type' => 'text',
+                                'name' => 'discount_amount',
+                                'id' => 'discount_amount',
+                                'label' => 'Discount Amount',
+                                'col' => 'col-md-4 col-6'
+                            ],
+                            [
+                                'type' => 'text',
+                                'name' => 'min_amount',
+                                'id' => 'min_amount',
+                                'label' => 'Min Amount',
+                                'col' => 'col-md-4 col-6'
+                            ],
+                            [
+                                'type' => 'date',
+                                'name' => 'starts_at',
+                                'label' => 'Starts At',
+                                'col' => 'col-md-4 col-6'
+                            ],
+                            [
+                                'type' => 'date',
+                                'name' => 'expires_at',
+                                'label' => 'Expires At',
+                                'col' => 'col-md-4 col-6'
+                            ],
+                            [
+                                'type' => 'select',
+                                'name' => 'type',
+                                'label' => 'Discount Type',
+                                'options' => [
+                                    'Percent' => 'Percent',
+                                    'Fixed' => 'Fixed',
+                                ],
+                                'col' => 'col-md-2 col-6'
+                            ],
+                            [
+                                'type' => 'select',
+                                'name' => 'status',
+                                'label' => 'Status',
+                                'options' => [
+                                    1 => 'Active',
+                                    0 => 'Block',
+                                ],
+                                'col' => 'col-md-2 col-12'
+                            ],
+                            [
+                                'type' => 'textarea',
+                                'name' => 'description',
+                                'summer_class' => '',
+                                'label' => 'Description',
+                                'id'    => 'description',
+                                'col' => 'col-md-8 col-12'
+                            ],
+                            [
+                                'type' => 'file',
+                                'name' => 'image',
+                                'label' => 'Image',
+                                'col' => 'col-md-4 col-12'
+                            ],  
+                        ]                  
+                    ]
                 ]
             ]
         ];       
@@ -501,8 +512,6 @@ class SettingController extends Controller {
         }
     }
 
-
-
     public function coupon_destroy(Request $request, $id){
         $discountCode = DiscountCoupon::find($id);
 
@@ -521,8 +530,6 @@ class SettingController extends Controller {
         ]);
     }
 
-
-
     public function page_index(Request $request){
         $pages = Page::latest('id');
         if($request->keyword != ''){
@@ -535,6 +542,7 @@ class SettingController extends Controller {
         $data = [
             'title'         => 'Pages',
             'button_name'   => 'Create Page',
+            'form_id'       => 'Pages',
             'modal_id'      => 'createPageModal',
             'refresh'       => route('pages.index'),
             'button_route'  => null,
@@ -594,7 +602,6 @@ class SettingController extends Controller {
         ];       
         return view('admin.settings.pages.index', $data);
     }  
-
 
     public function page_create(){
         return view("admin.settings.pages.create");
@@ -692,7 +699,6 @@ class SettingController extends Controller {
         ]);
     }
 
-    
     //User
     public function users_index(Request $request){
         $users = User::latest('id');
@@ -709,6 +715,7 @@ class SettingController extends Controller {
         $data = [
             'title'         => 'Users',
             'button_name'   => 'Create User',
+            'form_id'       => 'Users',
             'modal_id'      => 'createUserModal',
             'refresh'       => route('users.index'),
             'button_route'  => null,
@@ -931,6 +938,7 @@ class SettingController extends Controller {
             'title'         => 'Shipping',
             'button_name'   => 'Add State',
             'modal_id'      => 'createStateModal',
+            'form_id'       => 'Shipping',
             'refresh'       => route('shipping.index'),
             'button_route'  => null,
             'shippings'     => $shippings,
@@ -1022,3 +1030,4 @@ class SettingController extends Controller {
 
     }
 }
+
