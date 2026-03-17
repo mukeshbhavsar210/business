@@ -48,8 +48,7 @@ class SettingController extends Controller {
                         'label' => 'Brand Name',
                         'placeholder' => 'Enter Brand name',
                         'slug_create' => 'slug-source',
-                        'class' => 'slug-source',
-                        'animate_label' => 'floating-input',
+                        'class' => 'slug-source',                        
                         'data'  => [
                             'target' => '#slug'
                         ],

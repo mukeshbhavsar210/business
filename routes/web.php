@@ -144,7 +144,7 @@ Route::group(['prefix' => 'admin'], function(){
             Route::get('/category/create', 'create')->name('categories.create');
             Route::post('/category/cat', 'category_store')->name('category.store');
             Route::get('/category/{category}/edit', 'category_edit')->name('category.edit');
-            Route::put('/category/{category}', 'category_update')->name('categories.update');
+            Route::put('/category/{category}', 'category_update')->name('category.update');
             Route::delete('/category/cat/{category}', 'category_destroy')->name('category.delete');
             
             //sub category edit and update

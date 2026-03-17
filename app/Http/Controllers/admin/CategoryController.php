@@ -41,20 +41,21 @@ class CategoryController extends Controller {
 
             'modals' => [                
                 'category' => [
-                    'modal_id' => 'createCategory',
+                    'modal_id'   => 'categoryModal',
+                    'form_id'    => 'categoryForm',
                     'formConfig' => [
-                        'action' => route('category.store'),
+                        'action' => '',
                         'method' => 'POST',
-                        'button' => 'Create Category',
+                        'button' => 'Save Category',
                         'fields' => [
                             [
                                 'type' => 'text',
-                                'name' => 'category_name',
+                                'name' => 'category_name',                                
+                                'id' => 'category_name', 
                                 'label' => 'Category Name',
                                 'placeholder' => 'Enter Category name',
                                 'slug_create' => 'slug-source',
-                                'class' => 'slug-source',
-                                'animate_label' => 'floating-input',
+                                'class' => 'slug-source',                                
                                 'data'  => [
                                     'target' => '#slug'
                                 ],
@@ -64,8 +65,7 @@ class CategoryController extends Controller {
                                 'type' => 'text',
                                 'name' => 'category_slug',
                                 'label' => 'Category slug',
-                                'placeholder' => 'Enter Category name',
-                                'animate_label' => 'floating-input',
+                                'placeholder' => 'Enter Category name',                                
                                 'id'    => 'slug',
                                 'col' => 'col-md-12 col-12 d-none'
                             ],                                     
@@ -112,15 +112,16 @@ class CategoryController extends Controller {
                             ]
                         ]
                     ]
-                ],
+                ],                
 
                 // Create Sub Category
                 'subcategory' => [
-                    'modal_id' => 'createSubCategory',
+                    'modal_id' => 'subCategoryModal',
+                    'form_id' => 'subCategoryForm',
                     'formConfig' => [
-                        'action' => route('sub_category.store'),
+                        'action' => '',
                         'method' => 'POST',
-                        'button' => 'Create Sub Category',
+                        'button' => 'Save Sub Category',
                         'fields' => [                            
                             [
                                 'type' => 'select',
@@ -137,7 +138,7 @@ class CategoryController extends Controller {
                                 'placeholder' => 'Enter Category name',
                                 'slug_create' => 'slug-source',
                                 'class' => 'slug-source',
-                                'animate_label' => 'floating-input',
+                                
                                 'data'  => [
                                     'target' => '#slug_2'
                                 ],
@@ -147,10 +148,9 @@ class CategoryController extends Controller {
                                 'type' => 'text',
                                 'name' => 'sub_category_slug',
                                 'label' => 'Category slug',
-                                'placeholder' => 'Enter Category name',
-                                'animate_label' => 'floating-input',
+                                'placeholder' => 'Enter Category name',                                
                                 'id'    => 'slug_2',
-                                'col' => 'col-md-12 col-12 d-none'
+                                'col' => 'col-md-12 col-12  d-none'
                             ],                                     
                             [
                                 'type' => 'select',
@@ -190,15 +190,15 @@ class CategoryController extends Controller {
                             ],
                         ]
                     ]
-                ],
-
-                // 🔹 Delete Modal
+                ],               
+                
                 'subsubcategory' => [
-                    'modal_id' => 'createSubSubCategory',
+                    'modal_id' => 'subSubCategoryModal',
+                    'form_id' => 'subSubCategoryForm',
                     'formConfig' => [
-                        'action' => route('sub_sub_category.store'),
+                        'action' => '',
                         'method' => 'POST',
-                        'button' => 'Create Sub Sub Category',
+                        'button' => 'Save Sub Sub Category',
                         'fields' => [
                             [
                                 'type' => 'select',
@@ -220,8 +220,7 @@ class CategoryController extends Controller {
                                 'label' => 'Sub Sub Category Name',
                                 'placeholder' => 'Enter Category name',
                                 'slug_create' => 'slug-source',
-                                'class' => 'slug-source',
-                                'animate_label' => 'floating-input',
+                                'class' => 'slug-source',                                
                                 'data'  => [
                                     'target' => '#slug_3'
                                 ],
@@ -231,100 +230,30 @@ class CategoryController extends Controller {
                                 'type' => 'text',
                                 'name' => 'sub_sub_category_slug',
                                 'label' => 'Category slug',
-                                'placeholder' => 'Enter Category name',
-                                'animate_label' => 'floating-input',
+                                'placeholder' => 'Enter Category name',                                
                                 'id'    => 'slug_3',
-                                'col' => 'col-md-12 col-12 d-none'
+                                'col' => 'col-md-12 col-12  d-none'
                             ],                            
                         ]
                     ]
                 ],
-            ],                                        
+            ],     
+                         
+            'delete' => [
+                'modal_id' => 'deleteCategoryModal',
+                'form_id' => 'deleteCategoryModalForm',
+                'formConfig' => [
+                    'action' => '',
+                    'method' => 'DELETE',
+                    'button' => 'Delete',
+                    'fields' => []
+                ]
+            ],
 
             'categories' => $categories
         ];
 
-        // $data = [
-        //     'title'         => 'Category',
-        //     'button_name'   => 'Create Category',
-        //     'modal_id'      => 'createCategoryModal',
-        //     'refresh'       => route('brands.index'),
-        //     'button_route'  => null,
-        //     'categories'    => $categories,
-        //     'total'         => $categoryTotal,
-
-        //     'formConfig' => [
-        //         'action' => route('category.store'),
-        //         'modal_size' => null,
-        //         'method' => 'POST',
-        //         'button' => 'Create Category',
-        //         'fields' => [
-        //             [
-        //                 'type' => 'text',
-        //                 'name' => 'category_name',
-        //                 'label' => 'Category Name',
-        //                 'placeholder' => 'Enter Category name',
-        //                 'slug_create' => 'slug-source',
-        //                 'class' => 'slug-source',
-        //                 'animate_label' => 'floating-input',
-        //                 'data'  => [
-        //                     'target' => '#slug'
-        //                 ],
-        //                 'col' => 'col-md-12 col-12'
-        //             ],     
-        //             [
-        //                 'type' => 'text',
-        //                 'name' => 'category_slug',
-        //                 'label' => 'Category slug',
-        //                 'placeholder' => 'Enter Category name',
-        //                 'animate_label' => 'floating-input',
-        //                 'id'    => 'slug',
-        //                 'col' => 'col-md-12 col-12 d-none'
-        //             ],                                     
-        //             [
-        //                 'type' => 'select',
-        //                 'name' => 'menu_order',
-        //                 'label' => 'Menu Order',
-        //                 'options' => [
-        //                     1 => 1,
-        //                     2 => 2,
-        //                     3 => 3,
-        //                     4 => 4,
-        //                     5 => 5,
-        //                     6 => 6,
-        //                     7 => 7,
-        //                     8 => 8,
-        //                 ],
-        //                 'col' => 'col-md-4 col-6'
-        //             ],
-        //             [
-        //                 'type' => 'select',
-        //                 'name' => 'showHome',
-        //                 'label' => 'showHome',
-        //                 'options' => [
-        //                     'Yes' => 'Yes',
-        //                     'No' => 'No'
-        //                 ],
-        //                 'col' => 'col-md-4 col-6'
-        //             ],
-        //             [
-        //                 'type' => 'select',
-        //                 'name' => 'status',
-        //                 'label' => 'Status',
-        //                 'options' => [
-        //                     1 => 'Active',
-        //                     0 => 'Block'
-        //                 ],
-        //                 'col' => 'col-md-4 col-6'
-        //             ],
-        //             [
-        //                 'type' => 'dropzone',
-        //                 'name' => 'image',
-        //                 'label' => 'Image'                        
-        //             ]
-        //         ]
-        //     ]
-        // ];       
+          
 
         return view('admin.category.index', $data);       
     }
