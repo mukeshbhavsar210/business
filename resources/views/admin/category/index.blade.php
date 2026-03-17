@@ -19,9 +19,9 @@
                         </button>
 
                         <ul class="dropdown-menu" id="dropdownMenu">
-                            <li><a class="dropdown-item open-modal" href="#" data-target="#createCategory">Create Category</a></li>
-                            <li><a class="dropdown-item open-modal" href="#" data-target="#createSubCategory">Create Sub Category</a></li>
-                            <li><a class="dropdown-item open-modal" href="#" data-target="#createSubSubCategory">Create Sub Sub Category</a></li>
+                            <li><a class="dropdown-item open-modal" href="#" onclick="createCategoryModal()" data-bs-toggle="modal" data-bs-target="#categoryModal" >Create Category</a></li>
+                            <li><a class="dropdown-item open-modal" href="#" onclick="createSubCategoryModal()" data-bs-toggle="modal" data-bs-target="#subCategoryModal">Create Sub Category</a></li>
+                            <li><a class="dropdown-item open-modal" href="#" onclick="createSubSubCategoryModal()" data-bs-toggle="modal" data-bs-target="#subSubCategoryModal">Create Sub Sub Category</a></li>                            
                         </ul>
                     </div>                     
 
@@ -66,11 +66,10 @@
                         <div class="col-6 mb-2">
                             <div class="accordion-item">                                
                                 <div class="accordion-header" id="cat{{ $category->id }}">
-                                    <button class="accordion-button collapsed p-2" data-bs-toggle="collapse"
-                                        data-bs-target="#catCollapse{{ $category->id }}">
+                                    <div class="accordion-button collapsed p-2" data-bs-toggle="collapse" data-bs-target="#catCollapse{{ $category->id }}">
                                         <div class="category-card">
                                             <div>
-                                                <a href="{{ route('products.edit', $category->id) }}">
+                                                <a href="{{ route('category.edit', $category->id) }}">
                                                     <img src="{{ asset('uploads/category/'.$category->image) }}" alt="" height="85" width="85" class="me-2 align-self-center rounded" />
                                                 </a> 
                                             </div>                                       
@@ -80,9 +79,21 @@
                                                 <p class="mb-0 text-muted">Menu Order: {{ $category->menu_order }}</p>
                                             </div>
                                             <div class="counts">{{ $category->sub_categories_count }}</div>
-                                            {{-- <a href="{{ route('products.edit', $category->id) }}" class="float-end"><i class="las la-pen text-secondary fs-18"></i></a> --}}                                            
+
+                                            <a class="float-end" href="javascript:0"
+                                                data-id="{{ $category->id }}"
+                                                data-category_name="{{ $category->category_name }}"
+                                                data-status="{{ $category->status }}"
+                                                data-showHome="{{ $category->showHome }}"
+                                                data-menu_order="{{ $category->menu_order }}"
+                                                onclick="editCategoryModal(this)"                                                
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#categoryModal"                                                
+                                                >
+                                                <i class="las la-pen text-secondary fs-18"></i>
+                                            </a>
                                         </div>                                        
-                                    </button>
+                                    </div>
                                 </div>
 
                                 <div id="catCollapse{{ $category->id }}" class="accordion-collapse collapse" data-bs-parent="#categoryAccordion">
@@ -98,6 +109,17 @@
                                                                 <span>- {{ $sub->sub_sub_categories_count }}</span>
                                                             </div>
                                                             <div class="flex">                                                                
+                                                                <a class="float-end" href="javascript:0"
+                                                                    data-id="{{ $sub->id }}"
+                                                                    data-sub_category_name="{{ $sub->sub_category_name }}"
+                                                                    data-status="{{ $sub->status }}"
+                                                                    data-showHome="{{ $sub->showHome }}"
+                                                                    onclick="editSubCategoryModal(this)"
+                                                                    data-bs-toggle="modal"
+                                                                    data-bs-target="#subCategoryModal">
+                                                                    <i class="las la-pen text-secondary fs-18"></i>
+                                                                </a>
+
                                                                 <a href="{{ route('sub_category.edit', $sub->id ) }}">
                                                                     <i class="las la-pen text-secondary fs-18"></i>
                                                                 </a>
@@ -146,6 +168,7 @@
 @foreach($modals as $key => $modal)
     @include('admin.layouts.common', [
         'modal_id' => $modal['modal_id'],
+        'form_id' => $modal['form_id'],
         'formConfig' => $modal['formConfig']
     ])
 @endforeach
@@ -154,28 +177,6 @@
 
 @section('customJs')
 <script>    
-    $(document).on('change', '.slug-source', function () {
-        let element = $(this);
-        let target = element.data('target');
-
-        $("button[type=submit]").prop('disabled', true);
-
-        $.ajax({
-            url: '{{ route("getSlug") }}',
-            type: 'GET',
-            data: { title: element.val() },
-            dataType: 'json',
-            success: function (response) {
-
-                $("button[type=submit]").prop('disabled', false);
-
-                if (response.status === true) {
-                    $(target).val(response.slug);
-                }
-            }
-        });
-    });
-
     Dropzone.autoDiscover = false;
     const dropzone = $("#image").dropzone({
         init: function() {
@@ -240,7 +241,6 @@
                 }
             });
         }
-
     }
 
     function deleteSub2Category(id){
@@ -262,8 +262,8 @@
                 }
             });
         }
-    }
+    } 
 
-   
+    
 </script>
 @endsection

@@ -189,7 +189,7 @@ class ProductController extends Controller {
 
     public function edit($id, Request $request){
         $product = Product::find($id);        
-        $product->load('variants');
+        //$product->load('variants');
         
         if (empty($product)) {
             return redirect()->route('products.index')->with('error','Product not found');
