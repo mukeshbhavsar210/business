@@ -25,7 +25,7 @@
 
                 <div class="flex-end">
                     <h5 class="h5">Saved Address</h5>
-                    <a href="#" class=" btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#deliveryAddress">Change Default Address</a>
+                    {{-- <a href="#" class=" btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#deliveryAddress">Change Default Address</a> --}}
                     @if(!in_array('Home', $addressTypes) || !in_array('Office', $addressTypes))
                         <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#createAddressModal">
                             + Add New Address
@@ -56,9 +56,11 @@
                                 <p class="title">{{ $value->default_address == 1 ? 'Default Address' : 'Other Address' }}</p>
                             </div>
                             <div class="card-body">                                
-                                <h6>{{ $value->name }} - {{ $value->mobile }}</h6>
                                 <p class="small-font">
-                                    <b>{{ $value->address_type == 'Home' ? 'Home' : 'Office' }}:</b>
+                                    <b>{{ $value->address_type == 'Home' ? 'Home' : 'Office' }}</b>
+                                </p>
+                                <h6>{{ $value->name }} - {{ $value->mobile }}</h6>
+                                <p class="small-font">                                    
                                     {{ $value->address }}, {{ $value->locality }},
                                     {{ $value->city }}-{{ $value->zip }}, {{ $value->state->name }}.
                                 </p>
