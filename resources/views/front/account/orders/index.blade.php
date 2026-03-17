@@ -288,8 +288,12 @@
                                     </div>
                                 </div>
                             @endforeach
-                            @else
-                                Orders not found                                    
+                            @else                                
+                                <div class="individual mb-0 text-center py-5">
+                                    <span class="sprites empty-order"></span>
+                                    <h5 class="mt-2 mb-2">Orders not found</h5>
+                                    <a href="{{ route('front.shop') }}" class="btn btn-primary">Shop Now</a>
+                                </div>
                         @endif                                                
                     </div>
 

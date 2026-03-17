@@ -130,6 +130,112 @@ class SettingController extends Controller {
         ]);
     }
 
+    //Shipping
+    public function shipping_index(Request $request){
+        $states = State::get();
+        $shippings = ShippingCharge::select('shipping_charges.*','states.name')->leftJoin('states','states.id','shipping_charges.state_id')->get();
+        $shippingTotal = ShippingCharge::count();
+        //$shippings = $shippings->paginate(10);
+
+        $data['states'] = $states;
+        $data['shippings'] = $shippings;
+
+        $data = [
+            'title'         => 'Shipping',
+            'button_name'   => 'Add State',
+            'modal_id'      => 'createStateModal',
+            'form_id'       => 'Shipping',
+            'method_id'  => '',
+            'refresh'       => route('shipping.index'),
+            'button_route'  => null,
+            'shippings'     => $shippings,
+            'states'     => $states,
+            'total'         => $shippingTotal,
+
+            'formConfig' => [
+                'action' => route('shipping.store'),
+                'modal_size' => null,
+                'method' => 'POST',
+                'button' => 'Create Shipping',
+                'fields' => [
+                    [
+                        'type' => 'select',
+                        'name' => 'state_id',
+                        'label' => 'State',
+                        'options' => $states->pluck('name', 'id')->toArray() + [
+                            'rest_of_state' => 'Rest of the state'
+                        ],
+                        'col' => 'col-md-12 col-12'
+                    ],
+                    [
+                        'type' => 'text',
+                        'name' => 'amount',
+                        'label' => 'Amount',
+                        'placeholder' => 'Enter amount',
+                        'col' => 'col-md-12 col-12'
+                    ]                    
+                ]
+            ]
+        ];       
+
+        return view('admin.settings.shipping.index', $data);
+    }
+
+    public function shipping_index2(){
+        $states = State::get();
+        $data['states'] = $states;
+        $shippings = ShippingCharge::select('shipping_charges.*','states.name')->leftJoin('states','states.id','shipping_charges.state_id')->get();
+        $data['shippings'] = $shippings;
+        return view('admin.settings.shipping.index', $data);
+    }
+
+    public function shipping_store(Request $request){
+        $validator = Validator::make($request->all(), [
+            'state_id' => 'required',
+            'amount' => 'required|numeric',
+        ]);
+
+        if($validator->passes()){
+            $count = ShippingCharge::where('state_id',$request->state)->count();
+            if($count > 0){
+                session()->flash('error','Shipping already added as you selected state.');
+                return response()->json([
+                    'status' => true,
+                ]);
+            }
+
+            $shipping = new ShippingCharge();
+            $shipping->state_id = $request->state_id;
+            $shipping->amount = $request->amount;
+            $shipping->save();
+            session()->flash('success','Shipping added successfully');
+            return response()->json([
+                'status' => true,
+            ]);
+        } else {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ]);
+        }
+    }
+
+    public function shipping_destroy($id){
+        $shippingCharge = ShippingCharge::find($id);
+        if ($shippingCharge == null) {
+            session()->flash('error','Shipping not found');
+
+            return response()->json([
+                'status' => true,
+            ]);
+        }
+        $shippingCharge->delete();
+        session()->flash('success','Shipping deleted successfully');
+        return response()->json([
+            'status' => true,
+        ]);
+
+    }
 
     //Colors
     public function color_index(Request $request){
@@ -244,7 +350,7 @@ class SettingController extends Controller {
                     'title'      => 'Create Discount',
                     'modal_id'   => 'discountModal',
                     'form_id'    => 'discountForm',
-                    'method_id'  => '1',
+                    'method_id'  => '',
                     'formConfig' => [
                         'action' => '',
                         'modal_size' => 'modal-lg',
@@ -530,174 +636,7 @@ class SettingController extends Controller {
         ]);
     }
 
-    public function page_index(Request $request){
-        $pages = Page::latest('id');
-        if($request->keyword != ''){
-            $pages = $pages->where('name','like','%'.$request->keyword.'%');
-        }
-
-        $pageTotal = Page::count();
-        $pages = $pages->paginate(10);
-
-        $data = [
-            'title'         => 'Pages',
-            'button_name'   => 'Create Page',
-            'form_id'       => 'Pages',
-            'modal_id'      => 'createPageModal',
-            'refresh'       => route('pages.index'),
-            'button_route'  => null,
-            'pages'         => $pages,
-            'total'         => $pageTotal,
-
-            'formConfig' => [
-                'action' => route('pages.store'),
-                'modal_size' => 'modal-lg',
-                'method' => 'POST',
-                'button' => 'Create Page',
-                'fields' => [
-                    [
-                        'type' => 'text',
-                        'name' => 'name',
-                        'label' => 'Page Title',                        
-                        'slug_create' => 'slug-source',
-                        'class' => 'slug-source',
-                        'data'  => [
-                            'target' => '#slug'
-                        ],
-                        'col' => 'col-md-9 col-9'
-                    ],
-                    [
-                        'type' => 'text',
-                        'name' => 'slug',
-                        'label' => 'Page Slug',                        
-                        'id'    => 'slug',
-                        'col' => 'd-none'
-                    ],
-                    [
-                        'type' => 'select',
-                        'name' => 'status',
-                        'label' => 'Status',
-                        'options' => [
-                            1 => '1',
-                            2 => '2',
-                            3 => '3',
-                            4 => '4',
-                            5 => '5',
-                            6 => '6',
-                            7 => '7',
-                            8 => '8',
-                        ],
-                        'col' => 'col-md-3 col-3'
-                    ],
-                    [
-                        'type' => 'textarea',
-                        'name' => 'content',
-                        'summer_class' => 'summernote',
-                        'label' => 'Content',                        
-                        'id'    => 'slug',
-                        'col' => 'col-md-12 col-12'
-                    ]                    
-                ]
-            ]
-        ];       
-        return view('admin.settings.pages.index', $data);
-    }  
-
-    public function page_create(){
-        return view("admin.settings.pages.create");
-    }
-
-    public function page_store(Request $request){
-        $validator = Validator::make($request->all(), [
-            'name' => 'required',
-            'slug' => 'required',
-        ]);
-        if ($validator->fails()){
-            return response()->json([
-                'status' => false,
-                'errors' => $validator->errors()
-            ]);
-        }
-        $page = new Page;
-        $page->name = $request->name;
-        $page->slug = $request->slug;
-        $page->content = $request->content;
-        $page->menu_order = $request->menu_order;
-        $page->save();
-
-        $message = 'Page added successfully.';
-        session()->flash('success',$message);
-
-        return response()->json([
-            'status' => true,
-            'message' => $message
-        ]);
-    }
-
-    public function page_edit($id){
-        $page = Page::find($id);
-        if ($page == null){
-            session()->flash('error','Page not found');
-            return redirect()->route('pages.index');
-        }
-
-        return view('admin.settings.pages.edit',[
-            'page' => $page
-        ]);
-    }
-
-    public function page_update(Request $request, $id){
-        $page = Page::find($id);
-
-        if($page == null) {
-            session()->flash('error','Page not found');
-            return response()->json([
-                'status' => true,
-            ]);
-        };
-
-        $validator = Validator::make($request->all(), [
-            'name' => 'required',
-            'slug' => 'required',
-        ]);
-        if ($validator->fails()){
-            return response()->json([
-                'status' => false,
-                'errors' => $validator->errors()
-            ]);
-        }
-
-        $page->name = $request->name;
-        $page->slug = $request->slug;
-        $page->content = $request->content;
-        $page->menu_order = $request->menu_order;
-        $page->save();
-
-        $message = 'Page updated successfully.';
-        session()->flash('success',$message);
-        return response()->json([
-            'status' => true,
-            'message' => $message
-        ]);
-    }
-
-    public function page_destroy($id){
-        $page = Page::find($id);
-        if($page == null) {
-            session()->flash('error','Page not found');
-            return response()->json([
-                'status' => true,
-            ]);
-        };
-        $page->delete();
-        $message = 'Page deleted successfully.';
-        session()->flash('success',$message);
-
-        return response()->json([
-            'status' => true,
-            'message' => $message
-        ]);
-    }
+   
 
     //User
     public function users_index(Request $request){
@@ -717,6 +656,7 @@ class SettingController extends Controller {
             'button_name'   => 'Create User',
             'form_id'       => 'Users',
             'modal_id'      => 'createUserModal',
+            'method_id'  => '',
             'refresh'       => route('users.index'),
             'button_route'  => null,
             'users'         => $users,
@@ -924,110 +864,174 @@ class SettingController extends Controller {
             ]);
     }
 
-    //Shipping
-    public function shipping_index(Request $request){
-        $states = State::get();
-        $shippings = ShippingCharge::select('shipping_charges.*','states.name')->leftJoin('states','states.id','shipping_charges.state_id')->get();
-        $shippingTotal = ShippingCharge::count();
-        //$shippings = $shippings->paginate(10);
+    //Pages
+    public function page_index(Request $request){
+        $pages = Page::latest('id');
+        if($request->keyword != ''){
+            $pages = $pages->where('name','like','%'.$request->keyword.'%');
+        }
 
-        $data['states'] = $states;
-        $data['shippings'] = $shippings;
+        $pageTotal = Page::count();
+        $pages = $pages->paginate(10);
 
         $data = [
-            'title'         => 'Shipping',
-            'button_name'   => 'Add State',
-            'modal_id'      => 'createStateModal',
-            'form_id'       => 'Shipping',
-            'refresh'       => route('shipping.index'),
+            'title'         => 'Pages',
+            'button_name'   => 'Create Page',
+            'form_id'       => 'Pages',
+            'modal_id'      => 'createPageModal',
+            'method_id'  => '',
+            'refresh'       => route('pages.index'),
             'button_route'  => null,
-            'shippings'     => $shippings,
-            'states'     => $states,
-            'total'         => $shippingTotal,
+            'pages'         => $pages,
+            'total'         => $pageTotal,
 
             'formConfig' => [
-                'action' => route('shipping.store'),
-                'modal_size' => null,
+                'action' => route('pages.store'),
+                'modal_size' => 'modal-lg',
                 'method' => 'POST',
-                'button' => 'Create Shipping',
+                'button' => 'Create Page',
                 'fields' => [
                     [
-                        'type' => 'select',
-                        'name' => 'state_id',
-                        'label' => 'State',
-                        'options' => $states->pluck('name', 'id')->toArray() + [
-                            'rest_of_state' => 'Rest of the state'
+                        'type' => 'text',
+                        'name' => 'name',
+                        'label' => 'Page Title',                        
+                        'slug_create' => 'slug-source',
+                        'class' => 'slug-source',
+                        'data'  => [
+                            'target' => '#slug'
                         ],
-                        'col' => 'col-md-12 col-12'
+                        'col' => 'col-md-9 col-9'
                     ],
                     [
                         'type' => 'text',
-                        'name' => 'amount',
-                        'label' => 'Amount',
-                        'placeholder' => 'Enter amount',
+                        'name' => 'slug',
+                        'label' => 'Page Slug',                        
+                        'id'    => 'slug',
+                        'col' => 'd-none'
+                    ],
+                    [
+                        'type' => 'select',
+                        'name' => 'status',
+                        'label' => 'Status',
+                        'options' => [
+                            1 => '1',
+                            2 => '2',
+                            3 => '3',
+                            4 => '4',
+                            5 => '5',
+                            6 => '6',
+                            7 => '7',
+                            8 => '8',
+                        ],
+                        'col' => 'col-md-3 col-3'
+                    ],
+                    [
+                        'type' => 'textarea',
+                        'name' => 'content',
+                        'summer_class' => 'summernote',
+                        'label' => 'Content',                        
+                        'id'    => 'slug',
                         'col' => 'col-md-12 col-12'
                     ]                    
                 ]
             ]
         ];       
+        return view('admin.settings.pages.index', $data);
+    }  
 
-        return view('admin.settings.shipping.index', $data);
+    public function page_create(){
+        return view("admin.settings.pages.create");
     }
 
-    public function shipping_index2(){
-        $states = State::get();
-        $data['states'] = $states;
-        $shippings = ShippingCharge::select('shipping_charges.*','states.name')->leftJoin('states','states.id','shipping_charges.state_id')->get();
-        $data['shippings'] = $shippings;
-        return view('admin.settings.shipping.index', $data);
-    }
-
-    public function shipping_store(Request $request){
+    public function page_store(Request $request){
         $validator = Validator::make($request->all(), [
-            'state_id' => 'required',
-            'amount' => 'required|numeric',
+            'name' => 'required',
+            'slug' => 'required',
         ]);
-
-        if($validator->passes()){
-            $count = ShippingCharge::where('state_id',$request->state)->count();
-            if($count > 0){
-                session()->flash('error','Shipping already added as you selected state.');
-                return response()->json([
-                    'status' => true,
-                ]);
-            }
-
-            $shipping = new ShippingCharge();
-            $shipping->state_id = $request->state_id;
-            $shipping->amount = $request->amount;
-            $shipping->save();
-            session()->flash('success','Shipping added successfully');
-            return response()->json([
-                'status' => true,
-            ]);
-        } else {
+        if ($validator->fails()){
             return response()->json([
                 'status' => false,
                 'errors' => $validator->errors()
             ]);
         }
+        $page = new Page;
+        $page->name = $request->name;
+        $page->slug = $request->slug;
+        $page->content = $request->content;
+        $page->menu_order = $request->menu_order;
+        $page->save();
+
+        $message = 'Page added successfully.';
+        session()->flash('success',$message);
+
+        return response()->json([
+            'status' => true,
+            'message' => $message
+        ]);
     }
 
-    public function shipping_destroy($id){
-        $shippingCharge = ShippingCharge::find($id);
-        if ($shippingCharge == null) {
-            session()->flash('error','Shipping not found');
+    public function page_edit($id){
+        $page = Page::find($id);
+        if ($page == null){
+            session()->flash('error','Page not found');
+            return redirect()->route('pages.index');
+        }
 
+        return view('admin.settings.pages.edit',[
+            'page' => $page
+        ]);
+    }
+
+    public function page_update(Request $request, $id){
+        $page = Page::find($id);
+
+        if($page == null) {
+            session()->flash('error','Page not found');
             return response()->json([
                 'status' => true,
             ]);
+        };
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'slug' => 'required',
+        ]);
+        if ($validator->fails()){
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ]);
         }
-        $shippingCharge->delete();
-        session()->flash('success','Shipping deleted successfully');
+
+        $page->name = $request->name;
+        $page->slug = $request->slug;
+        $page->content = $request->content;
+        $page->menu_order = $request->menu_order;
+        $page->save();
+
+        $message = 'Page updated successfully.';
+        session()->flash('success',$message);
         return response()->json([
             'status' => true,
+            'message' => $message
         ]);
+    }
 
+    public function page_destroy($id){
+        $page = Page::find($id);
+        if($page == null) {
+            session()->flash('error','Page not found');
+            return response()->json([
+                'status' => true,
+            ]);
+        };
+        $page->delete();
+        $message = 'Page deleted successfully.';
+        session()->flash('success',$message);
+
+        return response()->json([
+            'status' => true,
+            'message' => $message
+        ]);
     }
 }
-

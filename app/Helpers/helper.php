@@ -17,8 +17,7 @@ use Illuminate\Support\Facades\Mail;
             ])
             ->withCount('products')
             ->orderBy('menu_order', 'asc')
-            ->where('status', 1)
-            ->where('showHome', 'Yes')
+            ->where('status', 1)            
             ->orderBy('id', 'DESC')
             ->take(4)
             ->get();

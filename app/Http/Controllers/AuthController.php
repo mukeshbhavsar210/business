@@ -105,6 +105,7 @@ class AuthController extends Controller {
         $homeExists = CustomerAddress::where('user_id', auth()->id())
             ->where('address_type', 'Home')
             ->exists();        
+        $coupons = DiscountCoupon::orderBy('name','ASC')->get();    
         
         $data = [
             'user'   => $user,       
@@ -113,7 +114,9 @@ class AuthController extends Controller {
             'defaultAddress' => $defaultAddress,
             'homeExists' => $homeExists,
             'addressTypes' => $addressTypes, 
-            'delivery_address' => $delivery_address       
+            'delivery_address' => $delivery_address,
+            'coupons' => $coupons,
+                  
             
         //     'createAddress' => [
         //         'title' => 'Create Address',
