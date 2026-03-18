@@ -16,6 +16,20 @@ class Product extends Model {
 
     protected $appends = ['average_rating', 'rating_count'];
 
+    public function scopeFilterData($query, $category = null, $subCategory = null) {
+        $query->where('status', 1);
+
+        if ($category) {
+            $query->where('category_id', $category->id);
+        }
+
+        if ($subCategory) {
+            $query->where('sub_category_id', $subCategory->id);
+        }
+
+        return $query;
+    }
+
     public function items(){
         return $this->hasMany(OrderItem::class);
     }

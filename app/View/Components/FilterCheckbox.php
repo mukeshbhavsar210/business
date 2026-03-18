@@ -22,6 +22,6 @@ class FilterCheckbox extends Component {
     }
 
     public function render() {
-        return view('components.filter-checkbox');
+        return view('components.filters');
     }
 }

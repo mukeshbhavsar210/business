@@ -11,17 +11,14 @@
                 <div class="form-check">
                     <label class="form-check-label" for="{{ $type }}-{{ $item->id }}">
                         <input class="form-check-input {{ $type }}-label" type="checkbox"
-                            name="{{ $type }}[]"
-                            value="{{ $item->$valueField }}"
-                            id="{{ $type }}-{{ $item->id }}"
-                            {{ in_array($item->$valueField, $selected) ? 'checked' : '' }}
-                        >
+                            name="{{ $type }}[]" value="{{ $item->$valueField }}" id="{{ $type }}-{{ $item->id }}"
+                            {{ in_array($item->$valueField, $selected) ? 'checked' : '' }} >
 
                         @if($showColor && isset($item->code))
                             <span class="color-code" style="background-color: {{ $item->code }}"></span>
                         @endif
 
-                        {{-- <span class="{{ $type }}-name">{{ $item->$labelField }}</span>                 --}}
+                        {{-- <span class="{{ $type }}-name">{{ $item->$labelField }}</span> --}}
 
                         <span class="{{ $nameClass ?? $type.'-name' }}">
                             {{ isset($limit) ? Str::limit($item->$labelField, $limit, '...') : $item->$labelField }}

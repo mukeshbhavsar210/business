@@ -55,9 +55,9 @@
                         <div class="color-chip">
                             <span class="badge" style="background-color: {{ $value->code }}"></span>
                             <span class="color-title">{{ $value->name }}</span>
-                        
-                            <a href="#" onclick="deleteBrand({{ $value->id }})" class="float-end">
-                                <i class="las la-trash-alt text-secondary fs-18"></i>
+
+                            <a href="#" onclick="deleteBrand({{ $value->id }})" class="delete-icon float-end">
+                                <span class="sprites"></span>
                             </a> 
                         </div>
                     @endforeach            

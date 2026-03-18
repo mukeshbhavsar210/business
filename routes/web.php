@@ -29,7 +29,7 @@ Route::controller(FrontController::class)->group(function() {
 Route::post('/set-intended-url', function (Request $request) {session(['url.intended' => $request->url]);});
 
 Route::controller(ShopController::class)->group(function() {
-    Route::get('/products/{subCategorySlug?}/{subSubCategory?}','index')->name('front.shop');
+    Route::get('/products/{item1?}/{item2?}/{item3?}','index')->name('front.shop');    
     Route::get('/category/{categorySlug?}/','category')->name('front.category.shop');
     Route::get('/product/{slug}','product')->name('front.product');    
     Route::get('/product/{id}/reviews', 'allReviews')->name('product.reviews');

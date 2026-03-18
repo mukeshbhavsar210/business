@@ -16,153 +16,74 @@ use App\Models\SubSubCategory;
 use Illuminate\Http\Request;
 
 class ShopController extends Controller {
-    public function index(Request $request, $categorySlug = null, $subCategorySlug = null, $subSubCategory = null) {
-        $brandsArray = [];
-        $colorsArray = [];
-        $sizesArray = [];
-        $discountArray = [];
+    public function index(Request $request, $item1=null, $item2=null, $item3=null) {    
+        $filtersArray = [
+            'brands'   => [],
+            'colors'   => [],
+            'sizes'    => [],
+            'discount' => [],
+        ];
+
+        $selectedItems = [
+            'item1' => null,
+            'item2' => null,
+            'item3' => null,
+        ];
         
         $categories = Category::orderBy("category_name","ASC")->with(['sub_category'])->where('status',1)->get();               
         $products = Product::with('ratings')->where('status',1);
         $productCount = Product::where('status', 1)->count();
-        $totalProducts = $products->count();
-
-        $selectedCategory = null;
-        $selectedSubCategory = null;
-        $selectedSubSubCategory = null;
-
-        if (!empty($categorySlug)) {
-            $selectedCategory = Category::where('category_slug', $categorySlug)->first();
-            if ($selectedCategory) {
-                $products = $products->where('category_id', $selectedCategory->id);
+        $totalProducts = $products->count();     
+        
+        function applySlugFilter($slug, $model, $slugColumn, $productColumn, &$selectedItem, &$products){
+            if (!empty($slug)) {
+                $selectedItem = $model::where($slugColumn, $slug)->first();
+                if ($selectedItem) {
+                    $products->where($productColumn, $selectedItem->id);
+                }
             }
         }
 
-        if (!empty($subCategorySlug)) {
-            $selectedSubCategory = SubCategory::where('sub_category_slug', $subCategorySlug)->first();
-            if ($selectedSubCategory) {
-                $products = $products->where('sub_category_id', $selectedSubCategory->id);
-            }
-        }
+        applySlugFilter($item1, Category::class, 'category_slug', 'category_id', $selected_item1, $products);
+        applySlugFilter($item2, SubCategory::class, 'sub_category_slug', 'sub_category_id', $selected_item2, $products);
+        applySlugFilter($item3, SubSubCategory::class, 'sub_sub_category_slug', 'sub_sub_category_id', $selected_item3, $products);
 
-        if (!empty($subSubCategory)) {
-            $selectedSubSubCategory = SubSubCategory::where('sub2_category_slug', $subSubCategory)->first();
-            if ($selectedSubSubCategory) {
-                $products = $products->where('sub_sub_category_id', $selectedSubSubCategory->id);
-            }
-        }
+        $item3 = collect();
 
-        $subSubCategories = collect();
-
-        if ($selectedSubCategory) {
-            $subSubCategories = SubSubCategory::where('sub_category_id', $selectedSubCategory->id)
+        if ($selected_item2) {
+            $item3 = SubSubCategory::where('sub_category_id', $selected_item2->id)
                 ->withCount(['products' => function ($query) {
                     $query->where('status', 1);
                 }])
                 ->get();
         }
 
-        $brands = Brand::where('status',1)
-            ->withCount(['products as products_count' => function($query) use ($selectedCategory, $selectedSubCategory) {
-                $query->where('status',1);
-                if ($selectedCategory) {
-                    $query->where('category_id', $selectedCategory->id);
-                }
+        $filterProducts = function ($query) use ($selected_item1, $selected_item2) {
+            $query->where('status', 1);
+            if ($selected_item1) {$query->where('category_id', $selected_item1->id);}
+            if ($selected_item2) {$query->where('sub_category_id', $selected_item2->id);}
+        };
 
-                if ($selectedSubCategory) {
-                    $query->where('sub_category_id', $selectedSubCategory->id);
-                }
+        $brands = Brand::where('status',1)->withCount(['products as products_count' => $filterProducts])->orderBy('name','ASC')->get();        
+        $colors = Color::withCount(['products as products_count' => $filterProducts])->orderBy('name','ASC')->get();
+        $sizes = Size::withCount(['products as products_count' => $filterProducts])->orderBy('name','ASC')->get();
+        $discounts = DiscountPercentage::withCount(['products as products_count' => $filterProducts])->orderBy('name','ASC')->get();
 
-            }])
-            ->orderBy('name','ASC')
-            ->get();
-
-        $colors = Color::withCount([
-            'products as products_count' => function($query) use ($selectedCategory, $selectedSubCategory) {
-                $query->where('status', 1);
-                if ($selectedCategory) {
-                    $query->where('category_id', $selectedCategory->id);
-                }
-                if ($selectedSubCategory) {
-                    $query->where('sub_category_id', $selectedSubCategory->id);
-                }
+        //Filter logic
+        function applyFilter($request, $param, $model, $column, $productColumn, &$selectedArray, &$products) {
+            if (!empty($request->get($param))) {
+                $values = explode(',', $request->get($param));
+                $ids = $model::whereIn($column, $values)->pluck('id')->toArray();
+                $selectedArray = $values;
+                $products->whereIn($productColumn, $ids);
             }
-        ])
-        ->orderBy('name','ASC')
-        ->get();
-
-        $sizes = Size::withCount([
-            'products as products_count' => function($query) use ($selectedCategory, $selectedSubCategory) {
-                $query->where('status', 1);
-                if ($selectedCategory) {
-                    $query->where('category_id', $selectedCategory->id);
-                }
-                if ($selectedSubCategory) {
-                    $query->where('sub_category_id', $selectedSubCategory->id);
-                }
-            }
-        ])
-        ->orderBy('name','ASC')
-        ->get();
-
-        $discounts = DiscountPercentage::withCount([
-            'products as products_count' => function($query) use ($selectedCategory, $selectedSubCategory) {
-                $query->where('status', 1);
-                if ($selectedCategory) {
-                    $query->where('category_id', $selectedCategory->id);
-                }
-                if ($selectedSubCategory) {
-                    $query->where('sub_category_id', $selectedSubCategory->id);
-                }
-            }
-        ])
-        ->orderBy('name','ASC')
-        ->get();
-
-        // brands filters
-        if (!empty($request->get('brand'))) {
-            $brandSlugs = explode(',', $request->get('brand'));
-            $brandIds = Brand::whereIn('slug', $brandSlugs)
-                ->pluck('id')
-                ->toArray();
-
-            $brandsArray = $brandSlugs; // for checkbox checked state
-            $products = $products->whereIn('brand_id', $brandIds);
         }
 
-        // colors filters
-        if (!empty($request->get('color'))) {
-            $colorCode = explode(',', $request->get('color'));
-            $colorIds = Color::whereIn('name', $colorCode)
-                ->pluck('id')
-                ->toArray();
-
-            $colorsArray = $colorCode; 
-            $products = $products->whereIn('color_id', $colorIds);
-        }
-
-        // size filters
-        if (!empty($request->get('size'))) {
-            $sizeCode = explode(',', $request->get('size'));
-            $sizeIds = Size::whereIn('name', $sizeCode)
-                ->pluck('id')
-                ->toArray();
-
-            $sizesArray = $sizeCode; 
-            $products = $products->whereIn('size_id', $sizeIds);
-        }
-
-        // size filters
-        if (!empty($request->get('discount'))) {
-            $discountCode = explode(',', $request->get('discount'));
-            $discountIds = DiscountPercentage::whereIn('name', $discountCode)
-                ->pluck('id')
-                ->toArray();
-
-            $discountArray = $discountCode; 
-            $products = $products->whereIn('discount_percentage_id', $discountIds);
-        }
-
+        applyFilter($request, 'brand', Brand::class, 'slug', 'brand_id', $brandsArray, $products);
+        applyFilter($request, 'color', Color::class, 'name', 'color_id', $colorsArray, $products);
+        applyFilter($request, 'size', Size::class, 'name', 'size_id', $sizesArray, $products);
+        applyFilter($request, 'discount', DiscountPercentage::class, 'name', 'discount_percentage_id', $discountArray, $products);
+            
         // Price slider
         if ($request->filled('price_min') && $request->filled('price_max')) {
             $min = intval($request->get('price_min'));
@@ -220,7 +141,7 @@ class ShopController extends Controller {
             $request->filled('brand') ||
             $request->filled('color') ||
             $request->filled('size') ||
-            $request->filled('sub2') ||
+            $request->filled('item') ||
             $request->filled('price_min') ||
             $request->filled('price_max') ||
             $request->filled('sort') ||
@@ -228,48 +149,36 @@ class ShopController extends Controller {
             $request->filled('search')
         ) {
             $filtersApplied = true;
-        }
-
-
-        //$products = Product::query();        
+        }               
 
         // Coupon filter
         if ($request->coupon) {
-            $coupon = DiscountCoupon::where('code', $request->coupon)->first();
-            if ($coupon) {
-                $products->whereHas('coupons', function ($q) use ($coupon) {
-                    $q->where('discount_coupons.id', $coupon->id);
-                });
-            } else {
-                $products->whereRaw('0=1'); // show nothing if invalid coupon
-            }
+            $products->whereHas('coupons', function ($q) use ($request) {
+                $q->where('code', $request->coupon);
+            });
         }
+        // if ($request->coupon) {
+        //     $coupon = DiscountCoupon::where('code', $request->coupon)->first();
+        //     if ($coupon) {
+        //         $products->whereHas('coupons', function ($q) use ($coupon) {
+        //             $q->where('discount_coupons.id', $coupon->id);
+        //         });
+        //     } else {
+        //         $products->whereRaw('0=1'); 
+        //     }
+        // }
 
         $products = $products->paginate(10);
-
-        $data['categories'] = $categories;
-        $data['brands'] = $brands;
-        $data['brandsArray'] = $brandsArray;
-        $data['colors'] = $colors;
-        $data['colorsArray'] = $colorsArray;
-        $data['sizes'] = $sizes;
-        $data['sizesArray'] = $sizesArray;
-        $data['discounts'] = $discounts;
-        $data['discountArray'] = $discountArray;
-        $data['products'] = $products;
-        $data['productCount '] = $productCount;
-        $data['selectedCategory'] = $selectedCategory;
-        $data['selectedSubCategory'] = $selectedSubCategory;
-        $data['selectedSubSubCategory'] = $selectedSubSubCategory;
-        $data['subSubCategories'] = $subSubCategories;
-        
-        $data['priceMin'] = $request->get('price_min') ?? 0;
-        $data['priceMax'] = $request->get('price_max') ?? 5000;
-        $data['sort'] = $request->get('sort');
-        $data['filtersApplied'] = $filtersApplied;
-        $data['totalProducts'] = $totalProducts;
-
-        return view('front.shop.index',$data);
+       
+        return view('front.shop.index', compact(
+            'categories', 'brands', 'brandsArray', 'colors', 'colorsArray', 'sizes', 'sizesArray', 
+            'discounts', 'discountArray', 'products', 'productCount', 'selected_item1', 
+            'selected_item2', 'selected_item3', 'item3', 'filtersApplied', 'totalProducts'
+        ) + [
+            'priceMin' => $request->get('price_min', 0),
+            'priceMax' => $request->get('price_max', 5000),
+            'sort'     => $request->get('sort'),
+        ]);
     }
 
 
@@ -317,28 +226,28 @@ class ShopController extends Controller {
             abort(404);
         }
 
-        $selectedCategory = null;
-        $selectedSubCategory = null;
-        $selectedSubSubCategory = null;
+        $selected_item1 = null;
+        $selected_item2 = null;
+        $selected_item3 = null;
 
         if (!empty($categorySlug)) {
-            $selectedCategory = Category::where('category_slug', $categorySlug)->first();
-            if ($selectedCategory) {
-                $products = $product->where('category_id', $selectedCategory->id);
+            $selected_item1 = Category::where('category_slug', $categorySlug)->first();
+            if ($selected_item1) {
+                $products = $product->where('category_id', $selected_item1->id);
             }
         }
 
         if (!empty($subCategorySlug)) {
-            $selectedSubCategory = SubCategory::where('sub_category_slug', $subCategorySlug)->first();
-            if ($selectedSubCategory) {
-                $products = $products->where('sub_category_id', $selectedSubCategory->id);
+            $selected_item2 = SubCategory::where('sub_category_slug', $subCategorySlug)->first();
+            if ($selected_item2) {
+                $products = $products->where('sub_category_id', $selected_item2->id);
             }
         }
 
         if (!empty($subSubCategory)) {
-            $selectedSubSubCategory = SubSubCategory::where('sub2_category_slug', $subSubCategory)->first();
-            if ($selectedSubSubCategory) {
-                $products = $products->where('sub_sub_category_id', $selectedSubSubCategory->id);
+            $selected_item3 = SubSubCategory::where('sub_sub_category_slug', $subSubCategory)->first();
+            if ($selected_item3) {
+                $products = $products->where('sub_sub_category_id', $selected_item3->id);
             }
         }
 
@@ -377,9 +286,9 @@ class ShopController extends Controller {
         $data['colors'] = $colors;        
         $data['sizes'] = $sizes;
         $data['relatedProducts'] = $relatedProducts;
-        $data['selectedCategory'] = $selectedCategory;
-        $data['selectedSubCategory'] = $selectedSubCategory;
-        $data['selectedSubSubCategory'] = $selectedSubSubCategory;
+        $data['selected_item1'] = $selected_item1;
+        $data['selected_item2'] = $selected_item2;
+        $data['selected_item3'] = $selected_item3;
 
         return view('front.products.index',$data);
     }
