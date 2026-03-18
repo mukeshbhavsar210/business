@@ -26,7 +26,7 @@
                 $product->subSubCategory->subCategory->sub_category_slug,
                 $product->subSubCategory->sub2_category_slug
             ]) }}">
-                {{ $product->subSubCategory->sub2_category_name }}
+                {{ $product->subSubCategory->sub_sub_category_name }}
             </a>
         </li>
         

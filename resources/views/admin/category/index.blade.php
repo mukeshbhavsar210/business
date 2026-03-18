@@ -70,9 +70,14 @@
                                 </div>
                                 <div class="flex-grow-1">
                                     <h5>{{ $category->category_name }}</h5>
-                                    <p class="mb-0 text-muted">Order: {{ $category->menu_order }}</p>
-                                    <p class="mb-0 text-muted">Show: {{ $category->showHome }}</p>
+                                    <p class="mb-0 text-muted">Order: {{ $category->menu_order }}</p>                                    
                                 </div>
+
+                                @if ($category->status == 1)  
+                                    <span class="sprites green-tick-icon"></span>
+                                @else
+                                    <span class="sprites red-tick-icon"></span>
+                                @endif                                 
                                 <div class="counts">{{ $category->sub_categories_count }}</div>
                             </div>
                         </div>
@@ -122,8 +127,8 @@
                                                             <div class="chip">
                                                                 <span>{{ $child->sub_sub_category_name }}</span>
                                                                 <span>
-                                                                    <a href="#" onclick="deleteSub2Category({{ $child->id }})">
-                                                                        <i class="las la-trash-alt text-secondary fs-18"></i>
+                                                                    <a href="#" onclick="deleteSub2Category({{ $child->id }})" class="delete-icon">
+                                                                        <span class="sprites"></span>
                                                                     </a>                                                                            
                                                                 </span>
                                                             </div>

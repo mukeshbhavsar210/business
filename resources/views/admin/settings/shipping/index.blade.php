@@ -68,8 +68,8 @@
                         <td>{{ ($shipping->state_id == 'rest_of_state') ? 'Rest of the state 2' : $shipping->name }}</td>
                         <td>₹{{ $shipping->amount }}.00</td>
                         <td>
-                            <a href="javascript:void(0);" onclick="deleteRecord( {{ $shipping->id}} )" class="text-danger w-4 h-4">
-                                <i class="las la-trash-alt text-secondary fs-18"></i>
+                            <a href="javascript:void(0);" onclick="deleteRecord( {{ $shipping->id}} )" class="delete-icon">
+                                <span class="sprites"></span>
                             </a>
                         </td>
                     </tr>

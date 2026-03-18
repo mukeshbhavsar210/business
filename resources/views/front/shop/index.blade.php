@@ -55,33 +55,17 @@
                 @endif
             </div>                                    
 
-            @if($selectedSubCategory)                    
-                @foreach($subSubCategories as $sub2)
-                    <x-filter-checkbox  :items="$subSubCategories" type="sub2" valueField="sub2_category_slug" labelField="sub2_category_name" nameClass="name" title="Categories" :showColor="false" />
-
-                    {{-- <div class="form-check">
-                        <a href="javascript:0;" class="link">
-                            <label class="form-check-label" for="sub2-{{ $sub2->id }}">
-                                <input {{ (request()->get('sub2') && in_array($sub2->sub2_category_slug, explode(',', request()->get('sub2')))) ? 'checked' : '' }}
-                                class="form-check-input sub2-label" type="checkbox" value="{{ $sub2->sub2_category_slug }}" id="sub2-{{ $sub2->id }}">
-                                <span class="name">{{ $sub2->sub2_category_name }}</span>
-                                <span class="text-muted">({{ $sub2->products_count }})</span>                            
-                            </label>
-                        </a>
-                    </div> --}}
-                @endforeach
-            @endif            
-
-            <x-filter-checkbox  :items="$brands" type="brand" valueField="slug" labelField="name" nameClass="name" title="Brands" :showColor="false" :limit="20" />
+            <x-filters :items="$item3" type="item" valueField="sub_sub_category_slug" labelField="sub_sub_category_name" nameClass="name" title="Categories" :showColor="false" />
+            <x-filters :items="$brands" type="brand" valueField="slug" labelField="name" nameClass="name" title="Brands" :showColor="false" :limit="17" />
 
             <div class="filter-group">
                 <h5 class="h5 mb-2">Price</h5>
                 <input type="text" class="js-range-slider" name="my_range" value="" />
             </div>
 
-            <x-filter-checkbox :items="$sizes" type="size" valueField="name" labelField="name" title="Sizes" :showColor="false" />
-            <x-filter-checkbox :items="$colors" type="color" valueField="name" labelField="name" title="Color" :showColor="true" />
-            <x-filter-checkbox :items="$discounts" type="discount" valueField="name" labelField="name" title="Discount" :showColor="false" />
+            <x-filters :items="$sizes" type="size" valueField="name" labelField="name" title="Sizes" :showColor="false" />
+            <x-filters :items="$colors" type="color" valueField="name" labelField="name" title="Color" :showColor="true" />
+            <x-filters :items="$discounts" type="discount" valueField="name" labelField="name" title="Discount" :showColor="false" />
         </div>
 
         <div class="col-md-10 col-12">
@@ -130,14 +114,29 @@
             window.location.href = url.toString();
         });
 
-
-
-        $(".sub2-label").on('change', apply_category_filters);
+        $(".item-label").on('change', apply_category_filters);
         $(".brand-label").on('change', apply_brand_filters);
         $(".size-label").on('change', apply_size_filters);
         $(".color-label").on('change', apply_color_filters);        
         $(".discount-label").on('change', apply_discount_filters);
         $("#sortFilter").on('change', apply_sort_filters);
+
+        function apply_category_filters(){
+            var item = [];
+            $(".item-label").each(function(){
+                if ($(this).is(":checked") == true){
+                    item.push($(this).val());
+                }
+            });
+
+            var url = '{{ url()->current() }}?';
+
+            if (item.length > 0) {
+                //url += '&item=' + item.toString();
+                url += 'item=' + item.toString();
+            }
+            window.location.href = url;
+        }
 
         function apply_brand_filters(){
             var brands = [];
@@ -247,25 +246,9 @@
             params.set('price_max', max);
 
             window.location.href = '{{ url()->current() }}?' + params.toString();
-        }
+        }        
 
         
-
-        function apply_category_filters(){
-            var sub2 = [];
-            $(".sub2-label").each(function(){
-                if ($(this).is(":checked") == true){
-                    sub2.push($(this).val());
-                }
-            });
-
-            var url = '{{ url()->current() }}?';
-
-            if (sub2.length > 0) {
-                url += '&sub2=' + sub2.toString();
-            }
-            window.location.href = url;
-        }
       
         // function apply_search_filters(){            
         //     var keyword = $('#search').val();

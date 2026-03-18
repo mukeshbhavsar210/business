@@ -414,7 +414,7 @@ class CategoryController extends Controller {
         }
 
         $validator = Validator::make($request->all(), [
-            //'sub2_category_name' => 'required',
+            //'sub_sub_category_name' => 'required',
             //'slug' => 'required|unique:sub_sub_categories,slug,'.$sub2Category->id.',id',
             //'category' => 'required',                        
         ]);
@@ -422,8 +422,8 @@ class CategoryController extends Controller {
         if ($validator->passes()) {
             $sub2Category->category_id = $request->category_id;
             $sub2Category->sub_category_id = $request->sub_category_id;
-            $sub2Category->sub2_category_name = $request->sub2_category_name;
-            $sub2Category->sub2_category_slug = $request->sub2_category_slug;                   
+            $sub2Category->sub_sub_category_name = $request->sub_sub_category_name;
+            $sub2Category->sub_sub_category_slug = $request->sub_sub_category_slug;                   
             $sub2Category->save();
 
             $request->session()->flash('success', 'Sub2 Category updated successfully');

@@ -208,7 +208,7 @@
                             <option value="">Sub2 category</option>
                             @if ($subsubcategories->isNotEmpty())
                                 @foreach ($subsubcategories as $value)
-                                    <option {{ ($product->sub_sub_category_id == $value->id) ? 'selected' : '' }} value="{{ $value->id }}">{{ $value->sub2_category_name }}</option>
+                                    <option {{ ($product->sub_sub_category_id == $value->id) ? 'selected' : '' }} value="{{ $value->id }}">{{ $value->sub_sub_category_name }}</option>
                                 @endforeach
                             @endif
                         </select>    
@@ -428,7 +428,7 @@
                     $.each(response.subSubCategories, function(key, item){
                         $("#sub_sub_category").append(
                             `<option value="${item.id}">
-                                ${item.sub2_category_name}
+                                ${item.sub_sub_category_name}
                             </option>`
                         )
                     });

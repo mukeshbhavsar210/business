@@ -95,23 +95,20 @@
                                 <td>{{ $user->gender == 'male' ? 'Male' : 'Female' }}</td>
                                 <td>{{ \Carbon\Carbon::parse($user->birthdate)->format('d, M Y')  }}</td>
                                 <td>
-                                    @if($user->status == 1)
-                                        <svg class="text-success-500 h-6 w-6 text-success" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>
-                                    @else
+                                     <div class="flex">
+                                        @if ($user->status == 1)  
+                                            <span class="sprites green-tick-icon"></span>
+                                        @else
+                                            <span class="sprites red-tick-icon"></span>
+                                        @endif
 
-                                    <svg class="text-danger h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
-                                    @endif
-
-                                    <a href="{{ route('users.edit', $user->id ) }}">
-                                        <i class="las la-pen text-secondary fs-18"></i>
-                                    </a>
-                                    <a href="#" onclick="deleteUser({{ $user->id }})" class="text-danger w-4 h-4">
-                                        <i class="las la-trash-alt text-secondary fs-18"></i>
-                                    </a>
+                                        <a href="{{ route('users.edit', $user->id ) }}" class="edit-icon">
+                                            <span class="sprites"></span>
+                                        </a>
+                                        <a href="#" onclick="deleteUser({{ $user->id }})" class="delete-icon" >
+                                            <span class="sprites"></span>
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach
