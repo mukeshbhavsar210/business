@@ -29,10 +29,12 @@ Route::post('/set-intended-url', function (Request $request) {session(['url.inte
 
 Route::controller(ShopController::class)->group(function() {
     Route::get('/products/{item1?}/{item2?}/{item3?}','listing')->name('front.shop');
+    Route::get('/details/{item1?}-{item2?}-{item3?}/{slug}', 'product')->name('front.product');    
+
     Route::get('/category/{item1?}/{item2?}/{item3?}','category')->name('front.category');
     Route::get('/subcategory/{item1?}/{item2?}/{item3?}','subcategory')->name('front.subcategory');
-    //Route::get('/category/{item1?}/','category')->name('front.category');
-    Route::get('/product/{item1?}/{item2?}/{slug}', 'product')->name('front.product');    
+    //Route::get('/category/{item1?}/','category')->name('front.category');   
+     
     Route::get('/product/{id}/reviews', 'allReviews')->name('product.reviews');
     Route::post('/rate-product', 'rating_store')->name('rate.product');
 });

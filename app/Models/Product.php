@@ -74,17 +74,17 @@ class Product extends Model {
         return $this->belongsTo(Category::class);
     }
 
-    public function subcategory() {
+    public function subCategory() {
         return $this->belongsTo(SubCategory::class);
-    }
-
-    public function subcategory_id() {
-        return $this->belongsTo(SubCategory::class,'sub_category_id');
     }
 
     public function subSubCategory() {
         return $this->belongsTo(SubSubCategory::class);
     }
+
+    // public function subCategory_id() {
+    //     return $this->belongsTo(SubCategory::class,'sub_category_id');
+    // }
 
     public function discount_filter(){
         return $this->belongsTo(DiscountPercentage::class,'discount_percentage_id');

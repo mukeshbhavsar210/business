@@ -49,21 +49,56 @@
                     @if ($product->images && $product->images->count() > 0)
                         @foreach($product->images as $image)
                             <div class="slider-item">   
-                                {{-- <a href="{{ route('front.product', [$product->category->category_slug]) }}" >                                    
-                                    <img src="{{ asset('uploads/product/small/'.$image->image) }}" class="img-fluid" alt="{{ $product->title }}" >
-                                </a>  --}}
-                                {{-- <a href="{{ route('front.product', [$selected_item1->category_slug, $selected_item2, $product->slug]) }}" class="product-img">
-                                    <img src="{{ asset('uploads/product/small/'.$image->image) }}" class="img-fluid" alt="{{ $product->title }}" >
-                                </a>                                --}}
-
-                                {{-- @dd($selected_item1->category_slug); --}}
-                                {{-- @dd($selected_item2->sub_category_slug); --}}
-
+                                {{-- <a href="{{ route('front.product', ['slug' => $product->slug]) }}">
+                                    <img src="{{ asset('uploads/product/small/'.$product->images->first()->image) }}" >
+                                </a> --}}
+                                {{-- <a href="{{ route('front.product.detail', [
+                                    $product->category->category_slug,
+                                    $product->subCategory->sub_category_slug,
+                                    $product->subSubCategory->sub_sub_category_slug,
+                                    $product->slug
+                                ]) }}">
                                 <img src="{{ asset('uploads/product/small/'.$image->image) }}" class="img-fluid" alt="{{ $product->title }}" >
+                                </a> --}}
 
                                 {{-- <a href="{{ route('front.shop', [$selected_item1->category_slug, $product->slug]) }}">
                                     <img src="{{ asset('uploads/product/small/'.$image->image) }}" class="img-fluid" alt="{{ $product->title }}" >
                                 </a> --}}
+
+                                {{-- @if($item1 && $item2 && $item3)
+                                    <a href="{{ route('front.product', [
+                                        $item1->category_slug,
+                                        $item2->sub_category_slug,
+                                        $item3->sub_sub_category_slug,
+                                        $product->slug
+                                    ]) }}">
+                                        <img src="{{ asset('uploads/product/small/'.$image->image) }}" class="img-fluid" alt="{{ $product->title }}" >
+                                    </a>
+                                @endif --}}
+
+                                {{-- @if($item1 && $item2 && $item3)
+                                    <a href="{{ route('front.product', [
+                                        $item1->category_slug,
+                                        $item2->sub_category_slug,
+                                        $item3->sub_sub_category_slug,
+                                        $product->slug
+                                    ]) }}">
+                                        <img src="{{ asset('uploads/product/small/'.$image->image) }}" class="img-fluid" alt="{{ $product->title }}" >
+                                    </a>
+                                @endif --}}
+                                
+                                {{-- <a href="{{ route('front.product', ['slug' => $product->slug]) }}" class="variant-btn {{ request('variant') ? '' : 'active' }}">
+                                    <img src="{{ asset('uploads/product/small/'.$product->images->first()->image) }}" >
+                                </a> --}}
+
+                                <a href="{{ route('front.product', [
+                                    $product->category->category_slug,  
+                                    $product->subCategory->sub_category_slug,                               
+                                    $product->subSubCategory->sub_sub_category_slug,
+                                    'slug' => $product->slug]) }}">
+                                    <img src="{{ asset('uploads/product/small/'.$product->images->first()->image) }}" >
+                                </a>
+
                             </div>
                         @endforeach
                     @else
