@@ -257,7 +257,7 @@
             <h3>SIMILAR PRODUCTS</h3>
             @foreach($relatedProducts as $product)    
                 <div class="col-md-2 col-6">
-                    <x-product-card :product="$product" :showWishlist="false"/>
+                    <x-products :product="$product" :showWishlist="false"/>
                 </div>
             @endforeach       
         </div>

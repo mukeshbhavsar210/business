@@ -9,19 +9,18 @@ use App\Models\Order;
 use App\Models\Page;
 use App\Models\ProductImage;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Mail;  
 
     function getCategories() {
-        return Category::with([
-                'subCategories.subSubCategories'
-            ])
+        return Category::with(['subCategories.subSubCategories'])
             ->withCount('products')
+            ->where('status', 1)
             ->orderBy('menu_order', 'asc')
-            ->where('status', 1)            
             ->orderBy('id', 'DESC')
-            ->take(4)
+            ->take(20)
             ->get();
     }
+    
 
     function getProductImage($productId){
         return ProductImage::where('product_id',$productId)->first();

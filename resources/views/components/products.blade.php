@@ -1,8 +1,12 @@
 @props([
     'product' => null,
+    'selected_item1' => null,
+    'selected_item2' => null,
+    'selected_item3' => null,
     'category' => null,
+    'subcategory' => null,
     'wishlist' => null,
-    'class' => null,
+    'class' => null,    
     'showWishlist' => true,
     'slider' => true,
     'hover' => true,    
@@ -16,6 +20,8 @@
                 $count  = $product->rating_count ?? 0;
             @endphp
             
+            
+
             @if ($count > 0)
                 <div class="rating-wrapper">
                     <small>
@@ -42,10 +48,22 @@
                 @if($slider)
                     @if ($product->images && $product->images->count() > 0)
                         @foreach($product->images as $image)
-                            <div class="slider-item">
-                                <a href="{{ route('front.product',$product->slug) }}" class="product-img" target="_blank">
+                            <div class="slider-item">   
+                                {{-- <a href="{{ route('front.product', [$product->category->category_slug]) }}" >                                    
                                     <img src="{{ asset('uploads/product/small/'.$image->image) }}" class="img-fluid" alt="{{ $product->title }}" >
-                                </a>
+                                </a>  --}}
+                                {{-- <a href="{{ route('front.product', [$selected_item1->category_slug, $selected_item2, $product->slug]) }}" class="product-img">
+                                    <img src="{{ asset('uploads/product/small/'.$image->image) }}" class="img-fluid" alt="{{ $product->title }}" >
+                                </a>                                --}}
+
+                                {{-- @dd($selected_item1->category_slug); --}}
+                                {{-- @dd($selected_item2->sub_category_slug); --}}
+
+                                <img src="{{ asset('uploads/product/small/'.$image->image) }}" class="img-fluid" alt="{{ $product->title }}" >
+
+                                {{-- <a href="{{ route('front.shop', [$selected_item1->category_slug, $product->slug]) }}">
+                                    <img src="{{ asset('uploads/product/small/'.$image->image) }}" class="img-fluid" alt="{{ $product->title }}" >
+                                </a> --}}
                             </div>
                         @endforeach
                     @else
@@ -116,25 +134,51 @@
                 @endif
             </div>  
             
-        @elseif($category)
-            <a href="{{ route('front.category.shop', [$category->category_slug]) }}" >
+        @elseif($subcategory)        
+            <a href="{{ route('front.subcategory', [$subcategory->sub_category_slug]) }}" >
+                @if ($subcategory->image != "")
+                    <img src="{{ asset('uploads/category/'.$subcategory->image) }} " alt="" class="product-img rounded">
+                @else
+                    <img class="card-img-top" src="{{ asset('admin-assets/img/default-150x150.png') }}" alt="" />
+                @endif
+            </a>
+
+            <div class="hover-product">   
+                {{-- <a href="{{ route('front.shop', [$item1->category_slug, $item2->sub_category_slug]) }}">
+                    Shop Now
+                </a>                  --}}
+                <a href="{{ route('front.subcategory', [$subcategory->sub_category_slug]) }}" class="btn btn-primary">Shop Now</a>
+            </div>
+
+            <div class="product-info">
+                <h2>{{ Str::limit($subcategory->sub_category_name, 27, '...') }}</h2>
+                {{-- <h2>{{ Str::limit($category->category_name, 27, '...') }}</h2> --}}
+            </div>      
+            
+            <div class="price">
+                <p class="text-muted"><b>{{ $category->products_count }} Products</b></p>
+            </div>
+
+            {{-- @elseif($category)        
+            <a href="{{ route('front.category', [$category->category_slug]) }}" >
                 @if ($category->image != "")
                     <img src="{{ asset('uploads/category/'.$category->image) }} " alt="" class="product-img rounded">
                 @else
                     <img class="card-img-top" src="{{ asset('admin-assets/img/default-150x150.png') }}" alt="" />
                 @endif
             </a>
+
             <div class="hover-product">                    
-                <a href="{{ route('front.category.shop', [$category->category_slug]) }}" class="btn btn-primary">Shop Now</a>                
+                <a href="{{ route('front.category', [$category->category_slug]) }}" class="btn btn-primary">Shop Now</a>                
             </div>
 
             <div class="product-info">
-                <h2>{{ Str::limit($category->category_name, 27, '...') }}</h2>                
+                <h2>{{ Str::limit($category->category_name, 27, '...') }}</h2>
             </div>      
             
             <div class="price">
                 <p class="text-muted"><b>{{ $category->products_count }} Products</b></p>
-            </div>
+            </div> --}}
 
         @elseif($wishlist)
             @if ($wishlist->product->qty < 1)

@@ -23,10 +23,10 @@
         <div class="col-md-10 col-12">
             <div class="row">
                 <div class="col-md-10 col-12">
-                    <h6 class="h6">
-                        {{-- <b>{{ $selectedCategory->category_name }} {{ $selectedSubCategory->sub_category_name }}</b> - --}}
-                        <span class="text-muted">{{ $products->total() }} items</span>
-                    </h6>                    
+                    <p>                                                
+                        <b>{{ $selected_item1->category_name ?? '' }} / {{ $selected_item2->sub_category_name ?? '' }} </b>
+                        <span class="text-muted">({{ $products->total() }} items)</span>
+                    </p>                    
                 </div>
 
                 <div class="col-md-2 col-12">
@@ -54,8 +54,8 @@
                     <a href="{{ url()->current() }}" class="btn btn-outline-dark btn-sm">Clear All</a>                    
                 @endif
             </div>                                    
-
-            <x-filters :items="$item3" type="item" valueField="sub_sub_category_slug" labelField="sub_sub_category_name" nameClass="name" title="Categories" :showColor="false" />
+            
+            <x-filters :items="$item3" type="category" valueField="sub_sub_category_slug" labelField="sub_sub_category_name" nameClass="name" title="Categories" :showColor="false" :limit="17" :selected="$categoryArray" />
             <x-filters :items="$brands" type="brand" valueField="slug" labelField="name" nameClass="name" title="Brands" :showColor="false" :limit="17" />
 
             <div class="filter-group">
@@ -72,7 +72,7 @@
             <div class="row">
                 @foreach($products as $product)         
                     <div class="col-md-3 col-6">
-                        <x-product-card :product="$product" />                    
+                        <x-products :product="$product" :selected_item1="$selected_item1" :selected_item2="$selected_item2" :selected_item3="$selected_item3" />
                     </div>
                 @endforeach
             </div>
@@ -114,27 +114,25 @@
             window.location.href = url.toString();
         });
 
-        $(".item-label").on('change', apply_category_filters);
+        // $(".item-label").on('change', apply_category_filters);
+        $(".category-label").on('change', apply_category_filters);
         $(".brand-label").on('change', apply_brand_filters);
         $(".size-label").on('change', apply_size_filters);
         $(".color-label").on('change', apply_color_filters);        
         $(".discount-label").on('change', apply_discount_filters);
-        $("#sortFilter").on('change', apply_sort_filters);
+        $("#sortFilter").on('change', apply_sort_filters);      
 
         function apply_category_filters(){
-            var item = [];
-            $(".item-label").each(function(){
+            var category = [];
+            $(".category-label").each(function(){
                 if ($(this).is(":checked") == true){
-                    item.push($(this).val());
+                    category.push($(this).val());
                 }
-            });
-
+            });           
             var url = '{{ url()->current() }}?';
-
-            if (item.length > 0) {
-                //url += '&item=' + item.toString();
-                url += 'item=' + item.toString();
-            }
+            if (category.length > 0) {
+                url += '&category='+category.toString();
+            }            
             window.location.href = url;
         }
 
@@ -247,9 +245,6 @@
 
             window.location.href = '{{ url()->current() }}?' + params.toString();
         }        
-
-        
-      
         // function apply_search_filters(){            
         //     var keyword = $('#search').val();
         //     if(keyword.length > 0){
