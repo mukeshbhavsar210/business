@@ -9,7 +9,7 @@
 							@if (getCategories()->isNotEmpty())
 								@foreach (getCategories() as $category)
 									<li>
-										<a href="{{ route('front.category.shop', [$category->category_slug]) }}" title="{{ $category->category_name }}" >
+										<a href="{{ route('front.category', [$category->category_slug]) }}" title="{{ $category->category_name }}" >
 											{{ $category->category_name }}
 										</a>
 									</li>

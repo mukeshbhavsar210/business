@@ -97,6 +97,8 @@ a:hover { text-decoration: none; color: var(--black); }
 .caps-btn { text-transform: uppercase; }
 .small-font { font-size: 13px !important;}
 
+.home-title { text-transform: uppercase; margin-bottom: 20px; letter-spacing: 2px; word-spacing: 3px;}
+
 /* Works in Chrome, Edge, Safari */
 ::-webkit-scrollbar {
     width: 8px;

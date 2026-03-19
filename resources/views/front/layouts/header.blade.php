@@ -19,7 +19,7 @@
                             @if (getCategories()->isNotEmpty())
                                 @foreach (getCategories() as $item1)
                                     <li class="nav-item dropdown position-static">
-                                        <a href="{{ route('front.category.shop', [$item1->category_slug]) }}" class="nav-link dropdown-toggle" >
+                                        <a href="{{ route('front.category', [$item1->category_slug]) }}" class="nav-link dropdown-toggle" >
                                             {{ $item1->category_name }}
                                         </a>
 
