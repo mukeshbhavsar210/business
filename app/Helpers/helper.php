@@ -1,15 +1,23 @@
 <?php
 
-use App\Mail\OrderEmail;
 use App\Models\Category;
 use App\Models\State;
-use App\Models\CustomerAddress;
 use App\Models\Wishlist;
+use App\Models\Brand;
 use App\Models\Order;
 use App\Models\Page;
 use App\Models\ProductImage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;  
+
+    function getBrands() {
+        return Brand::withCount('products')
+            ->where('status', 1)
+            ->having('products_count', '>', 0) 
+            ->orderBy('brand_order', 'DESC')
+            ->take(10)
+            ->get();
+    }
 
     function getCategories() {
         return Category::with(['subCategories.subSubCategories'])

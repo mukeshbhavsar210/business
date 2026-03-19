@@ -99,6 +99,18 @@ a:hover { text-decoration: none; color: var(--black); }
 
 .home-title { text-transform: uppercase; margin-bottom: 20px; letter-spacing: 2px; word-spacing: 3px;}
 
+.brand-wrapper { }
+.brand-slider { width: 100%; text-align: center;}
+.brand-slider .slick-track { display: flex !important; }
+.brand-slider .brand-item { display: flex; }
+.brand-slider .brand-item img { transition: 0.3s; border-radius: 0 !important; }
+.brand-slider .brand-item .brand-details { color: var(--black); text-decoration: none;}
+.brand-slider .brand-item .brand-details .photo { position: relative;}
+.brand-slider .brand-item .brand-details .photo .logo { position: absolute; bottom:10px; left:25%; width: 50%; }
+.brand-slider .brand-item .brand-details .details { margin-top: 10px;}
+.brand-slider .brand-item .brand-details .details .title { font-size: 16px;}
+.brand-slider .brand-item .brand-details .details .discount { font-size: 13px; font-weight: bold; text-transform: uppercase;}
+
 /* Works in Chrome, Edge, Safari */
 ::-webkit-scrollbar {
     width: 8px;

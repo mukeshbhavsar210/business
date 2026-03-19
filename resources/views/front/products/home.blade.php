@@ -3,9 +3,17 @@
 @section('title', 'Online Fashion Shopping for Men and Women')
 
 @section('content')
-    <div class="container">        
-        <h2 class="home-title">Shop By Category</h2>
-        
+    <div class="container-fluid">
+        <h2 class="home-title">Global Brands</h2>        
+        <div class="brand-slider">
+            @foreach(getBrands() as $brand)                
+                <div class="brand-item">
+                    <x-products :brand="$brand" :slider="true" :hover="true" />
+                </div>
+            @endforeach
+        </div>
+
+        <h2 class="home-title mt-5">Shop By Category</h2>                
         <div class="row">
             @foreach(getCategories() as $category)                
                 @foreach($category->subCategories as $subCategory)    

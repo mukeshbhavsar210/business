@@ -6,21 +6,20 @@
     'category' => null,
     'subcategory' => null,
     'wishlist' => null,
-    'class' => null,    
+    'class' => null,   
+    'brand' => null, 
     'showWishlist' => true,
     'slider' => true,
     'hover' => true,    
 ])
 
-<div class="product-card">                                
-    <div class="product-image-wrapper {{ $class }}">
-        @if($product)
+@if($product)
+    <div class="product-card">
+        <div class="product-image-wrapper {{ $class }}">
             @php
                 $rating = $product->average_rating ?? 0;
                 $count  = $product->rating_count ?? 0;
             @endphp
-            
-            
 
             @if ($count > 0)
                 <div class="rating-wrapper">
@@ -49,56 +48,13 @@
                     @if ($product->images && $product->images->count() > 0)
                         @foreach($product->images as $image)
                             <div class="slider-item">   
-                                {{-- <a href="{{ route('front.product', ['slug' => $product->slug]) }}">
-                                    <img src="{{ asset('uploads/product/small/'.$product->images->first()->image) }}" >
-                                </a> --}}
-                                {{-- <a href="{{ route('front.product.detail', [
-                                    $product->category->category_slug,
-                                    $product->subCategory->sub_category_slug,
-                                    $product->subSubCategory->sub_sub_category_slug,
-                                    $product->slug
-                                ]) }}">
-                                <img src="{{ asset('uploads/product/small/'.$image->image) }}" class="img-fluid" alt="{{ $product->title }}" >
-                                </a> --}}
-
-                                {{-- <a href="{{ route('front.shop', [$selected_item1->category_slug, $product->slug]) }}">
-                                    <img src="{{ asset('uploads/product/small/'.$image->image) }}" class="img-fluid" alt="{{ $product->title }}" >
-                                </a> --}}
-
-                                {{-- @if($item1 && $item2 && $item3)
-                                    <a href="{{ route('front.product', [
-                                        $item1->category_slug,
-                                        $item2->sub_category_slug,
-                                        $item3->sub_sub_category_slug,
-                                        $product->slug
-                                    ]) }}">
-                                        <img src="{{ asset('uploads/product/small/'.$image->image) }}" class="img-fluid" alt="{{ $product->title }}" >
-                                    </a>
-                                @endif --}}
-
-                                {{-- @if($item1 && $item2 && $item3)
-                                    <a href="{{ route('front.product', [
-                                        $item1->category_slug,
-                                        $item2->sub_category_slug,
-                                        $item3->sub_sub_category_slug,
-                                        $product->slug
-                                    ]) }}">
-                                        <img src="{{ asset('uploads/product/small/'.$image->image) }}" class="img-fluid" alt="{{ $product->title }}" >
-                                    </a>
-                                @endif --}}
-                                
-                                {{-- <a href="{{ route('front.product', ['slug' => $product->slug]) }}" class="variant-btn {{ request('variant') ? '' : 'active' }}">
-                                    <img src="{{ asset('uploads/product/small/'.$product->images->first()->image) }}" >
-                                </a> --}}
-
                                 <a href="{{ route('front.product', [
                                     $product->category->category_slug,  
                                     $product->subCategory->sub_category_slug,                               
                                     $product->subSubCategory->sub_sub_category_slug,
-                                    'slug' => $product->slug]) }}">
+                                    'slug' => $product->slug]) }}" target="_blank" title="{{ $product->slug }}">
                                     <img src="{{ asset('uploads/product/small/'.$product->images->first()->image) }}" >
                                 </a>
-
                             </div>
                         @endforeach
                     @else
@@ -168,8 +124,12 @@
                     <span class="dark">₹{{ $product->price }}</span>                    
                 @endif
             </div>  
-            
-        @elseif($subcategory)        
+        </div>
+    </div> 
+
+@elseif($subcategory)    
+    <div class="product-card">
+        <div class="product-image-wrapper {{ $class }}">    
             <a href="{{ route('front.subcategory', [$subcategory->sub_category_slug]) }}" >
                 @if ($subcategory->image != "")
                     <img src="{{ asset('uploads/category/'.$subcategory->image) }} " alt="" class="product-img rounded">
@@ -214,8 +174,12 @@
             <div class="price">
                 <p class="text-muted"><b>{{ $category->products_count }} Products</b></p>
             </div> --}}
+        </div>
+    </div>
 
-        @elseif($wishlist)
+@elseif($wishlist)
+    <div class="product-card">
+        <div class="product-image-wrapper {{ $class }}">   
             @if ($wishlist->product->qty < 1)
                 <div class="out-stock"><span>Out of Stock</span></div>
             @endif   
@@ -260,6 +224,20 @@
                     <span class="discount">{{ $discount }}% OFF</span>
                 @endif                                        
             </div>
-        @endif
+        </div>
     </div>
-</div>
+
+@elseif($brand)        
+    @if($slider)
+        <a href="{{ route('front.shop') }}?brand={{ $brand->slug }}" class="brand-details">
+            <div class="photo">
+                <img src="{{ asset('uploads/brands/' . $brand->logo) }}" class="logo">
+                <img src="{{ asset('uploads/brands/' . $brand->image) }}" class="model">
+            </div>
+            <div class="details">
+                <p class="title">{{ $brand->description }}</p>
+                <p class="discount">{{ $brand->discount }}</p>
+            </div>
+        </a>
+    @endif        
+@endif

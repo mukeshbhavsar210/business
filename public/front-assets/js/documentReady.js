@@ -121,7 +121,34 @@ $(document).ready(function(){
             $slider.slick('slickGoTo', 0); // optional → reset to first image
         });
     });
+    
 
+    $('.brand-slider').slick({
+        slidesToShow: 5,
+        slidesToScroll: 1,
+        autoplay: true,
+        arrows: true,
+        dots: true,
+        infinite: true,
+        responsive: [
+            {
+                breakpoint: 1200,
+                settings: { slidesToShow: 5 }
+            },
+            {
+                breakpoint: 992,
+                settings: { slidesToShow: 4 }
+            },
+            {
+                breakpoint: 768,
+                settings: { slidesToShow: 3 }
+            },
+            {
+                breakpoint: 576,
+                settings: { slidesToShow: 2 }
+            }
+        ]
+    });
     
     $("#related-products").not('.slick-initialized').slick({
         centerMode: false,
@@ -170,12 +197,11 @@ $(document).ready(function(){
         },{
             breakpoint: 576,
             settings: {
-                 centerMode: false,
+                centerMode: false,
                 slidesToShow: 1,
                 slidesToScroll: 1,      
             }
-        }] 
-    
+        }]     
     });
 });
 

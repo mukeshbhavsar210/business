@@ -72,7 +72,7 @@
             <div class="row">
                 @foreach($products as $product)         
                     <div class="col-md-3 col-6">  
-                        <x-products :product="$product"  />
+                        <x-products :product="$product" />
                     </div>
                 @endforeach
             </div>
