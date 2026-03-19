@@ -17,23 +17,20 @@ use App\Models\SubSubCategory;
 use Illuminate\Http\Request;
 
 class ShopController extends Controller {
-    public function listing(Request $request, $item1=null, $item2=null, $item3=null) {    
-        $filtersArray = [            
-            'category' => [],
-            'brands'   => [],
-            'colors'   => [],
-            'sizes'    => [],
-            'discount' => [],
-        ];
 
-        $selectedItems = [
-            'item1' => null,
-            'item2' => null,
-            'item3' => null,
-        ];
+    public function listing(Request $request, $item1=null, $item2=null, $item3=null) {    
+        $selected_item1 = null;
+        $selected_item2 = null;
+        $selected_item3 = null;
+
+        $categoryArray = [];
+        $brandsArray = [];
+        $colorsArray = [];
+        $sizesArray = [];
+        $discountArray = [];            
         
-        $categories = Category::orderBy("category_name","ASC")->with(['sub_category'])->where('status',1)->get();               
-        $products = Product::with('ratings')->where('status',1);
+        $products = Product::with(['category','subCategory','subSubCategory','ratings'])->where('status',1);
+        $categories = Category::orderBy("category_name","ASC")->with(['sub_category'])->where('status',1)->get();                       
         $productCount = Product::where('status', 1)->count();
         $totalProducts = $products->count();     
         
@@ -61,7 +58,7 @@ class ShopController extends Controller {
         }        
 
         //Category filters
-        $categoryArray = [];
+        //$categoryArray = [];
 
         if (!empty($request->get('category'))) {
             $values = explode(',', $request->get('category'));
@@ -207,12 +204,12 @@ class ShopController extends Controller {
             'priceMax' => $request->get('price_max', 5000),
             'sort'     => $request->get('sort'),
         ]);
-        
+                    
 
         return view('front.products.listing', $data);
     }
 
-    public function product($item1=null, $item2=null, $slug, Request $request) {
+    public function product($item1=null, $item2=null, $item3=null, $slug, Request $request) {
         $product = Product::where('slug',$slug)->with(['product_images', 'variants', 'subSubCategory.subCategory.category'])->first();
         $colors = Color::get();
         $sizes = Size::get();

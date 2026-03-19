@@ -71,8 +71,8 @@
         <div class="col-md-10 col-12">
             <div class="row">
                 @foreach($products as $product)         
-                    <div class="col-md-3 col-6">
-                        <x-products :product="$product" :selected_item1="$selected_item1" :selected_item2="$selected_item2" :selected_item3="$selected_item3" />
+                    <div class="col-md-3 col-6">  
+                        <x-products :product="$product"  />
                     </div>
                 @endforeach
             </div>
