@@ -232,7 +232,7 @@
         <a href="{{ route('front.shop') }}?brand={{ $brand->slug }}" class="brand-details">
             <div class="photo">
                 <img src="{{ asset('uploads/brands/' . $brand->logo) }}" class="logo">
-                <img src="{{ asset('uploads/brands/' . $brand->image) }}" class="model">
+                <img src="{{ asset('uploads/brands/' . $brand->model) }}" class="model">
             </div>
             <div class="details">
                 <p class="title">{{ $brand->description }}</p>

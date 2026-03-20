@@ -20,16 +20,25 @@
     
     <div class="row gx-1">
         <div class="col-md-9 col-12">
-            <div class="card ">
+            <div class="card mb-1">
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-12">
+                        <div class="col-md-6 col-12">
                             <div class="form-group">
                                 <label for="title">Product Title</label>
                                 <input type="text" name="title" class="form-control slug-source" value="{{ old('title', $product->title ?? '') }}" data-target="#slug">
                                 <input type="hidden" readonly name="slug" id="slug" class="form-control" placeholder="Slug" value="{{ old('title', $product->slug ?? '') }}">
                             </div>
+                        </div>
 
+                        <div class="col-md-6 col-12">
+                            <div class="form-group">
+                                <label for="short_description">Short Description</label>
+                                <input type="text" name="short_description" id="short_description" class="form-control" value="{{ old('title', $product->short_description ?? '') }}" >
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 col-12">
                             <div class="form-group">
                                 <label for="description">Description</label>
                                 <textarea name="description" class="form-control summernote" cols="30" rows="10" >                                
@@ -37,52 +46,137 @@
                                 </textarea>
                             </div>
                         </div>
-                        <div class="col-md-6 col-12">                            
-                            <div class="form-group">
-                                <label for="short_description">Short Description</label>
-                                <textarea name="short_description" id="short_description" cols="30" rows="10" class="summernote" >
-                                    {{ old('short_description', $product->short_description ?? '') }}
-                                </textarea>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-12">
+
+                        <div class="col-md-8 col-6">
                             <div class="form-group">
                                 <label for="shipping_returns">Shipping & Returns</label>
-                                <textarea name="shipping_returns" id="shipping_returns" cols="30" rows="10" class="summernote">
-                                    {{ old('shipping_returns', $product->shipping_returns ?? '') }}                                
-                                </textarea>
+                                <input type="text" name="shipping_returns" id="shipping_returns" class="form-control" value="{{ old('title', $product->shipping_returns ?? '') }}" >
                             </div>
                         </div>
-                    </div>
 
-                    <h4 class="mb-2">Product photos</h4>
-                    <div id="image" class="dropzone dz-clickable mb-2">
-                        <div class="dz-message needsclick">
-                            <br>Drop files here or click to upload.<br><br>
-                        </div>
-                    </div>
-
-                    <div class="row" id="product-gallery"></div>
-                                    
-                    @if(isset($product) && $product->images->isNotEmpty())
-                        <div id="product-gallery">
-                            <h5>Uploaded Images</h5>
-                            <div class="row">
-                                @foreach ($product->images as $image)
-                                    <div class="col-md-2" id="image-row-{{ $image->id }}">
-                                        <div class="uploaded-images">
-                                            <input type="hidden" name="image_array[]" value="{{ $image->id }}">
-                                            <img src="{{ asset('uploads/product/small/'.$image->image) }}" class="rounded" />                                            
-                                            <a href="javascript:void(0)" class="deleteCardImg" data-id="{{ $image->id }}">X</a>                                            
+                        <div class="col-md-4 col-6">
+                            <div class="flex-2">
+                                <div class="form-group">                                
+                                    <label>Is Returnable</label><br />
+                                    <div class="flex-2"> 
+                                        <div class="mt-2">                                        
+                                            <input type="hidden" name="is_returnable" value="0">
+                                            <input class="form-check-input" type="checkbox" name="is_returnable" value="1"
+                                            {{ old('is_returnable', $product->is_returnable ?? 0) == 1 ? 'checked' : '' }} >                                        
                                         </div>
+                                        <div>
+                                            <select name="return_days" id="return_days" class="form-select" style="width: 90px">
+                                                <option value="7 days"
+                                                    {{ old('return_days', $product->return_days ?? '7 days') == '7 days' ? 'selected' : '' }}>
+                                                    7 days
+                                                </option>
+
+                                                <option value="14 days"
+                                                    {{ old('return_days', $product->return_days ?? '') == '14 days' ? 'selected' : '' }}>
+                                                    14 days
+                                                </option>
+                                            </select>
+                                        </div>                                    
                                     </div>
-                                @endforeach
+                                </div>                    
+                                <div>
+                                    <label>Cash on delivery?</label><br />
+                                    <div class="mt-2">                                
+                                        <input type="hidden" name="cod" value="0">                                
+                                        <input class="form-check-input" type="checkbox" name="cod" value="1"
+                                            {{ old('cod', $product->cod ?? 0) == 1 ? 'checked' : '' }} >
+                                    </div>
+                                </div> 
+                            </div> 
+                        </div>                    
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-1">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-9 col-12">
+                            <h5 class="mb-2">Product Category</h5>
+                            <div class="row">
+                                <div class="col-md-4 col-6">
+                                    <div class="form-group">
+                                        <label for="category_id">Category</label>
+                                        <select name="category_id" id="category_id" class="form-select">
+                                            <option value="">Select a category</option>
+                                            @if ($categories->isNotEmpty())
+                                                @foreach ($categories as $value)
+                                                    <option 
+                                                        value="{{ $value->id }}"
+                                                        {{ old('category_id', $product->category_id ?? '') == $value->id ? 'selected' : '' }}>
+                                                        {{ $value->category_name }}
+                                                    </option>
+                                                @endforeach
+                                            @endif
+                                        </select>
+                                        <p class="error"></p>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4 col-6">
+                                    <div class="form-group">
+                                        <label for="sub_category_id">Sub Category</label>
+                                        @php
+                                            $selectedSubCategory = old('sub_category_id', $product->sub_category_id ?? '');
+                                        @endphp
+
+                                        <select name="sub_category_id" id="sub_category" class="form-select">
+                                            <option value="">Select Subcategory</option>
+                                            @if ($subcategories->isNotEmpty())
+                                                @foreach ($subcategories as $value)
+                                                    <option 
+                                                        value="{{ $value->id }}"
+                                                        {{ $selectedSubCategory == $value->id ? 'selected' : '' }}>
+                                                        {{ $value->sub_category_name }}
+                                                    </option>
+                                                @endforeach
+                                            @endif
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4 col-6">
+                                    <div class="form-group">
+                                        <label for="sub_sub_category_id">Sub Sub Category</label>
+                                        <select name="sub_sub_category_id" id="sub_sub_category_id" class="form-select">
+                                            <option value="">Sub Sub Category</option>
+                                            @if ($subsubcategories->isNotEmpty())
+                                                @foreach ($subsubcategories as $value)
+                                                    <option {{ ($product->sub_sub_category_id == $value->id) ? 'selected' : '' }} value="{{ $value->id }}">{{ $value->sub_sub_category_name }}</option>
+                                                @endforeach
+                                            @endif
+                                        </select>    
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    @endif     
+                        <div class="col-md-3 col-12">                            
+                            <h5 class="mb-2">Product Brand</h5>
+                            <div class="form-group">
+                                <label>Brand</label>
+                                <select name="brand" id="brand" class="form-select">
+                                    <option value="">Select a Brand</option>
+                                    @if ($brands->isNotEmpty())
+                                        @foreach ($brands as $value)
+                                            <option 
+                                                value="{{ $value->id }}"
+                                                {{ old('brand_id', $product->brand_id ?? '') == $value->id ? 'selected' : '' }}>
+                                                {{ $value->name }}
+                                            </option>
+                                        @endforeach
+                                    @endif
+                                </select> 
+                            </div>
+                        </div>                        
+                    </div>
                     <hr />
 
-                    <h4 class="mb-1">Pricing</h4>
+                    <h5 class="mb-1">Pricing</h5>
                     <div class="row">
                         <div class="col-md-3 col-6">
                             <div class="form-group">
@@ -95,16 +189,16 @@
                             <div class="form-group">
                                 <label for="compare_price">Discount</label>
                                 <select name="discount_percent" class="form-select">
-                                    <option value="0">No Discount</option>
-                                    <option value="10">10%</option>
-                                    <option value="20">20%</option>
-                                    <option value="30">30%</option>
-                                    <option value="40">40%</option>
-                                    <option value="50">50%</option>
-                                    <option value="60">60%</option>
-                                    <option value="70">70%</option>
-                                    <option value="80">80%</option>
-                                    <option value="90">90%</option>
+                                    <option value="0" {{ ($brand->discount_percent_id ?? '') == 0 ? 'selected' : '' }}>No Discount</option>
+                                    <option value="10" {{ ($brand->discount_percent_id ?? '') == 10 ? 'selected' : '' }}>10%</option>
+                                    <option value="20" {{ ($brand->discount_percent_id ?? '') == 20 ? 'selected' : '' }}>20%</option>
+                                    <option value="30" {{ ($brand->discount_percent_id ?? '') == 30 ? 'selected' : '' }}>30%</option>
+                                    <option value="40" {{ ($brand->discount_percent_id ?? '') == 40 ? 'selected' : '' }}>40%</option>
+                                    <option value="50" {{ ($brand->discount_percent_id ?? '') == 50 ? 'selected' : '' }}>50%</option>
+                                    <option value="60" {{ ($brand->discount_percent_id ?? '') == 60 ? 'selected' : '' }}>60%</option>
+                                    <option value="70" {{ ($brand->discount_percent_id ?? '') == 70 ? 'selected' : '' }}>70%</option>
+                                    <option value="80" {{ ($brand->discount_percent_id ?? '') == 80 ? 'selected' : '' }}>80%</option>
+                                    <option value="90" {{ ($brand->discount_percent_id ?? '') == 90 ? 'selected' : '' }}>90%</option>
                                 </select>
                             </div>
                         </div>
@@ -142,9 +236,38 @@
                         </div>
                     </div>
                     <p class="text-muted">To show a reduced price, move the product’s original price into Compare at price. Enter a lower value into Price.</p>
-                    <hr />
+                </div>
+            </div>
 
-                    <h4 class="mb-2">Related products</h4>
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="mb-2">Product photos</h4>
+                    <div id="image" class="dropzone dz-clickable mb-2">
+                        <div class="dz-message needsclick">
+                            <br>Drop files here or click to upload.<br><br>
+                        </div>
+                    </div>
+
+                    <div class="row" id="product-gallery"></div>
+                                    
+                    @if(isset($product) && $product->images->isNotEmpty())
+                        <div id="product-gallery">
+                            <h5>Uploaded Images</h5>
+                            <div class="row">
+                                @foreach ($product->images as $image)
+                                    <div class="col-md-2" id="image-row-{{ $image->id }}">
+                                        <div class="uploaded-images">
+                                            <input type="hidden" name="image_array[]" value="{{ $image->id }}">
+                                            <img src="{{ asset('uploads/product/small/'.$image->image) }}" class="rounded" />                                            
+                                            <a href="javascript:void(0)" class="deleteCardImg" data-id="{{ $image->id }}">X</a>                                            
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif                         
+
+                    <h5 class="mb-2">Related products</h5>
                     <select multiple class="related-product " name="related_products[]" id="related_products">
                         @if (!empty($relatedProducts))
                             @foreach ($relatedProducts as $relProduct)
@@ -164,119 +287,38 @@
         <div class="col-md-3 col-12 pl-0">
             <div class="card mb-1 p-0">
                 <div class="card-body">
-                    <h4 class="mb-2">Product Category</h4>
+                    <h4 class="mb-2">Inventory</h4>
                     <div class="form-group">
-                        <label for="category">Category</label>
-                        <select name="category" id="category" class="form-select">
-                            <option value="">Select a category</option>
-                            @if ($categories->isNotEmpty())
-                                @foreach ($categories as $value)
-                                    <option 
-                                        value="{{ $value->id }}"
-                                        {{ old('category_id', $product->category_id ?? '') == $value->id ? 'selected' : '' }}>
-                                        {{ $value->category_name }}
-                                    </option>
-                                @endforeach
-                            @endif
-                        </select>
+                        <label for="sku">SKU (Stock Keeping Unit)</label>
+                        <input type="text" name="sku" id="sku" class="form-control" placeholder="sku" value="{{ old('sku', $product->sku ?? '') }}">
                         <p class="error"></p>
                     </div>
-                
-                    <div class="form-group">
-                        <label for="category">Sub Category</label>
-                        @php
-                            $selectedSubCategory = old('sub_category_id', $product->sub_category_id ?? '');
-                        @endphp
 
-                        <select name="sub_category_id" id="sub_category" class="form-select">
-                            <option value="">Select Subcategory</option>
-                            @if ($subcategories->isNotEmpty())
-                                @foreach ($subcategories as $value)
-                                    <option 
-                                        value="{{ $value->id }}"
-                                        {{ $selectedSubCategory == $value->id ? 'selected' : '' }}>
-                                        {{ $value->sub_category_name }}
-                                    </option>
-                                @endforeach
-                            @endif
-                        </select>
+                    <div class="flex-2">
+                        <div class="form-group">
+                            <label for="barcode">Barcode</label>
+                            <input type="text" name="barcode" id="barcode" class="form-control" placeholder="Barcode" value="{{ old('barcode', $product->barcode ?? '') }}">
+                        </div>                
+                        <div class="custom-control custom-checkbox">
+                            <div class="form-group mb-0">
+                                <label for="track_qty" class="custom-control-label">Track Qty.</label>
+                                <input type="hidden" name="track_qty" value="No" >
+                                <input class="form-check-input" type="checkbox" id="track_qty" name="track_qty" value="Yes"
+                                    {{ old('track_qty', $product->track_qty ?? '') == 'Yes' ? 'checked' : '' }} >                                
+                            </div>
+                        </div>
                     </div>
-                
-                    <div class="form-group">
-                        <label for="category">Sub2 Category</label>
-                        <select name="sub_sub_category" id="sub_sub_category" class="form-select">
-                            <option value="">Sub2 category</option>
-                            @if ($subsubcategories->isNotEmpty())
-                                @foreach ($subsubcategories as $value)
-                                    <option {{ ($product->sub_sub_category_id == $value->id) ? 'selected' : '' }} value="{{ $value->id }}">{{ $value->sub_sub_category_name }}</option>
-                                @endforeach
-                            @endif
-                        </select>    
-                    </div>
+                    <div>
+                        <input type="number" min="0" name="qty" id="qty" class="form-control" placeholder="Qty" value="{{ old('qty', $product->qty ?? '') }}">
+                        <p class="error"></p>
+                    </div>                                            
                 </div>
             </div>
-                    
+
             <div class="card mb-1 p-0">
                 <div class="card-body">
-                    <h4 class="mb-2">Product Brand</h4>                        
-                    <select name="brand" id="brand" class="form-select">
-                        <option value="">Select a Brand</option>
-                        @if ($brands->isNotEmpty())
-                            @foreach ($brands as $value)
-                                <option 
-                                    value="{{ $value->id }}"
-                                    {{ old('brand_id', $product->brand_id ?? '') == $value->id ? 'selected' : '' }}>
-                                    {{ $value->name }}
-                                </option>
-                            @endforeach
-                        @endif
-                    </select>                        
-                    
-                    <h4 class="mb-2 mt-3">Inventory</h4>
                     <div class="row">
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label for="sku">SKU (Stock Keeping Unit)</label>
-                                <input type="text" name="sku" id="sku" class="form-control" placeholder="sku" value="{{ old('sku', $product->sku ?? '') }}">
-                                <p class="error"></p>
-                            </div>
-                        </div>
-                        <div class="col-md-7">
-                            <div class="form-group">
-                                <label for="barcode">Barcode</label>
-                                <input type="text" name="barcode" id="barcode" class="form-control" placeholder="Barcode" value="{{ old('barcode', $product->barcode ?? '') }}">
-                            </div>
-                        </div>
-                        <div class="col-md-5">
-                            <div class="custom-control custom-checkbox">
-                                <div class="form-group mb-0">
-                                    <input type="hidden" name="track_qty" value="No" >
-                                    <input class="custom-control-input" type="checkbox" id="track_qty" name="track_qty" value="Yes"
-                                        {{ old('track_qty', $product->track_qty ?? '') == 'Yes' ? 'checked' : '' }} >
-                                    <label for="track_qty" class="custom-control-label">Track Qty.</label>
-                                </div>
-                            </div>
-                            <div>
-                                <input type="number" min="0" name="qty" id="qty" class="form-control" placeholder="Qty" value="{{ old('qty', $product->qty ?? '') }}">
-                                <p class="error"></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card mb-1 p-0">
-                <div class="card-body">
-                    <div class="row">                                                
-                        <div class="col-4">
-                            <h6 class="mb-1">COD</h6>
-                            <input type="hidden" name="cod" value="0">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" name="cod" value="1"
-                                    {{ old('cod', $product->cod ?? 0) == 1 ? 'checked' : '' }} >                        
-                            </div> 
-                        </div>                       
-                        <div class="col-4">
+                        <div class="col-6">
                             <h6 class="mb-1">Featured</h6>
                             <input type="hidden" name="is_featured" value="No">
                             <div class="form-check form-switch">
@@ -284,7 +326,7 @@
                                     {{ old('is_featured', $product->is_featured ?? 'No') == 'Yes' ? 'checked' : '' }} >                        
                             </div> 
                         </div>
-                        <div class="col-4">
+                        <div class="col-6">
                             <h6 class="mb-1">Status</h6>
                             <input type="hidden" name="status" value="0">
                             <div class="form-check form-switch">
@@ -292,28 +334,6 @@
                                     {{ old('status', $product->status ?? 0) == 1 ? 'checked' : '' }} >                        
                             </div>                                              
                         </div>
-                        <div class="col-6 mt-3">
-                            <h6 class="mb-1">Is Returnable</h6>
-                            <input type="hidden" name="is_returnable" value="0">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" name="is_returnable" value="1"
-                                    {{ old('is_returnable', $product->is_returnable ?? 0) == 1 ? 'checked' : '' }} >                        
-                            </div> 
-                        </div>
-                        <div class="col-6 mt-3">
-                            <h6 class="mb-1">Is Returnable</h6>
-                            <select name="return_days" id="return_days" class="form-select">
-                                <option value="7 days"
-                                    {{ old('return_days', $product->return_days ?? '7 days') == '7 days' ? 'selected' : '' }}>
-                                    7 days
-                                </option>
-
-                                <option value="14 days"
-                                    {{ old('return_days', $product->return_days ?? '') == '14 days' ? 'selected' : '' }}>
-                                    14 days
-                                </option>
-                            </select>
-                        </div> 
                     </div>
                     
                     <hr />

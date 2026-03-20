@@ -156,13 +156,12 @@
 <script src="{{ asset('admin-assets/js/simplebar.min.js.download') }}"></script>
 <script src="{{ asset('admin-assets/js/app.js.download') }}"></script>
 <script src="{{ asset('admin-assets/js/admin_documentReady.js') }}"></script>
-
 <script src="{{ asset('admin-assets/plugins/dropzone/min/dropzone.min.js') }}"></script>
 <script src="{{ asset('admin-assets/plugins/summernote/summernote-bs4.min.js') }}"></script>
 <script src="{{ asset('admin-assets/plugins/select2/js/select2.min.js') }}"></script>
 <script src="{{ asset('admin-assets/js/datetimepicker.js') }}"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script type="text/javascript">
     $(document).ready(function () {            
         // Toggle dropdown manually
@@ -186,19 +185,40 @@
         });
     });
 
-    
-
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
 
-    $(document).ready(function(){
+    $(document).ready(function(){        
         $(".summernote").summernote({
             //height:250;
         });
     })
+
+
+    function deleteBrand(id){        
+        var url = '{{ route("brands.delete","ID") }}'
+        var newUrl = url.replace("ID",id)
+
+        if(confirm("Are you sure you want to delete?")){
+            $.ajax({
+                url: newUrl,
+                type: 'delete',
+                data: {},
+                dataType: 'json',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response){
+                    if(response["status"]){
+                        window.location.href="{{ route('brands.index') }}"
+                    }
+                }
+            });
+        }
+    }
 
     //Alert timeout
     setTimeout(function () {
@@ -240,5 +260,6 @@
 </script>
 
 @yield('customJs')
+
 </body>
 </html>
