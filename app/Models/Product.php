@@ -9,7 +9,7 @@ class Product extends Model {
     use HasFactory;
 
     protected $fillable = [ 'title', 'slug', 'description', 'short_description', 'shipping_returns', 'related_products', 
-        'price', 'category_id', 'sub_category_id', 'sub_sub_category_id', 'brand_id', 'color_id', 'size_id', 'discount_percentage_id', 
+        'price', 'category_id', 'sub_category_id', 'sub_sub_category_id', 'brand_id', 'discount_percentage_id', 
         'is_featured', 'sku', 'barcode', 'track_qty', 'qty', 'recommended', 'views', 'discount_percentage', 'average_rating', 
         'cod', 'is_returnable', 'return_days', 'delivery_min_days', 'delivery_max_days', 'status', 
     ];
@@ -48,6 +48,18 @@ class Product extends Model {
 
     public function size() {
         return $this->belongsTo(Size::class);
+    }
+
+    // public function colors(){
+    //     return $this->belongsToMany(Color::class);
+    // }
+
+    public function colors(){
+        return $this->belongsToMany(Color::class, 'product_color');
+    }
+
+    public function sizes(){
+        return $this->belongsToMany(Size::class, 'product_size');
     }
 
     public function images() {

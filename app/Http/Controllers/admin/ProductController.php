@@ -54,7 +54,6 @@ class ProductController extends Controller {
         return view('admin.products.create', $data);
     }
 
-
     public function store(Request $request){
         $rules = [
             'title' => 'required',
@@ -80,13 +79,11 @@ class ProductController extends Controller {
             $product->short_description = $request->short_description;$product->shipping_returns = $request->shipping_returns;
             $product->related_products = (!empty($request->related_products)) ? implode(',',$request->related_products) : '';
             $product->price = $request->price;            
-            $product->category_id = $request->category_id;
-            $product->sub_category_id = $request->sub_category_id;
-            $product->sub_sub_category_id = $request->sub_sub_category_id;
-            $product->brand_id = $request->brand;
-            $product->color_id = $request->color;            
-            $product->size_id = $request->size;
-            $product->discount_percentage_id = $request->discount_percent;
+            $product->category_id = $request->category;
+            $product->sub_category_id = $request->sub_category;
+            $product->sub_sub_category_id = $request->sub_sub_category;
+            $product->brand_id = $request->brand;            
+            //$product->discount_percentage_id = $request->discount_percent;
             $product->is_featured = $request->is_featured;
             $product->sku = $request->sku;
             $product->barcode = $request->barcode;
@@ -102,6 +99,10 @@ class ProductController extends Controller {
             $product->delivery_max_days = Carbon::now()->addDays(7);
             $product->status = $request->status;
             $product->save();
+
+            // attach multiple IDs
+            $product->colors()->sync($request->colors);
+            $product->sizes()->sync($request->sizes);
 
             if($request->discount_percent > 0){
                 Discount::create([
@@ -131,7 +132,6 @@ class ProductController extends Controller {
                 }
             }
 
-
             if (!empty($request->image_array)) {
                 foreach ($request->image_array as $temp_image_id) {
                     $tempImageInfo = TempImage::find($temp_image_id);
@@ -152,9 +152,10 @@ class ProductController extends Controller {
                     $destPath = public_path().'/uploads/product/large/'.$imageName;
                     $manager = new ImageManager(new Driver());
                     $image = $manager->read($sourcePath);
-                    $image->resize(1000, null, function ($constraint) {
-                        $constraint->aspectRatio();
-                    });
+                    $image->cover(540,720);
+                    // $image->resize(300, null, function ($constraint) {
+                    //     $constraint->aspectRatio();
+                    // });
                     $image->save($destPath);
 
                     //Generate Thumnail
@@ -185,8 +186,6 @@ class ProductController extends Controller {
             ]);
         }
     }
-
-
 
     public function edit($id, Request $request){
         $product = Product::find($id);        
@@ -432,7 +431,6 @@ class ProductController extends Controller {
     }
 
     public function getProducts(Request $request){
-
         $tempProduct = [];
 
         if($request->term != ""){

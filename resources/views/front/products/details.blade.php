@@ -98,18 +98,30 @@
                 <div class="part">
                     <div class="flex">
                         <h3 style="margin-top: 22px;">Select Size:</h3>
-                                    
-                        @if($sizes->isNotEmpty())
-                            <ul class="size-list">
-                                @foreach($sizes as $size)
-                                    <li>
-                                        <a href="javascript:void(0);" class="size-option" data-size="{{ $size->code }}">
-                                            {{ $size->code }}
-                                        </a>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        @endif
+                        <ul class="size-list">
+                            @foreach($product->sizes as $size)
+                                <li>
+                                    <a href="javascript:void(0);" class="size-option" data-size="{{ $size->code }}">
+                                        {{ $size->code }}
+                                    </a>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="part">
+                    <div class="flex">
+                        <h3 style="margin-top: 22px;">Select Colors:</h3>                                    
+                        <ul class="size-list">
+                            @foreach($product->colors as $color)
+                                <li>
+                                    <a href="javascript:void(0);" class="size-option" data-size="{{ $size->name }}">
+                                        <span style="background-color: {{ $color->code }}; height:22px; width:22px; border-radius:100px; display:block;"></span>                                        
+                                    </a>
+                                </li>
+                            @endforeach
+                        </ul>
                     </div>
                 </div>
 
