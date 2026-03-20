@@ -15,6 +15,11 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\File;
+use Intervention\Image\Facades\Image;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
+use Illuminate\Support\Str;
 
 class SettingController extends Controller {
 
@@ -65,6 +70,35 @@ class SettingController extends Controller {
                         'col' => 'col-md-6 col-6 d-none'
                     ],
                     [
+                        'type' => 'text',
+                        'name' => 'description',
+                        'label' => 'Description',
+                        'placeholder' => 'Enter Brand name',
+                        'col' => 'col-md-12 col-12'
+                    ],
+                    [
+                        'type' => 'text',
+                        'name' => 'discount',
+                        'label' => 'Discount',
+                        'placeholder' => 'Enter Brand name',
+                        'col' => 'col-md-6 col-6'
+                    ],
+                    [
+                        'type' => 'select',
+                        'name' => 'brand_order',
+                        'label' => 'Brand Order',
+                        'options' => [
+                            1 => 1,
+                            2 => 2,
+                            3 => 3,
+                            4 => 4,
+                            5 => 5,
+                            6 => 6,
+                            7 => 7,
+                        ],
+                        'col' => 'col-md-3 col-3'
+                    ],
+                    [
                         'type' => 'select',
                         'name' => 'status',
                         'label' => 'Status',
@@ -72,21 +106,28 @@ class SettingController extends Controller {
                             1 => 'Active',
                             0 => 'Block',
                         ],
-                        'col' => 'col-md-12 col-12'
+                        'col' => 'col-md-3 col-3'
+                    ],                    
+                    [
+                        'type' => 'file',
+                        'name' => 'logo',
+                        'label' => 'Brand Logo',
+                        'col' => 'col-md-6 col-6'
                     ],
-                    // [
-                    //     'type' => 'file',
-                    //     'name' => 'image',
-                    //     'label' => 'Brand Image'
-                    // ]
+                    [
+                        'type' => 'file',
+                        'name' => 'model',
+                        'label' => 'Brand Model',
+                        'col' => 'col-md-6 col-6'
+                    ],
                 ]
             ]
         ];       
-
         return view('admin.settings.brands', $data);
     }
     
-    public function brand_store(Request $request ){
+
+    public function brand_store(Request $request){
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'slug' => 'required|unique:brands',
@@ -97,7 +138,45 @@ class SettingController extends Controller {
             $brand->name = $request->name;
             $brand->slug = $request->slug;
             $brand->status = $request->status;
-            $brand->save();            
+            $brand->description = $request->description;
+            $brand->discount = $request->discount;
+            $brand->brand_order = $request->brand_order;
+            $brand->save();
+
+            $brandId = $brand->id;
+            $brandName = Str::slug($brand->name);
+
+            // Init Image Manager
+            $manager = new ImageManager(new Driver());
+
+            // Create directory if not exists
+            $path = public_path('uploads/brands/');
+            if (!File::exists($path)) {
+                File::makeDirectory($path, 0755, true);
+            }            
+
+            // ✅ IMAGE (180x200)
+            if ($request->hasFile('model')) {
+                $model = $request->file('model');
+                $imageName = $brandId.'_'.$brandName.'_model.'.$model->getClientOriginalExtension();
+                $img = $manager->read($model->getRealPath());
+                $img->scale(width: 180);
+                //$img->cover(180, 200); // exact crop like fit()
+                $img->save($path.$imageName);
+                $brand->model = $imageName;
+            }
+
+            // ✅ LOGO (100x50)
+            if ($request->hasFile('logo')) {
+                $logo = $request->file('logo');
+                $logoName = $brandId.'_'.$brandName.'_logo.'.$logo->getClientOriginalExtension();
+                $logoImg = $manager->read($logo->getRealPath());
+                $logoImg->scale(width: 100);                
+                $logoImg->save($path.$logoName);
+                $brand->logo = $logoName;
+            }
+
+            $brand->save();
 
             return response()->json([
                 'status' => true,
@@ -114,21 +193,40 @@ class SettingController extends Controller {
 
     public function brand_destroy($id, Request $request){
         $brand = Brand::find($id);
-        if(empty($brand)){
+
+        if (empty($brand)) {
             $request->session()->flash('error','Record not found');
             return response([
                 'status' => false,
                 'notFound' => true,
             ]);
         }
-        $brand->delete();
-        $request->session()->flash('success', 'Brand deleted successfully');
 
-        return response([
-            'status' => true,
-            'message' => 'Brand deleted successfully',
-        ]);
-    }
+        $path = public_path('uploads/brands/');
+            // ✅ Delete Image
+            if (!empty($brand->model)) {
+                $imagePath = $path . $brand->model;
+                if (File::exists($imagePath)) {
+                    File::delete($imagePath);
+                }
+            }
+
+            // ✅ Delete Logo
+            if (!empty($brand->logo)) {
+                $logoPath = $path . $brand->logo;
+                if (File::exists($logoPath)) {
+                    File::delete($logoPath);
+                }
+            }
+            // ✅ Delete DB record
+            $brand->delete();
+            $request->session()->flash('success', 'Brand deleted successfully');
+
+            return response([
+                'status' => true,
+                'message' => 'Brand deleted successfully',
+            ]);
+        }
 
     //Shipping
     public function shipping_index(Request $request){

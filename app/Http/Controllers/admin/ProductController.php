@@ -80,12 +80,13 @@ class ProductController extends Controller {
             $product->short_description = $request->short_description;$product->shipping_returns = $request->shipping_returns;
             $product->related_products = (!empty($request->related_products)) ? implode(',',$request->related_products) : '';
             $product->price = $request->price;            
-            $product->category_id = $request->category;
-            $product->sub_category_id = $request->sub_category;
-            $product->sub_sub_category_id = $request->sub_sub_category;
+            $product->category_id = $request->category_id;
+            $product->sub_category_id = $request->sub_category_id;
+            $product->sub_sub_category_id = $request->sub_sub_category_id;
             $product->brand_id = $request->brand;
             $product->color_id = $request->color;            
             $product->size_id = $request->size;
+            $product->discount_percentage_id = $request->discount_percent;
             $product->is_featured = $request->is_featured;
             $product->sku = $request->sku;
             $product->barcode = $request->barcode;

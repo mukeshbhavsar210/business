@@ -58,18 +58,45 @@
                 <table class="table mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th class="border-top-0" width="40">ID</th>
-                            <th class="border-top-0" >Name</th>
-                            <th class="border-top-0" width="30">Status</th>
-                            <th class="border-top-0" width="100">Action</th>
+                            <th class="border-top-0" width="20%">Brand</th>
+                            <th class="border-top-0" width="20%">Brand Name</th>
+                            <th class="border-top-0" width="15%">Description</th>
+                            <th class="border-top-0" width="15%">Discount</th>
+                            <th class="border-top-0" width="5%">Status</th>
+                            <th class="border-top-0" width="5%">Action</th>
                         </tr>
                     </thead>                     
                     <tbody>
                         @if ($brands->isNotEmpty())
-                            @foreach ($brands as $brand)
+                            @foreach ($brands as $key => $brand)                                                                   
                                 <tr>
-                                    <td>{{ $brand->id }}</td>
-                                    <td>{{ $brand->name }}</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            @if (!empty($brand->model))
+                                                <img src="{{ asset('uploads/brands/'.$brand->model) }}" height="85" class="me-3 align-self-center rounded" >
+                                            @else
+                                                <img src="{{ asset('admin-assets/img/default-150x150.png') }}" alt="" height="120" class="me-3 align-self-center rounded" />
+                                            @endif                                            
+                                            
+                                            @if (!empty($brand->logo))
+                                                <img src="{{ asset('uploads/brands/'.$brand->logo) }}" height="30" class="me-3 align-self-center rounded" >
+                                            @else
+                                                <img src="{{ asset('admin-assets/img/default-150x150.png') }}" alt="" height="25" class="me-3 align-self-center rounded" />
+                                            @endif                                                                                            
+                                        </div>
+                                    </td>  
+                                    <td>
+                                        <p>{{ $brand->name }}</p>
+                                        <div class="small-fonts">                                                    
+                                            <span class="text-muted">{{ $brand->id }}</span>                                                    
+                                        </div>
+                                    </td>    
+                                    <td>
+                                        <p>{{ $brand->description }}</p>
+                                    </td>
+                                    <td>
+                                        <p>{{ $brand->discount }}</p>
+                                    </td>
                                     <td>
                                         @if ($brand->status == 1)  
                                             <span class="sprites green-tick-icon"></span>
@@ -102,45 +129,7 @@
 @endsection
 
 @section('customJs')
-<script>
-    $('#name').change(function(){
-        element = $(this);
-        $("button[type=submit]").prop('disabled', true);
-        $.ajax({
-            url: '{{ route("getSlug") }}',
-            type: 'get',
-            data: {title: element.val()},
-            dataType: 'json',
-            success: function(response){
-                $("button[type=submit]").prop('disabled', false);
-                if(response["status"] == true){
-                    $("#slug").val(response["slug"]);
-                }
-            }
-        });
-    })
-
-    function deleteBrand(id){
-        var url = '{{ route("brands.delete","ID") }}'
-        var newUrl = url.replace("ID",id)
-
-        if(confirm("Are you sure you want to delete?")){
-            $.ajax({
-                url: newUrl,
-                type: 'delete',
-                data: {},
-                dataType: 'json',
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                success: function(response){
-                    if(response["status"]){
-                        window.location.href="{{ route('brands.index') }}"
-                    }
-                }
-            });
-        }
-
-    }
+<script>        
+    
 </script>
 @endsection
