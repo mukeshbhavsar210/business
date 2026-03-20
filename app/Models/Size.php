@@ -10,7 +10,11 @@ class Size extends Model {
 
     protected $fillable = ['name', 'code'];
 
-    public function products() {
+    public function products_unique() {
         return $this->hasMany(Product::class);
+    }
+
+    public function products(){
+        return $this->belongsToMany(Product::class, 'product_size');
     }
 }

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 13, 2026 at 02:47 PM
+-- Generation Time: Mar 20, 2026 at 04:33 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -31,7 +31,12 @@ CREATE TABLE `brands` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `name` varchar(255) NOT NULL,
   `slug` varchar(255) NOT NULL,
+  `model` varchar(50) DEFAULT NULL,
+  `logo` varchar(50) DEFAULT NULL,
   `status` int(11) NOT NULL,
+  `description` varchar(50) DEFAULT NULL,
+  `discount` varchar(50) DEFAULT NULL,
+  `brand_order` int(3) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -40,13 +45,9 @@ CREATE TABLE `brands` (
 -- Dumping data for table `brands`
 --
 
-INSERT INTO `brands` (`id`, `name`, `slug`, `status`, `created_at`, `updated_at`) VALUES
-(17, 'Roadster', 'roadster', 1, '2023-11-24 00:02:00', '2023-11-24 00:02:00'),
-(18, 'HRX by Hrithik Roshan', 'hrx-by-hrithik-roshan', 1, '2023-11-24 00:02:22', '2023-11-24 00:02:22'),
-(19, 'Tommy Hilfiger', 'tommy-hilfiger', 1, '2023-11-24 00:02:40', '2023-11-24 00:02:40'),
-(20, 'U.S. Polo Assn.', 'us-polo-assn', 1, '2023-11-24 00:03:01', '2023-11-24 00:03:01'),
-(21, 'Jack & Jones', 'jack-jones', 1, '2023-11-24 00:03:16', '2023-11-24 00:03:16'),
-(22, 'H&M', 'hm', 1, '2023-11-24 00:16:13', '2023-11-24 00:16:13');
+INSERT INTO `brands` (`id`, `name`, `slug`, `model`, `logo`, `status`, `description`, `discount`, `brand_order`, `created_at`, `updated_at`) VALUES
+(45, 'H&M', 'hm', '45_hm_model.jpg', '45_hm_logo.png', 1, 'Cool Casuals', 'Flat 40% Off', 1, '2026-03-20 02:07:16', '2026-03-20 02:07:16'),
+(46, 'Lux Cozi', 'lux-cozi', '46_lux-cozi_model.jpg', '46_lux-cozi_logo.png', 1, 'best', 'Min 50% Off', 1, '2026-03-20 08:59:57', '2026-03-20 08:59:57');
 
 -- --------------------------------------------------------
 
@@ -57,11 +58,10 @@ INSERT INTO `brands` (`id`, `name`, `slug`, `status`, `created_at`, `updated_at`
 CREATE TABLE `categories` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `category_name` varchar(50) NOT NULL,
-  `category_slug` varchar(50) NOT NULL,
-  `image` varchar(100) DEFAULT NULL,
-  `status` int(11) NOT NULL DEFAULT 1,
-  `showHome` enum('Yes','No') NOT NULL DEFAULT 'No',
-  `menu_order` int(10) DEFAULT NULL,
+  `category_slug` varchar(50) DEFAULT NULL,
+  `image` varchar(50) DEFAULT NULL,
+  `status` int(5) NOT NULL DEFAULT 1,
+  `menu_order` int(3) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -70,10 +70,10 @@ CREATE TABLE `categories` (
 -- Dumping data for table `categories`
 --
 
-INSERT INTO `categories` (`id`, `category_name`, `category_slug`, `image`, `status`, `showHome`, `menu_order`, `created_at`, `updated_at`) VALUES
-(82, 'Men', 'men', '82-men.jpg', 1, 'Yes', 1, '2023-11-23 23:55:20', '2026-02-28 06:33:51'),
-(83, 'Women', 'women', '83-women.jpg', 1, 'Yes', 2, '2023-11-23 23:55:28', '2026-02-28 06:40:20'),
-(149, 'Kids', 'kids', NULL, 1, 'Yes', 3, '2026-02-16 23:27:00', '2026-02-28 06:41:00');
+INSERT INTO `categories` (`id`, `category_name`, `category_slug`, `image`, `status`, `menu_order`, `created_at`, `updated_at`) VALUES
+(82, 'Men', 'men', '82-men.jpg', 1, 1, '2023-11-23 23:55:20', '2026-02-28 06:33:51'),
+(83, 'Women', 'women', '83-women.jpg', 1, 2, '2023-11-23 23:55:28', '2026-02-28 06:40:20'),
+(149, 'Kids', 'kids', NULL, 1, 3, '2026-02-16 23:27:00', '2026-02-28 06:41:00');
 
 -- --------------------------------------------------------
 
@@ -102,7 +102,8 @@ INSERT INTO `colors` (`id`, `name`, `code`, `created_at`, `updated_at`) VALUES
 (6, 'Navy Blue', '#3c4477', NULL, NULL),
 (7, 'Brown', '#915039', NULL, NULL),
 (8, 'Green', '#5eb160', NULL, NULL),
-(9, 'Olive', '#3d9970', NULL, NULL);
+(9, 'Olive', '#3d9970', NULL, NULL),
+(12, 'Yellow', '#3d9970', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -117,15 +118,6 @@ CREATE TABLE `coupon_product` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `coupon_product`
---
-
-INSERT INTO `coupon_product` (`id`, `discount_coupons_id`, `product_id`, `created_at`, `updated_at`) VALUES
-(1, 4, 14, NULL, NULL),
-(2, 5, 13, NULL, NULL),
-(3, 5, 49, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -154,8 +146,7 @@ CREATE TABLE `customer_addresses` (
 --
 
 INSERT INTO `customer_addresses` (`id`, `user_id`, `address_type`, `default_address`, `name`, `mobile`, `address`, `locality`, `city`, `state_id`, `zip`, `created_at`, `updated_at`) VALUES
-(1, 7, 'Home', 1, 'Dhruv Bhavsar', '9978812345', 'Shlok Heights, Next to Mirada Banquet hall, Mansarovar road, New Chandkheda', 'Gandhinagar', 'Ahmedabad', 7, '382424', NULL, '2026-03-12 07:01:08'),
-(19, 7, 'Office', 0, 'Priyanka', '9538135005', 'E-508, Keerthi Royal Palms', 'Service Road, Banglore', 'Banglore', 11, '560100', '2026-03-12 06:46:42', '2026-03-12 07:01:08');
+(1, 7, 'Home', 1, 'Dhruv Bhavsar', '9978812345', 'Shlok Heights, Next to Mirada Banquet hall, Mansarovar road, New Chandkheda', 'Gandhinagar', 'Ahmedabad', 7, '382424', NULL, '2026-03-17 08:42:48');
 
 -- --------------------------------------------------------
 
@@ -179,7 +170,8 @@ CREATE TABLE `discounts` (
 --
 
 INSERT INTO `discounts` (`id`, `product_id`, `discount_percent`, `start_date`, `end_date`, `status`, `created_at`, `updated_at`) VALUES
-(2, 14, 20, '2026-03-10', '2026-05-31', 1, NULL, NULL);
+(4, 59, 50, '2026-03-20', '2026-04-19', 1, '2026-03-20 02:52:28', '2026-03-20 02:52:28'),
+(5, 64, 20, '2026-03-20', '2026-04-19', 1, '2026-03-20 09:48:07', '2026-03-20 09:48:07');
 
 -- --------------------------------------------------------
 
@@ -333,7 +325,10 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (55, '2026_03_11_043119_add_discount_percentage_id_to_products_table', 47),
 (56, '2026_03_12_130417_create_payments_table', 48),
 (57, '2026_03_13_101312_add_product_variant_id_to_orders_table', 49),
-(58, '2026_03_13_102116_add_product_variant_id_to_orders_table', 50);
+(58, '2026_03_13_102116_add_product_variant_id_to_orders_table', 50),
+(59, '2026_03_14_070156_create_carts_table', 51),
+(60, '2026_03_20_142012_create_product_color_table', 52),
+(61, '2026_03_20_142026_create_product_size_table', 52);
 
 -- --------------------------------------------------------
 
@@ -359,25 +354,6 @@ CREATE TABLE `orders` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `orders`
---
-
-INSERT INTO `orders` (`id`, `user_id`, `product_id`, `product_variant_id`, `customer_address_id`, `subtotal`, `shipping`, `coupon_code`, `coupon_code_id`, `discount`, `grandtotal`, `payment_status`, `payment_method`, `created_at`, `updated_at`) VALUES
-(165, 7, 14, NULL, 1, 1272.00, 50.00, '', NULL, 0.00, 1322.00, 'Not Paid', 'cod', '2026-03-13 06:32:28', '2026-03-13 06:32:28'),
-(166, 7, 14, NULL, 1, 1272.00, 50.00, '', NULL, 0.00, 1322.00, 'Not Paid', 'cod', '2026-03-13 06:49:36', '2026-03-13 06:49:36'),
-(167, 7, 14, NULL, 1, 1272.00, 50.00, '', NULL, 0.00, 1322.00, 'Not Paid', 'cod', '2026-03-13 06:53:55', '2026-03-13 06:53:55'),
-(168, 7, 14, NULL, 1, 1272.00, 50.00, '', NULL, 0.00, 1322.00, 'Not Paid', 'razorpay', '2026-03-13 06:54:05', '2026-03-13 06:54:05'),
-(169, 7, 14, NULL, 1, 1272.00, 50.00, '', NULL, 0.00, 1322.00, 'Not Paid', 'razorpay', '2026-03-13 06:55:43', '2026-03-13 06:55:43'),
-(170, 7, 14, NULL, 1, 1272.00, 50.00, '', NULL, 0.00, 1322.00, 'Not Paid', 'razorpay', '2026-03-13 06:56:57', '2026-03-13 06:56:57'),
-(171, 7, 14, NULL, 1, 1272.00, 50.00, '', NULL, 0.00, 1322.00, 'Not Paid', 'razorpay', '2026-03-13 07:02:18', '2026-03-13 07:02:18'),
-(172, 7, 14, NULL, 1, 1272.00, 50.00, '', NULL, 0.00, 1322.00, 'Not Paid', 'razorpay', '2026-03-13 07:38:24', '2026-03-13 07:38:24'),
-(173, 7, 14, NULL, 1, 1272.00, 50.00, '', NULL, 0.00, 1322.00, 'Not Paid', 'razorpay', '2026-03-13 07:39:08', '2026-03-13 07:39:08'),
-(174, 7, 14, NULL, 1, 1272.00, 50.00, '', NULL, 0.00, 1322.00, 'Not Paid', 'razorpay', '2026-03-13 07:45:26', '2026-03-13 07:45:26'),
-(177, 7, NULL, NULL, 1, 1272.00, 50.00, '', NULL, 0.00, 1322.00, 'Not Paid', 'cod', '2026-03-13 07:48:46', '2026-03-13 07:48:46'),
-(178, 7, NULL, NULL, 1, 1272.00, 50.00, '', NULL, 0.00, 1322.00, 'Not Paid', 'razorpay', '2026-03-13 07:49:03', '2026-03-13 07:49:03'),
-(179, 7, NULL, NULL, 1, 1272.00, 50.00, '', NULL, 0.00, 1322.00, 'Not Paid', 'cod', '2026-03-13 08:16:56', '2026-03-13 08:16:56');
-
 -- --------------------------------------------------------
 
 --
@@ -398,25 +374,6 @@ CREATE TABLE `order_items` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `order_items`
---
-
-INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `product_variant_id`, `color`, `size`, `qty`, `price`, `total`, `created_at`, `updated_at`) VALUES
-(5, 165, 14, NULL, NULL, 'M', 1, 1590.00, 1272.00, '2026-03-13 06:32:29', '2026-03-13 06:32:29'),
-(6, 166, 14, NULL, NULL, 'S', 1, 1590.00, 1272.00, '2026-03-13 06:49:37', '2026-03-13 06:49:37'),
-(7, 167, 14, NULL, NULL, 'S', 1, 1590.00, 1272.00, '2026-03-13 06:53:55', '2026-03-13 06:53:55'),
-(8, 168, 14, NULL, NULL, 'L', 1, 1590.00, 1272.00, '2026-03-13 06:54:05', '2026-03-13 06:54:05'),
-(9, 169, 14, NULL, NULL, 'M', 1, 1590.00, 1272.00, '2026-03-13 06:55:43', '2026-03-13 06:55:43'),
-(10, 170, 14, NULL, NULL, 'M', 1, 1590.00, 1272.00, '2026-03-13 06:56:57', '2026-03-13 06:56:57'),
-(11, 171, 14, NULL, NULL, 'L', 1, 1590.00, 1272.00, '2026-03-13 07:02:18', '2026-03-13 07:02:18'),
-(12, 172, 14, NULL, NULL, 'M', 1, 1590.00, 1272.00, '2026-03-13 07:38:24', '2026-03-13 07:38:24'),
-(13, 173, 14, NULL, NULL, 'M', 1, 1590.00, 1272.00, '2026-03-13 07:39:09', '2026-03-13 07:39:09'),
-(14, 174, 14, NULL, NULL, 'M', 1, 1590.00, 1272.00, '2026-03-13 07:45:27', '2026-03-13 07:45:27'),
-(15, 177, 14, NULL, NULL, 'M', 1, 1590.00, 1272.00, '2026-03-13 07:48:46', '2026-03-13 07:48:46'),
-(16, 178, 14, NULL, NULL, 'M', 1, 1590.00, 1272.00, '2026-03-13 07:49:03', '2026-03-13 07:49:03'),
-(17, 179, 14, NULL, NULL, 'S', 1, 1590.00, 1272.00, '2026-03-13 08:16:56', '2026-03-13 08:16:56');
-
 -- --------------------------------------------------------
 
 --
@@ -436,25 +393,6 @@ CREATE TABLE `order_status_histories` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `order_status_histories`
---
-
-INSERT INTO `order_status_histories` (`id`, `order_id`, `tracking_number`, `courier`, `note`, `cancel_reason`, `cancel_comments`, `status`, `date`, `created_at`, `updated_at`) VALUES
-(132, 165, NULL, 'Shadofox', 'note', NULL, NULL, 'Confirmed', '2026-03-13 06:32:29', '2026-03-13 06:32:29', '2026-03-13 06:32:29'),
-(133, 166, NULL, 'Shadofox', 'note', NULL, NULL, 'Confirmed', '2026-03-13 06:49:37', '2026-03-13 06:49:37', '2026-03-13 06:49:37'),
-(134, 167, NULL, 'Shadofox', 'note', NULL, NULL, 'Confirmed', '2026-03-13 06:53:55', '2026-03-13 06:53:55', '2026-03-13 06:53:55'),
-(135, 168, NULL, 'Shadofox', 'note', NULL, NULL, 'Confirmed', '2026-03-13 06:54:05', '2026-03-13 06:54:05', '2026-03-13 06:54:05'),
-(136, 169, NULL, 'Shadofox', 'note', NULL, NULL, 'Confirmed', '2026-03-13 06:55:43', '2026-03-13 06:55:43', '2026-03-13 06:55:43'),
-(137, 170, NULL, 'Shadofox', 'note', NULL, NULL, 'Confirmed', '2026-03-13 06:56:57', '2026-03-13 06:56:57', '2026-03-13 06:56:57'),
-(138, 171, NULL, 'Shadofox', 'note', NULL, NULL, 'Confirmed', '2026-03-13 07:02:18', '2026-03-13 07:02:18', '2026-03-13 07:02:18'),
-(139, 172, NULL, 'Shadofox', 'note', NULL, NULL, 'Confirmed', '2026-03-13 07:38:24', '2026-03-13 07:38:24', '2026-03-13 07:38:24'),
-(140, 173, NULL, 'Shadofox', 'note', NULL, NULL, 'Confirmed', '2026-03-13 07:39:08', '2026-03-13 07:39:08', '2026-03-13 07:39:08'),
-(141, 174, NULL, 'Shadofox', 'note', NULL, NULL, 'Confirmed', '2026-03-13 07:45:27', '2026-03-13 07:45:27', '2026-03-13 07:45:27'),
-(142, 177, NULL, 'Shadofox', 'note', NULL, NULL, 'Confirmed', '2026-03-13 07:48:46', '2026-03-13 07:48:46', '2026-03-13 07:48:46'),
-(143, 178, NULL, 'Shadofox', 'note', NULL, NULL, 'Confirmed', '2026-03-13 07:49:03', '2026-03-13 07:49:03', '2026-03-13 07:49:03'),
-(144, 179, NULL, 'Shadofox', 'note', NULL, NULL, 'Confirmed', '2026-03-13 08:16:56', '2026-03-13 08:16:56', '2026-03-13 08:16:56');
 
 -- --------------------------------------------------------
 
@@ -561,11 +499,11 @@ CREATE TABLE `products` (
   `discount_percentage` varchar(10) DEFAULT NULL,
   `average_rating` varchar(10) DEFAULT NULL,
   `cod` int(10) DEFAULT 0,
-  `is_returnable` int(10) DEFAULT 0,
+  `is_returnable` int(1) DEFAULT 0,
   `return_days` enum('7 days','14 days') DEFAULT '7 days',
   `delivery_min_days` date DEFAULT NULL,
   `delivery_max_days` date DEFAULT NULL,
-  `status` int(11) NOT NULL DEFAULT 1,
+  `status` int(1) NOT NULL DEFAULT 1,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -575,9 +513,30 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`id`, `title`, `slug`, `description`, `short_description`, `shipping_returns`, `related_products`, `price`, `category_id`, `sub_category_id`, `sub_sub_category_id`, `brand_id`, `color_id`, `size_id`, `discount_percentage_id`, `is_featured`, `sku`, `barcode`, `track_qty`, `qty`, `recommended`, `views`, `discount_percentage`, `average_rating`, `cod`, `is_returnable`, `return_days`, `delivery_min_days`, `delivery_max_days`, `status`, `created_at`, `updated_at`) VALUES
-(13, 'Men Black', 'men-black', '<p><span style=\"color: rgb(40, 44, 63); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;\">Black solid T-shirt, has a round neck, short sleeves</span></p><div class=\"pdp-sizeFitDesc\" style=\"box-sizing: inherit; border: none; margin-top: 12px; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><h4 class=\"pdp-sizeFitDescTitle pdp-product-description-title\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; font-weight: 700; text-transform: capitalize; border: none; padding-bottom: 5px;\">Size &amp; Fit</h4><p class=\"pdp-sizeFitDescContent pdp-product-description-content\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); line-height: 1.4; font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; width: 461.734px;\">The model (height 6\') is wearing a size M</p></div><div class=\"pdp-sizeFitDesc\" style=\"box-sizing: inherit; border: none; margin-top: 12px; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><h4 class=\"pdp-sizeFitDescTitle pdp-product-description-title\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; font-weight: 700; text-transform: capitalize; border: none; padding-bottom: 5px;\">Material &amp; Care</h4><p class=\"pdp-sizeFitDescContent pdp-product-description-content\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); line-height: 1.4; font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; width: 461.734px;\">100% cotton<br style=\"box-sizing: inherit;\">Machine-wash</p></div><div class=\"index-sizeFitDesc\" style=\"box-sizing: inherit; border: none; margin-top: 12px; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><h4 class=\"index-sizeFitDescTitle index-product-description-title\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; font-weight: 700; padding-bottom: 12px; border: none; text-transform: capitalize;\">Specifications</h4></div>', NULL, NULL, '', 1299.00, 82, NULL, 1, 22, NULL, 3, 2, 'Yes', 'tshirt_01', 'tshirt_000001', 'Yes', 70, NULL, NULL, NULL, NULL, 0, 0, '7 days', '2026-03-12', '2026-03-19', 1, '2023-11-24 00:08:01', '2026-03-13 06:28:20'),
-(14, 'Men Yellow', 'men-yellow', '<div style=\"box-sizing: inherit; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><p class=\"pdp-product-description-content\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); line-height: 1.4; font-size: 16px; margin-top: 12px; width: 430.953px;\">Keep this hip this season with the HRX Men\'s Athleisure T-shirt. This versatile T-shirt can be styled any way you like for the ultimate gym-to-street look.<br style=\"box-sizing: inherit;\"><br style=\"box-sizing: inherit;\"><span style=\"box-sizing: inherit; font-weight: 700; display: inline-block; margin-top: 16px;\">Features</span></p><ul style=\"box-sizing: inherit; list-style: none; padding: 0px; margin-right: 0px; margin-bottom: 10px; margin-left: 0px;\"><li style=\"box-sizing: inherit;\">Athleisure T-shirt can be paired with tracks, khakis or jeans</li><li style=\"box-sizing: inherit;\">Style: Round Neck</li><li style=\"box-sizing: inherit;\">Sleeve: Short Sleeves</li><li style=\"box-sizing: inherit;\">Colour: Yellow</li><li style=\"box-sizing: inherit;\">Print: Typography</li><li style=\"box-sizing: inherit;\">Fit: Regular</li></ul><p></p></div><div class=\"pdp-sizeFitDesc\" style=\"box-sizing: inherit; border: none; margin-top: 12px; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><h4 class=\"pdp-sizeFitDescTitle pdp-product-description-title\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; font-weight: 700; text-transform: capitalize; border: none; padding-bottom: 5px;\">Size &amp; Fit</h4><p class=\"pdp-sizeFitDescContent pdp-product-description-content\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); line-height: 1.4; font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; width: 461.734px;\">The model height 6\' is wearing a size M</p></div><div class=\"pdp-sizeFitDesc\" style=\"box-sizing: inherit; border: none; margin-top: 12px; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><h4 class=\"pdp-sizeFitDescTitle pdp-product-description-title\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; font-weight: 700; text-transform: capitalize; border: none; padding-bottom: 5px;\">Material &amp; Care</h4><p class=\"pdp-sizeFitDescContent pdp-product-description-content\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); line-height: 1.4; font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; width: 461.734px;\">100% cotton<br style=\"box-sizing: inherit;\">Machine-wash</p></div>', 'Embroidered Logo V-Neck Cotton Lounge T-shirts', NULL, '', 1590.00, 82, NULL, 1, 20, NULL, 4, 3, 'Yes', 'tshirt_02', 'tshirt_000002', 'Yes', 96, NULL, NULL, NULL, NULL, 1, 1, '7 days', '2026-03-13', '2026-03-20', 1, '2023-11-24 00:11:49', '2026-03-13 08:16:56'),
-(49, 'Men Yellow Printed Cotton Pure Cotton T-shirt 2', 'men-yellow-printed-cotton-pure-cotton-t-shirt-2', '<div style=\"box-sizing: inherit; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><p class=\"pdp-product-description-content\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); line-height: 1.4; font-size: 16px; margin-top: 12px; width: 430.953px;\">Keep this hip this season with the HRX Men\'s Athleisure T-shirt. This versatile T-shirt can be styled any way you like for the ultimate gym-to-street look.<br style=\"box-sizing: inherit;\"><br style=\"box-sizing: inherit;\"><span style=\"box-sizing: inherit; font-weight: 700; display: inline-block; margin-top: 16px;\">Features</span></p><ul style=\"box-sizing: inherit; list-style: none; padding: 0px; margin-right: 0px; margin-bottom: 10px; margin-left: 0px;\"><li style=\"box-sizing: inherit;\">Athleisure T-shirt can be paired with tracks, khakis or jeans</li><li style=\"box-sizing: inherit;\">Style: Round Neck</li><li style=\"box-sizing: inherit;\">Sleeve: Short Sleeves</li><li style=\"box-sizing: inherit;\">Colour: Yellow</li><li style=\"box-sizing: inherit;\">Print: Typography</li><li style=\"box-sizing: inherit;\">Fit: Regular</li></ul><p></p></div><div class=\"pdp-sizeFitDesc\" style=\"box-sizing: inherit; border: none; margin-top: 12px; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><h4 class=\"pdp-sizeFitDescTitle pdp-product-description-title\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; font-weight: 700; text-transform: capitalize; border: none; padding-bottom: 5px;\">Size &amp; Fit</h4><p class=\"pdp-sizeFitDescContent pdp-product-description-content\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); line-height: 1.4; font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; width: 461.734px;\">The model height 6\' is wearing a size M</p></div><div class=\"pdp-sizeFitDesc\" style=\"box-sizing: inherit; border: none; margin-top: 12px; color: rgb(0, 0, 0); font-family: Assistant, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif; font-size: medium;\"><h4 class=\"pdp-sizeFitDescTitle pdp-product-description-title\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; font-weight: 700; text-transform: capitalize; border: none; padding-bottom: 5px;\">Material &amp; Care</h4><p class=\"pdp-sizeFitDescContent pdp-product-description-content\" style=\"box-sizing: inherit; color: rgb(40, 44, 63); line-height: 1.4; font-size: 16px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; width: 461.734px;\">100% cotton<br style=\"box-sizing: inherit;\">Machine-wash</p></div>', 'Embroidered Logo V-Neck Cotton Lounge T-shirts', NULL, '', 314.00, 82, NULL, NULL, 18, 1, 4, NULL, 'Yes', 'tshirt_02', 'tshirt_000002', 'Yes', 4, NULL, NULL, NULL, NULL, 0, 0, NULL, NULL, NULL, 1, '2023-11-24 00:11:49', '2026-03-10 00:53:28');
+(59, 'Park Avenue', 'park-avenue', 'test', 'Printed Polo Collar Slim Fit T-shirt', 'test', '', 1599.00, 82, 6, 1, 45, 8, 3, 5, 'Yes', 'tshirt_02', 'tshirt_000002', 'Yes', 100, NULL, NULL, NULL, NULL, 1, 1, '7 days', '2026-03-20', '2026-03-27', 1, '2026-03-20 02:52:28', '2026-03-20 02:52:28'),
+(64, 'Lux Cozi', 'lux-cozi', 'test', 'Polo Collar Lounge Tshirts', 'test', '', 419.00, 82, 6, 1, 46, NULL, NULL, NULL, 'Yes', 'tshirt_011', 'tshirt_11', 'Yes', 100, NULL, NULL, NULL, NULL, 1, 1, '7 days', '2026-03-20', '2026-03-27', 1, '2026-03-20 09:48:06', '2026-03-20 09:48:06');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `product_color`
+--
+
+CREATE TABLE `product_color` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `product_id` bigint(20) UNSIGNED NOT NULL,
+  `color_id` bigint(20) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `product_color`
+--
+
+INSERT INTO `product_color` (`id`, `product_id`, `color_id`) VALUES
+(6, 64, 1),
+(7, 64, 3),
+(8, 64, 8),
+(9, 64, 5);
 
 -- --------------------------------------------------------
 
@@ -599,12 +558,12 @@ CREATE TABLE `product_images` (
 --
 
 INSERT INTO `product_images` (`id`, `product_id`, `image`, `sort_order`, `created_at`, `updated_at`) VALUES
-(19, 13, '13-19-1700804281.jpg', NULL, '2023-11-24 00:08:01', '2023-11-24 00:08:01'),
-(20, 13, '13-20-1700804281.jpg', NULL, '2023-11-24 00:08:01', '2023-11-24 00:08:01'),
-(21, 14, '14-21-1700804509.jpg', NULL, '2023-11-24 00:11:49', '2023-11-24 00:11:49'),
-(39, 49, '49-39-1772284004.png', NULL, '2026-02-28 07:36:44', '2026-02-28 07:36:44'),
-(40, 49, '49-40-1772284150.jpg', NULL, '2026-02-28 07:39:10', '2026-02-28 07:39:10'),
-(42, 14, '14-42-1772286696.jpg', NULL, '2026-02-28 08:21:35', '2026-02-28 08:21:36');
+(43, 59, '59-43-1773994948.jpg', NULL, '2026-03-20 02:52:28', '2026-03-20 02:52:28'),
+(44, 59, '59-44-1773994948.jpg', NULL, '2026-03-20 02:52:28', '2026-03-20 02:52:28'),
+(45, 59, '59-45-1773994949.jpg', NULL, '2026-03-20 02:52:28', '2026-03-20 02:52:29'),
+(46, 59, '59-46-1773994949.jpg', NULL, '2026-03-20 02:52:29', '2026-03-20 02:52:29'),
+(47, 59, '59-47-1773994949.jpg', NULL, '2026-03-20 02:52:29', '2026-03-20 02:52:29'),
+(48, 64, '64-48-1774019887.jpg', NULL, '2026-03-20 09:48:07', '2026-03-20 09:48:07');
 
 -- --------------------------------------------------------
 
@@ -627,6 +586,28 @@ CREATE TABLE `product_ratings` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `product_size`
+--
+
+CREATE TABLE `product_size` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `product_id` bigint(20) UNSIGNED NOT NULL,
+  `size_id` bigint(20) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `product_size`
+--
+
+INSERT INTO `product_size` (`id`, `product_id`, `size_id`) VALUES
+(1, 64, 4),
+(2, 64, 3),
+(3, 64, 2),
+(4, 64, 1);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `product_variants`
 --
 
@@ -637,15 +618,6 @@ CREATE TABLE `product_variants` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `product_variants`
---
-
-INSERT INTO `product_variants` (`id`, `product_id`, `image`, `created_at`, `updated_at`) VALUES
-(25, 49, '49-25-1772286550.JPG', '2026-02-28 08:19:10', '2026-02-28 08:19:10'),
-(26, 14, '14-26-1772286626.JPG', '2026-02-28 08:20:26', '2026-02-28 08:20:26'),
-(27, 14, '14-27-1772286904.png', '2026-02-28 08:25:04', '2026-02-28 08:25:04');
 
 -- --------------------------------------------------------
 
@@ -663,14 +635,6 @@ CREATE TABLE `ratings` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `ratings`
---
-
-INSERT INTO `ratings` (`id`, `product_id`, `user_id`, `rating`, `review`, `created_at`, `updated_at`) VALUES
-(1, 14, 3, 3, 'Awesome Product', NULL, NULL),
-(2, 14, 1, 3, 'Awesome Product', NULL, NULL);
-
 -- --------------------------------------------------------
 
 --
@@ -686,15 +650,6 @@ CREATE TABLE `reviews` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `reviews`
---
-
-INSERT INTO `reviews` (`id`, `user_id`, `product_id`, `rating`, `review`, `created_at`, `updated_at`) VALUES
-(1, 3, 14, 5, 'Quality is good This cotton cream color T-shirt is a perfect blend of comfort, simplicity, and everyday style. The fabric feels soft, breathable, and gentle on the skin, making it ideal for long wear in any season. The cream shade looks classy and versatile, pairing effortlessly with jeans, chinos, or shorts. Stitching is neat and durable, giving the T-shirt a premium finish. It fits well without feeling too tight or too loose, offering a clean, relaxed look. Easy to wash and maintain, it retains its shape and color. Overall, it’s a reliable wardrobe essential for casual and smart-casual wear for daily use comfortably.', '2026-02-23 07:22:56', '2026-02-23 07:22:56'),
-(2, 1, 14, 3, 'Good product', NULL, NULL),
-(3, 7, 14, 1, 'Absolutely love this T-shirt! The fabric is super soft and comfortable, perfect for lounging or casual wear. The relaxed fit feels easy and breathable without looking oversized. The black color looks rich and premium, and the quality is definitely worth the price. Great everyday essential. Totally satisfied with the purchase!', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -828,9 +783,9 @@ CREATE TABLE `sub_categories` (
   `sub_category_name` varchar(255) NOT NULL,
   `sub_category_slug` varchar(255) NOT NULL,
   `status` int(11) NOT NULL,
-  `showHome` enum('Yes','No') NOT NULL DEFAULT 'No',
   `category_id` bigint(20) UNSIGNED NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
+  `image` varchar(50) DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -838,13 +793,12 @@ CREATE TABLE `sub_categories` (
 -- Dumping data for table `sub_categories`
 --
 
-INSERT INTO `sub_categories` (`id`, `sub_category_name`, `sub_category_slug`, `status`, `showHome`, `category_id`, `created_at`, `updated_at`) VALUES
-(6, 'Top Wear', 'top-wear', 1, 'Yes', 82, '2023-11-23 23:56:48', '2023-11-23 23:56:48'),
-(7, 'Bottom  Wear', 'bottom-wear', 1, 'Yes', 82, '2023-11-23 23:57:22', '2023-11-23 23:57:22'),
-(21, 'Bottom  Wear', 'bottom-wear', 1, 'Yes', 83, '2023-11-23 23:57:22', '2023-11-23 23:57:22'),
-(22, 'Top Wear', 'top-wear', 1, 'Yes', 83, '2023-11-23 23:56:48', '2023-11-23 23:56:48'),
-(25, 'Jewellery', 'jewellery', 1, 'Yes', 83, '2026-02-16 07:01:49', '2026-02-16 07:01:49'),
-(26, 'Footwear', 'footwear', 1, 'Yes', 82, '2026-02-16 23:46:21', '2026-02-28 00:17:35');
+INSERT INTO `sub_categories` (`id`, `sub_category_name`, `sub_category_slug`, `status`, `category_id`, `created_at`, `image`, `updated_at`) VALUES
+(6, 'Top Wear', 'top-wear', 1, 82, '2023-11-23 23:56:48', '82-men.jpg', '2023-11-23 23:56:48'),
+(7, 'Bottom  Wear', 'bottom-wear', 1, 82, '2023-11-23 23:57:22', NULL, '2023-11-23 23:57:22'),
+(21, 'Bottom  Wear', 'bottom-wear', 1, 83, '2023-11-23 23:57:22', NULL, '2023-11-23 23:57:22'),
+(25, 'Jewellery', 'jewellery', 1, 83, '2026-02-16 07:01:49', '83-women.jpg', '2026-02-16 07:01:49'),
+(26, 'Footwear', 'footwear', 1, 82, '2026-02-16 23:46:21', NULL, '2026-02-28 00:17:35');
 
 -- --------------------------------------------------------
 
@@ -856,8 +810,8 @@ CREATE TABLE `sub_sub_categories` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `category_id` bigint(20) UNSIGNED NOT NULL,
   `sub_category_id` bigint(20) UNSIGNED NOT NULL,
-  `sub2_category_name` varchar(255) NOT NULL,
-  `sub2_category_slug` varchar(255) NOT NULL,
+  `sub_sub_category_name` varchar(255) NOT NULL,
+  `sub_sub_category_slug` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -866,12 +820,12 @@ CREATE TABLE `sub_sub_categories` (
 -- Dumping data for table `sub_sub_categories`
 --
 
-INSERT INTO `sub_sub_categories` (`id`, `category_id`, `sub_category_id`, `sub2_category_name`, `sub2_category_slug`, `created_at`, `updated_at`) VALUES
+INSERT INTO `sub_sub_categories` (`id`, `category_id`, `sub_category_id`, `sub_sub_category_name`, `sub_sub_category_slug`, `created_at`, `updated_at`) VALUES
 (1, 82, 6, 'T-shirt', 't-shirt', '2026-02-16 03:28:51', '2026-02-16 03:28:51'),
-(8, 83, 22, 'Tops', 'tops', '2026-02-16 06:59:55', '2026-02-16 06:59:55'),
 (9, 83, 25, 'Earrings', 'earrings', '2026-02-16 07:02:29', '2026-02-16 07:02:29'),
 (10, 82, 7, 'Jeans', 'jeans', '2026-02-16 23:45:53', '2026-02-16 23:45:53'),
-(11, 82, 26, 'Casual Shoes', 'casual-shoes', '2026-02-16 23:46:42', '2026-02-20 07:25:55');
+(11, 82, 26, 'Casual Shoes', 'casual-shoes', '2026-02-16 23:46:42', '2026-02-20 07:25:55'),
+(21, 82, 6, 'Casual Shirt', 'casual_shirt', '2026-03-16 09:10:25', '2026-03-16 09:10:25');
 
 -- --------------------------------------------------------
 
@@ -932,7 +886,97 @@ INSERT INTO `temp_images` (`id`, `name`, `created_at`, `updated_at`) VALUES
 (214, '1772286624.JPG', '2026-02-28 08:20:24', '2026-02-28 08:20:24'),
 (215, '1772286693.jpg', '2026-02-28 08:21:33', '2026-02-28 08:21:33'),
 (216, '1772286903.png', '2026-02-28 08:25:03', '2026-02-28 08:25:03'),
-(217, '1772435118.jpg', '2026-03-02 01:35:18', '2026-03-02 01:35:18');
+(217, '1772435118.jpg', '2026-03-02 01:35:18', '2026-03-02 01:35:18'),
+(218, '1773666235.JPG', '2026-03-16 07:33:55', '2026-03-16 07:33:55'),
+(219, '1773666294.JPG', '2026-03-16 07:34:54', '2026-03-16 07:34:54'),
+(220, '1773666431.JPG', '2026-03-16 07:37:11', '2026-03-16 07:37:11'),
+(221, '1773666617.JPG', '2026-03-16 07:40:17', '2026-03-16 07:40:17'),
+(222, '1773666702.JPG', '2026-03-16 07:41:42', '2026-03-16 07:41:42'),
+(223, '1773666820.JPG', '2026-03-16 07:43:40', '2026-03-16 07:43:40'),
+(224, '1773667423.JPG', '2026-03-16 07:53:43', '2026-03-16 07:53:43'),
+(225, '1773667494.JPG', '2026-03-16 07:54:54', '2026-03-16 07:54:54'),
+(226, '1773667598.JPG', '2026-03-16 07:56:38', '2026-03-16 07:56:38'),
+(227, '1773667661.JPG', '2026-03-16 07:57:41', '2026-03-16 07:57:41'),
+(228, '1773667708.JPG', '2026-03-16 07:58:28', '2026-03-16 07:58:28'),
+(229, '1773667739.JPG', '2026-03-16 07:58:59', '2026-03-16 07:58:59'),
+(230, '1773671571.JPG', '2026-03-16 09:02:51', '2026-03-16 09:02:51'),
+(231, '1773748506.JPG', '2026-03-17 06:25:06', '2026-03-17 06:25:06'),
+(232, '1773748546.JPG', '2026-03-17 06:25:46', '2026-03-17 06:25:46'),
+(233, '1773752668.JPG', '2026-03-17 07:34:28', '2026-03-17 07:34:28'),
+(234, '1773989759.png', '2026-03-20 01:25:59', '2026-03-20 01:25:59'),
+(235, '1773989763.png', '2026-03-20 01:26:03', '2026-03-20 01:26:03'),
+(236, '1773989832.jpg', '2026-03-20 01:27:12', '2026-03-20 01:27:12'),
+(237, '1773990132.jpg', '2026-03-20 01:32:12', '2026-03-20 01:32:12'),
+(238, '1773990177.png', '2026-03-20 01:32:57', '2026-03-20 01:32:57'),
+(239, '1773994921.jpg', '2026-03-20 02:52:01', '2026-03-20 02:52:01'),
+(240, '1773994922.jpg', '2026-03-20 02:52:02', '2026-03-20 02:52:02'),
+(241, '1773994923.jpg', '2026-03-20 02:52:03', '2026-03-20 02:52:03'),
+(242, '1773994923.jpg', '2026-03-20 02:52:03', '2026-03-20 02:52:03'),
+(243, '1773994923.jpg', '2026-03-20 02:52:03', '2026-03-20 02:52:03'),
+(244, '1774017718.jpg', '2026-03-20 09:11:58', '2026-03-20 09:11:58'),
+(245, '1774017718.jpg', '2026-03-20 09:11:58', '2026-03-20 09:11:58'),
+(246, '1774017719.jpg', '2026-03-20 09:11:59', '2026-03-20 09:11:59'),
+(247, '1774017730.jpg', '2026-03-20 09:12:10', '2026-03-20 09:12:10'),
+(248, '1774017730.jpg', '2026-03-20 09:12:10', '2026-03-20 09:12:10'),
+(249, '1774017731.jpg', '2026-03-20 09:12:11', '2026-03-20 09:12:11'),
+(250, '1774017731.jpg', '2026-03-20 09:12:11', '2026-03-20 09:12:11'),
+(251, '1774017731.jpg', '2026-03-20 09:12:11', '2026-03-20 09:12:11'),
+(252, '1774017749.jpg', '2026-03-20 09:12:29', '2026-03-20 09:12:29'),
+(253, '1774017752.jpg', '2026-03-20 09:12:32', '2026-03-20 09:12:32'),
+(254, '1774017755.jpg', '2026-03-20 09:12:35', '2026-03-20 09:12:35'),
+(255, '1774017762.jpg', '2026-03-20 09:12:42', '2026-03-20 09:12:42'),
+(256, '1774017933.jpg', '2026-03-20 09:15:33', '2026-03-20 09:15:33'),
+(257, '1774017985.jpg', '2026-03-20 09:16:25', '2026-03-20 09:16:25'),
+(258, '1774018026.jpg', '2026-03-20 09:17:06', '2026-03-20 09:17:06'),
+(259, '1774018029.jpg', '2026-03-20 09:17:09', '2026-03-20 09:17:09'),
+(260, '1774018033.jpg', '2026-03-20 09:17:13', '2026-03-20 09:17:13'),
+(261, '1774018035.jpg', '2026-03-20 09:17:15', '2026-03-20 09:17:15'),
+(262, '1774018301.jpg', '2026-03-20 09:21:41', '2026-03-20 09:21:41'),
+(263, '1774018302.jpg', '2026-03-20 09:21:42', '2026-03-20 09:21:42'),
+(264, '1774018302.jpg', '2026-03-20 09:21:42', '2026-03-20 09:21:42'),
+(265, '1774018310.jpg', '2026-03-20 09:21:50', '2026-03-20 09:21:50'),
+(266, '1774018314.jpg', '2026-03-20 09:21:54', '2026-03-20 09:21:54'),
+(267, '1774018316.jpg', '2026-03-20 09:21:56', '2026-03-20 09:21:56'),
+(268, '1774018318.jpg', '2026-03-20 09:21:58', '2026-03-20 09:21:58'),
+(269, '1774018321.jpg', '2026-03-20 09:22:01', '2026-03-20 09:22:01'),
+(270, '1774018323.jpg', '2026-03-20 09:22:03', '2026-03-20 09:22:03'),
+(271, '1774018440.jpg', '2026-03-20 09:24:00', '2026-03-20 09:24:00'),
+(272, '1774018442.jpg', '2026-03-20 09:24:02', '2026-03-20 09:24:02'),
+(273, '1774018445.jpg', '2026-03-20 09:24:05', '2026-03-20 09:24:05'),
+(274, '1774018450.jpg', '2026-03-20 09:24:10', '2026-03-20 09:24:10'),
+(275, '1774018453.jpg', '2026-03-20 09:24:13', '2026-03-20 09:24:13'),
+(276, '1774018456.jpg', '2026-03-20 09:24:16', '2026-03-20 09:24:16'),
+(277, '1774018458.jpg', '2026-03-20 09:24:18', '2026-03-20 09:24:18'),
+(278, '1774018461.jpg', '2026-03-20 09:24:21', '2026-03-20 09:24:21'),
+(279, '1774018684.jpg', '2026-03-20 09:28:04', '2026-03-20 09:28:04'),
+(280, '1774018721.jpg', '2026-03-20 09:28:41', '2026-03-20 09:28:41'),
+(281, '1774018723.jpg', '2026-03-20 09:28:43', '2026-03-20 09:28:43'),
+(282, '1774018726.jpg', '2026-03-20 09:28:46', '2026-03-20 09:28:46'),
+(283, '1774018729.jpg', '2026-03-20 09:28:49', '2026-03-20 09:28:49'),
+(284, '1774018731.jpg', '2026-03-20 09:28:51', '2026-03-20 09:28:51'),
+(285, '1774018733.jpg', '2026-03-20 09:28:53', '2026-03-20 09:28:53'),
+(286, '1774018736.jpg', '2026-03-20 09:28:56', '2026-03-20 09:28:56'),
+(287, '1774018964.jpg', '2026-03-20 09:32:44', '2026-03-20 09:32:44'),
+(288, '1774018967.jpg', '2026-03-20 09:32:47', '2026-03-20 09:32:47'),
+(289, '1774018969.jpg', '2026-03-20 09:32:49', '2026-03-20 09:32:49'),
+(290, '1774018972.jpg', '2026-03-20 09:32:52', '2026-03-20 09:32:52'),
+(291, '1774018974.jpg', '2026-03-20 09:32:54', '2026-03-20 09:32:54'),
+(292, '1774019119.jpg', '2026-03-20 09:35:19', '2026-03-20 09:35:19'),
+(293, '1774019122.jpg', '2026-03-20 09:35:22', '2026-03-20 09:35:22'),
+(294, '1774019124.jpg', '2026-03-20 09:35:24', '2026-03-20 09:35:24'),
+(295, '1774019128.jpg', '2026-03-20 09:35:28', '2026-03-20 09:35:28'),
+(296, '1774019130.jpg', '2026-03-20 09:35:30', '2026-03-20 09:35:30'),
+(297, '1774019526.jpg', '2026-03-20 09:42:06', '2026-03-20 09:42:06'),
+(298, '1774019529.jpg', '2026-03-20 09:42:09', '2026-03-20 09:42:09'),
+(299, '1774019562.jpg', '2026-03-20 09:42:42', '2026-03-20 09:42:42'),
+(300, '1774019564.jpg', '2026-03-20 09:42:44', '2026-03-20 09:42:44'),
+(301, '1774019567.jpg', '2026-03-20 09:42:47', '2026-03-20 09:42:47'),
+(302, '1774019838.jpg', '2026-03-20 09:47:18', '2026-03-20 09:47:18'),
+(303, '1774019841.jpg', '2026-03-20 09:47:21', '2026-03-20 09:47:21'),
+(304, '1774019857.jpg', '2026-03-20 09:47:37', '2026-03-20 09:47:37'),
+(305, '1774019860.jpg', '2026-03-20 09:47:40', '2026-03-20 09:47:40'),
+(306, '1774019882.jpg', '2026-03-20 09:48:02', '2026-03-20 09:48:02'),
+(307, '1774019884.jpg', '2026-03-20 09:48:04', '2026-03-20 09:48:04');
 
 -- --------------------------------------------------------
 
@@ -966,7 +1010,7 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`id`, `name`, `email`, `phone`, `mobile`, `birthdate`, `gender`, `role`, `image`, `status`, `email_verified_at`, `password`, `is_active`, `remember_token`, `created_at`, `updated_at`) VALUES
 (1, 'Admin', 'mukeshbhavsar210@gmail.com', '', NULL, NULL, NULL, 2, 'mukesh.webp', 1, NULL, '$2y$12$Iy5Wh1TVAkCYAvaefrR71OEKD4QDjhnnWBxknqjwnioSSM6sAJMnO', 1, NULL, '2023-11-17 23:52:06', '2023-12-01 05:59:34'),
 (3, 'Priyanka', 'p.bhavsar2610@gmail', '9538135005', '9978812324', '2026-02-18', 'female', 1, 'priyanka.png', 1, NULL, '$2y$12$Iy5Wh1TVAkCYAvaefrR71OEKD4QDjhnnWBxknqjwnioSSM6sAJMnO', 1, NULL, '2023-11-25 00:32:42', '2026-03-04 00:10:24'),
-(7, 'Dhruv', 'dhruvbhavsar210@gmail.com', '9538135005', '9978812324', '2026-02-18', 'female', 1, 'priyanka.png', 1, NULL, '$2y$12$Iy5Wh1TVAkCYAvaefrR71OEKD4QDjhnnWBxknqjwnioSSM6sAJMnO', 1, NULL, '2023-11-25 00:32:42', '2026-03-09 03:12:12');
+(7, 'Dhruv', 'dhruvbhavsar210@gmail.com', '9538135005', '9978812324', '2026-02-18', 'male', 1, 'priyanka.png', 1, NULL, '$2y$12$Iy5Wh1TVAkCYAvaefrR71OEKD4QDjhnnWBxknqjwnioSSM6sAJMnO', 1, NULL, '2023-11-25 00:32:42', '2026-03-17 08:37:16');
 
 -- --------------------------------------------------------
 
@@ -981,14 +1025,6 @@ CREATE TABLE `wishlists` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `wishlists`
---
-
-INSERT INTO `wishlists` (`id`, `user_id`, `product_id`, `created_at`, `updated_at`) VALUES
-(50, 3, 13, '2026-03-02 06:27:19', '2026-03-02 06:27:19'),
-(52, 7, 14, '2026-03-10 01:17:12', '2026-03-10 01:17:12');
 
 --
 -- Indexes for dumped tables
@@ -1127,6 +1163,14 @@ ALTER TABLE `products`
   ADD KEY `products_discount_percentage_id_foreign` (`discount_percentage_id`);
 
 --
+-- Indexes for table `product_color`
+--
+ALTER TABLE `product_color`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `product_color_product_id_foreign` (`product_id`),
+  ADD KEY `product_color_color_id_foreign` (`color_id`);
+
+--
 -- Indexes for table `product_images`
 --
 ALTER TABLE `product_images`
@@ -1139,6 +1183,14 @@ ALTER TABLE `product_images`
 ALTER TABLE `product_ratings`
   ADD PRIMARY KEY (`id`),
   ADD KEY `product_ratings_product_id_foreign` (`product_id`);
+
+--
+-- Indexes for table `product_size`
+--
+ALTER TABLE `product_size`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `product_size_product_id_foreign` (`product_id`),
+  ADD KEY `product_size_size_id_foreign` (`size_id`);
 
 --
 -- Indexes for table `product_variants`
@@ -1202,7 +1254,7 @@ ALTER TABLE `sub_categories`
 --
 ALTER TABLE `sub_sub_categories`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `sub_sub_categories_slug_unique` (`sub2_category_slug`),
+  ADD UNIQUE KEY `sub_sub_categories_slug_unique` (`sub_sub_category_slug`),
   ADD KEY `sub_sub_categories_category_id_foreign` (`category_id`),
   ADD KEY `sub_sub_categories_sub_category_id_foreign` (`sub_category_id`);
 
@@ -1235,19 +1287,19 @@ ALTER TABLE `wishlists`
 -- AUTO_INCREMENT for table `brands`
 --
 ALTER TABLE `brands`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
 
 --
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=155;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=167;
 
 --
 -- AUTO_INCREMENT for table `colors`
 --
 ALTER TABLE `colors`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `coupon_product`
@@ -1265,7 +1317,7 @@ ALTER TABLE `customer_addresses`
 -- AUTO_INCREMENT for table `discounts`
 --
 ALTER TABLE `discounts`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `discount_coupons`
@@ -1289,7 +1341,7 @@ ALTER TABLE `failed_jobs`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=59;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=62;
 
 --
 -- AUTO_INCREMENT for table `orders`
@@ -1331,19 +1383,31 @@ ALTER TABLE `personal_access_tokens`
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=65;
+
+--
+-- AUTO_INCREMENT for table `product_color`
+--
+ALTER TABLE `product_color`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `product_images`
 --
 ALTER TABLE `product_images`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
 
 --
 -- AUTO_INCREMENT for table `product_ratings`
 --
 ALTER TABLE `product_ratings`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `product_size`
+--
+ALTER TABLE `product_size`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `product_variants`
@@ -1385,19 +1449,19 @@ ALTER TABLE `states`
 -- AUTO_INCREMENT for table `sub_categories`
 --
 ALTER TABLE `sub_categories`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- AUTO_INCREMENT for table `sub_sub_categories`
 --
 ALTER TABLE `sub_sub_categories`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `temp_images`
 --
 ALTER TABLE `temp_images`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=218;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=308;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -1409,7 +1473,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `wishlists`
 --
 ALTER TABLE `wishlists`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=104;
 
 --
 -- Constraints for dumped tables
@@ -1477,6 +1541,13 @@ ALTER TABLE `products`
   ADD CONSTRAINT `products_sub_sub_category_id_foreign` FOREIGN KEY (`sub_sub_category_id`) REFERENCES `sub_sub_categories` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
+-- Constraints for table `product_color`
+--
+ALTER TABLE `product_color`
+  ADD CONSTRAINT `product_color_color_id_foreign` FOREIGN KEY (`color_id`) REFERENCES `colors` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `product_color_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE;
+
+--
 -- Constraints for table `product_images`
 --
 ALTER TABLE `product_images`
@@ -1487,6 +1558,13 @@ ALTER TABLE `product_images`
 --
 ALTER TABLE `product_ratings`
   ADD CONSTRAINT `product_ratings_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `product_size`
+--
+ALTER TABLE `product_size`
+  ADD CONSTRAINT `product_size_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `product_size_size_id_foreign` FOREIGN KEY (`size_id`) REFERENCES `sizes` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `product_variants`

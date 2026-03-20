@@ -209,7 +209,7 @@ class ShopController extends Controller {
     }
 
     public function product($item1=null, $item2=null, $item3=null, $slug, Request $request) {
-        $product = Product::where('slug',$slug)->with(['product_images', 'variants', 'subSubCategory.subCategory.category'])->first();
+        $product = Product::where('slug',$slug)->with(['colors', 'sizes', 'product_images', 'variants', 'subSubCategory.subCategory.category'])->first();
         $colors = Color::get();
         $sizes = Size::get();
 
