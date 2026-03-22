@@ -24,6 +24,7 @@
                             <th class="border-top-0">Product details</th>   
                             <th class="border-top-0 text-end" width="130">Amount</th>
                             <th class="border-top-0 text-end" width="100">Discount</th>
+                            <th class="border-top-0 text-end" width="130">Grand Total</th>                            
                             <th class="border-top-0 text-end" width="130">Date</th>
                             <th class="border-top-0 text-end" width="150">Courier</th>
                             <th class="border-top-0 text-end" width="120">Status</th> 
@@ -40,8 +41,13 @@
                                                 @php
                                                     $productImage = $item->product->images->first();
                                                 @endphp
-                                                                            
-                                                <a href="{{ route('front.product', $item->product->slug) }}" target="_blank" class="user-avatar position-relative d-inline-block ms-n2">
+
+                                                <a href="{{ route('front.product', [
+                                                            $item->product->category->category_slug,
+                                                            $item->product->subCategory->sub_category_slug,
+                                                            $item->product->subSubCategory->sub_sub_category_slug,
+                                                            'slug' => $item->product->slug
+                                                        ]) }}" target="_blank" class="user-avatar position-relative d-inline-block ms-n2">
                                                     @if($productImage && !empty($productImage->image))
                                                         <img src="{{ asset('uploads/product/small/'.$productImage->image) }}" height="80" class="thumb-md shadow-sm rounded-circle" />
                                                     @else
@@ -50,13 +56,22 @@
                                                 </a>       
                                                 <span class="counts">{{ $order->items->count() }}</span>                                    
                                             @endforeach
-                                        </div>
+                                        </div>                                        
+
                                         <div>
                                             @foreach($order->items as $item)                                                                                                                            
                                                 <a href="{{ route('orders.detail',$order->id) }}" title="{{ $order->id }}">                                            
                                                     <p>
                                                         <strong>{{ $item->product->title }}</strong>
-                                                        <span class="text-muted">- {{ $item->product->size->code }}, {{ $item->product->size->code }}</span>
+                                                        <span class="text-muted">- 
+                                                            {{-- @if($item->product->size->code)
+                                                                {{ $item->product->size->code }},    
+                                                            @endif
+
+                                                            @if($item->product->size->code)
+                                                                {{ $item->product->size->code }}   
+                                                            @endif                                                              --}}
+                                                        </span>
                                                     </p>
                                                 </a> 
                                             @endforeach
@@ -64,12 +79,10 @@
                                     </div>
                                 </td>                         
                                 <td class="text-end">
-                                    <h5 class="mb-0">₹{{ number_format(optional($order->items->first())->grandtotal,2) }}</h5>                                    
-                                    {{-- <h5 class="mb-0">₹{{ number_format($order->grandtotal,2) }}</h5> --}}
-                                    <p class="m-0 text-muted tiny-font">
-                                        Price: ₹{{ number_format(optional($order->items->first())->price,2) }}
-                                        Price: ₹{{ number_format(optional($order->items->first())->subtotal,2) }}
-                                        {{-- {{ $order->payment_method == 'cod' ? 'COD' : 'Razorpay' }} --}}
+                                    <h5 class="mb-0">₹{{ number_format($order->subtotal,2) }} </h5>
+                                    <p class="m-0 text-muted tiny-font">  
+                                        <del>₹{{ number_format(optional($order->items->first())->price,2) }}</del><br />
+                                        Shipping: ₹{{ number_format($order->shipping,2) }}<br />
                                     </p>
                                 </td>   
                                 <td class="text-end">
@@ -80,6 +93,12 @@
                                         {{-- ({{ $order->coupon_code }}) --}}
                                     </p>
                                 </td>
+                                <td class="text-end">
+                                    <h5 class="mb-0">₹{{ number_format($order->grandtotal,2) }}</h5>
+                                    <p class="m-0 text-muted tiny-font">
+                                        {{ $order->payment_method == 'cod' ? 'COD' : 'Razorpay' }}
+                                    </p>
+                                </td>                                
                                 <td class="text-end">
                                     <p class="m-0">
                                         {{ \Carbon\Carbon::parse(optional($order->items->first())->created_at)->format('d M, Y') }}

@@ -535,7 +535,7 @@ class ShopController extends Controller {
         $brands = Brand::where('status',1)->withCount(['products as products_count' => $filterProducts])->orderBy('name','ASC')->get();        
         $colors = Color::withCount(['products as products_count' => $filterProducts])->orderBy('name','ASC')->get();
         $sizes = Size::withCount(['products as products_count' => $filterProducts])->orderBy('name','ASC')->get();
-        $discounts = DiscountPercentage::withCount(['products as products_count' => $filterProducts])->orderBy('name','ASC')->get();
+        $discounts = DiscountPercentage::withCount(['products as products_count' => $filterProducts])->orderBy('percentage','ASC')->get();
 
         //Filter logic
         function applyFilter($request, $param, $model, $column, $productColumn, &$selectedArray, &$products) {

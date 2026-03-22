@@ -13,10 +13,13 @@ class ProductForm extends Component {
     public $title;
     public $categories;
     public $subcategories;
-    public $subsubcategories;
+    public $subsubcategories;    
+    public $selectedsubcategory;
     public $brands;
     public $colors;
     public $sizes;
+    public $discounts;
+    public $discountpercentages;
     public $productimages;
 
     public function __construct(
@@ -31,6 +34,8 @@ class ProductForm extends Component {
         $brands = null,
         $colors = null,
         $sizes = null,
+        $discounts = null,
+        $discountpercentages = null,
         $productimages = null,
         $buttonText = 'Save')
     {
@@ -45,6 +50,8 @@ class ProductForm extends Component {
         $this->brands = $brands;
         $this->colors = $colors;
         $this->sizes = $sizes;
+        $this->discounts = $discounts;
+        $this->discountpercentages = $discountpercentages;
         $this->productimages = $productimages;
         $this->buttonText = $buttonText;
     }

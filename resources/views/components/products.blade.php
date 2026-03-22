@@ -53,7 +53,8 @@
                                     $product->subCategory->sub_category_slug,                               
                                     $product->subSubCategory->sub_sub_category_slug,
                                     'slug' => $product->slug]) }}" target="_blank" title="{{ $product->slug }}">
-                                    <img src="{{ asset('uploads/product/small/'.$product->images->first()->image) }}" >
+                                    <img src="{{ asset('uploads/product/small/'.$image->image) }}">
+                                    {{-- <img src="{{ asset('uploads/product/small/'.$product->images->first()->image) }}" > --}}
                                 </a>
                             </div>
                         @endforeach
@@ -110,19 +111,18 @@
             @endif            
 
             <div class="price">
-                @if($product->discount)
-                    @php
-                        $discountPrice = $product->price - ($product->price * $product->discount->discount_percent / 100);
-                    @endphp
+                @php
+                    $discountPercent = optional($product->discount->percentage)->percentage	?? 0;
+                    $discountPrice = $product->price - ($product->price * $discountPercent / 100);
+                @endphp
 
-                    <span class="dark">₹{{ $discountPrice }}</span>
-                    <span class="mrp">MRP 
-                        <del>₹{{ $product->price }}</del>
-                    </span>
-                    <span class="discount">{{ $product->discount->discount_percent }}% OFF</span>
+                @if($discountPercent > 0)
+                    <span class="dark">₹{{ round($discountPrice) }}</span>
+                    <span class="mrp">MRP <del>₹{{ $product->price }}</del></span>
+                    <span class="discount">{{ $discountPercent }}% OFF</span>
                 @else
-                    <span class="dark">₹{{ $product->price }}</span>                    
-                @endif
+                    <span class="dark">₹{{ number_format($product->price, 2) }}</span>
+                @endif                
             </div>  
         </div>
     </div> 

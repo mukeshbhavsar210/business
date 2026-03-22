@@ -7,6 +7,7 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Color;
 use App\Models\Discount;
+use App\Models\DiscountPercentage;
 use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\ProductVariant;
@@ -23,7 +24,7 @@ use Carbon\Carbon;
 
 class ProductController extends Controller {
     public function index(Request $request){
-        $products = Product::latest('id')->with(['product_images','variant_images']);
+        $products = Product::latest('id')->with(['product_images','variant_images','brand','sizes','colors','discount.percentage']);
 
         if ($request->get('keyword') != ""){
             $products = $products->where('title', 'like', '%'.$request->keyword.'%');
@@ -31,7 +32,8 @@ class ProductController extends Controller {
 
         $products = $products->paginate();
 
-        $data['products'] = $products;
+        $data['products'] = $products;        
+
         return view ('admin.products.list',$data);
     }
 
@@ -83,14 +85,13 @@ class ProductController extends Controller {
             $product->sub_category_id = $request->sub_category;
             $product->sub_sub_category_id = $request->sub_sub_category;
             $product->brand_id = $request->brand;            
-            //$product->discount_percentage_id = $request->discount_percent;
+            $product->discount_percentage_id = $request->discount_percent;
             $product->is_featured = $request->is_featured;
             $product->sku = $request->sku;
             $product->barcode = $request->barcode;
             $product->track_qty = $request->track_qty;
             $product->qty = $request->qty;
-            $product->recommended = $request->recommended;
-            $product->discount_percentage = $request->discount_percentage;
+            $product->recommended = $request->recommended;            
             $product->average_rating = $request->average_rating;
             $product->cod = $request->cod;
             $product->is_returnable = $request->is_returnable;
@@ -139,11 +140,11 @@ class ProductController extends Controller {
                     $ext = last($extArray);
 
                     $productImage = new ProductImage();
-                    $productImage->product_id = $product->id;
+                    $productImage->product_id = $product->id;                    
                     $productImage->image = "NULL";
                     $productImage->save();
 
-                    $imageName = $product->id.'-'.$productImage->id.'-'.time().'.'.$ext;
+                    $imageName = $product->id. '-' .$product->title. '-' .$productImage->id.'.'.$ext;
                     $productImage->image = $imageName;
                     $productImage->save();
 
@@ -162,7 +163,7 @@ class ProductController extends Controller {
                     $destPath = public_path().'/uploads/product/small/'.$imageName;
                     $manager = new ImageManager(new Driver());
                     $image = $manager->read($sourcePath);
-                    $image->cover(300,300);
+                    $image->cover(300,400);
                     $image->save($destPath);
                 }
             }
@@ -188,17 +189,19 @@ class ProductController extends Controller {
     }
 
     public function edit($id, Request $request){
-        $product = Product::find($id);        
+        $product = Product::with(['colors','sizes','discount'])->find($id);        
+        $subcategories = SubCategory::where('category_id', $product->category_id)->get();
+        $selectedsubcategory = $product->sub_category_id;
+        //Fetch Product Images
+        $productimages = ProductImage::where('product_id',$product->id)->get();
+        //$subcategories = SubCategory::where('category_id',$product->category_id)->get();        
+        $subsubcategories = SubSubCategory::where('sub_category_id', $product->sub_category_id)->get();        
+
         //$product->load('variants');
         
         if (empty($product)) {
             return redirect()->route('products.index')->with('error','Product not found');
-        }
-
-        //Fetch Product Images
-        $productimages = ProductImage::where('product_id',$product->id)->get();
-        $subcategories = SubCategory::where('category_id',$product->category_id)->get();        
-        $subsubcategories = SubSubCategory::where('sub_category_id', $product->sub_category_id)->get();        
+        }        
 
         //Fetch Related products
         $relatedProducts = [];
@@ -210,24 +213,30 @@ class ProductController extends Controller {
         $data = [];
         $categories = Category::orderBy('category_name','ASC')->get();
         $brands = Brand::orderBy('name','ASC')->get();
-        $colors = Color::orderBy('name','ASC')->get();
-        $sizes  = Size::orderBy('name','ASC')->get();
+        $colors = Color::orderBy('id','ASC')->get();
+        $sizes  = Size::orderBy('id','ASC')->get();
+        $discounts = Discount::orderBy('id','ASC')->get();
+        $discountpercentages = DiscountPercentage::orderBy('percentage','ASC')->get();
 
-        $data['categories'] = $categories;
         $data['brands'] = $brands;
         $data['colors'] = $colors;
         $data['sizes'] = $sizes;
-        $data['product'] = $product;
+        $data['discounts'] = $discounts;
+        $data['discountpercentages'] = $discountpercentages;
+        $data['product'] = $product;        
+        $data['categories'] = $categories;
         $data['subcategories'] = $subcategories;
         $data['subsubcategories'] = $subsubcategories;
+        $data['selectedsubcategory'] = $selectedsubcategory;
         $data['productimages'] = $productimages;
-        $data['relatedProducts'] = $relatedProducts;        
-
+        $data['relatedProducts'] = $relatedProducts;               
+        
         return view('admin.products.edit',$data);
     }
 
     public function update($id, Request $request){
-        $product = Product::find($id);
+        $product = Product::with('sizes','colors')->find($id);
+
         $rules = [
             'title' => 'required',
             'slug' => 'required|unique:products,slug,'.$product->id.',id',
@@ -254,16 +263,14 @@ class ProductController extends Controller {
             $product->category_id = $request->category;
             $product->sub_category_id = $request->sub_category;
             $product->sub_sub_category_id = $request->sub_sub_category;
-            $product->brand_id = $request->brand;
-            $product->color_id = $request->color;            
-            $product->size_id = $request->size;
+            $product->brand_id = $request->brand;            
             $product->is_featured = $request->is_featured;
             $product->sku = $request->sku;
             $product->barcode = $request->barcode;
             $product->track_qty = $request->track_qty;
             $product->qty = $request->qty;
             $product->recommended = $request->recommended;
-            $product->discount_percentage = $request->discount_percentage;
+            $product->discount_percentage_id = $request->discount_percent;            
             $product->average_rating = $request->average_rating;
             $product->cod = $request->cod;
             $product->is_returnable = $request->is_returnable;
@@ -273,13 +280,21 @@ class ProductController extends Controller {
             $product->status = $request->status;
             $product->save();
 
+            // attach multiple IDs
+            $product->colors()->sync($request->colors);
+            $product->sizes()->sync($request->sizes);
+
             if($request->discount_percent > 0){
-                Discount::create([
-                    'product_id' => $product->id,
-                    'discount_percent' => $request->discount_percent,
-                    'start_date' => Carbon::now(),
-                    'end_date' => Carbon::now()->addDays(30),
-                ]);
+                Discount::updateOrCreate(
+                    ['product_id' => $product->id],
+                    [
+                        'discount_percentages_id' => $request->discount_percent,
+                        'start_date' => Carbon::now(),
+                        'end_date' => Carbon::now()->addDays(30),
+                    ]
+                );
+            } else {
+                Discount::where('product_id', $product->id)->delete(); // remove discount
             }
 
             // 3️⃣ Save Variants
@@ -300,7 +315,7 @@ class ProductController extends Controller {
                     $productVariant->image = 'temp.jpg'; // NOT NULL safety
                     $productVariant->save();
 
-                    $imageName = $product->id . '-' . $productVariant->id . '-' . time() . '.' . $ext;
+                    $imageName = $product->id. '-' .$product->title. '-' .$productVariant->id. '.' .$ext;
 
                     // Update image name
                     $productVariant->image = $imageName;
@@ -317,14 +332,15 @@ class ProductController extends Controller {
                     // LARGE IMAGE (1000px width)
                     $largePath = public_path('/uploads/product/large/' . $imageName);
                     $image = $manager->read($sourcePath);
-                    $image->scale(width: 1000);
-                    $image->save($largePath, quality: 85);
+                    //$image->scale(width: 1000);
+                    $image->cover(540, 720);
+                    $image->save($largePath, quality: 100);
 
                     // SMALL IMAGE (300x300 exact)
                     $smallPath = public_path('/uploads/product/small/' . $imageName);
                     $image = $manager->read($sourcePath);
-                    $image->cover(300, 300);
-                    $image->save($smallPath, quality: 85);
+                    $image->cover(300, 400);
+                    $image->save($smallPath, quality: 100);
 
                     // Delete temp file
                     File::delete($sourcePath);
@@ -348,7 +364,7 @@ class ProductController extends Controller {
                     $productImage->image = 'temp.jpg'; // temporary value (not null)
                     $productImage->save();
 
-                    $imageName = $product->id . '-' . $productImage->id . '-' . time() . '.' . $ext;
+                    $imageName = $product->id. '-' .$product->title. '-' .$productImage->id. '.' .$ext;
 
                     // Update with correct filename
                     $productImage->image = $imageName;
@@ -365,14 +381,15 @@ class ProductController extends Controller {
                     // Large
                     $largePath = public_path('/uploads/product/large/' . $imageName);
                     $image = $manager->read($sourcePath);
-                    $image->scale(width: 1000);
-                    $image->save($largePath, quality: 85);
+                    $image->cover(540, 720);
+                    //$image->scale(width: 1000);
+                    $image->save($largePath, quality: 100);
 
                     // Small
                     $smallPath = public_path('/uploads/product/small/' . $imageName);
                     $image = $manager->read($sourcePath);
-                    $image->cover(300, 300);
-                    $image->save($smallPath, quality: 85);
+                    $image->cover(300, 400);
+                    $image->save($smallPath, quality: 100);
 
                     File::delete($sourcePath);
                 }

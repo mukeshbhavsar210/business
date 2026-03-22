@@ -6,18 +6,21 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\OrderStatusHistory;
-use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller {
     public function index(Request $request) {
-        $orders = Order::with(array_merge($this->orderRelations(), ['latestStatus', 'items']))            
+        $orders = Order::with(array_merge($this->orderRelations(), [
+                'latestStatus', 'items', 
+                'items.product.category',
+                'items.product.subCategory',
+                'items.product.subSubCategory']))            
             ->latest('orders.created_at')
             ->paginate(20);
 
         // Order counts
-        $totalOrders = Order::count();
+        $totalOrders = Order::count();        
 
         return view('admin.orders.list', [
             'orders' => $orders,
@@ -32,13 +35,21 @@ class OrderController extends Controller {
             'items',
             'orderItems.product.images',
             'orderItems.product.size',
-            'orderItems.product.color'
+            'orderItems.product.color',
+            'items.product.category',
+            'items.product.subCategory',
+            'items.product.subSubCategory'
         ];
     }
 
 
     public function detail($orderId){
-        $order = Order::select(
+        $order = Order::with([
+                'items.product.category',
+                'items.product.subCategory',
+                'items.product.subSubCategory'
+            ])
+            ->select(
                 'orders.*',
                 'customer_addresses.name',
                 'customer_addresses.mobile',

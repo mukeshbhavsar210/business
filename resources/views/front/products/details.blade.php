@@ -53,21 +53,18 @@
                 
                 <div class="price-wrapper">
                     <div class="price">
-                        @if($product->discount)
-                            @php
-                                $discountPrice = $product->price - ($product->price * $product->discount->discount_percent / 100);
-                            @endphp
+                        @php
+                            $discountPercent = optional($product->discount->percentage)->percentage	?? 0;
+                            $discountPrice = $product->price - ($product->price * $discountPercent / 100);
+                        @endphp
 
-                            <span class="dark">₹{{ $discountPrice }}</span>
-                            <span class="mrp">MRP 
-                                <del>₹{{ $product->price }}</del>
-                            </span>
-                            <span class="discount">{{ $product->discount->discount_percent }}% OFF</span>
+                        @if($discountPercent > 0)
+                            <span class="dark">₹{{ round($discountPrice) }}</span>
+                            <span class="mrp">MRP <del>₹{{ $product->price }}</del></span>
+                            <span class="discount">{{ $discountPercent }}% OFF</span>
                         @else
-                            <div class="price">
-                                <span class="dark">₹{{ $product->price }}</span>
-                            </div>
-                        @endif
+                            <span class="dark">₹{{ number_format($product->price, 2) }}</span>
+                        @endif                         
                     </div>                                                                                                                                      
                     <p class="inclusive">Inclusive of all taxes</p>
                 </div>
@@ -77,7 +74,12 @@
                     <ul class="variant">
                         @if($product->images->first())
                             <li>
-                                <a href="{{ route('front.product', ['slug' => $product->slug]) }}" class="variant-btn {{ request('variant') ? '' : 'active' }}">
+                                <a href="{{ route('front.product', [
+                                        $product->category->category_slug,  
+                                        $product->subCategory->sub_category_slug,                               
+                                        $product->subSubCategory->sub_sub_category_slug,
+                                        'slug' => $product->slug]) }}" 
+                                        class="variant-btn {{ request('variant') ? '' : 'active' }}">
                                     <img src="{{ asset('uploads/product/small/'.$product->images->first()->image) }}" >
                                 </a>
                             </li>
@@ -85,7 +87,12 @@
                         @foreach ($product->variants as $variant)
                             @if($variant->image)
                                 <li id="variant-image-row-{{ $variant->id }}">                                
-                                    <a href="{{ route('front.product', ['slug' => $product->slug, 'variant' => $variant->id]) }}" class="variant-btn {{ request('variant') == $variant->id ? 'active' : '' }}">
+                                    <a href="{{ route('front.product', [
+                                                $product->category->category_slug,  
+                                                $product->subCategory->sub_category_slug,                               
+                                                $product->subSubCategory->sub_sub_category_slug,
+                                                'slug' => $product->slug, 'variant' => $variant->id]) }}" 
+                                                class="variant-btn {{ request('variant') == $variant->id ? 'active' : '' }}">
                                         <input type="hidden" name="existing_variant_images[]" value="{{ $variant->id }}">
                                         <img src="{{ asset('uploads/product/small/'.$variant->image) }}"  />
                                     </a>
@@ -112,11 +119,11 @@
 
                 <div class="part">
                     <div class="flex">
-                        <h3 style="margin-top: 22px;">Select Colors:</h3>                                    
-                        <ul class="size-list">
+                        <h3 style="margin-top: 14px;">Colors:</h3>                                    
+                        <ul class="color-list">
                             @foreach($product->colors as $color)
                                 <li>
-                                    <a href="javascript:void(0);" class="size-option" data-size="{{ $size->name }}">
+                                    <a href="javascript:void(0);" class="color-option" data-size="{{ $size->name }}">
                                         <span style="background-color: {{ $color->code }}; height:22px; width:22px; border-radius:100px; display:block;"></span>                                        
                                     </a>
                                 </li>

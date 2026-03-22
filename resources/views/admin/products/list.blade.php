@@ -54,11 +54,14 @@
                     <thead class="table-light">
                         <tr>
                             <th class="border-top-0">Product</th>
-                            <th class="border-top-0" width="100">Color/Size</th>                            
-                            <th class="border-top-0" width="100">Price</th>
-                            <th class="border-top-0" width="90">Stock</th>
-                            <th class="border-top-0" width="50">Status</th>
-                            <th class="border-top-0" width="70">Action</th>
+                            <th class="border-top-0" width="170">Variants</th>
+                            <th class="border-top-0" width="130">Colors/Sizes</th>                            
+                            <th class="border-top-0 text-end" width="90">Price</th>
+                            <th class="border-top-0 text-end" width="70">COD</th>
+                            <th class="border-top-0 text-end" width="90">Returnable</th>
+                            <th class="border-top-0 text-end" width="90">Stock</th>
+                            <th class="border-top-0 text-end" width="60">Status</th>
+                            <th class="border-top-0 text-end" width="60">Action</th>
                         </tr>
                     </thead>                     
                     <tbody id="productAccordion">
@@ -68,104 +71,127 @@
                                     $productImage = $product->product_images->first();
                                 @endphp
 
-                                <tr data-bs-toggle="collapse" data-bs-target="#variantRow{{ $product->id }}" class="cursor-pointer">
+                                <tr>
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="{{ route('products.edit', $product->id) }}">
                                                 @if (!empty($productImage->image))
-                                                    <img src="{{ asset('uploads/product/small/'.$productImage->image) }}" height="80" class="me-3 align-self-center rounded" >
+                                                    <img src="{{ asset('uploads/product/small/'.$productImage->image) }}" height="90" class="me-3 align-self-center rounded" >
                                                     @else
-                                                    <img src="{{ asset('admin-assets/img/default-150x150.png') }}" alt="" height="80" class="me-3 align-self-center rounded" />
+                                                    <img src="{{ asset('admin-assets/img/default-150x150.png') }}" alt="" height="90" class="me-3 align-self-center rounded" />
                                                 @endif
                                             </a>
                                             <div class="flex-grow-1 text-truncate">
                                                 <h5 class="product-title">
                                                     <a href="{{ route('products.edit', $product->id) }}">{{ Str::limit($product->title, 70, '...') }}</a>
                                                 </h5>
-                                                <div class="small-fonts">
-                                                    {{-- <span class="color-small" style="background:{{ $product->color->code }}; height:20px; width:20px; border-radius:100px;"></span> --}}
+                                                <div class="small-fonts">                                                    
+                                                    <p class="text-muted">{{ $product->category->category_name }} / {{ $product->subCategory->sub_category_name }} / {{ $product->subSubCategory->sub_sub_category_name }} / {{ $product->brand->name }}</p>
                                                     <p class="mb-0">
-                                                        <span class="text-muted">{{ $product->id }}</span> | 
+                                                        <span class="text-muted">{{ $product->id }} / </span>
                                                         @if($product->sku)
-                                                            <span class="mb-0 text-muted">SKU: {{ $product->sku }}</span>
+                                                            <span class="mb-0 text-muted">{{ $product->sku }}</span>
                                                         @endif          
                                                     </p>
-
-                                                    @if($product->variants->count() > 0)
-                                                        <a href="javascript:0" data-bs-toggle="modal" data-bs-target="#variantRow{{ $product->id }}">
-                                                            <b>Variants: {{ $product->variants->count() }}</b>
-                                                        </a>
-                                                    @endif                                                    
+                                                    {{-- @if($product->variants->count() > 0)                                                        
+                                                        <b>Variants: {{ $product->variants->count() }}</b>
+                                                    @endif                                                     --}}
                                                 </div>
                                             </div>
                                         </div>
                                     </td> 
                                     <td>
-                                        <p>{{ $product->color->name ?? '' }}</p>
-                                        <span class="text-muted">Size:</span> {{ $product->size->code ?? '' }}                                        
-                                    </td>    
+                                        <div class="align-self-center">
+                                            <div class="img-group color_code">
+                                                @if($product->variants->count())
+                                                    @foreach($product->variants as $variant)                                        
+                                                        <p class="user-avatar position-relative d-inline-block ms-n3">
+                                                            <img src="{{ asset('uploads/product/small/'.$variant->image) }}" height="50" class="shadow-sm rounded-circle">                                                            
+                                                        </p>                                                    
+                                                    @endforeach
+                                                @else
+                                                    <div class="text-muted">No Variants</div>
+                                                @endif
+                                                </div>                                            
+                                            </div>
+                                        </td>
                                     <td>
-                                        <p><b>₹{{ number_format($product->price,2) }}</b></p>
-                                        <p class="text-muted fs-10">
-                                            @if($product->compare_price)
-                                                Discount: ₹{{ number_format($product->compare_price,2) }}
-                                            @else
-                                                <span>No Discount</span>
-                                            @endif
-                                        </p>   
-                                    </td>                                                                                                             
-                                    <td>                                        
+                                        <div class="align-self-center">
+                                            <div class="img-group color_code">
+                                                @foreach($product->colors as $color)                                                    
+                                                     <p class="user-avatar position-relative d-inline-block ms-n1" >                                                        
+                                                        <span class="color" style="background-color: {{ $color->code }};">
+                                                            <span class="tooltip" data-tip="{{ $color->name }}">1</span>
+                                                        </span>                                                        
+                                                    </p>                                                    
+                                                @endforeach                                                                                           
+                                            </div>                                            
+                                        </div>   
+                                        <div class="align-self-center">
+                                            <div class="img-group color_code">
+                                                @foreach($product->sizes as $size)                                                    
+                                                     <p class="user-avatar position-relative d-inline-block ms-n1" >                                                        
+                                                        <span class="size">
+                                                            <span class="tooltip-item" data-tip="{{ $size->name }}">{{ $size->code }}</span>
+                                                        </span>                                                        
+                                                    </p>                                                    
+                                                @endforeach                                                                                           
+                                            </div>                                            
+                                        </div>                                                                         
+                                    </td>                                    
+                                    <td class="text-end">                                              
+                                        @php
+                                            $discountPercent = optional($product->discount->percentage)->percentage ?? 0;
+                                            $discountPrice = $product->price - ($product->price * $discountPercent / 100);
+                                        @endphp
+
+                                        @if($discountPercent > 0)
+                                            <h5 class="mb-0">₹{{ round($discountPrice) }}</h5>
+                                            <p class="tiny-font text-muted">
+                                                <del>₹{{ number_format($product->price, 2) }}</del><br />
+                                                {{ $discountPercent }}% OFF
+                                            </p>
+                                        @else
+                                            <h5 class="mb-0">₹{{ number_format($product->price, 2) }}</h5>
+                                        @endif
+                                    </td>     
+                                    <td class="text-end">
+                                        <p>{{ $product->cod == 1 ? 'Yes' : 'No' }}</p>
+                                    </td>   
+                                    <td class="text-end">
+                                        <p>{{ $product->is_returnable == 1 ? 'Yes' : 'No' }}</p>                                        
+                                        @if($product->is_returnable == 1)
+                                            <p class="text-muted tiny-font">{{ $product->return_days }}</p>
+                                        @endif                                        
+                                    </td>                                                                                                       
+                                    <td class="text-end">                                        
                                         @if ($product->qty > 0)
                                             <span class="badge bg-primary-subtle text-primary px-2">{{ $product->qty }} Stock</span>
                                         @else
                                             <span class="badge bg-danger-subtle text-danger px-2">Out of Stock</span>
                                         @endif                                    
                                     </td>                                   
-                                    <td>
-                                        @if ($product->status == 1)  
-                                            <span class="sprites green-tick-icon"></span>
-                                        @else
-                                            <span class="sprites red-tick-icon"></span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <div class="flex">
-                                            <a href="{{ route('products.edit', $product->id ) }}" class="edit-icon">
-                                                <span class="sprites"></span>
-                                            </a>
-                                            <a href="#" onclick="deleteProduct( {{ $product->id }} )" class="delete-icon" >
-                                                <span class="sprites"></span>
-                                            </a>
+                                    <td class="text-end">
+                                        <div class="pull-right">
+                                            @if ($product->status == 1)  
+                                                <span class="sprites green-tick-icon"></span>
+                                            @else
+                                                <span class="sprites red-tick-icon"></span>
+                                            @endif
                                         </div>
-                                    </td> 
-                                    
-                                    <div class="modal fade" id="variantRow{{ $product->id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog modal-sm">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="exampleModalLabel">Variants</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    @if($product->variants->count())
-                                                        @foreach($product->variants as $variant)
-                                                            @php
-                                                                $variantImage = $product->variant_images->first();
-                                                            @endphp
-                                                            
-                                                            @if(!empty($variantImage->image))
-                                                                <img src="{{ asset('uploads/product/small/'.$variantImage->image) }}" height="70" class="me-3 rounded">
-                                                            @else
-                                                                <img src="{{ asset('admin-assets/img/default-150x150.png') }}" height="70" class="me-3 rounded">
-                                                            @endif                                                                                                            
-                                                        @endforeach
-                                                    @else
-                                                        <div class="text-muted">No Variants Available</div>
-                                                    @endif
-                                                </div>                                        
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="pull-right">
+                                            <div class="flex">
+                                                <a href="{{ route('products.edit', $product->id ) }}" class="edit-icon">
+                                                    <span class="sprites"></span>
+                                                </a>
+                                                <a href="#" onclick="deleteProduct( {{ $product->id }} )" class="delete-icon" >
+                                                    <span class="sprites"></span>
+                                                </a>
                                             </div>
                                         </div>
-                                    </div>
+                                    </td> 
                                 </tr>
                                 @endforeach
                             @else

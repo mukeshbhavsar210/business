@@ -118,7 +118,12 @@
                                                         $image = $item->product?->images->first();
                                                     @endphp
 
-                                                    <a href="{{ route('front.product', $item->product->slug) }}" target="_blank">
+                                                    <a href="{{ route('front.product', [
+                                                            $item->product->category->category_slug,
+                                                            $item->product->subCategory->sub_category_slug,
+                                                            $item->product->subSubCategory->sub_sub_category_slug,
+                                                            'slug' => $item->product->slug
+                                                        ]) }}" target="_blank">
                                                         @if($image)
                                                             <img src="{{ asset('uploads/product/small/'.$image->image) }}" height="90" class="me-3 align-self-center rounded">
                                                         @else
@@ -127,7 +132,12 @@
                                                     </a>                                        
                                                     <div class="flex-grow-1 text-truncate">
                                                         <h5 class="product-title">
-                                                            <a href="{{ route('front.product', $item->product->slug) }}" target="_blank">{{ Str::limit($item->product->title, 75, '...') }}</a>
+                                                            <a href="{{ route('front.product', [
+                                                                        $item->product->category->category_slug,
+                                                                        $item->product->subCategory->sub_category_slug,
+                                                                        $item->product->subSubCategory->sub_sub_category_slug,
+                                                                        'slug' => $item->product->slug
+                                                                    ]) }}" target="_blank">{{ Str::limit($item->product->title, 75, '...') }}</a>
                                                         </h5>
                                                         <div class="small-fonts">
                                                             <p class="mb-0"><span class="text-muted">Size: </span> {{ $item->size }}</p>
@@ -137,8 +147,8 @@
                                                 </div>
                                             </td>                                                                                                            
                                             <td class="text-end"><p class="mt-3">{{ $item->qty }}</p></td>
-                                            <td class="text-end"><p class="mt-3">₹{{ $item->total }}</p></td>
-                                            <td class="text-end"><p class="mt-3">₹{{ $item->qty*$item->price }}</p></td>                                    
+                                            <td class="text-end"><p class="mt-3">₹{{ $item->qty*$item->price }}</p></td>
+                                            <td class="text-end"><p class="mt-3">₹{{ $item->total }}</p></td>                                            
                                         </tr>
                                     @endforeach
                                         <tr>
