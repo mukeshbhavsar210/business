@@ -148,13 +148,11 @@
             </div>
         </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-<script src="{{ asset('admin-assets/plugins/jquery/jquery.min.js') }}"></script>
-<script src="{{ asset('admin-assets/js/bootstrap.bundle.min.js.download') }}"></script>
-<script src="{{ asset('admin-assets/js/simplebar.min.js.download') }}"></script>
-<script src="{{ asset('admin-assets/js/app.js.download') }}"></script>
+<script src="{{ asset('admin-assets/js/jquery-3.6.0.min.js') }}"></script>
+<script src="{{ asset('admin-assets/js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ asset('admin-assets/js/simplebar.min.js') }}"></script>
+<script src="{{ asset('admin-assets/js/app.js') }}"></script>
 <script src="{{ asset('admin-assets/js/admin_documentReady.js') }}"></script>
 <script src="{{ asset('admin-assets/plugins/dropzone/min/dropzone.min.js') }}"></script>
 <script src="{{ asset('admin-assets/plugins/summernote/summernote-bs4.min.js') }}"></script>
@@ -195,7 +193,7 @@
         $(".summernote").summernote({
             //height:250;
         });
-    })
+    });
 
 
     function deleteBrand(id){        

@@ -78,7 +78,7 @@
                                         >
                                     <span class="checkmark"></span>
                                 </label>
-                            </div>                                                                   
+                            </div>                                                                                             
                             <div class="photo">   
                                 @if ($item->options->productImage)
                                     <img src="{{ asset('uploads/product/large/'.$item->options->productImage) }}" >
@@ -110,20 +110,10 @@
                                 </div>
                                 
                                 <div class="price">
-                                    @php
-                                        $discountPrice = $item->price - ($item->price * $item->options->discount_percent / 100);
-                                    @endphp
-
-                                    <span class="dark">
-                                        ₹{{ $discountPrice }}
-                                    </span>
-
+                                    <span class="dark">₹{{ round($discountPrice) }}</span>
                                     @if($item->options->discount_percent)
-                                        <span class="mrp">MRP <del>₹{{ $item->price }}</del></span>    
-
-                                        <span class="discount">
-                                        {{ $item->options->discount_percent }}% OFF
-                                        </span>
+                                        <span class="mrp">MRP <del>₹{{ $item->options->original_price }}</del></span>    
+                                        <span class="discount">{{ $item->options->discount_percent }}% OFF</span>
                                     @endif
                                 </div>
                                 

@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Services\ShiprocketService;
 use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\Order;
@@ -64,22 +63,26 @@ class CartController extends Controller {
         }
 
         if (!$alreadyExists) {
+            // ✅ Get discount percent safely
+            $discountPercent = optional(optional($product->discount)->percentage)->percentage ?? 0;
+
+            // ✅ Calculate discount price
             $discount_price = $product->price;
 
-            if ($product->discount) {
-                $discount_price = $product->price -
-                    ($product->price * $product->discount->discount_percent / 100);
+            if ($discountPercent > 0) {
+                $discount_price = $product->price - ($product->price * $discountPercent / 100);
             }
 
             Cart::add([
                 'id'      => $product->id,
                 'name'    => $product->title,
                 'qty'     => 1,                
-                'price'   => $product->price,
+                'price'   => round($product->price),                
                 'weight'  => 0,
                 'options' => [
-                    'discount_price'    => $discount_price,
-                    'discount_percent'  => $product->discount->discount_percent ?? 0,
+                    'original_price'    => $product->price,
+                    'discount_price'    => round($discount_price),
+                    'discount_percent'  => $discountPercent,                    
                     'short_description' => $product->short_description,                    
                     'productImage'      => $image,
                     'variant_id'        => $variantId,
@@ -146,22 +149,26 @@ class CartController extends Controller {
         }
 
         if (!$alreadyExists) {
-            $discount_price = $product->price;
+            // ✅ Get discount percent safely
+                $discountPercent = optional(optional($product->discount)->percentage)->percentage ?? 0;
 
-            if ($product->discount) {
-                $discount_price = $product->price -
-                    ($product->price * $product->discount->discount_percent / 100);
-            }
+                // ✅ Calculate discount price
+                $discount_price = $product->price;
+
+                if ($discountPercent > 0) {
+                    $discount_price = $product->price - ($product->price * $discountPercent / 100);
+                }
 
             Cart::add([
                 'id'      => $product->id,
                 'name'    => $product->title,
                 'qty'     => 1,                
-                'price'   => $product->price,
+                'price'   => round($product->price),                
                 'weight'  => 0,
                 'options' => [
-                    'discount_price'    => $discount_price,
-                    'discount_percent'  => $product->discount->discount_percent ?? 0,
+                    'original_price'    => $product->price,
+                    'discount_price'    => round($discount_price),
+                    'discount_percent'  => $discountPercent,                    
                     'short_description' => $product->short_description,                    
                     'productImage'      => $image,
                     'variant_id'        => $variantId,
@@ -242,12 +249,12 @@ class CartController extends Controller {
             return ($item->options->discount_price ?? 0) * $item->qty;
         });
 
-        $discount_percentage = $cartItems->sum(function ($item) {
-            return ($item->options->discount_percent ?? 0) * $item->qty;
-        });
+        // $discount_percentage = $cartItems->sum(function ($item) {
+        //     return ($item->options->discount_percent ?? 0) * $item->qty;
+        // });
                 
         $discountPrice = $discount_price;
-        $discountPercent = $discount_percentage;
+        //$discountPercent = $discount_percentage;
         $store_discount = session()->get('coupon_discount');
         $coupon_discount = session()->get('coupon_discount.discount', 0);
         $coupon_code = session()->get('coupon_discount.code', 0);        
@@ -258,7 +265,7 @@ class CartController extends Controller {
 
         return view('front.checkout.cart', [
             'discountPrice'         => $discountPrice,
-            'discountPercent'       => $discountPercent,
+            //'discountPercent'       => $discountPercent,
             'store_discount'        => $store_discount,
             'coupon_code'           => $coupon_code,
             'coupon_discount'       => $coupon_discount,
@@ -577,7 +584,7 @@ class CartController extends Controller {
         // Step 6: Create Order
         $order = new Order;
         $order->user_id = $user->id;
-        //$order->product_id = $order->id;
+        $order->product_id = $order->id;
         $order->product_variant_id = $item->options->variant_id ?? null;
         $order->customer_address_id = $request->customer_address_id;
         $order->subtotal = $subTotal;

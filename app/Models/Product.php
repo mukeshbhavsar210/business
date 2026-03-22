@@ -10,7 +10,7 @@ class Product extends Model {
 
     protected $fillable = [ 'title', 'slug', 'description', 'short_description', 'shipping_returns', 'related_products', 
         'price', 'category_id', 'sub_category_id', 'sub_sub_category_id', 'brand_id', 'discount_percentage_id', 
-        'is_featured', 'sku', 'barcode', 'track_qty', 'qty', 'recommended', 'views', 'discount_percentage', 'average_rating', 
+        'is_featured', 'sku', 'barcode', 'track_qty', 'qty', 'recommended', 'views', 'average_rating', 
         'cod', 'is_returnable', 'return_days', 'delivery_min_days', 'delivery_max_days', 'status', 
     ];
 
@@ -42,6 +42,10 @@ class Product extends Model {
         return $this->hasMany(ProductVariant::class);
     }  
 
+    public function brand() {
+        return $this->belongsTo(Brand::class);
+    }
+
     public function color() {
         return $this->belongsTo(Color::class);
     }
@@ -54,12 +58,16 @@ class Product extends Model {
     //     return $this->belongsToMany(Color::class);
     // }
 
-    public function colors(){
-        return $this->belongsToMany(Color::class, 'product_color');
+    // public function colors(){
+    //     return $this->belongsToMany(Color::class, 'product_colors');
+    // }
+
+    public function colors() {
+        return $this->belongsToMany(Color::class, 'product_colors', 'product_id', 'color_id');
     }
 
     public function sizes(){
-        return $this->belongsToMany(Size::class, 'product_size');
+        return $this->belongsToMany(Size::class, 'product_sizes');
     }
 
     public function images() {
@@ -96,15 +104,19 @@ class Product extends Model {
 
     // public function subCategory_id() {
     //     return $this->belongsTo(SubCategory::class,'sub_category_id');
-    // }
+    // }   
 
+    public function discount() {
+        return $this->hasOne(Discount::class, 'product_id', 'id');
+    }
+    
     public function discount_filter(){
         return $this->belongsTo(DiscountPercentage::class,'discount_percentage_id');
     }
 
-    public function discount(){
-        return $this->hasOne(Discount::class);
-    }
+    // public function discount(){
+    //     return $this->hasOne(Discount::class);
+    // }
 
     public function getDiscountPriceAttribute() {
         if ($this->discount) {

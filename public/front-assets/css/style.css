@@ -580,6 +580,12 @@ body.active .menu-overlay{
 .product-details-wrapper .part .size-list li a { border:1px #e5e5e5 solid; padding:9px 11px; border-radius: 100px; display: block; font-weight: bold; height: 45px; width: 45px; text-align: center; color: var(--gray);}
 .product-details-wrapper .part .size-list li a:hover { border-color: var(--black); color: var(--black); }
 .product-details-wrapper .part .size-list li a.active { border-color:var(--black); color: var(--black);}
+
+.product-details-wrapper .part .color-list { display: flex; column-gap: 7px; margin-top: 10px;}
+.product-details-wrapper .part .color-list li a { border:1px #e5e5e5 solid; border-radius: 100px; display: block; font-weight: bold; height: 30px; width: 30px; text-align: center; color: var(--gray); padding: 3px;}
+.product-details-wrapper .part .color-list li a:hover { border-color: var(--black); color: var(--black); }
+.product-details-wrapper .part .color-list li a.active { border-color:var(--black); color: var(--black);}
+
 .shake{
     animation: shake 0.4s; border:1px solid pink; border-radius: 100px;
 }
