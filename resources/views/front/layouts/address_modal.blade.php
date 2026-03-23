@@ -83,39 +83,19 @@
     </div>
 </div>
 
-<div class="modal fade" id="commonSizesModal" tabindex="-1">
+<div class="modal fade" id="commonCartUpdateModal" tabindex="-1">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Sizes</h5>
+                <h5 class="modal-title" id="cartModalTitle">Sizes</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <ul class="list-unstyled" id="modalSizesList">
-                    
-                </ul>
-                <button type="button" class="btn btn-primary w-100" data-bs-dismiss="modal">Done</button>
+                <ul class="list-unstyled" id="modalList"></ul>                
             </div>
         </div>
     </div>
 </div>
-
-<div class="modal fade" id="commonQtyModal" tabindex="-1">
-    <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Quantity</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <ul class="list-unstyled" id="modalQtyList">
-                    
-                </ul>
-                {{-- <button type="button" class="btn btn-primary w-100" data-bs-dismiss="modal">Done</button> --}}
-            </div>
-        </div>
-    </div>
-</div>  
 
 <div class="modal fade" id="discount" tabindex="-1" aria-labelledby="discountLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">

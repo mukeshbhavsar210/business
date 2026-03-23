@@ -125,8 +125,9 @@
             data: {
                 _token: '{{ csrf_token() }}',
                 product_id: id,
-                variant_id: variantId,
+                variant_id: variantId ? variantId : '',
                 size: selectedSize,
+                color: selectedColor,
             },
             dataType: 'json',
             success: function(response){
@@ -134,15 +135,17 @@
                     $('#cartCount').text(response.cartCount);
                     showAlert(response.message,'success');
                     selectedSize = '';
+                    selectedColor = '';
                 }else{
                     showAlert(response.message,'error');
                 }
             },
-            error: function(){
+            error: function(xhr){
+                console.log(xhr.responseText);
                 alert('Something went wrong');
             }
         });
-    }
+    }   
 
     function addToWishlist(id){
         $.ajax({

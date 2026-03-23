@@ -119,9 +119,9 @@
                                         <div class="align-self-center">
                                             <div class="img-group color_code">
                                                 @foreach($product->colors as $color)                                                    
-                                                     <p class="user-avatar position-relative d-inline-block ms-n1" >                                                        
-                                                        <span class="color" style="background-color: {{ $color->code }};">
-                                                            <span class="tooltip" data-tip="{{ $color->name }}">1</span>
+                                                     <p class="user-avatar position-relative d-inline-block ms-n1 show-tooltip" >                                                        
+                                                        <span class="color" style="background-color: {{ $color->code }};">                                                            
+                                                            <span class="tooltip">{{ $color->name }}</span>
                                                         </span>                                                        
                                                     </p>                                                    
                                                 @endforeach                                                                                           
@@ -130,17 +130,27 @@
                                         <div class="align-self-center">
                                             <div class="img-group color_code">
                                                 @foreach($product->sizes as $size)                                                    
-                                                     <p class="user-avatar position-relative d-inline-block ms-n1" >                                                        
-                                                        <span class="size">
-                                                            <span class="tooltip-item" data-tip="{{ $size->name }}">{{ $size->code }}</span>
-                                                        </span>                                                        
+                                                     <p class="user-avatar position-relative d-inline-block ms-n1 show-tooltip" >                                                        
+                                                        <span class="size">{{ $size->code }}</span>
+                                                        <span class="tooltip">{{ $size->name }}</span>
                                                     </p>                                                    
                                                 @endforeach                                                                                           
                                             </div>                                            
                                         </div>                                                                         
                                     </td>                                    
-                                    <td class="text-end">                                              
-                                        @php
+                                    <td class="text-end"> 
+                                        <div class="price">                                   
+                                            @if($product->discount_percent > 0)
+                                                <h5 class="mb-0">₹{{ round($product->discount_price) }}</h5>
+                                                <p class="tiny-font text-muted"><del>₹{{ $product->price }}</del><br />
+                                                    <span class="discount">{{ $product->discount_percent }}% OFF</span>
+                                                </p>
+                                            @else
+                                                <span class="dark">₹{{ number_format($product->price, 2) }}</span>
+                                            @endif
+                                        </div>
+
+                                        {{-- @php
                                             $discountPercent = optional($product->discount->percentage)->percentage ?? 0;
                                             $discountPrice = $product->price - ($product->price * $discountPercent / 100);
                                         @endphp
@@ -153,7 +163,7 @@
                                             </p>
                                         @else
                                             <h5 class="mb-0">₹{{ number_format($product->price, 2) }}</h5>
-                                        @endif
+                                        @endif --}}
                                     </td>     
                                     <td class="text-end">
                                         <p>{{ $product->cod == 1 ? 'Yes' : 'No' }}</p>

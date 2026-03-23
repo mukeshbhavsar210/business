@@ -84,6 +84,8 @@
                             Wishlist
                         </a>
                     @endif
+
+                    {{-- @dd($product); --}}
                     <p class="show-size">Size: {{ $product->size->code ?? '' }}</p>
                 </div>  
 
@@ -110,19 +112,14 @@
                 </div>                
             @endif            
 
-            <div class="price">
-                @php
-                    $discountPercent = optional($product->discount->percentage)->percentage	?? 0;
-                    $discountPrice = $product->price - ($product->price * $discountPercent / 100);
-                @endphp
-
-                @if($discountPercent > 0)
-                    <span class="dark">₹{{ round($discountPrice) }}</span>
+            <div class="price">                
+                @if($product->discount_percent > 0)
+                    <span class="dark">₹{{ round($product->discount_price) }}</span>
                     <span class="mrp">MRP <del>₹{{ $product->price }}</del></span>
-                    <span class="discount">{{ $discountPercent }}% OFF</span>
+                    <span class="discount">{{ $product->discount_percent }}% OFF</span>
                 @else
                     <span class="dark">₹{{ number_format($product->price, 2) }}</span>
-                @endif                
+                @endif
             </div>  
         </div>
     </div> 

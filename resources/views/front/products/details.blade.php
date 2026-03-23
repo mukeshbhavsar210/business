@@ -52,20 +52,15 @@
                 @endif                                       
                 
                 <div class="price-wrapper">
-                    <div class="price">
-                        @php
-                            $discountPercent = optional($product->discount->percentage)->percentage	?? 0;
-                            $discountPrice = $product->price - ($product->price * $discountPercent / 100);
-                        @endphp
-
-                        @if($discountPercent > 0)
-                            <span class="dark">₹{{ round($discountPrice) }}</span>
+                    <div class="price">                                   
+                        @if($product->discount_percent > 0)
+                            <span class="dark">₹{{ round($product->discount_price) }}</span>
                             <span class="mrp">MRP <del>₹{{ $product->price }}</del></span>
-                            <span class="discount">{{ $discountPercent }}% OFF</span>
+                            <span class="discount">{{ $product->discount_percent }}% OFF</span>
                         @else
                             <span class="dark">₹{{ number_format($product->price, 2) }}</span>
-                        @endif                         
-                    </div>                                                                                                                                      
+                        @endif
+                    </div>
                     <p class="inclusive">Inclusive of all taxes</p>
                 </div>
 
@@ -108,8 +103,9 @@
                         <ul class="size-list">
                             @foreach($product->sizes as $size)
                                 <li>
-                                    <a href="javascript:void(0);" class="size-option" data-size="{{ $size->code }}">
+                                    <a href="javascript:void(0);" class="size-option show-tooltip" data-size="{{ $size->code }}">
                                         {{ $size->code }}
+                                        <span class="tooltip" style="bottom: 47px;">{{ $size->name }}</span>
                                     </a>
                                 </li>
                             @endforeach
@@ -123,8 +119,9 @@
                         <ul class="color-list">
                             @foreach($product->colors as $color)
                                 <li>
-                                    <a href="javascript:void(0);" class="color-option" data-size="{{ $size->name }}">
-                                        <span style="background-color: {{ $color->code }}; height:22px; width:22px; border-radius:100px; display:block;"></span>                                        
+                                    <a href="javascript:void(0);" class="color-option show-tooltip" data-color="{{ $color->name }}">
+                                        <span style="background-color: {{ $color->code }}; height:22px; width:22px; border-radius:100px; display:block;"></span>
+                                        <span class="tooltip">{{ $color->name }}</span>
                                     </a>
                                 </li>
                             @endforeach
@@ -290,17 +287,15 @@
     let selectedColor = '';
     let selectedSize = '';
 
-    $(document).on('click', '.color-option', function(){
+    $(document).on('click', '.color-option', function(){        
         $('.color-option').removeClass('active');
         $(this).addClass('active');
-
-        selectedColor = $(this).data('color');
+        selectedColor = $(this).data('color');        
     });    
 
     $(document).on('click', '.size-option', function(){
         $('.size-option').removeClass('active');
         $(this).addClass('active');
-
         selectedSize = $(this).data('size');
     });
 </script>

@@ -92,20 +92,19 @@
 
                                 <div class="manuplate">                                    
                                     <div class="select">                                    
-                                        <a href="javascript:void(0);" class="update-size" data-type="size" data-rowid="{{ $item->rowId }}" data-selected="{{ $item->options->size }}">
-                                            <b>
-                                                Size: {{ $item->options->size }}
-                                                <span class="caret"></span>
-                                            </b>
+                                        <a href="javascript:void(0);" class="update-cart-modal" data-type="size" data-productid="{{ $item->id }}" data-rowid="{{ $item->rowId }}" data-selected="{{ $item->options->size }}">
+                                            <b>Size: {{ $item->options->size }} <span class="caret"></span></b>
                                         </a>
                                     </div>
                                     <div class="select">                                
-                                        <a href="javascript:void(0);" class="update-qty" data-type="qty" data-rowid="{{ $item->rowId }}" data-selected="{{ $item->qty }}">
-                                            <b>
-                                                Qty: {{ $item->qty }}
-                                                <span class="caret"></span>
-                                            </b>
+                                        <a href="javascript:void(0);" class="update-cart-modal" data-type="color" data-productid="{{ $item->id }}" data-rowid="{{ $item->rowId }}" data-selected="{{ $item->options->color }}">
+                                            <b>Color: {{ $item->options->color }} <span class="caret"></span></b>
                                         </a>
+                                    </div>
+                                    <div class="select">   
+                                        <a href="javascript:void(0);" class="update-cart-modal" data-type="qty" data-rowid="{{ $item->rowId }}" data-selected="{{ $item->qty }}">
+                                            <b>Qty: {{ $item->qty }} <span class="caret"></span></b>
+                                        </a>                                                                    
                                     </div>
                                 </div>
                                 
@@ -398,7 +397,6 @@
         //     });
         // });
     
-
         $("#orderForm").submit(function(event){
             event.preventDefault();
             let paymentMethod = $('input[name="payment_method"]:checked').val();
@@ -455,10 +453,53 @@
 
 
         let currentRowId = '';
-        let currentType = '';          
-       
-        //Size Modal
-        $(document).on('click', '.update-size', function(){
+        let currentType = '';  
+        
+        // $(document).on('click', '.update-cart-modal', function(){            
+        //     currentRowId = $(this).data('rowid');
+        //     currentType = $(this).data('type');
+        //     let selected = $(this).data('selected');
+
+        //     let title = '';
+        //     let options = [];
+
+        //     if(currentType === 'size'){
+        //         title = 'Select Size';
+        //         options = ['S', 'M', 'L', 'XL']; 
+        //     }
+
+        //     if(currentType === 'color'){
+        //         title = 'Select Color';
+
+        //         options = ['Black'];
+        //         $('.color-option').each(function(){
+        //             options.push($(this).data('color'));
+        //         });
+        //     }
+
+        //     if(currentType === 'qty'){
+        //         title = 'Select Quantity';
+        //         options = [1,2,3,4,5,6,7,8,9,10];
+        //     }
+
+        //     $('#cartModalTitle').text(title);
+
+        //     // ✅ Build HTML
+        //     let html = '';
+        //     options.forEach(function(option){
+        //         let active = (option == selected) ? 'selected' : '';
+        //         html += `<li>
+        //             <a href="#" class="select-option ${active}" data-value="${option}">
+        //                 ${option}
+        //             </a>
+        //         </li>`;
+        //     });
+
+        //     $('#modalList').html(html);
+        //     new bootstrap.Modal('#commonCartUpdateModal').show();
+        // });
+
+        $(document).on('click', '.update-cart-modal', function(){            
             currentRowId = $(this).data('rowid');
             currentType = $(this).data('type');
             let selected = $(this).data('selected');
@@ -468,87 +509,94 @@
 
             if(currentType === 'size'){
                 title = 'Select Size';
-                options = ['S', 'M', 'L', 'XL'];
-            }                      
+                options = ['S', 'M', 'L', 'XL']; 
 
-            let html = '';
-            options.forEach(function(option){
-                let active = (option == selected) ? 'selected' : '';
-                html += `<li><a href="#" class="select-size-option ${active}" data-value="${option}">${option}</a></li>`;
-            });
+                let productId = $(this).data('productid');
 
-            $('#modalSizesList').html(html);
+                $.get('/get-product-sizes/' + productId, function(res){
+                    let options = res.sizes; // array of colors
 
-            new bootstrap.Modal('#commonSizesModal').show();
+                    let html = '';
+                    options.forEach(function(option){
+                        let active = (option.name == selected) ? 'selected' : '';
+                        html += `<li>
+                                    <a href="#" class="select-option show-tooltip ${active}" data-value="${option.name}">
+                                        ${option.code}
+                                        <span class="tooltip" style="bottom:48px;">${option.name}</span>
+                                    </a>
+                                </li>`;
+                    });
+
+                    $('#modalList').html(html);
+                    $('#cartModalTitle').text(title);
+
+                    let modal = new bootstrap.Modal(document.getElementById('commonCartUpdateModal'));
+                    modal.show();
+                });
+
+                return; // ❗ stop further execution
+            }
+
+            if(currentType === 'color'){
+                title = 'Select Color';
+                let productId = $(this).data('productid');
+                $.get('/get-product-colors/' + productId, function(res){
+                    let options = res.colors;
+                    let html = '';
+                    options.forEach(function(option){
+                        let active = (option.name == selected) ? 'selected' : '';
+                        html += `<li>
+                                    <a href="#" class="select-option ${active} show-tooltip" data-value="${option.name}">
+                                        <span class="color" style="background-color:${option.code}"></span>                                
+                                        <span class="tooltip" style="bottom:48px;">${option.name}</span>
+                                    </a>
+                                </li>`;
+                    });
+
+                    $('#modalList').html(html);
+                    $('#cartModalTitle').text(title);
+                    let modal = new bootstrap.Modal(document.getElementById('commonCartUpdateModal'));
+                    modal.show();
+                });
+                return; // ❗ stop further execution
+            }
+
+            if(currentType === 'qty'){
+                title = 'Select Quantity';
+                options = [1,2,3,4,5,6,7,8,9,10];
+
+                let html = '';
+                options.forEach(function(option){
+                    let active = (option == selected) ? 'selected' : '';
+                    html += `<li><a href="#" class="select-option ${active}" data-value="${option}">${option}</a></li>`;
+                });
+
+                $('#modalList').html(html);
+                new bootstrap.Modal('#commonCartUpdateModal').show();
+            }
+            $('#cartModalTitle').text(title);
         });
 
-        $(document).on('click', '.select-size-option', function(e){            
-            e.preventDefault();
 
+        $(document).on('click', '.select-option', function(e){
+            e.preventDefault();
             let value = $(this).data('value');
 
             let data = {
                 rowId: currentRowId,
                 _token: '{{ csrf_token() }}'
             };
-       
-            if(currentType === 'size'){
-                data.size = value;
-            }          
-
-            $.post('{{ route("front.updateCartOption") }}', data, function(res){
-                if(res.status){
-                    location.reload();
-                }
-            });
-        });
-
-        //Qty
-        $(document).on('click', '.update-qty', function(){            
-            currentRowId = $(this).data('rowid');
-            currentType = $(this).data('type');
-            let selected = $(this).data('selected');
-
-            let title = '';
-            let options = [];     
-            
-            if(currentType === 'size'){
-                title = 'Select Size';
-                options = ['S', 'M', 'L', 'XL'];
-            }   
-
-            if(currentType === 'size'){
-                data.size = value;
-            } 
-
-            if(currentType === 'qty'){
-                title = 'Select Quantity';
-                options = [1,2,3,4,5,6,7,8,9,10];
-            }            
-
-            let html = '';
-            options.forEach(function(option){
-                let active = (option == selected) ? 'selected' : '';
-                html += `<li><a href="#" class="select-qty-option ${active}" data-value="${option}">${option}</a></li>`;
-            });
-
-            $('#modalQtyList').html(html);
-
-            new bootstrap.Modal('#commonQtyModal').show();
-        });
-        
-        $(document).on('click', '.select-qty-option', function(e){
-            e.preventDefault();
-
-            let value = $(this).data('value');
-
-            let data = {
-                rowId: currentRowId,
-                _token: '{{ csrf_token() }}'
-            };           
 
             if(currentType === 'qty'){
                 data.qty = value;
+            }
+
+            if(currentType === 'size'){
+                data.size = value;
+            }
+
+            if(currentType === 'color'){
+                data.color = value;
             }
 
             $.post('{{ route("front.updateCartOption") }}', data, function(res){
@@ -556,8 +604,8 @@
                     location.reload();
                 }
             });
-        });          
-        
+        });           
+       
         function deleteItem(rowId){            
             $.ajax({
                 url: '{{ route("front.deleteItem.cart") }}',
