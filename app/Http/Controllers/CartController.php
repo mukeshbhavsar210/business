@@ -55,7 +55,8 @@ class CartController extends Controller {
             if (
                 $item->id == $product->id &&
                 $item->options->variant_id == $variantId &&
-                $item->options->size == $size
+                $item->options->size == $size &&
+                $item->options->color == $color
             ) {
                 $alreadyExists = true;
                 break;
@@ -63,8 +64,14 @@ class CartController extends Controller {
         }
 
         if (!$alreadyExists) {
+            $discountPercent = 0;
+
+            if ($product->discount) {
+                $discountPercent = $product->discount->percentage;
+            }
             // ✅ Get discount percent safely
-            $discountPercent = optional(optional($product->discount)->percentage)->percentage ?? 0;
+            $discountPercent = (int) optional($product->discount)->percentage;
+            //$discountPercent = optional($product->discounts->first())->percentage ?? 0;
 
             // ✅ Calculate discount price
             $discount_price = $product->price;
@@ -150,14 +157,14 @@ class CartController extends Controller {
 
         if (!$alreadyExists) {
             // ✅ Get discount percent safely
-                $discountPercent = optional(optional($product->discount)->percentage)->percentage ?? 0;
+            $discountPercent = optional($product->discounts->first())->percentage ?? 0;
 
-                // ✅ Calculate discount price
-                $discount_price = $product->price;
+            // ✅ Calculate discount price
+            $discount_price = $product->price;
 
-                if ($discountPercent > 0) {
-                    $discount_price = $product->price - ($product->price * $discountPercent / 100);
-                }
+            if ($discountPercent > 0) {
+                $discount_price = $product->price - ($product->price * $discountPercent / 100);
+            }
 
             Cart::add([
                 'id'      => $product->id,
@@ -260,8 +267,7 @@ class CartController extends Controller {
         $coupon_code = session()->get('coupon_discount.code', 0);        
             
         //dd(Cart::content());
-        //dd(session('coupon_discount'));        
-        
+        //dd(session('coupon_discount'));                
 
         return view('front.checkout.cart', [
             'discountPrice'         => $discountPrice,
@@ -681,7 +687,6 @@ class CartController extends Controller {
             'status'  => true,
         ]);
     }
-    
 
     public function thankyou($id){
         $order = Order::where('id', $id)
@@ -1354,4 +1359,33 @@ class CartController extends Controller {
             ]);
         }
     }
+
+    public function getProductColors($id) {
+        $product = Product::with('colors')->find($id);
+
+        return response()->json([
+            'colors' => $product->colors->map(function($color){
+                return [
+                    'id' => $color->id,
+                    'name' => $color->name,
+                    'code' => $color->code // optional (hex color)
+                ];
+            })
+        ]);
+    }
+
+    public function getProductSizes($id) {
+        $product = Product::with('sizes')->find($id);
+
+        return response()->json([
+            'sizes' => $product->sizes->map(function($size){
+                return [
+                    'id' => $size->id,
+                    'name' => $size->name,
+                    'code' => $size->code 
+                ];
+            })
+        ]);
+    }
+
 }

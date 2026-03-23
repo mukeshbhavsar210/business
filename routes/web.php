@@ -31,10 +31,11 @@ Route::controller(ShopController::class)->group(function() {
     Route::get('/products/{item1?}/{item2?}/{item3?}','listing')->name('front.shop');
     Route::get('/details/{item1?}-{item2?}-{item3?}/{slug}', 'product')->name('front.product');    
 
-    Route::get('/category/{item1?}/{item2?}/{item3?}','category')->name('front.category');
-    Route::get('/subcategory/{item1?}/{item2?}/{item3?}','subcategory')->name('front.subcategory');
-    //Route::get('/category/{item1?}/','category')->name('front.category');   
-     
+    //Category
+    Route::get('/category/{item1?}','category')->name('front.category');
+    Route::get('/subcategory/{item2?}','subcategory')->name('front.subcategory');    
+    
+    //Reviews
     Route::get('/product/{id}/reviews', 'allReviews')->name('product.reviews');
     Route::post('/rate-product', 'rating_store')->name('rate.product');
 });
@@ -51,6 +52,9 @@ Route::controller(CartController::class)->group(function() {
     Route::post('/cart/bulk-action', 'bulkAction')->name('cart.bulk.action');    
 
     Route::post('/cart/select-item','selectItem');
+
+    Route::get('/get-product-colors/{id}', 'getProductColors');
+    Route::get('/get-product-sizes/{id}', 'getProductSizes');
 
     //Update Color/Size/Qty in cart
     Route::post('/apply-coupon', 'applyCoupon')->name('coupon.apply');

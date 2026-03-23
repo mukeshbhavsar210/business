@@ -24,7 +24,7 @@ use Carbon\Carbon;
 
 class ProductController extends Controller {
     public function index(Request $request){
-        $products = Product::latest('id')->with(['product_images','variant_images','brand','sizes','colors','discount.percentage']);
+        $products = Product::latest('id')->with(['product_images','variant_images','brand','sizes','colors',]);
 
         if ($request->get('keyword') != ""){
             $products = $products->where('title', 'like', '%'.$request->keyword.'%');

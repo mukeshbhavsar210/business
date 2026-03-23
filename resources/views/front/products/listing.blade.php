@@ -55,17 +55,17 @@
                 @endif
             </div>                                    
             
-            <x-filters :items="$item3" type="category" valueField="sub_sub_category_slug" labelField="sub_sub_category_name" nameClass="name" title="Categories" :showColor="false" :limit="17" :selected="$categoryArray" />
-            <x-filters :items="$brands" type="brand" valueField="slug" labelField="name" nameClass="name" title="Brands" :showColor="false" :limit="17" />
+            <x-filters :items="$item3" type="category" valueField="sub_sub_category_slug" labelField="sub_sub_category_name" nameClass="name" title="Categories" :showColor="false" :showPercent="false" :limit="17" :selected="$categoryArray" />
+            <x-filters :items="$brands" type="brand" valueField="slug" labelField="name" nameClass="name" title="Brands" :showColor="false" :showPercent="false" :limit="17" />
 
             <div class="filter-group">
                 <h5 class="h5 mb-2">Price</h5>
                 <input type="text" class="js-range-slider" name="my_range" value="" />
             </div>
 
-            <x-filters :items="$sizes" type="size" valueField="name" labelField="name" title="Sizes" :showColor="false" />
-            <x-filters :items="$colors" type="color" valueField="name" labelField="name" title="Color" :showColor="true" />
-            <x-filters :items="$discounts" type="discount" valueField="name" labelField="name" title="Discount" :showColor="false" />
+            <x-filters :items="$sizes" type="size" valueField="name" labelField="name" title="Sizes" :showColor="false" :showPercent="false" />
+            <x-filters :items="$colors" type="color" valueField="name" labelField="name" title="Color" :showColor="true" :showPercent="false" />
+            <x-filters :items="$discounts" type="discount" valueField="percentage" labelField="percentage" title="Discount" :showColor="false" :showPercent="true"  />
         </div>
 
         <div class="col-md-10 col-12">

@@ -18,10 +18,10 @@
                             <span class="color-code" style="background-color: {{ $item->code }}"></span>
                         @endif
 
-                        {{-- <span class="{{ $type }}-name">{{ $item->$labelField }}</span> --}}
-
                         <span class="{{ $nameClass ?? $type.'-name' }}">
-                            {{ isset($limit) ? Str::limit($item->$labelField, $limit, '...') : $item->$labelField }}
+                            {{ (isset($limit)
+                                ? Str::limit($item->$labelField, $limit, '...')
+                                : $item->$labelField) . ($showPercent ? '%' : '') }}
                         </span>
 
                         @if(isset($item->products_count))
