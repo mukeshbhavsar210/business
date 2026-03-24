@@ -219,18 +219,7 @@ class CategoryController extends Controller {
                     ]
                 ],
             ],     
-                         
-            // 'delete' => [
-            //     'modal_id' => 'deleteCategoryModal',
-            //     'form_id' => 'deleteCategoryModalForm',
-            //     'formConfig' => [
-            //         'action' => '',
-            //         'method' => 'DELETE',
-            //         'button' => 'Delete',
-            //         'fields' => []
-            //     ]
-            // ],
-
+                                   
             'categories' => $categories
         ];          
 
@@ -259,13 +248,13 @@ class CategoryController extends Controller {
                 if ($tempImage) {
                     $ext = pathinfo($tempImage->name, PATHINFO_EXTENSION);
                     $slugName = Str::slug($category->category_name);
-                    $newImageName = $category->id . '-' . $slugName . '.' . $ext;
+                    $newImageName = $category->id. '-' .$slugName. '.' .$ext;
                     $sourcePath = public_path('/temp/' . $tempImage->name);
                     $destinationPath = public_path('/uploads/category/' . $newImageName);
                     $manager = new ImageManager(new Driver());
                     $image = $manager->read($sourcePath);
-                    $image->cover(300, 300);
-                    $image->save($destinationPath, quality: 80);
+                    $image->cover(400, 500);
+                    $image->save($destinationPath, quality: 100);
                     $category->image = $newImageName;
                     $category->save();
 
@@ -321,16 +310,17 @@ class CategoryController extends Controller {
                 if ($tempImage) {
                     $manager = new ImageManager(new Driver());
                     $ext = pathinfo($tempImage->name, PATHINFO_EXTENSION);
-                    $newImageName = $category->id . '-' .
-                        Str::slug($category->category_name) . '.' . $ext;
+                    $slugName = Str::slug($category->category_name);
+                    $newImageName = $category->id. '-' .$slugName. '.' .$ext;
+                    //$newImageName = $category->id. '-' .Str::slug($category->category_name). '.' .$ext;
 
                     $sourcePath = public_path('/temp/' . $tempImage->name);
                     $destinationPath = public_path('/uploads/category/' . $newImageName);
 
                     // Read image
                     $image = $manager->read($sourcePath);
-                    $image->cover(300, 300);
-                    $image->save($destinationPath, quality: 80);
+                    $image->cover(400, 500);
+                    $image->save($destinationPath, quality: 100);
 
                     // Update database
                     $oldImage = $category->image;
@@ -362,6 +352,46 @@ class CategoryController extends Controller {
         }
     }
 
+    public function subCategory_store(Request $request){
+        $validator = Validator::make($request->all(), [
+            'category_id' => 'required',
+            'sub_category_name' => 'required',             
+            // 'slug' => 'required|unique:sub_categories',
+            // 'sub_category_slug' => [
+            //         'required',
+            //         Rule::unique('sub_categories')
+            //             ->where(function ($query) use ($request) {
+            //                 return $query->where('category_id', $request->category_id);
+            //             }),
+            //     ],            
+            'status' => 'required',
+        ]);
+
+        if ($validator->passes()) {
+            $subCategory = new SubCategory();
+            $category = Category::find($request->category_id);            
+            $subCategory->sub_category_title = $request->sub_category_name;
+            $subCategory->sub_category_name = $category->category_name. ' - ' .$request->sub_category_name;
+            $subCategory->sub_category_slug = $category->category_slug. '-' .$request->sub_category_slug;            
+            $subCategory->status = $request->status;
+            $subCategory->category_id = $request->category_id;            
+            $subCategory->save();
+
+            $request->session()->flash('success', 'Sub Category added successfully');
+
+            return response([
+                'status' => true,
+                'message' => 'Sub Category added successfully',
+            ]);
+
+        } else {
+            return response([
+                'status' => false,
+                'errors' => $validator->errors()
+            ]);
+        }
+    }
+
     public function subCategory_update($subCategoryId, Request $request){
         $subCategory = SubCategory::find($subCategoryId);
 
@@ -381,8 +411,10 @@ class CategoryController extends Controller {
         ]);
 
         if ($validator->passes()) {
-            $subCategory->sub_category_name = $request->sub_category_name;
-            $subCategory->sub_category_slug = $request->sub_category_slug;
+            $category = Category::find($request->category_id);            
+            $subCategory->sub_category_title = $request->sub_category_name;
+            $subCategory->sub_category_name = $category->category_name. ' - ' .$request->sub_category_name;
+            $subCategory->sub_category_slug = $category->category_slug. '-' .$request->sub_category_slug;            
             $subCategory->status = $request->status;            
             $subCategory->category_id = $request->category;
             $subCategory->save();
@@ -467,44 +499,7 @@ class CategoryController extends Controller {
         ]);
     }
 
-    public function subCategory_store(Request $request){
-        $validator = Validator::make($request->all(), [
-            'sub_category_name' => 'required',             
-            // 'slug' => 'required|unique:sub_categories',
-            'sub_category_slug' => [
-                    'required',
-                    Rule::unique('sub_categories')
-                        ->where(function ($query) use ($request) {
-                            return $query->where('category_id', $request->category_id);
-                        }),
-                ],
-            'category_id' => 'required',
-            'status' => 'required',
-        ]);
-
-        if ($validator->passes()) {
-            $subCategory = new SubCategory();
-            $subCategory->sub_category_name = $request->sub_category_name;
-            $subCategory->sub_category_slug = $request->sub_category_slug;
-            $subCategory->status = $request->status;
-            $subCategory->category_id = $request->category_id;
-            $subCategory->showHome = $request->showHome;
-            $subCategory->save();
-
-            $request->session()->flash('success', 'Sub Category added successfully');
-
-            return response([
-                'status' => true,
-                'message' => 'Sub Category added successfully',
-            ]);
-
-        } else {
-            return response([
-                'status' => false,
-                'errors' => $validator->errors()
-            ]);
-        }
-    }
+    
 
     public function subSubCategory_store(Request $request){
         $validator = Validator::make($request->all(), [

@@ -113,7 +113,7 @@
                                             <button class="accordion-button collapsed p-2" data-bs-toggle="collapse" data-bs-target="#subCollapse{{ $sub->id }}">
                                                 <div class="category-card">
                                                     <div class="flex">
-                                                        <p class="product-title">{{ $sub->sub_category_name }}</p>
+                                                        <p class="product-title">{{ $sub->sub_category_title }}</p>
                                                     </div>                                                                
                                                 </div>                                                        
                                             </button>                                                    

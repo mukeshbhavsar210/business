@@ -46,9 +46,14 @@ class ProductController extends Controller {
         $colors = Color::orderBy('name','ASC')->get();
         $sizes  = Size::orderBy('name','ASC')->get();
 
+        $selected_discount = $product->discount_percentage_id ?? '';
+        $discount_percentages = DiscountPercentage::all();
+
         $data['categories'] = $categories;        
         $data['subcategories'] = $subcategories;
         $data['subsubcategories'] = $subsubcategories;
+        $data['selected_discount'] = $selected_discount;
+        $data['discount_percentages'] = $discount_percentages;
         $data['brands'] = $brands;
         $data['colors'] = $colors;
         $data['sizes'] = $sizes;
@@ -108,7 +113,7 @@ class ProductController extends Controller {
             if($request->discount_percent > 0){
                 Discount::create([
                     'product_id' => $product->id,
-                    'discount_percent' => $request->discount_percent,
+                    'discount_percentages_id' => $request->discount_percent,
                     'start_date' => Carbon::now(),
                     'end_date' => Carbon::now()->addDays(30),
                 ]);
@@ -144,7 +149,8 @@ class ProductController extends Controller {
                     $productImage->image = "NULL";
                     $productImage->save();
 
-                    $imageName = $product->id. '-' .$product->title. '-' .$productImage->id.'.'.$ext;
+                    //$imageName = $product->id. '-' .$product->title. '-' .$productImage->id.'.'.$ext;
+                    $imageName = $product->slug. '_' .$product->id. '_' .$productImage->id. '.' .$ext;
                     $productImage->image = $imageName;
                     $productImage->save();
 
@@ -191,12 +197,12 @@ class ProductController extends Controller {
     public function edit($id, Request $request){
         $product = Product::with(['colors','sizes','discount'])->find($id);        
         $subcategories = SubCategory::where('category_id', $product->category_id)->get();
-        $selectedsubcategory = $product->sub_category_id;
-        //Fetch Product Images
+        $selected_subcategory = $product->sub_category_id;
+        $selected_subsubcategory = $product->sub_sub_category_id;
         $productimages = ProductImage::where('product_id',$product->id)->get();
         //$subcategories = SubCategory::where('category_id',$product->category_id)->get();        
         $subsubcategories = SubSubCategory::where('sub_category_id', $product->sub_category_id)->get();        
-
+        $selected_discount = $product->discount_percentage_id ?? '';
         //$product->load('variants');
         
         if (empty($product)) {
@@ -216,20 +222,22 @@ class ProductController extends Controller {
         $colors = Color::orderBy('id','ASC')->get();
         $sizes  = Size::orderBy('id','ASC')->get();
         $discounts = Discount::orderBy('id','ASC')->get();
-        $discountpercentages = DiscountPercentage::orderBy('percentage','ASC')->get();
+        $discount_percentages = DiscountPercentage::orderBy('percentage','ASC')->get();
 
+        $data['categories'] = $categories;
+        $data['subcategories'] = $subcategories;
+        $data['subsubcategories'] = $subsubcategories;
+        $data['selected_subcategory'] = $selected_subcategory;
+        $data['selected_subsubcategory'] = $selected_subsubcategory;
+        $data['product'] = $product;                
+        $data['productimages'] = $productimages;
+        $data['relatedProducts'] = $relatedProducts;        
         $data['brands'] = $brands;
         $data['colors'] = $colors;
         $data['sizes'] = $sizes;
         $data['discounts'] = $discounts;
-        $data['discountpercentages'] = $discountpercentages;
-        $data['product'] = $product;        
-        $data['categories'] = $categories;
-        $data['subcategories'] = $subcategories;
-        $data['subsubcategories'] = $subsubcategories;
-        $data['selectedsubcategory'] = $selectedsubcategory;
-        $data['productimages'] = $productimages;
-        $data['relatedProducts'] = $relatedProducts;               
+        $data['discount_percentages'] = $discount_percentages;
+        $data['selected_discount'] = $selected_discount;               
         
         return view('admin.products.edit',$data);
     }
@@ -312,10 +320,10 @@ class ProductController extends Controller {
                     // Create variant record first (temporary image value)
                     $productVariant = new ProductVariant();
                     $productVariant->product_id = $product->id;
-                    $productVariant->image = 'temp.jpg'; // NOT NULL safety
+                    $productVariant->image = 'temp.jpg'; 
                     $productVariant->save();
 
-                    $imageName = $product->id. '-' .$product->title. '-' .$productVariant->id. '.' .$ext;
+                    $imageName = $product->slug. '_' .$product->id. '_' .$productVariant->id. '.' .$ext;
 
                     // Update image name
                     $productVariant->image = $imageName;
@@ -339,7 +347,7 @@ class ProductController extends Controller {
                     // SMALL IMAGE (300x300 exact)
                     $smallPath = public_path('/uploads/product/small/' . $imageName);
                     $image = $manager->read($sourcePath);
-                    $image->cover(300, 400);
+                    $image->cover(300, 300);
                     $image->save($smallPath, quality: 100);
 
                     // Delete temp file

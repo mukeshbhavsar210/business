@@ -5,6 +5,7 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\ProductImage;
+use App\Models\ProductVariant;
 use Illuminate\Support\Facades\File;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
@@ -49,7 +50,7 @@ class ProductImageController extends Controller {
         ]);
     }
 
-    public function destroy(Request $request) {
+    public function destroy_product(Request $request) {
         $productImage = ProductImage::find($request->id);
 
         if (!$productImage) {
@@ -74,7 +75,36 @@ class ProductImageController extends Controller {
 
         return response()->json([
             'status' => true,
-            'message' => 'Image deleted successfully'
+            'message' => 'Product Image deleted successfully'
+        ]);
+    }
+
+    public function destroy_variant(Request $request) {
+        $variant = ProductVariant::find($request->id); // ✅ correct model
+
+        if (!$variant || !$variant->image) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Image not found'
+            ]);
+        }
+
+        $largePath = public_path('uploads/product/large/'.$variant->image);
+        $smallPath = public_path('uploads/product/small/'.$variant->image);
+
+        if (File::exists($largePath)) {
+            File::delete($largePath);
+        }
+
+        if (File::exists($smallPath)) {
+            File::delete($smallPath);
+        }
+
+        $variant->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Variant deleted successfully'
         ]);
     }
 }
