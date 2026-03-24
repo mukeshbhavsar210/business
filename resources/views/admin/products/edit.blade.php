@@ -1,24 +1,27 @@
 @extends('admin.layouts.app')
 
-@section('content')           
-    <x-product-form 
+@section('content')
+
+    <x-product_update 
         :product="$product"
         :categories="$categories"            
-        :selectedsubcategory="$selectedsubcategory"
+        :selectedsubcategory="$selected_subcategory"
+        :selectedsubsubcategory="$selected_subsubcategory"
         :subcategories="$subcategories"
         :subsubcategories="$subsubcategories"
         :brands="$brands"
         :colors="$colors"
         :sizes="$sizes"
         :discounts="$discounts"
-        :discountpercentages="$discountpercentages"
+        :discountpercentages="$discount_percentages"
+        :selecteddiscount="$selected_discount"
         :productimages="$productimages"
         :route="route('products.update', $product->id)"
         method="PUT"
         buttonText="Update Product"
         title="Edit Product"
         formname="productFormEdit"
-    />            
+    />
 @endsection
 
 @section('customJs')

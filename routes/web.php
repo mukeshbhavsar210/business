@@ -188,7 +188,8 @@ Route::group(['prefix' => 'admin'], function(){
         //Delete Product Images Route
         Route::controller(ProductImageController::class)->group(function() {
             Route::post('/product-images/update', 'update')->name('product-images.update');
-            Route::delete('/product-images', 'destroy')->name('product-images.destroy');
+            Route::delete('/product-images', 'destroy_product')->name('product-images.destroy');
+            Route::delete('/variant-images', 'destroy_variant')->name('variant-images.destroy');
         });
         
         //Orders Routes

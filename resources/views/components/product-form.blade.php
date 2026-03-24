@@ -116,7 +116,7 @@
                                         </select>
                                         <p class="error"></p>
                                     </div>
-                                </div>
+                                </div>                                                                
 
                                 <div class="col-md-4 col-6">
                                     <div class="form-group">
@@ -142,7 +142,7 @@
                                             <option value="">Select</option>
                                             @if ($subsubcategories->isNotEmpty())
                                                 @foreach ($subsubcategories as $value)
-                                                    <option {{ ($product->sub_sub_category_id == $value->id) ? 'selected' : '' }} value="{{ $value->id }}">{{ $value->sub_sub_category_name }}</option>
+                                                    <option {{ ($selectedsubsubcategory == $value->id) ? 'selected' : '' }} value="{{ $value->id }}">{{ $value->sub_sub_category_name }}</option>
                                                 @endforeach
                                             @endif
                                         </select>    
@@ -174,27 +174,23 @@
                     <h5 class="mb-1">Pricing</h5>
                     <div class="row">
                         <div class="col-md-3 col-6">
-                            <label for="price" class="form-label">Price</label>
-                            <div class="input-group has-validation">
-                                <span class="input-group-text" id="price">Rs</span>                                
-                                <input type="text" name="price" id="price" class="form-control" placeholder="Price" value="{{ old('price', $product->price ?? '') }}">
-                                <p class="error"></p>
+                            <div class="form-group">
+                                <label for="price" class="form-label">Price</label>
+                                <div class="input-group has-validation">
+                                    <span class="input-group-text" id="price">Rs</span>                                
+                                    <input type="text" name="price" id="price" class="form-control" placeholder="Price" value="{{ old('price', $product->price ?? '') }}">
+                                    <p class="error"></p>
+                                </div>
                             </div>
                         </div>
                         <div class="col-md-3 col-6">
-                            <div class="form-group">                                
+                            <div class="form-group">
                                 <label for="compare_price" class="form-label">Discount</label>
-                                @php
-                                    $selectedDiscount = $product->discount->discount_percentages_id ?? '';
-                                @endphp                                
-
-                                {{-- @dd($selectedDiscount); --}}
-                                
                                 <select name="discount_percent" class="form-select">
                                     <option value="">Select Discount</option>
                                     @foreach($discountpercentages as $discount)
                                         <option value="{{ $discount->id }}"
-                                            {{ $selectedDiscount == $discount->id ? 'selected' : '' }}>
+                                            {{ $selecteddiscount == $discount->id ? 'selected' : '' }}>
                                             {{ $discount->percentage }}%
                                         </option>
                                     @endforeach
@@ -252,46 +248,42 @@
             <div class="card mb-1">
                 <div class="card-body">
                     <h5 class="mb-2">Product photos</h5>
-                    <div class="row">                        
-                        <div class="col">                           
-                            @if(isset($product) && $product->images->isNotEmpty())                        
-                                <div class="row" id="product-gallery">                                    
-                                    @foreach ($product->images as $image)
-                                        <div class="col" id="image-row-{{ $image->id }}">
-                                            <div class="uploaded-images">
-                                                <input type="hidden" name="image_array[]" value="{{ $image->id }}">
-                                                <img src="{{ asset('uploads/product/small/'.$image->image) }}" class="rounded" />                                            
-                                                <a href="javascript:void(0)" class="deleteCardImg delete-icon" data-id="{{ $image->id }}">
-                                                    <span class="sprites"></span>
-                                                </a>                                            
-                                            </div>
+                    <div class="dropbox-flex">
+                        @if(isset($product) && $product->images->isNotEmpty())                        
+                            <div id="product-gallery" class="dropbox-flex" >                                    
+                                @foreach ($product->images as $image)
+                                    <div id="image-row-{{ $image->id }}">
+                                        <div class="uploaded-images">
+                                            <input type="hidden" name="image_array[]" value="{{ $image->id }}">
+                                            <img src="{{ asset('uploads/product/small/'.$image->image) }}" class="rounded" height="225" />
+                                            <a href="javascript:void(0)" class="deleteProductImg delete-icon-edit" data-id="{{ $image->id }}">
+                                                <span class="sprites"></span>
+                                            </a>                                            
                                         </div>
-                                    @endforeach
-                                </div>                               
-                            @endif   
-                        </div>
-                        <div class="col">
-                            <div id="product-gallery"></div>
-                        </div>
-                        <div class="col-3">                              
+                                    </div>
+                                @endforeach
+                            </div>                               
+                        @endif   
+                                                
+                        <div id="product-gallery"></div>         
+
+                        <div>                              
                             <div id="image" class="dropzone dz-clickable mb-2">
-                                <div class="dz-message needsclick">
-                                    <br>Drop Product Image here<br><br>
-                                </div>
+                                <div class="dz-message needsclick">Drop Image</div>
                             </div>
                         </div>
                     </div> 
                     
-                    <h5 class="mb-2 mt-2">Uploaded Variant</h5> 
-                    <div class="row">                                                
+                    <h5 class="mb-2">Uploaded Variant</h5> 
+                    <div class="dropbox-flex">
                         @if(isset($product) && $product->variants->isNotEmpty())                                                        
                             @foreach ($product->variants as $variant)
                                 @if($variant->image)
-                                    <div class="col" id="variant-image-row-{{ $variant->id }}">
+                                    <div id="variant-image-row-{{ $variant->id }}">
                                         <div class="uploaded-images">
                                             <input type="hidden" name="existing_variant_images[]" value="{{ $variant->id }}">
-                                            <img src="{{ asset('uploads/product/small/'.$variant->image) }}" class="rounded" />
-                                            <a href="javascript:void(0)" onclick="deleteVariantImage({{ $variant->id }})" class="deleteCardImg delete-icon">
+                                            <img src="{{ asset('uploads/product/small/'.$variant->image) }}" class="rounded" height="100"  />
+                                            <a href="javascript:void(0)" onclick="deleteVariantImage({{ $variant->id }})" class="deleteVariantImg delete-icon-edit">
                                                 <span class="sprites"></span>
                                             </a>
                                         </div>
@@ -299,16 +291,12 @@
                                 @endif
                             @endforeach                                
                         @endif                           
-                        <div class="col">
-                            <div id="variant-gallery"></div>
-                        </div>
-                        <div class="col-3">
-                            <div id="variant_image" class="dropzone dz-clickable mb-2">
-                                <div class="dz-message needsclick">
-                                    <br>Drop variant images here<br><br>
-                                </div>
-                            </div>
-                        </div>
+                        
+                        <div id="variant-gallery"></div>
+                                                
+                        <div id="variant_image" class="dropzone dz-clickable">
+                            <div class="dz-message needsclick">Drop images</div>
+                        </div>                        
                     </div>
                 </div>
             </div>
@@ -340,26 +328,26 @@
                         <label for="sku" class="form-label">SKU (Stock Keeping Unit)</label>
                         <input type="text" name="sku" id="sku" class="form-control" placeholder="sku" value="{{ old('sku', $product->sku ?? '') }}">
                         <p class="error"></p>
-                    </div>
-
-                    <div class="flex-2">
-                        <div class="form-group">
-                            <label for="barcode" class="form-label">Barcode</label>
-                            <input type="text" name="barcode" id="barcode" class="form-control" placeholder="Barcode" value="{{ old('barcode', $product->barcode ?? '') }}">
-                        </div>                
+                    </div>                    
+                    <div class="form-group">
+                        <label for="barcode" class="form-label">Barcode</label>
+                        <input type="text" name="barcode" id="barcode" class="form-control" placeholder="Barcode" value="{{ old('barcode', $product->barcode ?? '') }}">
+                    </div>                                        
+                    
                         <div class="custom-control custom-checkbox">
                             <div class="form-group mb-0">
                                 <label for="track_qty" class="custom-control-label">Track Qty.</label>
                                 <input type="hidden" name="track_qty" value="No" >
-                                <input class="form-check-input" type="checkbox" id="track_qty" name="track_qty" value="Yes"
+                                <div class="flex-2">
+                                    <input class="form-check-input mt-2" type="checkbox" id="track_qty" name="track_qty" value="Yes"
                                     {{ old('track_qty', $product->track_qty ?? '') == 'Yes' ? 'checked' : '' }} >                                
-                            </div>
+                                    <input type="number" min="0" name="qty" id="qty" class="form-control" placeholder="Qty" value="{{ old('qty', $product->qty ?? '') }}">
+                                    <p class="error"></p>
+                                </div>
+                            </div>                    
                         </div>
                     </div>
                     <div>
-                        <input type="number" min="0" name="qty" id="qty" class="form-control" placeholder="Qty" value="{{ old('qty', $product->qty ?? '') }}">
-                        <p class="error"></p>
-                    </div>                                            
                 </div>
             </div>
 
@@ -466,10 +454,10 @@
     });
 
 
-    $(document).on('click', '.deleteCardImg', function () {
+    $(document).on('click', '.deleteProductImg', function () {
         let id = $(this).data('id');
 
-        if (!confirm("Are you sure you want to delete image?")) {
+        if (!confirm("Are you sure you want to delete Product image?")) {
             return;
         }
 
@@ -495,15 +483,15 @@
     });    
 
 
-    $(document).on('click', '.deleteCardImg2', function () {
+    $(document).on('click', '.deleteVariantImg', function () {
         let id = $(this).data('id');
 
-        if (!confirm("Are you sure you want to delete image?")) {
+        if (!confirm("Are you sure you want to delete Variant image?")) {
             return;
         }
 
         $.ajax({
-            url: '{{ route("product-images.destroy") }}',
+            url: '{{ route("variant-images.destroy") }}',
             type: 'DELETE',
             data: {
                 id: id,
@@ -559,7 +547,7 @@
                                 <div class="uploaded-images">
                                     <input type="hidden" name="image_array[]" value="${response.image_id}" >
                                     <img src="${response.ImagePath}" class="rounded" />
-                                    <a href="javascript:void(0)" onclick="deleteImage(${response.image_id})" class="deleteCardImg delete-icon">
+                                    <a href="javascript:void(0)" onclick="deleteImage(${response.image_id})" class="deleteCardImg delete-icon-edit">
                                         <span class="sprites"></span>
                                     </a>
                                 </div>
@@ -590,11 +578,11 @@
             },
 
             success: function(file, response){
-                var html = `<div class="col" id="variant-image-row-${response.image_id}">
+                var html = `<div class="col-3" id="variant-image-row-${response.image_id}">
                                 <div class="uploaded-images">
                                     <input type="hidden" name="variant_image_array[]" value="${response.image_id}">
                                     <img src="${response.ImagePath}" class="rounded" />
-                                    <a href="javascript:void(0)" onclick="deleteVariantImage(${response.image_id})" class="deleteCardImg delete-icon">
+                                    <a href="javascript:void(0)" onclick="deleteVariantImage(${response.image_id})" class="deleteCardImg2 delete-icon-edit">
                                         <span class="sprites"></span>
                                     </a>
                                 </div>

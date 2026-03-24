@@ -98,21 +98,17 @@ class Product extends Model {
     //     return $this->belongsTo(SubCategory::class,'sub_category_id');
     // }   
 
-    // public function discount() {
-    //     return $this->hasOne(Discount::class, 'product_id', 'id');
-    // }
-
     public function discount(){
         return $this->belongsTo(DiscountPercentage::class, 'discount_percentage_id');
+    }
+
+    public function discount_id() {
+        return $this->hasOne(Discount::class, 'product_id', 'id');
     }
     
     public function discount_filter(){
         return $this->belongsTo(DiscountPercentage::class,'discount_percentage_id');
     }
-
-    // public function discount(){
-    //     return $this->hasOne(Discount::class);
-    // }
 
     public function getDiscountPercentAttribute(){
         return optional($this->discount)->percentage ?? 0;
@@ -121,17 +117,9 @@ class Product extends Model {
     public function getDiscountPriceAttribute(){
         $percent = $this->discount_percent;
         return $this->price - ($this->price * $percent / 100);
-    }
+    }    
 
-    // public function getDiscountPriceAttribute() {
-    //     if ($this->discount) {
-    //         return $this->price - ($this->price * $this->discount->discount_percent / 100);
-    //     }
-
-    //     return $this->price;
-    // }
-
-   public function coupons() {
+    public function coupons() {
         return $this->belongsToMany(
             DiscountCoupon::class,
             'coupon_product',

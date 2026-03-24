@@ -79,24 +79,43 @@
                                 </a>
                             </li>
                         @endif
-                        @foreach ($product->variants as $variant)
-                            @if($variant->image)
-                                <li id="variant-image-row-{{ $variant->id }}">                                
-                                    <a href="{{ route('front.product', [
-                                                $product->category->category_slug,  
-                                                $product->subCategory->sub_category_slug,                               
-                                                $product->subSubCategory->sub_sub_category_slug,
-                                                'slug' => $product->slug, 'variant' => $variant->id]) }}" 
-                                                class="variant-btn {{ request('variant') == $variant->id ? 'active' : '' }}">
-                                        <input type="hidden" name="existing_variant_images[]" value="{{ $variant->id }}">
-                                        <img src="{{ asset('uploads/product/small/'.$variant->image) }}"  />
-                                    </a>
-                                </li>
-                            @endif
-                        @endforeach
-                    </ul> 
-                </div>                
 
+                        @if($product->variants)
+                            @foreach ($product->variants as $variant)
+                                @if($variant->image)
+                                    <li id="variant-image-row-{{ $variant->id }}">                                
+                                        <a href="{{ route('front.product', [
+                                                    $product->category->category_slug,  
+                                                    $product->subCategory->sub_category_slug,                               
+                                                    $product->subSubCategory->sub_sub_category_slug,
+                                                    'slug' => $product->slug, 'variant' => $variant->id]) }}" 
+                                                    class="variant-btn {{ request('variant') == $variant->id ? 'active' : '' }}">
+                                            <input type="hidden" name="existing_variant_images[]" value="{{ $variant->id }}">
+                                            <img src="{{ asset('uploads/product/small/'.$variant->image) }}"  />
+                                        </a>
+                                    </li>
+                                @endif
+                            @endforeach
+                        @else
+                            <div class="part">
+                                <div class="flex">
+                                    <h3 style="margin-top: 22px;">Colors:</h3>                                    
+                                    <ul class="color-list">
+                                        @foreach($product->colors as $color)
+                                            <li>
+                                                <a href="javascript:void(0);" class="color-option show-tooltip" data-color="{{ $color->name }}">
+                                                    <span class="color" style="background-color: {{ $color->code }}"></span>
+                                                    <span class="tooltip" style="bottom: 47px;">{{ $color->name }}</span>
+                                                </a>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            </div>
+                        @endif
+                    </ul> 
+                </div>    
+                
                 <div class="part">
                     <div class="flex">
                         <h3 style="margin-top: 22px;">Select Size:</h3>
@@ -106,22 +125,6 @@
                                     <a href="javascript:void(0);" class="size-option show-tooltip" data-size="{{ $size->code }}">
                                         {{ $size->code }}
                                         <span class="tooltip" style="bottom: 47px;">{{ $size->name }}</span>
-                                    </a>
-                                </li>
-                            @endforeach
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="part">
-                    <div class="flex">
-                        <h3 style="margin-top: 14px;">Colors:</h3>                                    
-                        <ul class="color-list">
-                            @foreach($product->colors as $color)
-                                <li>
-                                    <a href="javascript:void(0);" class="color-option show-tooltip" data-color="{{ $color->name }}">
-                                        <span style="background-color: {{ $color->code }}; height:22px; width:22px; border-radius:100px; display:block;"></span>
-                                        <span class="tooltip">{{ $color->name }}</span>
                                     </a>
                                 </li>
                             @endforeach

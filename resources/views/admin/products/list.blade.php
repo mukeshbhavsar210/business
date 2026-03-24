@@ -56,12 +56,11 @@
                             <th class="border-top-0">Product</th>
                             <th class="border-top-0" width="170">Variants</th>
                             <th class="border-top-0" width="130">Colors/Sizes</th>                            
-                            <th class="border-top-0 text-end" width="90">Price</th>
+                            <th class="border-top-0 text-end" width="80">Price</th>
                             <th class="border-top-0 text-end" width="70">COD</th>
                             <th class="border-top-0 text-end" width="90">Returnable</th>
-                            <th class="border-top-0 text-end" width="90">Stock</th>
-                            <th class="border-top-0 text-end" width="60">Status</th>
-                            <th class="border-top-0 text-end" width="60">Action</th>
+                            <th class="border-top-0 text-end" width="90">Stock</th>                            
+                            <th class="border-top-0 text-end" width="90">Action</th>
                         </tr>
                     </thead>                     
                     <tbody id="productAccordion">
@@ -70,14 +69,13 @@
                                 @php
                                     $productImage = $product->product_images->first();
                                 @endphp
-
                                 <tr>
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="{{ route('products.edit', $product->id) }}">
                                                 @if (!empty($productImage->image))
                                                     <img src="{{ asset('uploads/product/small/'.$productImage->image) }}" height="90" class="me-3 align-self-center rounded" >
-                                                    @else
+                                                @else
                                                     <img src="{{ asset('admin-assets/img/default-150x150.png') }}" alt="" height="90" class="me-3 align-self-center rounded" />
                                                 @endif
                                             </a>
@@ -118,13 +116,17 @@
                                     <td>
                                         <div class="align-self-center">
                                             <div class="img-group color_code">
-                                                @foreach($product->colors as $color)                                                    
-                                                     <p class="user-avatar position-relative d-inline-block ms-n1 show-tooltip" >                                                        
-                                                        <span class="color" style="background-color: {{ $color->code }};">                                                            
-                                                            <span class="tooltip">{{ $color->name }}</span>
-                                                        </span>                                                        
-                                                    </p>                                                    
-                                                @endforeach                                                                                           
+                                                @if($product->colors)
+                                                        @foreach($product->colors as $color)                                                    
+                                                        <p class="user-avatar position-relative d-inline-block ms-n1 show-tooltip" >                                                        
+                                                            <span class="color" style="background-color: {{ $color->code }};">                                                            
+                                                                <span class="tooltip">{{ $color->name }}</span>
+                                                            </span>                                                        
+                                                        </p>                                                    
+                                                    @endforeach
+                                                @else
+                                                    No Colors
+                                                @endif                                                
                                             </div>                                            
                                         </div>   
                                         <div class="align-self-center">
@@ -146,24 +148,9 @@
                                                     <span class="discount">{{ $product->discount_percent }}% OFF</span>
                                                 </p>
                                             @else
-                                                <span class="dark">₹{{ number_format($product->price, 2) }}</span>
+                                                <h5 class="mb-0">₹{{ number_format($product->price, 2) }}</h5>
                                             @endif
                                         </div>
-
-                                        {{-- @php
-                                            $discountPercent = optional($product->discount->percentage)->percentage ?? 0;
-                                            $discountPrice = $product->price - ($product->price * $discountPercent / 100);
-                                        @endphp
-
-                                        @if($discountPercent > 0)
-                                            <h5 class="mb-0">₹{{ round($discountPrice) }}</h5>
-                                            <p class="tiny-font text-muted">
-                                                <del>₹{{ number_format($product->price, 2) }}</del><br />
-                                                {{ $discountPercent }}% OFF
-                                            </p>
-                                        @else
-                                            <h5 class="mb-0">₹{{ number_format($product->price, 2) }}</h5>
-                                        @endif --}}
                                     </td>     
                                     <td class="text-end">
                                         <p>{{ $product->cod == 1 ? 'Yes' : 'No' }}</p>
@@ -179,20 +166,17 @@
                                             <span class="badge bg-primary-subtle text-primary px-2">{{ $product->qty }} Stock</span>
                                         @else
                                             <span class="badge bg-danger-subtle text-danger px-2">Out of Stock</span>
-                                        @endif                                    
+                                        @endif
                                     </td>                                   
                                     <td class="text-end">
                                         <div class="pull-right">
-                                            @if ($product->status == 1)  
-                                                <span class="sprites green-tick-icon"></span>
-                                            @else
-                                                <span class="sprites red-tick-icon"></span>
-                                            @endif
-                                        </div>
-                                    </td>
-                                    <td class="text-end">
-                                        <div class="pull-right">
                                             <div class="flex">
+                                                @if ($product->status == 1)  
+                                                    <span class="sprites green-tick-icon"></span>
+                                                @else
+                                                    <span class="sprites red-tick-icon"></span>
+                                                @endif
+                                                
                                                 <a href="{{ route('products.edit', $product->id ) }}" class="edit-icon">
                                                     <span class="sprites"></span>
                                                 </a>
@@ -220,38 +204,6 @@
 @endsection
 
 @section('customJs')
-<script>
-    function deleteProduct(id){
-        var url = '{{ route("products.delete","ID") }}'
-        var newUrl = url.replace("ID",id)
-
-        if(confirm("Are you sure you want to delete?")){
-            $.ajax({
-                url: newUrl,
-                type: 'delete',
-                data: {},
-                dataType: 'json',
-                success: function(response){
-                    if(response["status"]){
-                        window.location.href="{{ route('products.index') }}"
-                    } else {
-                        window.location.href="{{ route('products.index') }}"
-                    }
-                }
-            });
-        }
-    }
-</script>
-@endsection
-
-
-
-
-            
-
-
-@section('customJs')
-
 <script>
     function deleteProduct(id){
         var url = '{{ route("products.delete","ID") }}'

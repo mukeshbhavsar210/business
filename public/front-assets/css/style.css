@@ -581,10 +581,11 @@ body.active .menu-overlay{
 .product-details-wrapper .part .size-list li a:hover { border-color: var(--black); color: var(--black); }
 .product-details-wrapper .part .size-list li a.active { border-color:var(--black); color: var(--black);}
 
-.product-details-wrapper .part .color-list { display: flex; column-gap: 7px; margin-top: 10px;}
-.product-details-wrapper .part .color-list li a { border:1px #e5e5e5 solid; border-radius: 100px; display: block; font-weight: bold; height: 30px; width: 30px; text-align: center; color: var(--gray); padding: 3px; position: relative;}
+.product-details-wrapper .part .color-list { display: flex; column-gap:3px; margin-top: 10px;}
+.product-details-wrapper .part .color-list li a { border:1px #e5e5e5 solid; border-radius: 100px; display: block; font-weight: bold; text-align: center; color: var(--gray); padding: 3px; position: relative;}
 .product-details-wrapper .part .color-list li a:hover { border-color: var(--black); color: var(--black); }
 .product-details-wrapper .part .color-list li a.active { border-color:var(--black); color: var(--black);}
+.product-details-wrapper .part .color-list li a .color { height:35px; width:35px; border-radius:100px; display:block;}
 
 .tooltip {
   position: absolute;

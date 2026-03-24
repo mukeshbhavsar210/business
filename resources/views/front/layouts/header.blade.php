@@ -33,7 +33,7 @@
                                                                     <ul>
                                                                         <li class="dropdown-header">
                                                                             <a href="{{ route('front.shop', [$item1->category_slug, $item2->sub_category_slug]) }}">
-                                                                                {{ $item2->sub_category_name }}
+                                                                                {{ $item2->sub_category_title }}
                                                                             </a>
                                                                         </li>                                                                
                                                                         @foreach ($item2->subSubCategories as $item3)
