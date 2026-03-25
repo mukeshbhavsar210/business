@@ -69,14 +69,14 @@
                                         <select name="sub_category_id" id="sub_category" class="form-select" >
                                             <option value="">Sub Category</option>
                                         </select>    
-                                        
-                                    @elseif($field['type'] == 'dropzone')                                                                                
-                                        <input type="hidden" id="image_id" name="image_id" value=" ">                                        
-                                        <div id="image" class="dropzone dz-clickable">
+
+                                    @elseif($field['type'] == 'dropzone')
+                                        <input type="hidden" id="{{ $field['name'] }}_id" name="{{ $field['name'] }}_id" value=" ">                                        
+                                        <div id="{{ $field['name'] }}" data-input="{{ $field['name'] }}_id" class="dropzone custom-dropzone dz-clickable">
                                             <div class="dz-message needsclick">
                                                 <br>Drop files here or click to upload.<br><br>
                                             </div>
-                                        </div> 
+                                        </div>                                       
                                     @endif
                                 </div>
                             </div>
@@ -166,25 +166,21 @@
     });
 
     Dropzone.autoDiscover = false;
-    const dropzone = $("#image").dropzone({
-        init: function() {
-            this.on('addedfile', function(file) {
-                if (this.files.length > 1) {
-                    this.removeFile(this.files[0]);
-                }
-            });
-        },
-        url:  "{{ route('temp-images.create') }}",
-        maxFiles: 1,
-        paramName: 'image',
-        addRemoveLinks: true,
-        acceptedFiles: "image/jpeg,image/png,image/gif",
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }, success: function(file, response){
-            $("#image_id").val(response.image_id);
-            console.log(response)
-        }
+    document.querySelectorAll('.custom-dropzone').forEach(function (el) {
+        let inputId = el.getAttribute('data-input');
+        new Dropzone(el, { 
+            url: "{{ route('temp-images.create') }}",
+            maxFiles: 1,
+            paramName: 'image',
+            addRemoveLinks: true,
+            acceptedFiles: "image/jpeg,image/png,image/gif",
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            success: function(file, response){
+                document.getElementById(inputId).value = response.image_id;
+            }
+        });
     });
 
    $(document).ready(function () {        
@@ -229,7 +225,6 @@
     const update_subCategory    = "{{ url('admin/subcategory/') }}";
     const update_subSubCategory = "{{ url('admin/subsubcategory/') }}";
     const update_discount       = "{{ url('admin/settings/coupons/{coupon}') }}";
-
 
     function createCategoryModal() {
         document.querySelector('#categoryModal .modal-title').innerText = 'Create Category';

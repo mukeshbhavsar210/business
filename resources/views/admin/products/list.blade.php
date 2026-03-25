@@ -54,13 +54,13 @@
                     <thead class="table-light">
                         <tr>
                             <th class="border-top-0">Product</th>
-                            <th class="border-top-0" width="170">Variants</th>
-                            <th class="border-top-0" width="130">Colors/Sizes</th>                            
-                            <th class="border-top-0 text-end" width="80">Price</th>
-                            <th class="border-top-0 text-end" width="70">COD</th>
-                            <th class="border-top-0 text-end" width="90">Returnable</th>
-                            <th class="border-top-0 text-end" width="90">Stock</th>                            
-                            <th class="border-top-0 text-end" width="90">Action</th>
+                            <th class="border-top-0" width="200">Variants</th>
+                            <th class="border-top-0" width="120">Colors</th>
+                            <th class="border-top-0" width="120">Sizes</th>
+                            <th class="border-top-0 text-end" width="80">Price</th>                            
+                            <th class="border-top-0 text-end" width="110">Returnable</th>
+                            <th class="border-top-0 text-end" width="70">Status</th>
+                            <th class="border-top-0 text-end" width="70">Action</th>
                         </tr>
                     </thead>                     
                     <tbody id="productAccordion">
@@ -72,28 +72,36 @@
                                 <tr>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <a href="{{ route('products.edit', $product->id) }}">
+                                            <a href="{{ route('products.edit', $product->id) }}" class="show-tooltip">
                                                 @if (!empty($productImage->image))
                                                     <img src="{{ asset('uploads/product/small/'.$productImage->image) }}" height="90" class="me-3 align-self-center rounded" >
                                                 @else
                                                     <img src="{{ asset('admin-assets/img/default-150x150.png') }}" alt="" height="90" class="me-3 align-self-center rounded" />
                                                 @endif
+                                                <span class="tooltip" style="bottom: 0; left:90px;">{{ $product->category->category_name }} / {{ $product->subCategory->sub_category_title }} / {{ $product->subSubCategory->sub_sub_category_name }} / {{ $product->brand->name }}</span>
                                             </a>
                                             <div class="flex-grow-1 text-truncate">
-                                                <h5 class="product-title">
-                                                    <a href="{{ route('products.edit', $product->id) }}">{{ Str::limit($product->title, 70, '...') }}</a>
+                                                <h5 class="product-title ">
+                                                    <a href="{{ route('products.edit', $product->id) }}">
+                                                        {{ Str::limit($product->title, 70, '...') }}
+                                                        @if($product->variants->count() > 0)                                                        
+                                                            - {{ $product->variants->count() }}
+                                                        @endif                                                         
+                                                    </a>                                                    
                                                 </h5>
                                                 <div class="small-fonts">                                                    
-                                                    <p class="text-muted">{{ $product->category->category_name }} / {{ $product->subCategory->sub_category_name }} / {{ $product->subSubCategory->sub_sub_category_name }} / {{ $product->brand->name }}</p>
                                                     <p class="mb-0">
                                                         <span class="text-muted">{{ $product->id }} / </span>
                                                         @if($product->sku)
                                                             <span class="mb-0 text-muted">{{ $product->sku }}</span>
                                                         @endif          
-                                                    </p>
-                                                    {{-- @if($product->variants->count() > 0)                                                        
-                                                        <b>Variants: {{ $product->variants->count() }}</b>
-                                                    @endif                                                     --}}
+                                                    </p>                                                                                                       
+                                                
+                                                    @if ($product->qty > 0)
+                                                        <span class="small-fonts text-muted">Stock: {{ $product->qty }}</span>
+                                                    @else
+                                                        <span class="small-fonts">Out of Stock</span>
+                                                    @endif                                                    
                                                 </div>
                                             </div>
                                         </div>
@@ -128,7 +136,9 @@
                                                     No Colors
                                                 @endif                                                
                                             </div>                                            
-                                        </div>   
+                                        </div>                                                                                                                    
+                                    </td>                                    
+                                    <td>
                                         <div class="align-self-center">
                                             <div class="img-group color_code">
                                                 @foreach($product->sizes as $size)                                                    
@@ -138,45 +148,44 @@
                                                     </p>                                                    
                                                 @endforeach                                                                                           
                                             </div>                                            
-                                        </div>                                                                         
-                                    </td>                                    
+                                        </div>
+                                    </td>
                                     <td class="text-end"> 
-                                        <div class="price">                                   
+                                        <div class="price show-tooltip">                                   
                                             @if($product->discount_percent > 0)
                                                 <h5 class="mb-0">₹{{ round($product->discount_price) }}</h5>
-                                                <p class="tiny-font text-muted"><del>₹{{ $product->price }}</del><br />
-                                                    <span class="discount">{{ $product->discount_percent }}% OFF</span>
+                                                <p class="tooltip" style="bottom: 23px; left:15px;">
+                                                    MRP <del>₹{{ $product->price }}</del><br />
+                                                    <span class="discount">{{ $product->discount_percent }}% OFF</span>                                                    
                                                 </p>
                                             @else
                                                 <h5 class="mb-0">₹{{ number_format($product->price, 2) }}</h5>
                                             @endif
                                         </div>
-                                    </td>     
+                                    </td> 
                                     <td class="text-end">
-                                        <p>{{ $product->cod == 1 ? 'Yes' : 'No' }}</p>
-                                    </td>   
+                                        <div class="show-tooltip">
+                                            <p>{{ $product->is_returnable == 1 ? 'Yes' : 'No' }}</p>                                        
+                                            <p class="tooltip" style="bottom: 23px; left:10px;">
+                                                COD: {{ $product->cod == 1 ? 'Yes' : 'No' }}<br />
+                                                @if($product->is_returnable == 1)
+                                                    {{ $product->return_days }}
+                                                @endif                                                
+                                            </p>
+                                        </div>
+                                    </td>             
                                     <td class="text-end">
-                                        <p>{{ $product->is_returnable == 1 ? 'Yes' : 'No' }}</p>                                        
-                                        @if($product->is_returnable == 1)
-                                            <p class="text-muted tiny-font">{{ $product->return_days }}</p>
-                                        @endif                                        
-                                    </td>                                                                                                       
-                                    <td class="text-end">                                        
-                                        @if ($product->qty > 0)
-                                            <span class="badge bg-primary-subtle text-primary px-2">{{ $product->qty }} Stock</span>
-                                        @else
-                                            <span class="badge bg-danger-subtle text-danger px-2">Out of Stock</span>
-                                        @endif
-                                    </td>                                   
+                                        <div class="pull-right">
+                                            @if ($product->status == 1)  
+                                                <span class="sprites green-tick-icon"></span>
+                                            @else
+                                                <span class="sprites red-tick-icon"></span>
+                                            @endif
+                                        </div>
+                                    </td>                  
                                     <td class="text-end">
                                         <div class="pull-right">
                                             <div class="flex">
-                                                @if ($product->status == 1)  
-                                                    <span class="sprites green-tick-icon"></span>
-                                                @else
-                                                    <span class="sprites red-tick-icon"></span>
-                                                @endif
-                                                
                                                 <a href="{{ route('products.edit', $product->id ) }}" class="edit-icon">
                                                     <span class="sprites"></span>
                                                 </a>

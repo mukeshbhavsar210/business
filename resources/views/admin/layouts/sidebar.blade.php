@@ -27,17 +27,19 @@
         </a>
     </li>
     <li class="nav-item">
+        <a href="{{ route('brands.index') }}" class="nav-link">
+            <i class="iconoir-journal-page menu-icon"></i>
+            <span>Brands</span>
+        </a>
+    </li>
+    <li class="nav-item">
         <a class="nav-link" href="#extra" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarApplications">
             <i class="iconoir-page-star menu-icon"></i>
             <span>Settings</span>
         </a>
         <div class="collapse " id="extra">
             <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a href="{{ route('brands.index') }}" class="nav-link">                        
-                        <span>Brands</span>
-                    </a>
-                </li>
+                
                 <li class="nav-item">
                     <a href="{{ route('shipping.index') }}" class="nav-link">                        
                         <span>Shipping</span>

@@ -160,8 +160,8 @@ class SettingController extends Controller {
                 $model = $request->file('model');
                 $imageName = $brandId.'_'.$brandName.'_model.'.$model->getClientOriginalExtension();
                 $img = $manager->read($model->getRealPath());
-                $img->scale(width: 180);
-                //$img->cover(180, 200); // exact crop like fit()
+                //$img->scale(width: 180);
+                $img->cover(200, 250); // exact crop like fit()
                 $img->save($path.$imageName);
                 $brand->model = $imageName;
             }
@@ -171,7 +171,7 @@ class SettingController extends Controller {
                 $logo = $request->file('logo');
                 $logoName = $brandId.'_'.$brandName.'_logo.'.$logo->getClientOriginalExtension();
                 $logoImg = $manager->read($logo->getRealPath());
-                $logoImg->scale(width: 100);                
+                $logoImg->scale(height: 60);                
                 $logoImg->save($path.$logoName);
                 $brand->logo = $logoName;
             }

@@ -41,7 +41,7 @@ class CategoryController extends Controller {
                     'title'      => 'Create Category',
                     'modal_id'   => 'categoryModal',
                     'form_id'    => 'categoryForm',
-                    'method_id'  => 'category_method',
+                    'method_id'  => 'category_method',                    
                     'formConfig' => [
                         'action' => '',
                         'method' => 'POST',
@@ -95,9 +95,10 @@ class CategoryController extends Controller {
                                 'col' => 'col-md-3 col-6'
                             ],
                             [
-                                'type' => 'dropzone',
+                                'type' => 'file',
                                 'name' => 'image',
-                                'label' => 'Image'                        
+                                'label' => 'Category Image',
+                                'col' => 'col-md-12 col-6'
                             ]
                         ]
                     ]
@@ -108,7 +109,7 @@ class CategoryController extends Controller {
                     'title'      => 'Create Sub Category',
                     'modal_id'   => 'subCategoryModal',
                     'form_id'    => 'subCategoryForm',
-                    'method_id'  => 'subcategory_method',
+                    'method_id'  => 'subcategory_method',                    
                     'formConfig' => [
                         'action' => '',
                         'method' => 'POST',
@@ -119,7 +120,7 @@ class CategoryController extends Controller {
                                 'name' => 'category_id',
                                 'label' => 'Select Parent Category',
                                 'options' => ['Select Category' => 'Select Category'] + $categories->pluck('category_name','id')->toArray(),
-                                'col' => 'col-md-12 col-12'
+                                'col' => 'col-md-6 col-12'
                             ],   
                             [
                                 'type' => 'text',
@@ -132,7 +133,7 @@ class CategoryController extends Controller {
                                 'data'  => [
                                     'target' => '#slug_2'
                                 ],
-                                'col' => 'col-md-12 col-12'
+                                'col' => 'col-md-6 col-12'
                             ],                         
                             [
                                 'type' => 'text',
@@ -168,6 +169,12 @@ class CategoryController extends Controller {
                                 ],
                                 'col' => 'col-md-6 col-6'
                             ],
+                            [
+                                'type' => 'file',
+                                'name' => 'image',
+                                'label' => 'Sub Category Image',
+                                'col' => 'col-md-12 col-6'
+                            ]
                         ]
                     ]
                 ],               
@@ -176,7 +183,7 @@ class CategoryController extends Controller {
                     'title'      => 'Create Sub Sub Category',
                     'modal_id' => 'subSubCategoryModal',
                     'form_id' => 'subSubCategoryForm',
-                    'method_id'  => 'subsubcategory_method',
+                    'method_id'  => 'subsubcategory_method',                    
                     'formConfig' => [
                         'action' => '',
                         'method' => 'POST',
@@ -241,26 +248,28 @@ class CategoryController extends Controller {
             $category->menu_order = $request->menu_order;
             $category->save();
 
-            // Save image here
-            if (!empty($request->image_id)) {
-                $tempImage = TempImage::find($request->image_id);
+            $id = $category->id;
+            $name = Str::slug($category->category_name);
 
-                if ($tempImage) {
-                    $ext = pathinfo($tempImage->name, PATHINFO_EXTENSION);
-                    $slugName = Str::slug($category->category_name);
-                    $newImageName = $category->id. '-' .$slugName. '.' .$ext;
-                    $sourcePath = public_path('/temp/' . $tempImage->name);
-                    $destinationPath = public_path('/uploads/category/' . $newImageName);
-                    $manager = new ImageManager(new Driver());
-                    $image = $manager->read($sourcePath);
-                    $image->cover(400, 500);
-                    $image->save($destinationPath, quality: 100);
-                    $category->image = $newImageName;
-                    $category->save();
+            // Init Image Manager
+            $manager = new ImageManager(new Driver());
 
-                    File::delete($sourcePath);
-                }
-            }
+            // Create directory if not exists
+            $path = public_path('uploads/category/');
+            if (!File::exists($path)) {
+                File::makeDirectory($path, 0755, true);
+            }            
+            
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $imageName = $id . '_' . $name . '.' . $image->getClientOriginalExtension();
+                $img = $manager->read($image->getRealPath());
+                //$img->scale(width: 300);
+                $img->resize(300, 400);
+                $img->save($path.$imageName);
+                $category->image = $imageName;
+                $category->save();
+            }           
 
             $request->session()->flash('success', 'Category added successfully');
 
@@ -374,8 +383,31 @@ class CategoryController extends Controller {
             $subCategory->sub_category_name = $category->category_name. ' - ' .$request->sub_category_name;
             $subCategory->sub_category_slug = $category->category_slug. '-' .$request->sub_category_slug;            
             $subCategory->status = $request->status;
-            $subCategory->category_id = $request->category_id;            
+            $subCategory->category_id = $request->category_id;
             $subCategory->save();
+
+            $id = $subCategory->id;
+            $name = Str::slug($subCategory->sub_category_name);
+
+            // Init Image Manager
+            $manager = new ImageManager(new Driver());
+
+            // Create directory if not exists
+            $path = public_path('uploads/category/subcategory/');
+            if (!File::exists($path)) {
+                File::makeDirectory($path, 0755, true);
+            }            
+            
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $imageName = $id . '_' . $name . '.' . $image->getClientOriginalExtension();
+                $img = $manager->read($image->getRealPath());
+                //$img->scale(width: 300);
+                $img->resize(300, 400);
+                $img->save($path.$imageName);
+                $subCategory->image = $imageName;
+                $subCategory->save();
+            }           
 
             $request->session()->flash('success', 'Sub Category added successfully');
 

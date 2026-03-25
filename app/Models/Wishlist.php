@@ -15,4 +15,16 @@ class Wishlist extends Model {
         return $this->belongsTo(Product::class);
     }
 
+    public function category() {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function subCategory() {
+        return $this->belongsTo(SubCategory::class);
+    }
+
+    public function subSubCategory() {
+        return $this->belongsTo(SubSubCategory::class);
+    }
+
 }

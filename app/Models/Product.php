@@ -59,7 +59,7 @@ class Product extends Model {
     }
 
     public function sizes(){
-        return $this->belongsToMany(Size::class, 'product_sizes');
+        return $this->belongsToMany(Size::class, 'product_sizes', 'product_id', 'size_id');
     }
 
     public function images() {
@@ -80,8 +80,8 @@ class Product extends Model {
 
     public function variants() {
         return $this->hasMany(ProductVariant::class);
-    }    
-
+    }   
+        
     public function category() {
         return $this->belongsTo(Category::class);
     }
