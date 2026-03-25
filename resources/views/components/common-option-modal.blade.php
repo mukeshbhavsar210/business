@@ -6,7 +6,7 @@
     'colors' => [],
     'sizes' => [],
     'qtys' => [],
-    'label' => 'Select'
+    'label' => 'Select',    
 ])
 
 <div class="modal fade" id="{{ $modalId }}" tabindex="-1">

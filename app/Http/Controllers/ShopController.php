@@ -29,10 +29,11 @@ class ShopController extends Controller {
         $sizesArray = [];
         $discountArray = [];            
         
-        $products = Product::with(['category','subCategory','subSubCategory','ratings'])->where('status',1);
+        $products = Product::with(['category','subCategory','subSubCategory','ratings','sizes','variant_images'])->where('status',1);
         $categories = Category::orderBy("category_name","ASC")->with(['sub_category'])->where('status',1)->get();                       
         $productCount = Product::where('status', 1)->count();
         $totalProducts = $products->count();     
+        $sizes  = Size::orderBy('id','ASC')->get();
         
         function applySlugFilter($slug, $model, $slugColumn, $productColumn, &$selectedItem, &$products){
             if (!empty($slug)) {
@@ -205,21 +206,20 @@ class ShopController extends Controller {
         $products = $products->paginate(10);                        
 
         $data = compact(
-            'categories', 'categoryArray', 'brands', 'brandsArray', 'colors', 'colorsArray', 'sizes', 'sizesArray', 
-            'discounts', 'discountArray', 'products', 'productCount', 'selected_item1', 
-            'selected_item2', 'selected_item3', 'item1', 'item2', 'item3', 'filtersApplied', 'totalProducts'
+            'products', 'productCount', 'categories', 'sizes', 'categoryArray', 'brands', 'brandsArray', 'colors', 'colorsArray', 'sizes', 'sizesArray', 
+            'discounts', 'discountArray', 'selected_item1', 'selected_item2', 'selected_item3', 'item1', 'item2', 'item3', 'filtersApplied', 'totalProducts'
         );
 
         $data = array_merge($data, [
             'priceMin' => $request->get('price_min', 0),
             'priceMax' => $request->get('price_max', 5000),
             'sort'     => $request->get('sort'),
-        ]);                    
+        ]);                                    
 
         return view('front.products.listing', $data);
     }
 
-    public function product($item1=null, $item2=null, $item3=null, $slug, Request $request) {
+    public function product($item2=null, $item3=null, $slug, Request $request) {
         $product = Product::where('slug',$slug)->with(['colors', 'sizes', 'product_images', 'variants', 'subSubCategory.subCategory.category'])->first();
         $colors = Color::get();
         $sizes = Size::get();
@@ -358,8 +358,6 @@ class ShopController extends Controller {
 
         return view('front.products.subcategory', compact('products', 'item2',));
     }
-
-
 
     public function category_old(Request $request, $item1 = null) {
         $categorySelected = ' ';        

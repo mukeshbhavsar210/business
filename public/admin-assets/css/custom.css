@@ -380,8 +380,8 @@ input:checked + .slider { box-shadow:0 0 0 2px #007bff,0 0 2px #007bff; }
 .tooltip {
   position: absolute;
   bottom: 28px;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
+  transform: translateX(0);
   background: #000c;
   color: #fff;
   padding: 3px 7px;

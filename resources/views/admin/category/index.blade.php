@@ -171,7 +171,7 @@
     @include('admin.layouts.common', [
         'modal_id' => $modal['modal_id'],
         'form_id' => $modal['form_id'],
-        'method_id' => $modal['method_id'],
+        'method_id' => $modal['method_id'],        
         'formConfig' => $modal['formConfig'],
         'title' => $modal['title'] ?? 'Modal'
     ])
@@ -181,28 +181,6 @@
 
 @section('customJs')
 <script>    
-    Dropzone.autoDiscover = false;
-    const dropzone = $("#image").dropzone({
-        init: function() {
-            this.on('addedfile', function(file) {
-                if (this.files.length > 1) {
-                    this.removeFile(this.files[0]);
-                }
-            });
-        },
-        url:  "{{ route('temp-images.create') }}",
-        maxFiles: 1,
-        paramName: 'image',
-        addRemoveLinks: true,
-        acceptedFiles: "image/jpeg,image/png,image/gif",
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }, success: function(file, response){
-            $("#image_id").val(response.image_id);
-            console.log(response)
-        }
-    });
-
     function deleteCategory(id){
         var url = '{{ route("category.delete","ID") }}'
         var newUrl = url.replace("ID",id)
@@ -268,6 +246,5 @@
         }
     } 
 
-    
 </script>
 @endsection

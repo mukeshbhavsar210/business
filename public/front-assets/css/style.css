@@ -296,11 +296,16 @@ body.active .menu-overlay{
 
 .product-card { position: relative;}
 .product-card:hover { box-shadow: 0 4px 6px 0 #0000001f; transition: all 0.3s ease; border-radius: 10px; }
-.product-card:hover .gallery-icon { display: block; transform: translateY(0); animation: slideDown .4s ease;}
+.product-image-wrapper .gallery-icon { position: absolute; display: none; z-index: 1; bottom:150px; left:0; width: 100%; padding: 5px 15px; }
+.product-image-wrapper .gallery-icon .color-details { padding:8px 25px; background-color: rgba(0, 0, 0, 0.4); border-radius: 3px; }
+.product-image-wrapper .gallery-icon .color-details .img-group { display: flex; position: relative; }
+.product-image-wrapper .gallery-icon .color-details .img-group .ms-n2 { margin-left: -8px !important; }
+.product-image-wrapper .gallery-icon .color-details .img-group .ms-n3 { margin-left: -15px !important; }
+.product-image-wrapper .gallery-icon .color-details .variant-image { border-radius: 100px; height: 35px; width: 35px;}
+.product-card:hover .gallery-icon { display: block; transform: translateY(0); animation: slideDown .4s ease; }
 .product-image-wrapper { position: relative; overflow: hidden; transition: 0.3s ease; }
 .product-image-wrapper .rating-wrapper { position: absolute; z-index: 1; top:225px; left:10px; background-color: var(--white); padding: 2px 7px 3px 7px; border-radius: 3px; }
 .product-image-wrapper .rating-wrapper svg { fill: var(--green); position: relative; top:2px;}
-.product-image-wrapper .gallery-icon { position: absolute; display: none; z-index: 1; top:183px; right:10px;}
 .product-image-wrapper .out-stock { position: absolute; z-index: 1; top:0px; left:0px; background: rgba(255, 255, 255, 0.7);  border-radius: 3px;  height:255px; width: 100%; text-align: center; padding:120px 0; }
 .product-image-wrapper .out-stock span { border: 1px solid black; padding: 7px 10px; border-radius: 5px; background-color: var(--white); font-weight: bold; font-size: 13px; text-transform: uppercase;}
 .product-card .product-info { padding: 9px 10px 0 10px;   }
@@ -312,32 +317,22 @@ body.active .menu-overlay{
 .product-card .price span.text-underline { font-weight: normal; font-size: 12px; color: var(--gray); margin-left: 4px; margin-right: 4px;}
 .product-card .price span.discount { color: var(--orange); font-size: 12px;}
 
-.hover-product {
-    position: absolute; padding: 25px 13px 3px 13px;
-    bottom: -65px;
-    left: 0px;
-    background: #fff;
-    width: 100%;  
-    transition: all 0.3s ease; z-index: 2;
-}
+.hover-product { position: absolute; padding: 25px 13px 3px 13px; bottom: -100px; background: #fff; width: 100%;   transition: all 0.3s ease; z-index: 2; }
 .product-card:hover .hover-product { bottom: 40px; }
-
 .hover-product .btn { width: 100%; text-transform: uppercase; font-weight: bold; font-size: 13px; border-color: #e5e5e5; display: flex; column-gap: 8px; text-align: center; justify-content: center; /* horizontal center */
     align-items: center; }
 .hover-product .icon { position: relative; top:3px;}
 .hover-product .btn .far { margin-right: 5px;}
 .hover-product .btn:hover { border-color: var(--black);}
 .hover-product .show-size { width: 100%; margin-top: 5px; font-size: 13px;}
+.hover-product .size-wrapper { display: flex; column-gap: 5px; margin-top: 10px;}
+.size-list-small { display: flex; column-gap: 3px; }
+.size-list-small li a { border:1px #ccc solid; padding:2px; font-size: 12px; border-radius: 100px; display: block; font-weight: bold; height: 25px; width: 25px; text-align: center; color: var(--gray);}
+.size-list-small li a:hover { border-color: var(--black); color: var(--black); }
+.size-list-small li .color { height: 30px; width: 30px; border-radius: 100px; display: block;}
 
-/* Slick dots hidden initially */
-.product-card .slick-dots {
-    z-index: 4; bottom: 22px; 
-    transform: translateY(0px);
-    opacity: 0;
-    transition: all 0.1s ease;
-}
+.product-card .slick-dots { z-index: 4; bottom: 25px; transform: translateY(0px); opacity: 0; transition: all 0.1s ease;}
 .product-card .slick-dots li {  margin: 0; width: 15px;}
-
 .product-card:hover .slick-dots { opacity: 1; }
 
 /* On Hover */
@@ -576,16 +571,16 @@ body.active .menu-overlay{
 .product-details-wrapper .part .variant li a.active { border-color:var(--gray-dark); box-shadow: 0 4px 6px 0 #0000001f; }
 .product-details-wrapper .part .variant li a img { border-radius: 5px; width: 60px; height: 60px; }
 
-.product-details-wrapper .part .size-list { display: flex; column-gap: 7px; margin-top: 10px;}
-.product-details-wrapper .part .size-list li a { border:1px #e5e5e5 solid; padding:9px 11px; border-radius: 100px; display: block; font-weight: bold; height: 45px; width: 45px; text-align: center; color: var(--gray);}
-.product-details-wrapper .part .size-list li a:hover { border-color: var(--black); color: var(--black); }
-.product-details-wrapper .part .size-list li a.active { border-color:var(--black); color: var(--black);}
+.size-list { display: flex; column-gap: 7px; margin-top: 10px;}
+.size-list li a { border:1px #e5e5e5 solid; padding:9px 11px; border-radius: 100px; display: block; font-weight: bold; height: 45px; width: 45px; text-align: center; color: var(--gray);}
+.size-list li a:hover { border-color: var(--black); color: var(--black); }
+.size-list li a.active { border-color:var(--black); color: var(--black);}
 
-.product-details-wrapper .part .color-list { display: flex; column-gap:3px; margin-top: 10px;}
-.product-details-wrapper .part .color-list li a { border:1px #e5e5e5 solid; border-radius: 100px; display: block; font-weight: bold; text-align: center; color: var(--gray); padding: 3px; position: relative;}
-.product-details-wrapper .part .color-list li a:hover { border-color: var(--black); color: var(--black); }
-.product-details-wrapper .part .color-list li a.active { border-color:var(--black); color: var(--black);}
-.product-details-wrapper .part .color-list li a .color { height:35px; width:35px; border-radius:100px; display:block;}
+.color-list { display: flex; column-gap:3px; margin-top: 10px;}
+.color-list li a { border:1px #e5e5e5 solid; border-radius: 100px; display: block; font-weight: bold; text-align: center; color: var(--gray); padding: 3px; position: relative;}
+.color-list li a:hover { border-color: var(--black); color: var(--black); }
+.color-list li a.active { border-color:var(--black); color: var(--black);}
+.color-list li a .color { height:35px; width:35px; border-radius:100px; display:block;}
 
 .tooltip {
   position: absolute;

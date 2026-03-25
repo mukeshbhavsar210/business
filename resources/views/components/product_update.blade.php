@@ -294,6 +294,7 @@
                     <div id="variant_image" class="dropzone dz-clickable">
                         <div class="dz-message needsclick">Drop Variant images</div>
                     </div> 
+                    
                     <div class="row mt-2">
                         @if(isset($product) && $product->variants->isNotEmpty())                                                        
                             @foreach ($product->variants as $variant)

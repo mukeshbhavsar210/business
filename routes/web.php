@@ -29,7 +29,8 @@ Route::post('/set-intended-url', function (Request $request) {session(['url.inte
 
 Route::controller(ShopController::class)->group(function() {
     Route::get('/products/{item1?}/{item2?}/{item3?}','listing')->name('front.shop');
-    Route::get('/details/{item1?}-{item2?}-{item3?}/{slug}', 'product')->name('front.product');    
+    Route::get('/{item2?}-{item3?}/{slug}', 'product')->name('front.product');
+    //Route::get('/details/{item1?}/{item2?}-{item3?}/{slug}', 'product')->name('front.product');
 
     //Category
     Route::get('/category/{item1?}','category')->name('front.category');
