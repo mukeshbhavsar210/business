@@ -63,24 +63,23 @@
                     </div>
                     <p class="inclusive">Inclusive of all taxes</p>
                 </div>
-
-                <div class="part">
-                    <h3>More Colors</h3>
-                    <ul class="variant">
-                        @if($product->images->first())
-                            <li>
-                                <a href="{{ route('front.product', [
-                                        $product->category->category_slug,  
-                                        $product->subCategory->sub_category_slug,                               
-                                        $product->subSubCategory->sub_sub_category_slug,
-                                        'slug' => $product->slug]) }}" 
-                                        class="variant-btn {{ request('variant') ? '' : 'active' }}">
-                                    <img src="{{ asset('uploads/product/small/'.$product->images->first()->image) }}" >
-                                </a>
-                            </li>
-                        @endif
-
-                        @if($product->variants)
+                
+                @if($product->variants->count() > 0)
+                    <div class="part">
+                        <h3>More Colors</h3>
+                        <ul class="variant">
+                            @if($product->images->first())
+                                <li>
+                                    <a href="{{ route('front.product', [
+                                            $product->category->category_slug,  
+                                            $product->subCategory->sub_category_slug,                               
+                                            $product->subSubCategory->sub_sub_category_slug,
+                                            'slug' => $product->slug]) }}" 
+                                            class="variant-btn {{ request('variant') ? '' : 'active' }}">
+                                        <img src="{{ asset('uploads/product/small/'.$product->images->first()->image) }}" >
+                                    </a>
+                                </li>
+                            @endif
                             @foreach ($product->variants as $variant)
                                 @if($variant->image)
                                     <li id="variant-image-row-{{ $variant->id }}">                                
@@ -96,47 +95,50 @@
                                     </li>
                                 @endif
                             @endforeach
+                            </ul> 
                         @else
-                            <div class="part">
-                                <div class="flex">
-                                    <h3 style="margin-top: 22px;">Colors:</h3>                                    
-                                    <ul class="color-list">
-                                        @foreach($product->colors as $color)
-                                            <li>
-                                                <a href="javascript:void(0);" class="color-option show-tooltip" data-color="{{ $color->name }}">
-                                                    <span class="color" style="background-color: {{ $color->code }}"></span>
-                                                    <span class="tooltip" style="bottom: 47px;">{{ $color->name }}</span>
-                                                </a>
-                                            </li>
-                                        @endforeach
-                                    </ul>
+                            @if($product->colors->isNotEmpty())
+                                <div class="part">
+                                    <div class="flex">
+                                        <h3 style="margin-top: 22px;">Colors:</h3>                                    
+                                        <ul class="color-list">
+                                            @foreach($product->colors as $color)
+                                                <li>
+                                                    <a href="javascript:void(0);" class="color-option show-tooltip" data-color="{{ $color->name }}">
+                                                        <span class="color" style="background-color: {{ $color->code }}"></span>
+                                                        <span class="tooltip" style="bottom: 47px;">{{ $color->name }}</span>
+                                                    </a>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
                                 </div>
-                            </div>
-                        @endif
-                    </ul> 
-                </div>    
+                            @endif
+                        @endif                                    
+                
+                @if($product->sizes->isNotEmpty())
+                    <div class="part mb-3">
+                        <div class="flex">
+                            <h3 style="margin-top: 22px;">Size:</h3>
+                            <ul class="size-list">
+                                @foreach($product->sizes as $size)
+                                    <li>
+                                        <a href="javascript:void(0);" class="size-option show-tooltip" data-size="{{ $size->code }}">
+                                            {{ $size->code }}
+                                            <span class="tooltip" style="bottom: 47px;">{{ $size->name }}</span>
+                                        </a>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+                @endif
                 
                 <div class="part">
-                    <div class="flex">
-                        <h3 style="margin-top: 22px;">Select Size:</h3>
-                        <ul class="size-list">
-                            @foreach($product->sizes as $size)
-                                <li>
-                                    <a href="javascript:void(0);" class="size-option show-tooltip" data-size="{{ $size->code }}">
-                                        {{ $size->code }}
-                                        <span class="tooltip" style="bottom: 47px;">{{ $size->name }}</span>
-                                    </a>
-                                </li>
-                            @endforeach
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="part mt-4">
                     <div class="call-action">
                         @if ($product->track_qty == 'Yes')
                             @if ($product->qty > 0)
-                                <a class="btn btn-primary" id="addToCart" href="javascript:void(0);" onclick="addToCart({{ $product->id }})">
+                                <a class="btn btn-primary add-to-cart-btn" id="addToCart" href="javascript:void(0);" onclick="addToCart({{ $product->id }}, this)" data-has-sizes="{{ $product->sizes->isNotEmpty() ? 1 : 0 }}">
                                     <span class="sprites cart-small-ico"></span>
                                     &nbsp;ADD TO BAG
                                 </a>

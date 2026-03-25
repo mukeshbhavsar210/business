@@ -214,7 +214,7 @@ class ShopController extends Controller {
             'priceMin' => $request->get('price_min', 0),
             'priceMax' => $request->get('price_max', 5000),
             'sort'     => $request->get('sort'),
-        ]);                                    
+        ]);                    
 
         return view('front.products.listing', $data);
     }
@@ -289,7 +289,7 @@ class ShopController extends Controller {
         $totalRatings = Review::where('product_id', $product->id)->count();
         $averageRating = Review::avg('rating');
         $reviews = Review::with('user')->where('product_id', $product->id)->latest()->take(3)->get();      
-        $totalReviews = Review::where('product_id', $product->id)->count();         
+        $totalReviews = Review::where('product_id', $product->id)->count();           
        
         $data['product'] = $product;
         $data['coupon'] = $coupon;
@@ -301,8 +301,8 @@ class ShopController extends Controller {
         $data['totalReviews'] = $totalReviews;
         $data['colors'] = $colors;        
         $data['sizes'] = $sizes;
-        $data['relatedProducts'] = $relatedProducts;       
-
+        $data['relatedProducts'] = $relatedProducts; 
+            
         return view('front.products.details',$data);
     }
 
