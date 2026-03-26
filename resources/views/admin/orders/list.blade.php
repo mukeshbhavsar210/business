@@ -20,12 +20,12 @@
                 <table class="table table-text mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th class="border-top-0" width="65">ID</th>
-                            <th class="border-top-0">Product details</th>   
-                            <th class="border-top-0 text-end" width="130">Amount</th>
-                            <th class="border-top-0 text-end" width="100">Discount</th>
-                            <th class="border-top-0 text-end" width="130">Grand Total</th>                            
-                            <th class="border-top-0 text-end" width="130">Date</th>
+                            <th class="border-top-0" width="75">ID</th>
+                            <th class="border-top-0" width="140">Photo</th>   
+                            <th class="border-top-0">Name</th>                            
+                            <th class="border-top-0 text-end" width="120">Size</th>
+                            <th class="border-top-0 text-end" width="120">Color</th>
+                            <th class="border-top-0 text-end" width="130">Grand Total</th>
                             <th class="border-top-0 text-end" width="150">Courier</th>
                             <th class="border-top-0 text-end" width="120">Status</th> 
                         </tr>
@@ -34,77 +34,66 @@
                         @foreach($orders as $key => $order)
                             <tr>
                                 <td><p class="mt-2">{{ $order->id }}</p></td>
-                                <td>
-                                    <div class="flex">
-                                        <div class="img-group">
-                                            @foreach($order->items as $item)
-                                                @php
-                                                    $productImage = $item->product->images->first();
-                                                @endphp
+                                <td>                                    
+                                    <div class="img-group">
+                                        @foreach($order->items as $item)
+                                            @php
+                                                $productImage = $item->product->images->first();
+                                            @endphp
 
-                                                <a href="{{ route('front.product', [
-                                                            $item->product->category->category_slug,
-                                                            $item->product->subCategory->sub_category_slug,
-                                                            $item->product->subSubCategory->sub_sub_category_slug,
-                                                            'slug' => $item->product->slug
-                                                        ]) }}" target="_blank" class="user-avatar position-relative d-inline-block ms-n2">
-                                                    @if($productImage && !empty($productImage->image))
-                                                        <img src="{{ asset('uploads/product/small/'.$productImage->image) }}" height="80" class="thumb-md shadow-sm rounded-circle" />
-                                                    @else
-                                                        <img src="{{ asset('admin-assets/img/default-150x150.png') }}" height="80" class="thumb-md shadow-sm rounded-circle" />
+                                            <a href="{{ route('front.product', [
+                                                        $item->product->category->category_slug,
+                                                        $item->product->subCategory->sub_category_slug,
+                                                        $item->product->subSubCategory->sub_sub_category_slug,
+                                                        'slug' => $item->product->slug
+                                                    ]) }}" target="_blank" class="user-avatar position-relative d-inline-block ms-n2">
+                                                @if($productImage && !empty($productImage->image))
+                                                    <img src="{{ asset('uploads/product/small/'.$productImage->image) }}" height="80" class="thumb-md shadow-sm rounded-circle" />
+                                                @else
+                                                    <img src="{{ asset('admin-assets/img/default-150x150.png') }}" height="80" class="thumb-md shadow-sm rounded-circle" />
+                                                @endif
+                                            </a>       
+                                            <span class="counts">{{ $order->items->count() }}</span>                                    
+                                        @endforeach
+                                    </div>                                                                            
+                                </td>       
+                                <td>                                     
+                                    @foreach($order->items as $item)                                                                                                                            
+                                        <a href="{{ route('orders.detail',$order->id) }}" title="{{ $order->id }}">                                            
+                                            <p>
+                                                {{ $item->product->title }}
+                                                <span class="text-muted">- 
+                                                    {{-- @if($item->product->size->code)
+                                                        {{ $item->product->size->code }},    
                                                     @endif
-                                                </a>       
-                                                <span class="counts">{{ $order->items->count() }}</span>                                    
-                                            @endforeach
-                                        </div>                                        
 
-                                        <div>
-                                            @foreach($order->items as $item)                                                                                                                            
-                                                <a href="{{ route('orders.detail',$order->id) }}" title="{{ $order->id }}">                                            
-                                                    <p>
-                                                        <strong>{{ $item->product->title }}</strong>
-                                                        <span class="text-muted">- 
-                                                            {{-- @if($item->product->size->code)
-                                                                {{ $item->product->size->code }},    
-                                                            @endif
-
-                                                            @if($item->product->size->code)
-                                                                {{ $item->product->size->code }}   
-                                                            @endif                                                              --}}
-                                                        </span>
-                                                    </p>
-                                                </a> 
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                </td>                         
-                                <td class="text-end">
+                                                    @if($item->product->size->code)
+                                                        {{ $item->product->size->code }}   
+                                                    @endif                                                              --}}
+                                                </span>
+                                            </p>
+                                        </a> 
+                                    @endforeach                                        
+                                </td>                  
+                                {{-- <td class="text-end">
                                     <h5 class="mb-0">₹{{ number_format($order->subtotal,2) }} </h5>
                                     <p class="m-0 text-muted tiny-font">  
-                                        <del>₹{{ number_format(optional($order->items->first())->price,2) }}</del><br />
-                                        Shipping: ₹{{ number_format($order->shipping,2) }}<br />
+                                        <del>₹{{ number_format(optional($order->items->first())->price,2) }}</del><br />                                        
                                     </p>
-                                </td>   
+                                </td>                                    --}}
                                 <td class="text-end">
-                                    <h5 class="mb-0">{{ number_format(optional($order->items->first())->discount,2) }}</h5>
-                                    {{-- <h5 class="mb-0">₹{{ number_format($order->discount,2) }}</h5>                                 --}}
-                                    <p class="m-0 text-muted tiny-font">
-                                        {{ optional($order->items->first())->coupon_code }}
-                                        {{-- ({{ $order->coupon_code }}) --}}
-                                    </p>
+                                    {{ optional($order->items->first())->size }}                                    
                                 </td>
                                 <td class="text-end">
-                                    <h5 class="mb-0">₹{{ number_format($order->grandtotal,2) }}</h5>
-                                    <p class="m-0 text-muted tiny-font">
-                                        {{ $order->payment_method == 'cod' ? 'COD' : 'Razorpay' }}
-                                    </p>
-                                </td>                                
+                                    {{ optional($order->items->first())->color }}                                    
+                                </td>
                                 <td class="text-end">
-                                    <p class="m-0">
-                                        {{ \Carbon\Carbon::parse(optional($order->items->first())->created_at)->format('d M, Y') }}
-                                        {{-- {{ \Carbon\Carbon::parse($order->created_at)->format('d M, Y') }} --}}
+                                    <h5 class="mb-0">₹{{ round($order->grandtotal) }}</h5>
+                                    <p class="m-0 text-muted tiny-font">
+                                        {{ \Carbon\Carbon::parse(optional($order->items->first())->created_at)->format('d M, Y') }}<br />
+                                        {{ optional($order->items->first())->payment_method == 'cod' ? 'COD' : 'Razorpay' }}
                                     </p>
-                                </td>                                                      
+                                </td>                                                                
                                 <td class="text-end">
                                     <h5 class="mb-0">{{ $order->latestStatus->courier ?? '-' }}</h5>
                                     <p class="m-0 text-muted tiny-font">
@@ -112,33 +101,27 @@
                                         {{ $order->latestStatus->tracking_number ?? 'No Tracking' }}
                                     </p>
                                 </td>                                                                
-                                <td class="text-end">
-                                    <p>                                
-                                        <a href="#" class="track-order-btn" data-order-id="{{ $order->id }}" data-bs-toggle="modal" data-bs-target="#orderTrackingModal">
-                                            @php
-                                                $status = $order->latestStatus->status ?? 'confirmed';
-                                                $badgeClasses = [
-                                                    'Confirmed'         => 'bg-secondary',
-                                                    'Shipped'           => 'bg-primary',
-                                                    'Out for Delivery'  => 'bg-warning',
-                                                    'Delivered'         => 'bg-success',
-                                                    'Cancelled'         => 'bg-danger'
-                                                ];
-                                            @endphp
-
-                                            <p>
-                                                <span class="badge {{ $badgeClasses[$status] ?? 'bg-dark' }}">
-                                                    {{ ucfirst(str_replace('_',' ',$status)) }}
-                                                </span>
-                                            </p>
-                                            <p class="tiny-font">{{ optional($order->items->first())->payment_method == 'cod' ? 'COD' : 'Razorpay' }}</p>
-                                            
-
-                                            @if($order->latestStatus->cancel_comments)
-                                                <p class="mt-0">{{ $order->latestStatus->cancel_comments }}</p>
-                                            @endif 
-                                        </a>                                
-                                    </p>                    
+                                <td class="text-end">                                                               
+                                    <a href="#" class="track-order-btn show-tooltip" data-order-id="{{ $order->id }}" data-bs-toggle="modal" data-bs-target="#orderTrackingModal">
+                                        @php
+                                            $status = $order->latestStatus->status ?? 'confirmed';
+                                            $badgeClasses = [
+                                                'Confirmed'         => 'bg-secondary',
+                                                'Shipped'           => 'bg-primary',
+                                                'Out for Delivery'  => 'bg-warning',
+                                                'Delivered'         => 'bg-success',
+                                                'Cancelled'         => 'bg-danger'
+                                            ];
+                                        @endphp
+                                        
+                                        <span class="badge {{ $badgeClasses[$status] ?? 'bg-dark' }}">
+                                            {{ ucfirst(str_replace('_',' ',$status)) }}
+                                        </span>
+                                        
+                                        @if($order->latestStatus->cancel_comments)
+                                            <span class="tooltip">{{ $order->latestStatus->cancel_comments }}</span>
+                                        @endif 
+                                    </a>                                                       
                                 </td>                       
                             </tr>                    
                         @endforeach

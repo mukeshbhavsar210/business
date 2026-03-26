@@ -11,11 +11,11 @@ $(document).ready(function(){
         }
     );
 
-     $(window).on("scroll", function(){
+    $(window).on("scroll", function(){
         if($(window).scrollTop() > 100){
-            $(".header").addClass("sticky");
+            $("header").addClass("sticky");            
         }else{
-            $(".header").removeClass("sticky");
+            $("header").removeClass("sticky");
         }
     });
 

@@ -15,12 +15,13 @@ class OrderController extends Controller {
                 'latestStatus', 'items', 
                 'items.product.category',
                 'items.product.subCategory',
-                'items.product.subSubCategory']))            
+                'items.product.subSubCategory',                
+                ]))               
             ->latest('orders.created_at')
             ->paginate(20);
 
         // Order counts
-        $totalOrders = Order::count();        
+        $totalOrders = Order::count();                
 
         return view('admin.orders.list', [
             'orders' => $orders,
@@ -36,6 +37,10 @@ class OrderController extends Controller {
             'orderItems.product.images',
             'orderItems.product.size',
             'orderItems.product.color',
+            'items.product.size',
+            'items.product.color',
+            'items.size',
+            'items.color',
             'items.product.category',
             'items.product.subCategory',
             'items.product.subSubCategory'
@@ -47,7 +52,9 @@ class OrderController extends Controller {
         $order = Order::with([
                 'items.product.category',
                 'items.product.subCategory',
-                'items.product.subSubCategory'
+                'items.product.subSubCategory',
+                'items.size', 
+                'items.color'
             ])
             ->select(
                 'orders.*',
@@ -75,6 +82,8 @@ class OrderController extends Controller {
         $orderHistory = OrderStatusHistory::where('order_id',$orderId)
                 ->orderBy('date','asc')
                 ->get();
+
+        
 
         return view('admin.orders.detail', [
             'order' => $order,
