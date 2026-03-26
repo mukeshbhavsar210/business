@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 24, 2026 at 08:05 AM
+-- Generation Time: Mar 26, 2026 at 09:26 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -47,7 +47,8 @@ CREATE TABLE `brands` (
 
 INSERT INTO `brands` (`id`, `name`, `slug`, `model`, `logo`, `status`, `description`, `discount`, `brand_order`, `created_at`, `updated_at`) VALUES
 (45, 'H&M', 'hm', '45_hm_model.jpg', '45_hm_logo.png', 1, 'Cool Casuals', 'Flat 40% Off', 1, '2026-03-20 02:07:16', '2026-03-20 02:07:16'),
-(46, 'Lux Cozi', 'lux-cozi', '46_lux-cozi_model.jpg', '46_lux-cozi_logo.png', 1, 'best', 'Min 50% Off', 1, '2026-03-20 08:59:57', '2026-03-20 08:59:57');
+(46, 'Lux Cozi', 'lux-cozi', '46_lux-cozi_model.jpg', '46_lux-cozi_logo.png', 1, 'Best Product', 'Min 50% Off', 1, '2026-03-20 08:59:57', '2026-03-20 08:59:57'),
+(47, 'Boat', 'boat', '47_boat_model.jpg', '47_boat_logo.png', 1, 'Best Speaker', 'Max 10% Discount', 1, '2026-03-24 06:43:39', '2026-03-24 06:43:39');
 
 -- --------------------------------------------------------
 
@@ -73,7 +74,8 @@ CREATE TABLE `categories` (
 INSERT INTO `categories` (`id`, `category_name`, `category_slug`, `image`, `status`, `menu_order`, `created_at`, `updated_at`) VALUES
 (82, 'Men', 'men', '82-men.jpg', 1, 1, '2023-11-23 23:55:20', '2026-02-28 06:33:51'),
 (83, 'Women', 'women', '83-women.jpg', 1, 2, '2023-11-23 23:55:28', '2026-02-28 06:40:20'),
-(149, 'Kids', 'kids', '149-kids-2.jpeg', 1, 3, '2026-02-16 23:27:00', '2026-03-24 00:39:32');
+(149, 'Kids', 'kids', '149-kids-2.jpeg', 1, 3, '2026-02-16 23:27:00', '2026-03-24 00:39:32'),
+(170, 'Speakers', 'speakers', '170-speakers.jpg', 1, 4, '2026-03-24 06:40:34', '2026-03-24 06:40:35');
 
 -- --------------------------------------------------------
 
@@ -171,9 +173,10 @@ CREATE TABLE `discounts` (
 
 INSERT INTO `discounts` (`id`, `product_id`, `discount_percentages_id`, `start_date`, `end_date`, `status`, `created_at`, `updated_at`) VALUES
 (9, 64, 5, '2026-03-24', '2026-04-23', 1, '2026-03-23 02:46:20', '2026-03-24 01:06:15'),
-(10, 59, 3, '2026-03-24', '2026-04-23', 1, '2026-03-23 09:24:04', '2026-03-24 01:15:43'),
+(10, 59, 3, '2026-03-25', '2026-04-24', 1, '2026-03-23 09:24:04', '2026-03-25 02:49:43'),
 (11, 65, 5, '2026-03-24', '2026-04-23', 1, '2026-03-24 01:22:00', '2026-03-24 01:22:00'),
-(12, 67, 5, '2026-03-24', '2026-04-23', 1, '2026-03-24 01:34:37', '2026-03-24 01:34:37');
+(12, 67, 5, '2026-03-24', '2026-04-23', 1, '2026-03-24 01:34:37', '2026-03-24 01:34:37'),
+(13, 68, 1, '2026-03-24', '2026-04-23', 1, '2026-03-24 06:47:47', '2026-03-24 06:47:47');
 
 -- --------------------------------------------------------
 
@@ -347,12 +350,7 @@ CREATE TABLE `orders` (
   `customer_address_id` bigint(20) UNSIGNED DEFAULT NULL,
   `subtotal` double(10,2) NOT NULL,
   `shipping` double(10,2) NOT NULL,
-  `coupon_code` varchar(30) DEFAULT NULL,
-  `coupon_code_id` int(11) DEFAULT NULL,
-  `discount` double(10,2) DEFAULT NULL,
   `grandtotal` double(10,2) NOT NULL,
-  `payment_status` enum('Paid','Not Paid') NOT NULL DEFAULT 'Not Paid',
-  `payment_method` varchar(25) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -361,9 +359,9 @@ CREATE TABLE `orders` (
 -- Dumping data for table `orders`
 --
 
-INSERT INTO `orders` (`id`, `user_id`, `product_id`, `product_variant_id`, `customer_address_id`, `subtotal`, `shipping`, `coupon_code`, `coupon_code_id`, `discount`, `grandtotal`, `payment_status`, `payment_method`, `created_at`, `updated_at`) VALUES
-(181, 7, NULL, NULL, 1, 250.00, 50.00, '', NULL, 0.00, 300.00, 'Not Paid', 'cod', '2026-03-23 02:47:01', '2026-03-23 02:47:01'),
-(182, 7, NULL, NULL, 1, 250.00, 50.00, '', NULL, 0.00, 300.00, 'Not Paid', 'cod', '2026-03-23 02:48:31', '2026-03-23 02:48:31');
+INSERT INTO `orders` (`id`, `user_id`, `product_id`, `product_variant_id`, `customer_address_id`, `subtotal`, `shipping`, `grandtotal`, `created_at`, `updated_at`) VALUES
+(201, 7, NULL, NULL, 1, 1119.00, 50.00, 1057.10, '2026-03-26 02:13:30', '2026-03-26 02:13:30'),
+(202, 7, NULL, NULL, 1, 3369.00, 50.00, 3082.10, '2026-03-26 02:24:04', '2026-03-26 02:24:04');
 
 -- --------------------------------------------------------
 
@@ -376,11 +374,23 @@ CREATE TABLE `order_items` (
   `order_id` bigint(20) UNSIGNED NOT NULL,
   `product_id` bigint(20) UNSIGNED NOT NULL,
   `product_variant_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `discount` double(10,2) DEFAULT NULL,
+  `coupon_code` varchar(30) DEFAULT NULL,
+  `coupon_code_id` int(10) DEFAULT NULL,
   `color` varchar(20) DEFAULT NULL,
   `size` varchar(255) DEFAULT NULL,
   `qty` int(11) NOT NULL,
   `price` double(10,2) NOT NULL,
-  `total` double(10,2) NOT NULL,
+  `discount_percent` int(10) DEFAULT NULL,
+  `discounted_price` double(10,2) DEFAULT NULL,
+  `shipping` double(10,2) DEFAULT NULL,
+  `subtotal` double(10,2) NOT NULL,
+  `grandtotal` double(10,2) NOT NULL,
+  `return_days` varchar(10) DEFAULT NULL,
+  `delivery_min_days` date DEFAULT NULL,
+  `delivery_max_days` date DEFAULT NULL,
+  `payment_status` enum('Paid','Not Paid') NOT NULL DEFAULT 'Not Paid',
+  `payment_method` varchar(25) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -389,9 +399,10 @@ CREATE TABLE `order_items` (
 -- Dumping data for table `order_items`
 --
 
-INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `product_variant_id`, `color`, `size`, `qty`, `price`, `total`, `created_at`, `updated_at`) VALUES
-(19, 181, 64, NULL, 'Blue', 'M', 1, 500.00, 250.00, '2026-03-23 02:47:01', '2026-03-23 02:47:01'),
-(20, 182, 64, NULL, 'Navy Blue', 'Extra Large', 1, 500.00, 250.00, '2026-03-23 02:48:31', '2026-03-23 02:48:31');
+INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `product_variant_id`, `discount`, `coupon_code`, `coupon_code_id`, `color`, `size`, `qty`, `price`, `discount_percent`, `discounted_price`, `shipping`, `subtotal`, `grandtotal`, `return_days`, `delivery_min_days`, `delivery_max_days`, `payment_status`, `payment_method`, `created_at`, `updated_at`) VALUES
+(31, 201, 59, NULL, 111.90, 'IND30', 4, 'Blue', 'L', 1, 1599.00, 30, 1119.00, 50.00, 1119.00, 1057.10, '7 days', '2026-03-25', '2026-04-01', 'Not Paid', 'cod', '2026-03-26 02:13:30', '2026-03-26 02:13:30'),
+(32, 202, 59, NULL, 336.90, 'IND30', 4, 'Blue', 'M', 1, 1599.00, 30, 1119.00, 50.00, 3369.00, 3082.10, '7 days', '2026-03-25', '2026-04-01', 'Not Paid', 'cod', '2026-03-26 02:24:04', '2026-03-26 02:24:04'),
+(33, 202, 68, NULL, 336.90, 'IND30', 4, NULL, NULL, 1, 2500.00, 10, 2250.00, 50.00, 3369.00, 3082.10, '7 days', '2026-03-24', '2026-03-31', 'Not Paid', 'cod', '2026-03-26 02:24:04', '2026-03-26 02:24:04');
 
 -- --------------------------------------------------------
 
@@ -418,8 +429,12 @@ CREATE TABLE `order_status_histories` (
 --
 
 INSERT INTO `order_status_histories` (`id`, `order_id`, `tracking_number`, `courier`, `note`, `cancel_reason`, `cancel_comments`, `status`, `date`, `created_at`, `updated_at`) VALUES
-(146, 181, NULL, 'Shadofox', 'note', NULL, NULL, 'Confirmed', '2026-03-23 02:47:01', '2026-03-23 02:47:01', '2026-03-23 02:47:01'),
-(147, 182, NULL, 'Shadofox', 'note', NULL, NULL, 'Confirmed', '2026-03-23 02:48:31', '2026-03-23 02:48:31', '2026-03-23 02:48:31');
+(166, 201, NULL, 'Shadofox', 'note', NULL, NULL, 'Confirmed', '2026-03-26 02:13:30', '2026-03-26 02:13:30', '2026-03-26 02:13:30'),
+(167, 202, NULL, 'Shadofox', 'note', NULL, NULL, 'Confirmed', '2026-03-26 02:24:04', '2026-03-26 02:24:04', '2026-03-26 02:24:04'),
+(168, 202, NULL, NULL, NULL, 'Ordered by mistake', 'By mistake order placed', 'Cancelled', '2026-03-26 02:32:06', '2026-03-26 02:32:06', '2026-03-26 02:32:06'),
+(169, 201, '789789', 'Shadofax', 'test', NULL, NULL, 'Shipped', NULL, '2026-03-26 02:40:00', '2026-03-26 02:40:00'),
+(170, 201, NULL, 'Shadofax', 'note', NULL, NULL, 'Out for Delivery', NULL, '2026-03-26 02:41:40', '2026-03-26 02:41:40'),
+(171, 202, NULL, 'Shadofax', NULL, NULL, NULL, 'Out for Delivery', NULL, '2026-03-26 02:53:22', '2026-03-26 02:53:22');
 
 -- --------------------------------------------------------
 
@@ -538,10 +553,11 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`id`, `title`, `slug`, `description`, `short_description`, `shipping_returns`, `related_products`, `price`, `category_id`, `sub_category_id`, `sub_sub_category_id`, `brand_id`, `discount_percentage_id`, `is_featured`, `sku`, `barcode`, `track_qty`, `qty`, `recommended`, `views`, `discount_percentage`, `average_rating`, `cod`, `is_returnable`, `return_days`, `delivery_min_days`, `delivery_max_days`, `status`, `created_at`, `updated_at`) VALUES
-(59, 'Park Avenue', 'park-avenue', 'test', 'Printed Polo Collar Slim Fit T-shirt', 'test', '', 1599.00, 82, 42, 1, 45, 3, 'Yes', 'tshirt_02', 'tshirt_000002', 'Yes', 100, NULL, NULL, NULL, NULL, 1, 1, '7 days', '2026-03-24', '2026-03-31', 1, '2026-03-20 02:52:28', '2026-03-24 01:15:43'),
-(64, 'Lux Cozi', 'lux-cozi', 'test', 'Polo Collar Lounge Tshirts', 'test', '', 700.00, 82, 42, 1, 46, 5, 'Yes', 'tshirt_011', 'tshirt_11', 'Yes', 97, NULL, NULL, NULL, NULL, 1, 1, '7 days', '2026-03-24', '2026-03-31', 1, '2026-03-20 09:48:06', '2026-03-24 01:06:15'),
+(59, 'Park Avenue', 'park-avenue', 'test', 'Printed Polo Collar Slim Fit T-shirt', 'test', '', 1599.00, 82, 42, 21, 45, 3, 'Yes', 'tshirt_02', 'tshirt_000002', 'Yes', 91, NULL, NULL, NULL, NULL, 1, 1, '7 days', '2026-03-25', '2026-04-01', 1, '2026-03-20 02:52:28', '2026-03-26 02:24:04'),
+(64, 'Lux Cozi', 'lux-cozi', 'test', 'Polo Collar Lounge Tshirts', 'test', '', 700.00, 82, 42, 1, 46, 5, 'Yes', 'tshirt_011', 'tshirt_11', 'Yes', 96, NULL, NULL, NULL, NULL, 1, 1, '7 days', '2026-03-24', '2026-03-31', 1, '2026-03-20 09:48:06', '2026-03-26 01:55:50'),
 (65, 'Ponds', 'ponds', 'test', 'Polo Collar Lounge Tshirts', 'test', '', 500.00, 83, 46, 24, 46, 5, 'Yes', 'tshirt_011', 'tshirt_11', 'Yes', 99, NULL, NULL, NULL, NULL, 1, 1, '7 days', '2026-03-24', '2026-03-31', 1, '2026-03-20 09:48:06', '2026-03-24 01:22:00'),
-(67, 'Kurtas', 'kurtas', 'test', 'Polo Collar Lounge Tshirts', 'test', '', 500.00, 83, 50, 26, 46, 5, 'Yes', 'tshirt_011', 'tshirt_11', 'Yes', 99, NULL, NULL, NULL, NULL, 1, 1, '7 days', '2026-03-24', '2026-03-31', 1, '2026-03-20 09:48:06', '2026-03-24 01:34:37');
+(67, 'Kurtas', 'kurtas', 'test', 'Polo Collar Lounge Tshirts', 'test', '', 500.00, 83, 50, 26, 46, 5, 'Yes', 'tshirt_011', 'tshirt_11', 'Yes', 99, NULL, NULL, NULL, NULL, 1, 1, '7 days', '2026-03-24', '2026-03-31', 1, '2026-03-20 09:48:06', '2026-03-24 01:34:37'),
+(68, 'Boat Nirvana', 'boat-nirvana', 'test', 'Polo Collar Lounge Tshirts', 'test', '', 2500.00, 170, 53, 27, 47, 1, 'Yes', 'tshirt_011', 'tshirt_11', 'Yes', 96, NULL, NULL, NULL, NULL, 1, 1, '7 days', '2026-03-24', '2026-03-31', 1, '2026-03-20 09:48:06', '2026-03-26 02:24:05');
 
 -- --------------------------------------------------------
 
@@ -565,7 +581,11 @@ INSERT INTO `product_colors` (`id`, `product_id`, `color_id`) VALUES
 (15, 59, 1),
 (16, 59, 2),
 (19, 64, 7),
-(21, 64, 6);
+(21, 64, 6),
+(25, 59, 3),
+(26, 59, 4),
+(27, 59, 7),
+(28, 59, 8);
 
 -- --------------------------------------------------------
 
@@ -592,7 +612,11 @@ INSERT INTO `product_images` (`id`, `product_id`, `image`, `sort_order`, `create
 (53, 64, '64-Lux Cozi-53-1774094908.jpg', NULL, '2026-03-21 06:38:28', '2026-03-21 06:38:28'),
 (54, 59, '59-Park Avenue-54.jpg', NULL, '2026-03-21 06:41:28', '2026-03-21 06:41:28'),
 (55, 59, '59-Park Avenue-55.jpg', NULL, '2026-03-21 06:41:28', '2026-03-21 06:41:28'),
-(56, 67, '67-Kurtas-56.jpg', NULL, '2026-03-24 01:34:38', '2026-03-24 01:34:38');
+(56, 67, '67-Kurtas-56.jpg', NULL, '2026-03-24 01:34:38', '2026-03-24 01:34:38'),
+(57, 68, '68-Boat Nirvana-57.jpg', NULL, '2026-03-24 06:47:47', '2026-03-24 06:47:47'),
+(58, 68, '68-Boat Nirvana-58.jpg', NULL, '2026-03-24 06:47:48', '2026-03-24 06:47:48'),
+(59, 68, '68-Boat Nirvana-59.jpg', NULL, '2026-03-24 06:47:48', '2026-03-24 06:47:48'),
+(60, 68, '68-Boat Nirvana-60.jpg', NULL, '2026-03-24 06:47:48', '2026-03-24 06:47:48');
 
 -- --------------------------------------------------------
 
@@ -634,7 +658,9 @@ INSERT INTO `product_sizes` (`id`, `product_id`, `size_id`) VALUES
 (8, 59, 1),
 (9, 59, 3),
 (10, 64, 3),
-(12, 64, 4);
+(12, 64, 4),
+(13, 59, 4),
+(14, 59, 5);
 
 -- --------------------------------------------------------
 
@@ -658,8 +684,6 @@ INSERT INTO `product_variants` (`id`, `product_id`, `image`, `created_at`, `upda
 (28, 64, '64-28-1774078887.jpg', '2026-03-21 02:11:27', '2026-03-21 02:11:27'),
 (29, 64, '64-29-1774093826.jpg', '2026-03-21 06:20:26', '2026-03-21 06:20:26'),
 (30, 64, '64-30-1774093827.jpg', '2026-03-21 06:20:27', '2026-03-21 06:20:27'),
-(33, 59, '59-Park Avenue-33.jpg', '2026-03-21 06:41:27', '2026-03-21 06:41:27'),
-(34, 59, '59-Park Avenue-34.jpg', '2026-03-21 06:41:27', '2026-03-21 06:41:27'),
 (35, 64, '64-Lux Cozi-35.jpg', '2026-03-24 00:10:35', '2026-03-24 00:10:35'),
 (36, 64, 'lux-cozi_64_36.jpg', '2026-03-24 00:12:38', '2026-03-24 00:12:38'),
 (37, 67, 'kurtas_67_37.jpg', '2026-03-24 01:34:37', '2026-03-24 01:34:37');
@@ -745,20 +769,19 @@ INSERT INTO `shipping_charges` (`id`, `state_id`, `amount`, `created_at`, `updat
 CREATE TABLE `sizes` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `name` varchar(20) NOT NULL,
-  `code` varchar(20) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
+  `code` varchar(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `sizes`
 --
 
-INSERT INTO `sizes` (`id`, `name`, `code`, `created_at`, `updated_at`) VALUES
-(1, 'Small', 'S', NULL, NULL),
-(2, 'Medium', 'M', NULL, NULL),
-(3, 'Large', 'L', NULL, NULL),
-(4, 'Extra Large', 'XL', NULL, NULL);
+INSERT INTO `sizes` (`id`, `name`, `code`) VALUES
+(1, 'Small', 'S'),
+(2, 'Medium', 'M'),
+(3, 'Large', 'L'),
+(4, 'Extra Large', 'XL'),
+(5, 'Extra Extra Small', 'XXS');
 
 -- --------------------------------------------------------
 
@@ -825,13 +848,13 @@ INSERT INTO `states` (`id`, `name`, `code`, `created_at`, `updated_at`) VALUES
 
 CREATE TABLE `sub_categories` (
   `id` bigint(20) UNSIGNED NOT NULL,
+  `image` varchar(50) DEFAULT NULL,
   `sub_category_title` varchar(100) NOT NULL,
   `sub_category_name` varchar(100) NOT NULL,
   `sub_category_slug` varchar(100) NOT NULL,
   `status` int(11) NOT NULL,
   `category_id` bigint(20) UNSIGNED NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
-  `image` varchar(50) DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -839,16 +862,17 @@ CREATE TABLE `sub_categories` (
 -- Dumping data for table `sub_categories`
 --
 
-INSERT INTO `sub_categories` (`id`, `sub_category_title`, `sub_category_name`, `sub_category_slug`, `status`, `category_id`, `created_at`, `image`, `updated_at`) VALUES
-(36, 'Boys Clothing', 'Kids_Boys Clothing', 'kids-boys-clothing', 1, 149, '2026-03-24 00:40:25', NULL, '2026-03-24 00:40:25'),
-(42, 'Top Wear', 'Men - Top Wear', 'men-top-wear', 1, 82, '2026-03-24 01:03:29', NULL, '2026-03-24 01:03:29'),
-(43, 'Bottom Wear', 'Men - Bottom Wear', 'men-bottom-wear', 1, 82, '2026-03-24 01:11:26', NULL, '2026-03-24 01:11:26'),
-(44, 'Jackets', 'Men - Jackets', 'men-jackets', 1, 82, '2026-03-24 01:17:02', NULL, '2026-03-24 01:17:02'),
-(45, 'Watches', 'Men - Watches', 'men-watches', 1, 82, '2026-03-24 01:17:52', NULL, '2026-03-24 01:17:52'),
-(46, 'Indian & Fushion Wear', 'Women - Indian & Fushion Wear', 'women-indian-fushion-wear', 1, 83, '2026-03-24 01:20:30', NULL, '2026-03-24 01:20:30'),
-(47, 'Jewellery', 'Women - Jewellery', 'women-jewellery', 1, 83, '2026-03-24 01:22:41', NULL, '2026-03-24 01:22:41'),
-(48, 'Sarees', 'Women - Sarees', 'women-sarees', 1, 83, '2026-03-24 01:23:28', NULL, '2026-03-24 01:23:28'),
-(50, 'Western Wear', 'Women - Western Wear', 'women-western-wear', 1, 83, '2026-03-24 01:33:54', NULL, '2026-03-24 01:33:54');
+INSERT INTO `sub_categories` (`id`, `image`, `sub_category_title`, `sub_category_name`, `sub_category_slug`, `status`, `category_id`, `created_at`, `updated_at`) VALUES
+(36, NULL, 'Boys Clothing', 'Kids_Boys Clothing', 'kids-boys-clothing', 1, 149, '2026-03-24 00:40:25', '2026-03-24 00:40:25'),
+(42, '82-men.jpg', 'Top Wear', 'Men - Top Wear', 'men-top-wear', 1, 82, '2026-03-24 01:03:29', '2026-03-24 01:03:29'),
+(43, NULL, 'Bottom Wear', 'Men - Bottom Wear', 'men-bottom-wear', 1, 82, '2026-03-24 01:11:26', '2026-03-24 01:11:26'),
+(44, NULL, 'Jackets', 'Men - Jackets', 'men-jackets', 1, 82, '2026-03-24 01:17:02', '2026-03-24 01:17:02'),
+(45, NULL, 'Watches', 'Men - Watches', 'men-watches', 1, 82, '2026-03-24 01:17:52', '2026-03-24 01:17:52'),
+(46, NULL, 'Indian & Fushion Wear', 'Women - Indian & Fushion Wear', 'women-indian-fushion-wear', 1, 83, '2026-03-24 01:20:30', '2026-03-24 01:20:30'),
+(47, NULL, 'Jewellery', 'Women - Jewellery', 'women-jewellery', 1, 83, '2026-03-24 01:22:41', '2026-03-24 01:22:41'),
+(48, NULL, 'Sarees', 'Women - Sarees', 'women-sarees', 1, 83, '2026-03-24 01:23:28', '2026-03-24 01:23:28'),
+(50, NULL, 'Western Wear', 'Women - Western Wear', 'women-western-wear', 1, 83, '2026-03-24 01:33:54', '2026-03-24 01:33:54'),
+(53, '170-speakers.jpg', 'Boat', 'Speakers - Boat', 'speakers-boat', 1, 170, '2026-03-24 06:41:57', '2026-03-24 06:41:58');
 
 -- --------------------------------------------------------
 
@@ -878,7 +902,8 @@ INSERT INTO `sub_sub_categories` (`id`, `category_id`, `sub_category_id`, `sub_s
 (23, 149, 36, 'Clothing Sets', 'clothing-sets', '2026-03-24 00:41:55', '2026-03-24 00:41:55'),
 (24, 83, 46, 'Kurtas and Suits', 'kurtas-and-suits', '2026-03-24 01:21:37', '2026-03-24 01:21:37'),
 (25, 83, 46, 'Ethnic Wear', 'ethnic-we', '2026-03-24 01:28:06', '2026-03-24 01:28:06'),
-(26, 83, 50, 'Dresses', 'dresses', '2026-03-24 01:34:18', '2026-03-24 01:34:18');
+(26, 83, 50, 'Dresses', 'dresses', '2026-03-24 01:34:18', '2026-03-24 01:34:18'),
+(27, 170, 53, 'Nirvana', 'nirvana', '2026-03-24 06:44:45', '2026-03-24 06:44:45');
 
 -- --------------------------------------------------------
 
@@ -898,208 +923,15 @@ CREATE TABLE `temp_images` (
 --
 
 INSERT INTO `temp_images` (`id`, `name`, `created_at`, `updated_at`) VALUES
-(176, '1771507053.png', '2026-02-19 07:47:33', '2026-02-19 07:47:33'),
-(177, '1771853843.png', '2026-02-23 08:07:23', '2026-02-23 08:07:23'),
-(178, '1771853881.png', '2026-02-23 08:08:01', '2026-02-23 08:08:01'),
-(179, '1771853884.png', '2026-02-23 08:08:04', '2026-02-23 08:08:04'),
-(180, '1771853906.png', '2026-02-23 08:08:26', '2026-02-23 08:08:26'),
-(181, '1771854010.png', '2026-02-23 08:10:10', '2026-02-23 08:10:10'),
-(182, '1771854020.png', '2026-02-23 08:10:20', '2026-02-23 08:10:20'),
-(183, '1771854029.png', '2026-02-23 08:10:29', '2026-02-23 08:10:29'),
-(184, '1771854076.png', '2026-02-23 08:11:16', '2026-02-23 08:11:16'),
-(185, '1772257475.jpg', '2026-02-28 00:14:35', '2026-02-28 00:14:35'),
-(186, '1772279331.jpg', '2026-02-28 06:18:51', '2026-02-28 06:18:51'),
-(187, '1772279525.jpg', '2026-02-28 06:22:05', '2026-02-28 06:22:05'),
-(188, '1772279738.jpg', '2026-02-28 06:25:38', '2026-02-28 06:25:38'),
-(189, '1772279794.jpg', '2026-02-28 06:26:34', '2026-02-28 06:26:34'),
-(190, '1772279815.jpg', '2026-02-28 06:26:55', '2026-02-28 06:26:55'),
-(191, '1772280034.jpg', '2026-02-28 06:30:34', '2026-02-28 06:30:34'),
-(192, '1772280119.jpg', '2026-02-28 06:31:59', '2026-02-28 06:31:59'),
-(193, '1772280157.jpg', '2026-02-28 06:32:37', '2026-02-28 06:32:37'),
-(194, '1772280184.jpg', '2026-02-28 06:33:04', '2026-02-28 06:33:04'),
-(195, '1772280229.jpg', '2026-02-28 06:33:49', '2026-02-28 06:33:49'),
-(196, '1772280318.png', '2026-02-28 06:35:18', '2026-02-28 06:35:18'),
-(197, '1772280411.jpg', '2026-02-28 06:36:51', '2026-02-28 06:36:51'),
-(198, '1772280496.jpg', '2026-02-28 06:38:16', '2026-02-28 06:38:16'),
-(199, '1772280580.jpg', '2026-02-28 06:39:40', '2026-02-28 06:39:40'),
-(200, '1772280618.jpg', '2026-02-28 06:40:18', '2026-02-28 06:40:18'),
-(201, '1772281708.jpg', '2026-02-28 06:58:28', '2026-02-28 06:58:28'),
-(202, '1772283568.jpg', '2026-02-28 07:29:28', '2026-02-28 07:29:28'),
-(203, '1772283745.jpg', '2026-02-28 07:32:25', '2026-02-28 07:32:25'),
-(204, '1772283877.png', '2026-02-28 07:34:37', '2026-02-28 07:34:37'),
-(205, '1772284002.png', '2026-02-28 07:36:42', '2026-02-28 07:36:42'),
-(206, '1772284148.jpg', '2026-02-28 07:39:08', '2026-02-28 07:39:08'),
-(207, '1772284713.JPG', '2026-02-28 07:48:33', '2026-02-28 07:48:33'),
-(208, '1772284849.JPG', '2026-02-28 07:50:49', '2026-02-28 07:50:49'),
-(209, '1772284909.JPG', '2026-02-28 07:51:49', '2026-02-28 07:51:49'),
-(210, '1772284941.JPG', '2026-02-28 07:52:21', '2026-02-28 07:52:21'),
-(211, '1772286537.JPG', '2026-02-28 08:18:57', '2026-02-28 08:18:57'),
-(212, '1772286540.JPG', '2026-02-28 08:19:00', '2026-02-28 08:19:00'),
-(213, '1772286548.JPG', '2026-02-28 08:19:08', '2026-02-28 08:19:08'),
-(214, '1772286624.JPG', '2026-02-28 08:20:24', '2026-02-28 08:20:24'),
-(215, '1772286693.jpg', '2026-02-28 08:21:33', '2026-02-28 08:21:33'),
-(216, '1772286903.png', '2026-02-28 08:25:03', '2026-02-28 08:25:03'),
-(217, '1772435118.jpg', '2026-03-02 01:35:18', '2026-03-02 01:35:18'),
-(218, '1773666235.JPG', '2026-03-16 07:33:55', '2026-03-16 07:33:55'),
-(219, '1773666294.JPG', '2026-03-16 07:34:54', '2026-03-16 07:34:54'),
-(220, '1773666431.JPG', '2026-03-16 07:37:11', '2026-03-16 07:37:11'),
-(221, '1773666617.JPG', '2026-03-16 07:40:17', '2026-03-16 07:40:17'),
-(222, '1773666702.JPG', '2026-03-16 07:41:42', '2026-03-16 07:41:42'),
-(223, '1773666820.JPG', '2026-03-16 07:43:40', '2026-03-16 07:43:40'),
-(224, '1773667423.JPG', '2026-03-16 07:53:43', '2026-03-16 07:53:43'),
-(225, '1773667494.JPG', '2026-03-16 07:54:54', '2026-03-16 07:54:54'),
-(226, '1773667598.JPG', '2026-03-16 07:56:38', '2026-03-16 07:56:38'),
-(227, '1773667661.JPG', '2026-03-16 07:57:41', '2026-03-16 07:57:41'),
-(228, '1773667708.JPG', '2026-03-16 07:58:28', '2026-03-16 07:58:28'),
-(229, '1773667739.JPG', '2026-03-16 07:58:59', '2026-03-16 07:58:59'),
-(230, '1773671571.JPG', '2026-03-16 09:02:51', '2026-03-16 09:02:51'),
-(231, '1773748506.JPG', '2026-03-17 06:25:06', '2026-03-17 06:25:06'),
-(232, '1773748546.JPG', '2026-03-17 06:25:46', '2026-03-17 06:25:46'),
-(233, '1773752668.JPG', '2026-03-17 07:34:28', '2026-03-17 07:34:28'),
-(234, '1773989759.png', '2026-03-20 01:25:59', '2026-03-20 01:25:59'),
-(235, '1773989763.png', '2026-03-20 01:26:03', '2026-03-20 01:26:03'),
-(236, '1773989832.jpg', '2026-03-20 01:27:12', '2026-03-20 01:27:12'),
-(237, '1773990132.jpg', '2026-03-20 01:32:12', '2026-03-20 01:32:12'),
-(238, '1773990177.png', '2026-03-20 01:32:57', '2026-03-20 01:32:57'),
-(239, '1773994921.jpg', '2026-03-20 02:52:01', '2026-03-20 02:52:01'),
-(240, '1773994922.jpg', '2026-03-20 02:52:02', '2026-03-20 02:52:02'),
-(241, '1773994923.jpg', '2026-03-20 02:52:03', '2026-03-20 02:52:03'),
-(242, '1773994923.jpg', '2026-03-20 02:52:03', '2026-03-20 02:52:03'),
-(243, '1773994923.jpg', '2026-03-20 02:52:03', '2026-03-20 02:52:03'),
-(244, '1774017718.jpg', '2026-03-20 09:11:58', '2026-03-20 09:11:58'),
-(245, '1774017718.jpg', '2026-03-20 09:11:58', '2026-03-20 09:11:58'),
-(246, '1774017719.jpg', '2026-03-20 09:11:59', '2026-03-20 09:11:59'),
-(247, '1774017730.jpg', '2026-03-20 09:12:10', '2026-03-20 09:12:10'),
-(248, '1774017730.jpg', '2026-03-20 09:12:10', '2026-03-20 09:12:10'),
-(249, '1774017731.jpg', '2026-03-20 09:12:11', '2026-03-20 09:12:11'),
-(250, '1774017731.jpg', '2026-03-20 09:12:11', '2026-03-20 09:12:11'),
-(251, '1774017731.jpg', '2026-03-20 09:12:11', '2026-03-20 09:12:11'),
-(252, '1774017749.jpg', '2026-03-20 09:12:29', '2026-03-20 09:12:29'),
-(253, '1774017752.jpg', '2026-03-20 09:12:32', '2026-03-20 09:12:32'),
-(254, '1774017755.jpg', '2026-03-20 09:12:35', '2026-03-20 09:12:35'),
-(255, '1774017762.jpg', '2026-03-20 09:12:42', '2026-03-20 09:12:42'),
-(256, '1774017933.jpg', '2026-03-20 09:15:33', '2026-03-20 09:15:33'),
-(257, '1774017985.jpg', '2026-03-20 09:16:25', '2026-03-20 09:16:25'),
-(258, '1774018026.jpg', '2026-03-20 09:17:06', '2026-03-20 09:17:06'),
-(259, '1774018029.jpg', '2026-03-20 09:17:09', '2026-03-20 09:17:09'),
-(260, '1774018033.jpg', '2026-03-20 09:17:13', '2026-03-20 09:17:13'),
-(261, '1774018035.jpg', '2026-03-20 09:17:15', '2026-03-20 09:17:15'),
-(262, '1774018301.jpg', '2026-03-20 09:21:41', '2026-03-20 09:21:41'),
-(263, '1774018302.jpg', '2026-03-20 09:21:42', '2026-03-20 09:21:42'),
-(264, '1774018302.jpg', '2026-03-20 09:21:42', '2026-03-20 09:21:42'),
-(265, '1774018310.jpg', '2026-03-20 09:21:50', '2026-03-20 09:21:50'),
-(266, '1774018314.jpg', '2026-03-20 09:21:54', '2026-03-20 09:21:54'),
-(267, '1774018316.jpg', '2026-03-20 09:21:56', '2026-03-20 09:21:56'),
-(268, '1774018318.jpg', '2026-03-20 09:21:58', '2026-03-20 09:21:58'),
-(269, '1774018321.jpg', '2026-03-20 09:22:01', '2026-03-20 09:22:01'),
-(270, '1774018323.jpg', '2026-03-20 09:22:03', '2026-03-20 09:22:03'),
-(271, '1774018440.jpg', '2026-03-20 09:24:00', '2026-03-20 09:24:00'),
-(272, '1774018442.jpg', '2026-03-20 09:24:02', '2026-03-20 09:24:02'),
-(273, '1774018445.jpg', '2026-03-20 09:24:05', '2026-03-20 09:24:05'),
-(274, '1774018450.jpg', '2026-03-20 09:24:10', '2026-03-20 09:24:10'),
-(275, '1774018453.jpg', '2026-03-20 09:24:13', '2026-03-20 09:24:13'),
-(276, '1774018456.jpg', '2026-03-20 09:24:16', '2026-03-20 09:24:16'),
-(277, '1774018458.jpg', '2026-03-20 09:24:18', '2026-03-20 09:24:18'),
-(278, '1774018461.jpg', '2026-03-20 09:24:21', '2026-03-20 09:24:21'),
-(279, '1774018684.jpg', '2026-03-20 09:28:04', '2026-03-20 09:28:04'),
-(280, '1774018721.jpg', '2026-03-20 09:28:41', '2026-03-20 09:28:41'),
-(281, '1774018723.jpg', '2026-03-20 09:28:43', '2026-03-20 09:28:43'),
-(282, '1774018726.jpg', '2026-03-20 09:28:46', '2026-03-20 09:28:46'),
-(283, '1774018729.jpg', '2026-03-20 09:28:49', '2026-03-20 09:28:49'),
-(284, '1774018731.jpg', '2026-03-20 09:28:51', '2026-03-20 09:28:51'),
-(285, '1774018733.jpg', '2026-03-20 09:28:53', '2026-03-20 09:28:53'),
-(286, '1774018736.jpg', '2026-03-20 09:28:56', '2026-03-20 09:28:56'),
-(287, '1774018964.jpg', '2026-03-20 09:32:44', '2026-03-20 09:32:44'),
-(288, '1774018967.jpg', '2026-03-20 09:32:47', '2026-03-20 09:32:47'),
-(289, '1774018969.jpg', '2026-03-20 09:32:49', '2026-03-20 09:32:49'),
-(290, '1774018972.jpg', '2026-03-20 09:32:52', '2026-03-20 09:32:52'),
-(291, '1774018974.jpg', '2026-03-20 09:32:54', '2026-03-20 09:32:54'),
-(292, '1774019119.jpg', '2026-03-20 09:35:19', '2026-03-20 09:35:19'),
-(293, '1774019122.jpg', '2026-03-20 09:35:22', '2026-03-20 09:35:22'),
-(294, '1774019124.jpg', '2026-03-20 09:35:24', '2026-03-20 09:35:24'),
-(295, '1774019128.jpg', '2026-03-20 09:35:28', '2026-03-20 09:35:28'),
-(296, '1774019130.jpg', '2026-03-20 09:35:30', '2026-03-20 09:35:30'),
-(297, '1774019526.jpg', '2026-03-20 09:42:06', '2026-03-20 09:42:06'),
-(298, '1774019529.jpg', '2026-03-20 09:42:09', '2026-03-20 09:42:09'),
-(299, '1774019562.jpg', '2026-03-20 09:42:42', '2026-03-20 09:42:42'),
-(300, '1774019564.jpg', '2026-03-20 09:42:44', '2026-03-20 09:42:44'),
-(301, '1774019567.jpg', '2026-03-20 09:42:47', '2026-03-20 09:42:47'),
-(302, '1774019838.jpg', '2026-03-20 09:47:18', '2026-03-20 09:47:18'),
-(303, '1774019841.jpg', '2026-03-20 09:47:21', '2026-03-20 09:47:21'),
-(304, '1774019857.jpg', '2026-03-20 09:47:37', '2026-03-20 09:47:37'),
-(305, '1774019860.jpg', '2026-03-20 09:47:40', '2026-03-20 09:47:40'),
-(306, '1774019882.jpg', '2026-03-20 09:48:02', '2026-03-20 09:48:02'),
-(307, '1774019884.jpg', '2026-03-20 09:48:04', '2026-03-20 09:48:04'),
-(308, '1774078837.jpg', '2026-03-21 02:10:37', '2026-03-21 02:10:37'),
-(309, '1774078885.jpg', '2026-03-21 02:11:25', '2026-03-21 02:11:25'),
-(310, '1774093811.jpg', '2026-03-21 06:20:11', '2026-03-21 06:20:11'),
-(311, '1774093814.jpg', '2026-03-21 06:20:14', '2026-03-21 06:20:14'),
-(312, '1774093816.jpg', '2026-03-21 06:20:16', '2026-03-21 06:20:16'),
-(313, '1774093819.jpg', '2026-03-21 06:20:19', '2026-03-21 06:20:19'),
-(314, '1774093822.jpg', '2026-03-21 06:20:22', '2026-03-21 06:20:22'),
-(315, '1774093824.jpg', '2026-03-21 06:20:24', '2026-03-21 06:20:24'),
-(316, '1774094897.jpg', '2026-03-21 06:38:17', '2026-03-21 06:38:17'),
-(317, '1774094902.jpg', '2026-03-21 06:38:22', '2026-03-21 06:38:22'),
-(318, '1774094905.jpg', '2026-03-21 06:38:25', '2026-03-21 06:38:25'),
-(319, '1774095059.jpg', '2026-03-21 06:40:59', '2026-03-21 06:40:59'),
-(320, '1774095063.jpg', '2026-03-21 06:41:03', '2026-03-21 06:41:03'),
-(321, '1774095070.jpg', '2026-03-21 06:41:10', '2026-03-21 06:41:10'),
-(322, '1774095073.jpg', '2026-03-21 06:41:13', '2026-03-21 06:41:13'),
-(323, '1774096952.jpg', '2026-03-21 07:12:32', '2026-03-21 07:12:32'),
-(324, '1774097114.jpg', '2026-03-21 07:15:14', '2026-03-21 07:15:14'),
-(325, '1774097891.jpg', '2026-03-21 07:28:11', '2026-03-21 07:28:11'),
-(326, '1774097971.jpg', '2026-03-21 07:29:31', '2026-03-21 07:29:31'),
-(327, '1774098044.jpg', '2026-03-21 07:30:44', '2026-03-21 07:30:44'),
-(328, '1774329634.jpg', '2026-03-23 23:50:34', '2026-03-23 23:50:34'),
-(329, '1774330701.jpg', '2026-03-24 00:08:21', '2026-03-24 00:08:21'),
-(330, '1774330740.jpg', '2026-03-24 00:09:00', '2026-03-24 00:09:00'),
-(331, '1774330806.jpg', '2026-03-24 00:10:06', '2026-03-24 00:10:06'),
-(332, '1774330954.jpg', '2026-03-24 00:12:34', '2026-03-24 00:12:34'),
-(333, '1774331109.jpg', '2026-03-24 00:15:09', '2026-03-24 00:15:09'),
-(334, '1774331112.jpg', '2026-03-24 00:15:12', '2026-03-24 00:15:12'),
-(335, '1774331154.jpg', '2026-03-24 00:15:54', '2026-03-24 00:15:54'),
-(336, '1774331157.jpg', '2026-03-24 00:15:57', '2026-03-24 00:15:57'),
-(337, '1774331220.jpg', '2026-03-24 00:17:00', '2026-03-24 00:17:00'),
-(338, '1774331223.jpg', '2026-03-24 00:17:03', '2026-03-24 00:17:03'),
-(339, '1774331244.jpg', '2026-03-24 00:17:24', '2026-03-24 00:17:24'),
-(340, '1774331246.jpg', '2026-03-24 00:17:26', '2026-03-24 00:17:26'),
-(341, '1774331249.jpg', '2026-03-24 00:17:29', '2026-03-24 00:17:29'),
-(342, '1774331335.jpg', '2026-03-24 00:18:55', '2026-03-24 00:18:55'),
-(343, '1774331338.jpg', '2026-03-24 00:18:58', '2026-03-24 00:18:58'),
-(344, '1774331340.jpg', '2026-03-24 00:19:00', '2026-03-24 00:19:00'),
-(345, '1774331352.jpg', '2026-03-24 00:19:12', '2026-03-24 00:19:12'),
-(346, '1774331354.jpg', '2026-03-24 00:19:14', '2026-03-24 00:19:14'),
-(347, '1774331357.jpg', '2026-03-24 00:19:17', '2026-03-24 00:19:17'),
-(348, '1774331397.jpg', '2026-03-24 00:19:57', '2026-03-24 00:19:57'),
-(349, '1774331400.jpg', '2026-03-24 00:20:00', '2026-03-24 00:20:00'),
-(350, '1774331404.jpg', '2026-03-24 00:20:04', '2026-03-24 00:20:04'),
-(351, '1774331422.jpg', '2026-03-24 00:20:22', '2026-03-24 00:20:22'),
-(352, '1774331424.jpg', '2026-03-24 00:20:24', '2026-03-24 00:20:24'),
-(353, '1774331427.jpg', '2026-03-24 00:20:27', '2026-03-24 00:20:27'),
-(354, '1774331460.jpg', '2026-03-24 00:21:00', '2026-03-24 00:21:00'),
-(355, '1774331462.jpg', '2026-03-24 00:21:02', '2026-03-24 00:21:02'),
-(356, '1774331465.jpg', '2026-03-24 00:21:05', '2026-03-24 00:21:05'),
-(357, '1774331564.jpg', '2026-03-24 00:22:44', '2026-03-24 00:22:44'),
-(358, '1774331567.jpg', '2026-03-24 00:22:47', '2026-03-24 00:22:47'),
-(359, '1774331663.jpg', '2026-03-24 00:24:23', '2026-03-24 00:24:23'),
-(360, '1774331666.jpg', '2026-03-24 00:24:26', '2026-03-24 00:24:26'),
-(361, '1774331668.jpg', '2026-03-24 00:24:28', '2026-03-24 00:24:28'),
-(362, '1774331672.jpg', '2026-03-24 00:24:32', '2026-03-24 00:24:32'),
-(363, '1774331674.jpg', '2026-03-24 00:24:34', '2026-03-24 00:24:34'),
-(364, '1774331676.jpg', '2026-03-24 00:24:36', '2026-03-24 00:24:36'),
-(365, '1774331679.jpg', '2026-03-24 00:24:39', '2026-03-24 00:24:39'),
-(366, '1774331830.jpg', '2026-03-24 00:27:10', '2026-03-24 00:27:10'),
-(367, '1774331833.jpg', '2026-03-24 00:27:13', '2026-03-24 00:27:13'),
-(368, '1774331834.jpg', '2026-03-24 00:27:14', '2026-03-24 00:27:14'),
-(369, '1774331838.jpg', '2026-03-24 00:27:18', '2026-03-24 00:27:18'),
-(370, '1774331840.jpg', '2026-03-24 00:27:20', '2026-03-24 00:27:20'),
-(371, '1774332220.jpeg', '2026-03-24 00:33:40', '2026-03-24 00:33:40'),
-(372, '1774332254.jpeg', '2026-03-24 00:34:14', '2026-03-24 00:34:14'),
-(373, '1774332288.jpeg', '2026-03-24 00:34:48', '2026-03-24 00:34:48'),
-(374, '1774332326.jpeg', '2026-03-24 00:35:26', '2026-03-24 00:35:26'),
-(375, '1774332516.jpeg', '2026-03-24 00:38:36', '2026-03-24 00:38:36'),
-(376, '1774335872.jpg', '2026-03-24 01:34:32', '2026-03-24 01:34:32'),
-(377, '1774335875.jpg', '2026-03-24 01:34:35', '2026-03-24 01:34:35');
+(398, '1774354083.jpg', '2026-03-24 06:38:03', '2026-03-24 06:38:03'),
+(399, '1774354128.jpeg', '2026-03-24 06:38:48', '2026-03-24 06:38:48'),
+(400, '1774354134.jpg', '2026-03-24 06:38:54', '2026-03-24 06:38:54'),
+(401, '1774354232.jpg', '2026-03-24 06:40:32', '2026-03-24 06:40:32'),
+(402, '1774354313.jpg', '2026-03-24 06:41:53', '2026-03-24 06:41:53'),
+(403, '1774354644.jpg', '2026-03-24 06:47:24', '2026-03-24 06:47:24'),
+(404, '1774354647.jpg', '2026-03-24 06:47:27', '2026-03-24 06:47:27'),
+(405, '1774354649.jpg', '2026-03-24 06:47:29', '2026-03-24 06:47:29'),
+(406, '1774354651.jpg', '2026-03-24 06:47:31', '2026-03-24 06:47:31');
 
 -- --------------------------------------------------------
 
@@ -1148,6 +980,13 @@ CREATE TABLE `wishlists` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `wishlists`
+--
+
+INSERT INTO `wishlists` (`id`, `user_id`, `product_id`, `created_at`, `updated_at`) VALUES
+(104, 7, 64, '2026-03-25 00:54:47', '2026-03-25 00:54:47');
 
 --
 -- Indexes for dumped tables
@@ -1409,13 +1248,13 @@ ALTER TABLE `wishlists`
 -- AUTO_INCREMENT for table `brands`
 --
 ALTER TABLE `brands`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
 
 --
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=167;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=172;
 
 --
 -- AUTO_INCREMENT for table `colors`
@@ -1439,7 +1278,7 @@ ALTER TABLE `customer_addresses`
 -- AUTO_INCREMENT for table `discounts`
 --
 ALTER TABLE `discounts`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `discount_coupons`
@@ -1469,19 +1308,19 @@ ALTER TABLE `migrations`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=183;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=203;
 
 --
 -- AUTO_INCREMENT for table `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
 -- AUTO_INCREMENT for table `order_status_histories`
 --
 ALTER TABLE `order_status_histories`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=148;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=172;
 
 --
 -- AUTO_INCREMENT for table `pages`
@@ -1505,19 +1344,19 @@ ALTER TABLE `personal_access_tokens`
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=69;
 
 --
 -- AUTO_INCREMENT for table `product_colors`
 --
 ALTER TABLE `product_colors`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT for table `product_images`
 --
 ALTER TABLE `product_images`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=57;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
 
 --
 -- AUTO_INCREMENT for table `product_ratings`
@@ -1529,7 +1368,7 @@ ALTER TABLE `product_ratings`
 -- AUTO_INCREMENT for table `product_sizes`
 --
 ALTER TABLE `product_sizes`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `product_variants`
@@ -1559,7 +1398,7 @@ ALTER TABLE `shipping_charges`
 -- AUTO_INCREMENT for table `sizes`
 --
 ALTER TABLE `sizes`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `states`
@@ -1571,19 +1410,19 @@ ALTER TABLE `states`
 -- AUTO_INCREMENT for table `sub_categories`
 --
 ALTER TABLE `sub_categories`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=62;
 
 --
 -- AUTO_INCREMENT for table `sub_sub_categories`
 --
 ALTER TABLE `sub_sub_categories`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT for table `temp_images`
 --
 ALTER TABLE `temp_images`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=378;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=407;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -1595,7 +1434,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `wishlists`
 --
 ALTER TABLE `wishlists`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=104;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=105;
 
 --
 -- Constraints for dumped tables

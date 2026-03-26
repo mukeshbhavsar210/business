@@ -30,7 +30,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">	
 	<link rel="shortcut icon" type="image/x-icon" href="#" />
 </head>
-<body data-instant-intensity="mousedown">
+<body data-instant-intensity="mousedown" class="{{ request()->routeIs(['front.cart']) ? 'cart-wrapper' : 'default' }}" >
 
 <div class="container">    
     @include('front.layouts.toast')
@@ -38,7 +38,7 @@
 
 @include(request()->routeIs(['front.cart','front.checkout','front.checkout.thankyou']) ? 'front.layouts.cart_header' : 'front.layouts.header')
 
-<main class="{{ request()->routeIs(['front.cart','front.checkout','front.checkout.thankyou']) ? 'main' : 'default' }}">
+<main>
     @yield('content')
 </main>
 
@@ -86,19 +86,7 @@
 
     setTimeout(function(){
         $('.toast').fadeOut('slow');
-    },3000);
-
-	//window.onscroll = function() {myFunction()};
-	// var navbar = document.getElementById("navbar");
-	// var sticky = navbar.offsetTop;
-
-	function myFunction() {
-		if (window.pageYOffset >= sticky) {
-			navbar.classList.add("sticky")
-		} else {
-			navbar.classList.remove("sticky");
-		}
-	}
+    },3000);	
 
     $.ajaxSetup({
         headers: {

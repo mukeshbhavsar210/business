@@ -65,9 +65,6 @@
                                                         </button>
                                                         </li>  --}}
                                                     </ul>
-                                                    
-                                                        
-                                                    
                                                 </div>
                                             </div>
                                         </div>
@@ -147,9 +144,9 @@
                 <div class="modal-footer-extra">                                
                     <div class="max-savings">
                         <p>Maximum savings:</p> 
-                        {{-- @if($store_discount)
-                            <p class="discount-text">₹{{ $coupon_discount }}</p> 
-                        @endif --}}
+                        @if($store_discount)
+                            <p class="discount-text">₹{{ round($coupon_discount) }}</p> 
+                        @endif
                     </div>
                     <div>
                         <button class="btn btn-primary btn-big" type="submit" data-bs-dismiss="modal">Apply</button>

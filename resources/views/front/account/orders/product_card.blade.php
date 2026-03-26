@@ -14,12 +14,14 @@
         <div class="product-details-name">
             <h3>{{ $item->product->title }}</h3>
             <p>{{ $item->product->short_description }}</p>
-            <p class="m-0 text-muted">
-                @if($item->product->size)
-                    Size: {{ $item->product->size?->code ?? 'N/A' }},
+            
+            <p class="m-0 text-muted tiny-font">
+                @if($item->size)
+                    Size: <b>{{ $item->size }}</b>,
                 @endif                
-                @if($item->product->color)
-                    Color: {{ $item->product->color?->name ?? 'N/A' }}
+                
+                @if($item->color)
+                    Color: <b>{{ $item->color }}</b>
                 @endif
             </p>
         </div>

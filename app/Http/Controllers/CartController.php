@@ -586,12 +586,7 @@ class CartController extends Controller {
         $order->customer_address_id = $request->customer_address_id;
         $order->subtotal = $subTotal;
         $order->shipping = $shipping;
-        $order->discount = $discount;
-        $order->grandtotal = $grandTotal;
-        $order->coupon_code_id = $discountCodeId;
-        $order->coupon_code = $promoCode;
-        $order->payment_status = 'not paid';
-        $order->payment_method = $request->payment_method;        
+        $order->grandtotal = $grandTotal;        
         $order->save();
 
         OrderStatusHistory::create([
@@ -609,10 +604,22 @@ class CartController extends Controller {
             $orderItem->product_id = $item->id;
             $orderItem->qty = $item->qty;
             $orderItem->price = $item->price;                       
+            $orderItem->discounted_price = $item->options->discount_price ?? null;
+            $orderItem->discount_percent = $item->options->discount_percent ?? null;
             $orderItem->product_variant_id = $item->options->variant_id ?? null;
-            $orderItem->size = $item->options->size ?? null;                        
-            $orderItem->color = $item->options->color;
-            $orderItem->total = $subTotal;  
+            $orderItem->size = $item->options->size ?? null;
+            $orderItem->color = $item->options->color ?? null;
+            $orderItem->discount = $discount;            
+            $orderItem->coupon_code = $promoCode;
+            $orderItem->coupon_code_id = $discountCodeId;    
+            $orderItem->shipping = $shipping;        
+            $orderItem->subTotal = $subTotal;
+            $orderItem->grandtotal = $grandTotal;            
+            $orderItem->payment_status = 'not paid';
+            $orderItem->payment_method = $request->payment_method;   
+            $orderItem->return_days = $item->options->return_days ?? null;
+            $orderItem->delivery_min_days = $item->options->delivery_min_days ?? null;
+            $orderItem->delivery_max_days = $item->options->delivery_max_days ?? null;
             $orderItem->save();
 
             // Update Variant Stock

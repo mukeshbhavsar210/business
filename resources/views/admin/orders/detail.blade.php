@@ -104,9 +104,8 @@
                                 <thead class="table-light">  
                                     <tr>
                                         <th class="border-top-0">Products details</th>                                
-                                        <th class="border-top-0 text-end" width="130">Qty</th>
-                                        <th class="border-top-0 text-end" width="130">Price</th>
-                                        <th class="border-top-0 text-end" width="100">Amount</th>
+                                        <th class="border-top-0 text-end" width="150">Qty</th>                                                                                
+                                        <th class="border-top-0 text-end" width="150">Amount</th>
                                     </tr>                                                    
                                 </thead>
                                 <tbody>
@@ -147,33 +146,35 @@
                                                 </div>
                                             </td>                                                                                                            
                                             <td class="text-end"><p class="mt-3">{{ $item->qty }}</p></td>
-                                            <td class="text-end"><p class="mt-3">₹{{ $item->qty*$item->price }}</p></td>
-                                            <td class="text-end"><p class="mt-3">₹{{ $item->total }}</p></td>                                            
+                                            <td class="text-end">
+                                                @if($item->discounted_price)
+                                                    <p class="mt-3">₹{{ round($item->qty*$item->discounted_price) }}</p>
+                                                    <p class="tiny-font text-muted">₹{{ $item->qty*$item->price }} (O. Price)</p>
+                                                @else
+                                                    <p class="mt-3">₹{{ round($item->qty*$item->price) }}</p>
+                                                @endif                                                
+                                            </td>                                            
                                         </tr>
                                     @endforeach
-                                        <tr>
-                                            <td></td>
+                                        <tr>                                            
                                             <td></td>
                                             <td class="text-end">Subtotal:</td>
-                                            <td class="text-end"><b>₹{{ $order->subtotal }}</b></td>
+                                            <td class="text-end"><b>₹{{ $item->subtotal }}</b></td>
+                                        </tr>                                        
+                                        <tr>                                            
+                                            <td></td>
+                                            <td class="text-end"><p style="color: green;">Discount <b>{{ (!empty($item->coupon_code)) ? '('.$item->coupon_code.')' : '' }}</b>:</p></td>
+                                            <td class="text-end"><p style="color: green;">₹{{ round($item->discount) }}</p></td>
                                         </tr>
-                                        <tr>
+                                        <tr>                                            
                                             <td></td>
-                                            <td></td>
-                                            <td class="text-end">Discount: {{ (!empty($order->coupon_code)) ? '('.$order->coupon_code.')' : '' }}</td>                                    
-                                            <td class="text-end">₹ {{ $order->discount }}</td>
+                                            <td class="text-end">Platform Fees:</td>
+                                            <td class="text-end">₹{{ round($item->shipping) }}</td>
                                         </tr>
-                                        <tr>
-                                            <td></td>
-                                            <td></td>
-                                            <td class="text-end">Shipping:</td>
-                                            <td class="text-end">₹ {{ $order->shipping }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td></td>
+                                        <tr>                                            
                                             <td></td>
                                             <td class="text-end"><b>Grand Total:</b></td>
-                                            <td class="text-end"><b>₹{{ $order->grandtotal }}</b></td>
+                                            <td class="text-end"><b>₹{{ round($item->grandtotal) }}</b></td>
                                         </tr>
                                 </tbody>
                             </table>                                             

@@ -441,6 +441,8 @@ class AuthController extends Controller {
             'items.product',
             'items.product.color',
             'items.product.size',
+            'items.color',
+            'items.size',
             'statusHistories',
             'latestStatus'
         ])->where('user_id', $user->id);
@@ -487,7 +489,7 @@ class AuthController extends Controller {
         // Cancelled Items Count
         // $totalCancelledItems = $orders->sum(function ($order) {
         //     return $order->items->sum('qty');
-        // });
+        // });        
 
         return view('front.account.orders.index', [
             'orders' => $orders,

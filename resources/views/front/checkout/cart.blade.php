@@ -67,7 +67,7 @@
                     </div>
                 
                     @foreach($cartContent as $item)
-                        <div class="product-repeate" id="cart-item-{{ $item->rowId }}"> 
+                        <div class="product-repeate active-card" id="cart-item-{{ $item->rowId }}"> 
                             <div class="checkbox">
                                 <label class="custom-checkbox">                                    
                                     <input type="checkbox" name="cart_ids[]" value="{{ $item->rowId }}" class="item-checkbox" checked
@@ -94,20 +94,20 @@
                                     @if(!$item->options->size == null || !$item->options->size == null)
                                         <div class="select">                                    
                                             <a href="javascript:void(0);" class="update-cart-modal" data-type="size" data-productid="{{ $item->id }}" data-rowid="{{ $item->rowId }}" data-selected="{{ $item->options->size }}">
-                                                Size: {{ $item->options->size }} <span class="caret"></span>
+                                                Size: <b>{{ $item->options->size }}</b> <span class="caret"></span>
                                             </a>
                                         </div>
                                     
                                         <div class="select">                                
                                             <a href="javascript:void(0);" class="update-cart-modal" data-type="color" data-productid="{{ $item->id }}" data-rowid="{{ $item->rowId }}" data-selected="{{ $item->options->color }}">
-                                                Color: {{ $item->options->color }} <span class="caret"></span>
+                                                Color: <b>{{ $item->options->color }}</b> <span class="caret"></span>
                                             </a>
                                         </div>
                                     @endif
                                     
                                     <div class="select">   
                                         <a href="javascript:void(0);" class="update-cart-modal" data-type="qty" data-rowid="{{ $item->rowId }}" data-selected="{{ $item->qty }}">
-                                            Qty: {{ $item->qty }} <span class="caret"></span>
+                                            Qty: <b>{{ $item->qty }}</b> <span class="caret"></span>
                                         </a>                                                                    
                                     </div>
                                 </div>
@@ -134,8 +134,8 @@
                             </div>
 
                             <div class="remove">                                
-                                <a href="#" data-bs-toggle="modal" data-bs-target="#removeItemModal_{{ $item->id }}">
-                                    <svg fill="#666666" width="23px" height="23px" viewBox="-3.5 0 19 19" xmlns="http://www.w3.org/2000/svg" class="cf-icon-svg"><path d="M11.383 13.644A1.03 1.03 0 0 1 9.928 15.1L6 11.172 2.072 15.1a1.03 1.03 0 1 1-1.455-1.456l3.928-3.928L.617 5.79a1.03 1.03 0 1 1 1.455-1.456L6 8.261l3.928-3.928a1.03 1.03 0 0 1 1.455 1.456L7.455 9.716z"/></svg>
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#removeItemModal_{{ $item->id }}" class="delete-icon">
+                                    <span class="sprites"></span>                                    
                                 </a>                                    
                             </div>
 
@@ -232,15 +232,15 @@
                                 </div>
                             @endif
 
-                            <div class="part pb-3">
+                            <div class="part pb-3 ">
                                 <div class="repeate-row">
                                     <h5>Delivery Estimates</h5>
                                     <p class="tiny-font">Delivery in-between</p>
                                 </div>
                                 @foreach (Cart::content() as $item)
-                                    <div class="repeate-row">
+                                    <div class="repeate-row show-tooltip strike">
                                         <p>{{ $item->name }}</p>
-                                        <span class="tiny-font mt-1">{{ \Carbon\Carbon::parse($minDate)->format('d M')}} - {{ \Carbon\Carbon::parse($maxDate)->format('d M')}}</span> 
+                                        <span class="tiny-font mt-1">{{ \Carbon\Carbon::parse($minDate)->format('d, M')}} - {{ \Carbon\Carbon::parse($maxDate)->format('d, M')}}</span> 
                                     </div>                        
                                 @endforeach        
                             </div>
@@ -249,12 +249,12 @@
                                 <h5 class="mb-2">Price Details (<span class="selected-items">0</span> <span>items</span>)</h5>
 
                                 @if (Cart::count() > 0)                                                                    
-                                    <div class="repeate-row">
+                                    <div class="repeate-row mb-1">
                                         <div class="left">Total MRP</div>
                                         <div class="right">₹<span class="mrp_total">0.00</span></div>
                                     </div>
 
-                                    <div class="repeate-row priceDetailsBox">
+                                    <div class="repeate-row mb-1 priceDetailsBox">
                                         <div class="left">Discount on MRP</div>
                                         <div class="right">
                                             <span class="compare-discount">- ₹<span class="price_discount">0.00</span></span>                                            
@@ -289,7 +289,7 @@
                                             </div>
                                         </div>
                                     @else
-                                        <div class="repeate-row">
+                                        <div class="repeate-row mb-1">
                                             <div class="left">Coupon Discount</div>
                                             <div class="right">
                                                 <a href="#" data-bs-toggle="modal" data-bs-target="#discount">Apply Discount</a>
@@ -362,7 +362,106 @@
 
 @section('customJs')
     <script>
-         $("#payment_cod").click(function(){
+        let currentRowId = '';
+        let currentType = '';       
+
+        $(document).on('click', '.update-cart-modal', function(){            
+            currentRowId = $(this).data('rowid');
+            currentType = $(this).data('type');
+            let selected = $(this).data('selected');
+
+            let title = '';
+            let options = [];
+
+            if(currentType === 'size'){
+                title = 'Select Size';                
+                let productId = $(this).data('productid');
+
+                $.get('/get-product-sizes/' + productId, function(res){
+                    let options = res.sizes; 
+
+                    let html = '';
+                    options.forEach(function(option){
+                        let active = (option.code == selected) ? 'selected' : '';
+                        html += `<li><a href="#" class="select-option show-tooltip ${active}" data-value="${option.code}">
+                                        ${option.code}
+                                    <span class="tooltip" style="bottom:48px;">${option.name}</span>
+                                </a></li>`;
+                    });
+
+                    $('#modalList').html(html);
+                    $('#cartModalTitle').text(title);
+
+                    let modal = new bootstrap.Modal(document.getElementById('commonCartUpdateModal'));
+                    modal.show();
+                });
+
+                return; // ❗ stop further execution
+            }
+
+            if(currentType === 'color'){
+                title = 'Select Color';
+                let productId = $(this).data('productid');
+
+                $.get('/get-product-colors/' + productId, function(res){
+                    let options = res.colors;
+                    let html = '';
+                    options.forEach(function(option){
+                        let active = (option.name == selected) ? 'selected' : '';
+                        html += `<li><a href="#" class="select-option ${active} show-tooltip" data-value="${option.name}">
+                                        <span class="color" style="background-color:${option.code}"></span>
+                                        <span class="tooltip" style="bottom:48px;">${option.name}</span>
+                                </a></li>`;
+                    });
+
+                    $('#modalList').html(html);
+                    $('#cartModalTitle').text(title);
+
+                    let modal = new bootstrap.Modal(document.getElementById('commonCartUpdateModal'));
+                    modal.show();
+                });
+                return; // ❗ stop further execution
+            }
+
+            if(currentType === 'qty'){
+                title = 'Select Quantity';
+                options = [1,2,3,4,5,6,7,8,9,10];
+
+                let html = '';
+                options.forEach(function(option){
+                    let active = (option == selected) ? 'selected' : '';
+                    html += `<li><a href="#" class="select-option ${active}" data-value="${option}">${option}</a></li>`;
+                });
+
+                $('#modalList').html(html);
+                new bootstrap.Modal('#commonCartUpdateModal').show();
+            }
+            $('#cartModalTitle').text(title);
+        });
+
+
+        $(document).on('click', '.select-option', function(e){
+            e.preventDefault();
+            let value = $(this).data('value');
+
+            let data = {
+                rowId: currentRowId,
+                _token: '{{ csrf_token() }}'
+            };
+
+            if(currentType === 'qty'){ data.qty = value; }
+            if(currentType === 'size'){ data.size = value; }
+            if(currentType === 'color'){ data.color = value; }
+
+            $.post('{{ route("front.updateCartOption") }}', data, function(res){
+                if(res.status){
+                    location.reload();
+                }
+            });
+        });  
+
+
+        $("#payment_cod").click(function(){
             if ($(this).is(":checked") == true){
                 $("#cod-form").removeClass('d-none');
                 $("#razorpay-form").addClass('d-none');
@@ -374,34 +473,7 @@
                 $("#cod-form").addClass('d-none');
                 $("#razorpay-form").removeClass('d-none');
             }
-        });
-
-        // $("#orderForm").submit(function(event){            
-        //     event.preventDefault();
-
-        //     $('button[type="submit"]').prop('disabled', true);
-
-        //     $.ajax({
-        //         url: '{{ route("front.processCheckout") }}',
-        //         type: 'POST',
-        //         data: $(this).serialize(),
-        //         dataType: 'json',
-
-        //         success:function(response){
-        //             $('button[type="submit"]').prop('disabled', false);
-        //             if(response.status == false){
-        //                 console.log(response.errors);
-        //             }else{
-        //                 window.location.href = "{{ url('thanks') }}/"+response.orderId;
-        //             }
-        //         },
-
-        //         error:function(xhr){
-        //             console.log(xhr.responseText);
-        //             $('button[type="submit"]').prop('disabled', false);
-        //         }
-        //     });
-        // });
+        });    
     
         $("#orderForm").submit(function(event){
             event.preventDefault();
@@ -456,117 +528,7 @@
                 }
             });
         });
-
-        let currentRowId = '';
-        let currentType = '';  
-     
-
-        $(document).on('click', '.update-cart-modal', function(){            
-            currentRowId = $(this).data('rowid');
-            currentType = $(this).data('type');
-            let selected = $(this).data('selected');
-
-            let title = '';
-            let options = [];
-
-            if(currentType === 'size'){
-                title = 'Select Size';
-                options = ['S', 'M', 'L', 'XL']; 
-
-                let productId = $(this).data('productid');
-
-                $.get('/get-product-sizes/' + productId, function(res){
-                    let options = res.sizes; 
-
-                    let html = '';
-                    options.forEach(function(option){
-                        let active = (option.name == selected) ? 'selected' : '';
-                        html += `<li>
-                                    <a href="#" class="select-option show-tooltip ${active}" data-value="${option.name}">
-                                        ${option.code}
-                                        <span class="tooltip" style="bottom:48px;">${option.name}</span>
-                                    </a>
-                                </li>`;
-                    });
-
-                    $('#modalList').html(html);
-                    $('#cartModalTitle').text(title);
-
-                    let modal = new bootstrap.Modal(document.getElementById('commonCartUpdateModal'));
-                    modal.show();
-                });
-
-                return; // ❗ stop further execution
-            }
-
-            if(currentType === 'color'){
-                title = 'Select Color';
-                let productId = $(this).data('productid');
-                $.get('/get-product-colors/' + productId, function(res){
-                    let options = res.colors;
-                    let html = '';
-                    options.forEach(function(option){
-                        let active = (option.name == selected) ? 'selected' : '';
-                        html += `<li>
-                                    <a href="#" class="select-option ${active} show-tooltip" data-value="${option.name}">
-                                        <span class="color" style="background-color:${option.code}"></span>                                
-                                        <span class="tooltip" style="bottom:48px;">${option.name}</span>
-                                    </a>
-                                </li>`;
-                    });
-
-                    $('#modalList').html(html);
-                    $('#cartModalTitle').text(title);
-                    let modal = new bootstrap.Modal(document.getElementById('commonCartUpdateModal'));
-                    modal.show();
-                });
-                return; // ❗ stop further execution
-            }
-
-            if(currentType === 'qty'){
-                title = 'Select Quantity';
-                options = [1,2,3,4,5,6,7,8,9,10];
-
-                let html = '';
-                options.forEach(function(option){
-                    let active = (option == selected) ? 'selected' : '';
-                    html += `<li><a href="#" class="select-option ${active}" data-value="${option}">${option}</a></li>`;
-                });
-
-                $('#modalList').html(html);
-                new bootstrap.Modal('#commonCartUpdateModal').show();
-            }
-            $('#cartModalTitle').text(title);
-        });
-
-
-        $(document).on('click', '.select-option', function(e){
-            e.preventDefault();
-            let value = $(this).data('value');
-
-            let data = {
-                rowId: currentRowId,
-                _token: '{{ csrf_token() }}'
-            };
-
-            if(currentType === 'qty'){
-                data.qty = value;
-            }
-
-            if(currentType === 'size'){
-                data.size = value;
-            }
-
-            if(currentType === 'color'){
-                data.color = value;
-            }
-
-            $.post('{{ route("front.updateCartOption") }}', data, function(res){
-                if(res.status){
-                    location.reload();
-                }
-            });
-        });           
+                 
        
         function deleteItem(rowId){            
             $.ajax({
@@ -748,6 +710,14 @@
                 let coupon_discount = parseFloat($('#coupon_discount').val()) || 0;
                 let shipping_charge = parseFloat($('#shipping_charge').val()) || 0;
 
+                $('.item-checkbox').on('change', function() {                    
+                    if ($(this).is(':checked')) {
+                        $(this).parent().parent().parent().addClass('active-card');                        
+                    } else {
+                        $(this).parent().parent().parent().removeClass('active-card');                        
+                    }
+                });
+
                 $('.item-checkbox:checked').each(function(){
                     let price = parseFloat($(this).data('price')) || 0;
                     let qty = parseInt($(this).data('qty')) || 1;
@@ -780,8 +750,10 @@
                 if(selectedCount > 0){
                     appliedShipping = shipping_charge;
                     $('.priceDetailsBox').removeClass('d-none');
+                    $('.strike').removeClass('dell');
                 }else{
                     $('.priceDetailsBox').addClass('d-none');
+                    $('.strike').addClass('dell');
                 }
 
                 let total = afterCoupon + appliedShipping;
@@ -789,11 +761,11 @@
                 // Update UI
                 $('#selectedCount').text(selectedCount);
                 $('.selected-items').text(selectedCount);
-                $('.mrp_total').text(mrp_total.toFixed(2));
-                $('.price_discount').text(price_discount.toFixed(2));
-                $('.coupon_discount').text(coupon_discount.toFixed(2));
+                $('.mrp_total').text(Math.round(mrp_total));
+                $('.price_discount').text(Math.round(price_discount));  
+                $('.coupon_discount').text(Math.round(coupon_discount));
                 $('.shipping_charge').text(appliedShipping.toFixed(2));    
-                $('.grand_total').text(total.toFixed(2));
+                $('.grand_total').text(Math.round(total));
                 $('.grand_total_button').text(total.toFixed(2));
                 $('#grand_total_input').val($('.grand_total').text().trim());                
 

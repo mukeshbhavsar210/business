@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model {
     use HasFactory;
 
-    protected $fillable = [ 'user_id', 'product_id', 'product_variant_id', 'customer_address_id', 'subtotal', 'grandtotal', 'shipping', 'coupon_code', 'coupon_code_id', 'discount',
-                            'grandtotal', 'payment_status', 'payment_method', 'cancel_reason', 'cancel_comments', 'cancelled_at', 'shipped_date', 
+    protected $fillable = [ 'user_id', 'product_id', 'product_variant_id', 'customer_address_id', 
+                            'subtotal', 'shipping', 'grandtotal',  
                             
     ];
 
@@ -65,6 +65,14 @@ class Order extends Model {
 
     public function subSubCategory() {
         return $this->belongsTo(SubSubCategory::class);
+    }
+
+     public function color() {
+        return $this->belongsTo(Color::class);
+    }
+
+    public function size() {
+        return $this->belongsTo(Size::class);
     }
 
     // public function latestStatus() {
