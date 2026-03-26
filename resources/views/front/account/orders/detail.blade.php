@@ -33,32 +33,35 @@
             <div class="orders-details {{ $badgeClasses[$status] }}">                   
                 <div class="showcase">
                     <div class="product {{ $orderItems->count() > 1 ? 'more' : '' }} {{ $orderItems->count() > 2 ? 'more_2' : '' }}">
-                        @foreach ($orderItems as $item)
+                        @php
+                            $item = $orderItems->first();
+                        @endphp
+
+                        @if($item)
                             @php
-                                $productImage = getProductImage($item->product_id)
+                                $productImage = getProductImage($item->product_id);
                             @endphp
 
                             <div class="card-repeate">
                                 <div class="product-image">
                                     <a href="#" class="product-page">
                                         @if (!empty($productImage->image))
-                                            <img src="{{ asset('uploads/product/small/'.$productImage->image) }}" >
+                                            <img src="{{ asset('uploads/product/small/'.$productImage->image) }}">
                                         @else
                                             <img src="{{ asset('admin-assets/img/default-150x150.png') }}" alt="" />
                                         @endif
                                     </a>
                                 </div>                                                        
-                                <h3 class="product-title">{{ $item->product->title }}</h3>
-                                <p class="text-muted">{{ Str::limit($item->product->short_description, 25, '...') }}</p>                                
-                                <p class="text-muted">{{ $item->product->subcategory_id->sub_category_name ?? '' }}</p>
-                                <p class="text-muted">Order ID # {{ $order->id }}</p>                                                                                                
-                                <p class="text-muted">Size: {{ $item->product->size?->code ?? 'N/A' }}
-                                    @if($item->product->color)
-                                        Color: <span class="color-small" style="background:{{ $item->product->color->code }}"></span>
-                                    @endif
+                                <h2 class="product-title">{{ $item->product->title }}</h2>
+                                <p class="text-muted">{{ Str::limit($item->product->short_description, 50, '...') }}</p>                                
+                                {{-- <p class="text-muted">{{ $item->product->subcategory->sub_category_name ?? '' }}</p> --}}
+                                {{-- <p class="text-muted">Order ID # {{ $order->id }}</p>                                                                                                 --}}
+                                <p class="text-muted">
+                                    Size: <b>{{ $item->size ?? 'N/A' }}</b>
+                                    Color: <b>{{ $item->color ?? 'N/A' }}</b>                                    
                                 </p>
-                            </div>              
-                        @endforeach
+                            </div>
+                        @endif
                     </div>
 
                     <div class="delivery-status {{ $badgeClasses[$status] }}">
@@ -74,46 +77,63 @@
                             <p class="date {{ $status == 'cancelled' ? $badgeClasses[$status] : 'd-none' }}">On {{ \Carbon\Carbon::parse($order->created_at)->format('D, d M Y') }}</p>
                         </div>
                     </div>
-                
-                    @if (ucfirst($status) == 'Delivered')
-                        <div class="wrapper">
-                            <p class="tiny-font">Exchange/Return window closed on Sun, 2 Mar 2025</p>
-                        </div>
 
-                        <div class="wrapper">
-                            <div class="rate-product">
-                                <div class="product-img">
-                                    @foreach ($orderItems as $item)                        
-                                        @php
-                                            $productImage = getProductImage($item->product_id)
-                                        @endphp
-                                        
-                                        @if (!empty($productImage->image))
-                                            <img src="{{ asset('uploads/product/small/'.$productImage->image) }}" >
-                                        @else
-                                            <img src="{{ asset('admin-assets/img/default-150x150.png') }}" alt="" />
-                                        @endif     
-                                    @endforeach     
-                                </div>
-                                <div class="product-name">
-                                    <h5 class="mb-1">Rate this product</h5>
-                                    <div class="myRating"><div tabindex="0" role="button" class="myRating-imageWrapper"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0  24 24"><path d="M8.65 8.144l-6.023.918-.102.023c-.524.158-.712.866-.303 1.283l4.358 4.45-1.029 6.285-.01.103c-.023.573.565.983 1.071.704L12 18.943l5.388 2.967.09.043c.514.2 1.067-.26.97-.85l-1.029-6.285 4.36-4.45.07-.082c.334-.45.089-1.138-.476-1.224l-6.024-.918-2.694-5.717a.717.717 0 00-1.31 0L8.65 8.144z" fill="#FFF" stroke="#A9ABB3" stroke-width="1.5" fill-rule="evenodd" stroke-linejoin="round"></path></svg></div><div tabindex="0" role="button" class="myRating-imageWrapper"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0  24 24"><path d="M8.65 8.144l-6.023.918-.102.023c-.524.158-.712.866-.303 1.283l4.358 4.45-1.029 6.285-.01.103c-.023.573.565.983 1.071.704L12 18.943l5.388 2.967.09.043c.514.2 1.067-.26.97-.85l-1.029-6.285 4.36-4.45.07-.082c.334-.45.089-1.138-.476-1.224l-6.024-.918-2.694-5.717a.717.717 0 00-1.31 0L8.65 8.144z" fill="#FFF" stroke="#A9ABB3" stroke-width="1.5" fill-rule="evenodd" stroke-linejoin="round"></path></svg></div><div tabindex="0" role="button" class="myRating-imageWrapper"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0  24 24"><path d="M8.65 8.144l-6.023.918-.102.023c-.524.158-.712.866-.303 1.283l4.358 4.45-1.029 6.285-.01.103c-.023.573.565.983 1.071.704L12 18.943l5.388 2.967.09.043c.514.2 1.067-.26.97-.85l-1.029-6.285 4.36-4.45.07-.082c.334-.45.089-1.138-.476-1.224l-6.024-.918-2.694-5.717a.717.717 0 00-1.31 0L8.65 8.144z" fill="#FFF" stroke="#A9ABB3" stroke-width="1.5" fill-rule="evenodd" stroke-linejoin="round"></path></svg></div><div tabindex="0" role="button" class="myRating-imageWrapper"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0  24 24"><path d="M8.65 8.144l-6.023.918-.102.023c-.524.158-.712.866-.303 1.283l4.358 4.45-1.029 6.285-.01.103c-.023.573.565.983 1.071.704L12 18.943l5.388 2.967.09.043c.514.2 1.067-.26.97-.85l-1.029-6.285 4.36-4.45.07-.082c.334-.45.089-1.138-.476-1.224l-6.024-.918-2.694-5.717a.717.717 0 00-1.31 0L8.65 8.144z" fill="#FFF" stroke="#A9ABB3" stroke-width="1.5" fill-rule="evenodd" stroke-linejoin="round"></path></svg></div><div tabindex="0" role="button" class="myRating-imageWrapper"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0  24 24"><path d="M8.65 8.144l-6.023.918-.102.023c-.524.158-.712.866-.303 1.283l4.358 4.45-1.029 6.285-.01.103c-.023.573.565.983 1.071.704L12 18.943l5.388 2.967.09.043c.514.2 1.067-.26.97-.85l-1.029-6.285 4.36-4.45.07-.082c.334-.45.089-1.138-.476-1.224l-6.024-.918-2.694-5.717a.717.717 0 00-1.31 0L8.65 8.144z" fill="#FFF" stroke="#A9ABB3" stroke-width="1.5" fill-rule="evenodd" stroke-linejoin="round"></path></svg></div></div>
-                                </div>
-                            </div>                                                        
-                        </div>
-                    @endif
-                    
                     <div class="wrapper">
-                        @if($relatedProducts)
+                        <p><b>Item in this order</b></p>
+                        @if (ucfirst($status) == 'Delivered')
+                            <p class="tiny-font mb-3"><span class="text-muted">Exchange/Return window closed on</span> Sun, 2 Mar 2025</p>
+                        @endif
+
+                        <div class="row">
+                            @foreach($order->orderItems as $item)
+                                <div class="col-12 mb-2">
+                                    <div class="rate-product">
+                                        <div class="inline">
+                                            <div class="product-img">
+                                                <a href="{{ route('account.orderDetail',$order->id) }}" class="details">                                                
+                                                    <img src="{{ asset('uploads/product/small/'.$item->product->images->first()->image ?? '') }}"  class="img-fluid">                                                
+                                                </a>                                            
+                                            </div>
+                                            <div>
+                                                <h5>{{ Str::limit($item->product->title, 70, '...') }}</h5>
+                                                <p class="tiny-font text-muted">{{ Str::limit($item->product->short_description, 70, '...') }}</p>
+                                                <p>₹{{ $item->discounted_price }}/-</p>
+                                            </div>
+                                        </div>
+
+                                        <div class="rating-delivered">                                                                                       
+                                            <div class="rating-rateBox">
+                                                <div class="myRating">
+                                                    <span class="sprites rating-star2-ico"></span>
+                                                    <span class="sprites rating-star2-ico"></span>
+                                                    <span class="sprites rating-star1-ico"></span>
+                                                    <span class="sprites rating-star1-ico"></span>
+                                                    <span class="sprites rating-star1-ico"></span>
+                                                </div>
+                                                <p>Rate & Review</p>
+                                            </div>                                              
+                                        </div>                                        
+                                    </div>                                    
+                                </div>
+                            @endforeach
+                        </div>    
+
+                        <p class="text-muted ">On this item you saved a total of <b>₹{{ $order->orderItems->sum('discounted_price') }}</b></p>
+
+                        
+                    </div>
+
+                    @if($relatedProducts)
+                        <div class="wrapper">
                             <h3 class="mb-3">Similar items</h3>
                             @foreach($relatedProducts as $product)    
                                 <div class="col-md-3 col-6">
                                     <x-product-card :product="$product" :slider="false" :hover="false" />
                                 </div>
                             @endforeach
-                        @endif
-                    </div>
-
+                        </div>
+                    @endif  
+                
                     @if (ucfirst($status) == 'Delivered')                        
                         <div class="delivery-to">
                             <div class="top">
@@ -150,24 +170,7 @@
                             </div>                                                    
                         </div>                            
                     @endif      
-                    
-                    <div class="wrapper">
-                        <p class="mb-3"><b>Item in this order</b></p>
-
-                        <div class="product-card">
-                            @foreach($order->orderItems as $item)
-                                <a href="{{ route('account.orderDetail',$order->id) }}" class="details">
-                                    <div class="image">
-                                        <img src="{{ asset('uploads/product/small/'.$item->product->images->first()->image ?? '') }}"  class="img-fluid">
-                                    </div>
-                                    <div>{{ $item->product->title }} </div>
-                                </a>
-                            @endforeach
-                        </div>                         
-                    
-                        <h6>On this item you saved a total of ₹24,000</h6>
-                    </div>
-
+                                    
                     <div class="wrapper">
                         <div class="flex-end">
                             <h3>Total Order Price</h3>
@@ -185,8 +188,6 @@
                         
                         <a href="#" class="btn btn-outline-dark w-100 mt-2">Get Invoice</a>
                     </div>
-
-                     
 
                     <div class="wrapper">
                         <h6>Updates sent to</h6>

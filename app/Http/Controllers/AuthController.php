@@ -502,12 +502,7 @@ class AuthController extends Controller {
     
     public function orderDetail($id) {
         $user = Auth::user();
-
-        $order = Order::with('latestStatus')
-            ->where('user_id',$user->id)
-            ->where('id',$id)
-            ->firstOrFail();
-
+        $order = Order::with(['orderItems','latestStatus'])->where('user_id',$user->id)->where('id',$id)->firstOrFail();
         $orderItems = OrderItem::with('product')->where('order_id',$id)->get();
 
         $data['order'] = $order;
@@ -528,6 +523,9 @@ class AuthController extends Controller {
         }
 
         $data['relatedProducts'] = $relatedProducts;
+
+        // dd($orderItems->discounted_price);
+        // dd($order);
 
         return view('front.account.orders.detail', $data);
     }

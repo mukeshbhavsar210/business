@@ -129,17 +129,27 @@
                                 <div class="individual {{ $badgeClasses[$status] ?? 'confirmed' }}">
                                     <div class="status">
                                         <div class="icon">
-                                            @if(ucfirst($status) == 'Cancelled')
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 24 24"><path fill="#282C3F" fill-rule="nonzero" d="M15.854 8.146a.495.495 0 0 0-.703 0L12 11.296l-3.15-3.15a.495.495 0 0 0-.704 0 .495.495 0 0 0 0 .703L11.297 12l-3.15 3.15a.5.5 0 1 0 .35.85.485.485 0 0 0 .349-.146l3.15-3.15 3.151 3.15a.5.5 0 0 0 .35.147.479.479 0 0 0 .35-.147.495.495 0 0 0 0-.703L12.702 12l3.15-3.15a.495.495 0 0 0 0-.704z"></path></svg>
+                                            @if(ucfirst($status) == 'Confirmed')
+                                                <span class="sprites confirmed-icon"></span>
+                                            @elseif(ucfirst($status) == 'Packed')
+                                                <span class="sprites packed-icon"></span>
+                                            @elseif(ucfirst($status) == 'Shipped')
+                                                <span class="sprites shipped-icon"></span>
+                                            @elseif(ucfirst($status) == 'Out for Delivery')
+                                                <span class="sprites shipped-icon"></span>
+                                            @elseif(ucfirst($status) == 'Cancelled')
+                                                <span class="sprites cancelled-icon"></span>
+                                            @elseif(ucfirst($status) == 'Returned')
+                                                <span class="sprites returned-icon"></span>
+                                            @elseif(ucfirst($status) == 'Exchanged')
+                                                <span class="sprites exchanged-icon"></span>
                                             @else
                                                 @if(ucfirst($status) == 'Delivered')
+                                                    <span class="sprites delivered-icon"></span>
                                                     <div class="delivery-tick">                                                        
-                                                        <img src="{{ asset('front-assets/images/tick.svg') }}" alt="tick">
-                                                        <svg fill="#666666" width="13px" height="13px" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg"><path d="M760 380.4l-61.6-61.6-263.2 263.1-109.6-109.5L264 534l171.2 171.2L760 380.4z"/></svg>
+                                                        <span class="sprites green-tick-icon"></span>                                                        
                                                     </div>
-                                                @endif
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                                                    <path fill="#000000" fill-rule="nonzero" d="M19.173 7.059l-7.232-4a.469.469 0 0 0-.454 0l-7.232 4A.503.503 0 0 0 4 7.5v9c0 .185.098.355.255.441l7.232 4a.469.469 0 0 0 .454 0l7.232-4a.503.503 0 0 0 .256-.441v-9a.503.503 0 0 0-.256-.441zm-7.459-2.992L17.922 7.5 15.33 8.933 9.123 5.5l2.591-1.433zm-.482 15.6L4.964 16.2V8.334l6.268 3.466v7.866zm.482-8.734L5.507 7.5l2.591-1.433L14.305 9.5l-2.59 1.433zm6.75 5.267l-6.268 3.466V11.8l6.268-3.466V16.2z"></path></svg>
+                                                @endif                                                
                                             @endif
                                         </div>
                                         <div class="name">
@@ -168,17 +178,20 @@
 
                                         @if(ucfirst($status) == 'Delivered')
                                             <div class="rating-delivered">                                               
-                                                <div class="rating-icon"></div>
-                                                <div class="rating-rateBox">
-                                                    <div class="myRating-inline">
-                                                        <div tabindex="0" role="button" class="myRating-imageWrapper">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0  24 24">
-                                                                <path d="M8.65 8.144l-6.023.918-.102.023c-.524.158-.712.866-.303 1.283l4.358 4.45-1.029 6.285-.01.103c-.023.573.565.983 1.071.704L12 18.943l5.388 2.967.09.043c.514.2 1.067-.26.97-.85l-1.029-6.285 4.36-4.45.07-.082c.334-.45.089-1.138-.476-1.224l-6.024-.918-2.694-5.717a.717.717 0 00-1.31 0L8.65 8.144z" fill="#FFF" stroke="#A9ABB3" stroke-width="1.5" fill-rule="evenodd" stroke-linejoin="round"></path></svg></div><div tabindex="0" role="button" class="myRating-imageWrapper"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0  24 24"><path d="M8.65 8.144l-6.023.918-.102.023c-.524.158-.712.866-.303 1.283l4.358 4.45-1.029 6.285-.01.103c-.023.573.565.983 1.071.704L12 18.943l5.388 2.967.09.043c.514.2 1.067-.26.97-.85l-1.029-6.285 4.36-4.45.07-.082c.334-.45.089-1.138-.476-1.224l-6.024-.918-2.694-5.717a.717.717 0 00-1.31 0L8.65 8.144z" fill="#FFF" stroke="#A9ABB3" stroke-width="1.5" fill-rule="evenodd" stroke-linejoin="round"></path></svg></div><div tabindex="0" role="button" class="myRating-imageWrapper"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0  24 24"><path d="M8.65 8.144l-6.023.918-.102.023c-.524.158-.712.866-.303 1.283l4.358 4.45-1.029 6.285-.01.103c-.023.573.565.983 1.071.704L12 18.943l5.388 2.967.09.043c.514.2 1.067-.26.97-.85l-1.029-6.285 4.36-4.45.07-.082c.334-.45.089-1.138-.476-1.224l-6.024-.918-2.694-5.717a.717.717 0 00-1.31 0L8.65 8.144z" fill="#FFF" stroke="#A9ABB3" stroke-width="1.5" fill-rule="evenodd" stroke-linejoin="round"></path></svg></div><div tabindex="0" role="button" class="myRating-imageWrapper"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0  24 24"><path d="M8.65 8.144l-6.023.918-.102.023c-.524.158-.712.866-.303 1.283l4.358 4.45-1.029 6.285-.01.103c-.023.573.565.983 1.071.704L12 18.943l5.388 2.967.09.043c.514.2 1.067-.26.97-.85l-1.029-6.285 4.36-4.45.07-.082c.334-.45.089-1.138-.476-1.224l-6.024-.918-2.694-5.717a.717.717 0 00-1.31 0L8.65 8.144z" fill="#FFF" stroke="#A9ABB3" stroke-width="1.5" fill-rule="evenodd" stroke-linejoin="round"></path></svg></div><div tabindex="0" role="button" class="myRating-imageWrapper"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0  24 24"><path d="M8.65 8.144l-6.023.918-.102.023c-.524.158-.712.866-.303 1.283l4.358 4.45-1.029 6.285-.01.103c-.023.573.565.983 1.071.704L12 18.943l5.388 2.967.09.043c.514.2 1.067-.26.97-.85l-1.029-6.285 4.36-4.45.07-.082c.334-.45.089-1.138-.476-1.224l-6.024-.918-2.694-5.717a.717.717 0 00-1.31 0L8.65 8.144z" fill="#FFF" stroke="#A9ABB3" stroke-width="1.5" fill-rule="evenodd" stroke-linejoin="round"></path></svg>
-                                                            </div>
-                                                        </div>
-                                                    <p>Rate & Review to win MynCash!</p>
+                                                <div class="rating-icon">
+                                                    <span class="sprites rating-ico"></span>
                                                 </div>
-                                            </div>  
+                                                <div class="rating-rateBox">
+                                                    <div class="myRating">
+                                                        <span class="sprites rating-star2-ico"></span>
+                                                        <span class="sprites rating-star2-ico"></span>
+                                                        <span class="sprites rating-star1-ico"></span>
+                                                        <span class="sprites rating-star1-ico"></span>
+                                                        <span class="sprites rating-star1-ico"></span>
+                                                    </div>
+                                                    <p>Rate & Review</p>
+                                                </div>                                              
+                                            </div>
                                         @endif                                        
                                         
                                         @if(ucfirst($status) == 'Confirmed' || ucfirst($status) == 'Shipped')

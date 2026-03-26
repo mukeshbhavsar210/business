@@ -200,6 +200,8 @@
                                         <option value="Out for Delivery" {{ ($latestStatus && $latestStatus->status == 'Out for Delivery') ? 'selected' : '' }}>Out for Delivery</option>
                                         <option value="Delivered" {{ ($latestStatus && $latestStatus->status == 'Delivered') ? 'selected' : '' }}>Delivered</option>
                                         <option value="Cancelled" {{ ($latestStatus && $latestStatus->status == 'Cancelled') ? 'selected' : '' }}>Cancelled</option>
+                                        <option value="Returned" {{ ($latestStatus && $latestStatus->status == 'Returned') ? 'selected' : '' }}>Returned</option>
+                                        <option value="Exchanged" {{ ($latestStatus && $latestStatus->status == 'Exchanged') ? 'selected' : '' }}>Exchanged</option>
                                     </select>                            
                                 </div>
 
