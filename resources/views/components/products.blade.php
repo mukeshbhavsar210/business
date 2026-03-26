@@ -33,7 +33,7 @@
                 </div>
             @endif        
             
-            <div class="gallery-icon">
+            {{-- <div class="gallery-icon">
                 <div class="color-details">
                     @if ($product->variant_images && $product->variant_images->count() > 0)
                         <div class="img-group">
@@ -58,7 +58,7 @@
                         </ul>
                     @endif
                 </div>
-            </div>
+            </div> --}}
 
             <div class="product-slider">
                 @if($slider)
