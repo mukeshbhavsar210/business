@@ -142,8 +142,8 @@
             <div class="price">                
                 @if($product->discount_percent > 0)
                     <span class="dark">₹{{ round($product->discount_price) }}</span>
-                    <span class="mrp">MRP <del>₹{{ $product->price }}</del></span>
-                    <span class="discount">{{ $product->discount_percent }}% OFF</span>
+                    <span class="mrp"><del>₹{{ $product->price }}</del></span>
+                    <span class="discount">({{ $product->discount_percent }}% OFF)</span>
                 @else
                     <span class="dark">₹{{ number_format($product->price, 2) }}</span>
                 @endif

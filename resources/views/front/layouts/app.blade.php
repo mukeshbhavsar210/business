@@ -104,17 +104,19 @@
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
-    });
+    });   
     
+    function addToCart(id, btn2){
+        let btn = event.target;
+        let hasSizes = btn.getAttribute('data-has-sizes');
 
-    function addToCart(id){
-        if(selectedSize == '' || selectedSize == null){
+        if(hasSizes == 1 && (selectedSize == '' || selectedSize == null)){
             $('.size-list li').addClass('shake');
-            setTimeout(function(){
+             setTimeout(function(){
                 $('.size-list li').removeClass('shake');
-            },400);
-            return false;
-        }
+            },400);            
+            return;
+        }       
         
         let urlParams = new URLSearchParams(window.location.search);
         let variantId = urlParams.get('variant'); // null if not selected
@@ -136,6 +138,8 @@
                     showAlert(response.message,'success');
                     selectedSize = '';
                     selectedColor = '';
+                    $(btn2).text('Added to Bag');                  
+                    $(btn2).addClass('disabled');                   
                 }else{
                     showAlert(response.message,'error');
                 }
@@ -145,7 +149,7 @@
                 alert('Something went wrong');
             }
         });
-    }   
+    }  
 
     function addToWishlist(id){
         $.ajax({

@@ -9,24 +9,43 @@
 @section('content')
     
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-md-2 col-12">
-            <div class="light-font">
-                <ol class="breadcrumb primary-color">
-                    <li class="breadcrumb-item"><a href="{{ route('front.home') }}">Home</a></li>
-                    <li class="breadcrumb-item active">Products</li>
-                    {{-- <li class="breadcrumb-item active">{{ $selectedCategory->category_name }} {{ $selectedSubCategory->sub_category_name }}</li> --}}
-                </ol>
+    <div class="light-font">
+        <ol class="breadcrumb primary-color">
+            <li class="breadcrumb-item"><a href="{{ route('front.home') }}">Home</a></li>
+            <li class="breadcrumb-item active">{{ $selected_item2->sub_category_title ?? '' }} / {{ $selected_item3->sub_sub_category_name ?? '' }}</li>                    
+        </ol>
+    </div>
+    <p>                                                
+        <b>{{ $selected_item1->category_name ?? '' }} / {{ $selected_item2->sub_category_title ?? '' }} / {{ $selected_item3->sub_sub_category_name ?? '' }}</b>
+        <span class="text-muted">- {{ $products->total() }} items</span>
+    </p> 
+
+    <div class="row mt-3">
+        <div class="col-md-2 col-12">            
+            <div class="flex-end">
+                <h5>FILTERS</h5>
+                @if($filtersApplied)                    
+                    <a href="{{ url()->current() }}" class="btn btn-outline-dark btn-sm">Clear All</a>                    
+                @endif
             </div>
         </div>
 
         <div class="col-md-10 col-12">
             <div class="row">
                 <div class="col-md-10 col-12">
-                    <p>                                                
-                        <b>{{ $selected_item1->category_name ?? '' }} / {{ $selected_item2->sub_category_name ?? '' }} </b>
-                        <span class="text-muted">({{ $products->total() }} items)</span>
-                    </p>                    
+                    <div class="custom-dropdown">
+                        <a href="javascript:0" class="dropdown">
+                            Size
+                            <span class="rotate">
+                                <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M5.70711 9.71069C5.31658 10.1012 5.31658 10.7344 5.70711 11.1249L10.5993 16.0123C11.3805 16.7927 12.6463 16.7924 13.4271 16.0117L18.3174 11.1213C18.708 10.7308 18.708 10.0976 18.3174 9.70708C17.9269 9.31655 17.2937 9.31655 16.9032 9.70708L12.7176 13.8927C12.3271 14.2833 11.6939 14.2832 11.3034 13.8927L7.12132 9.71069C6.7308 9.32016 6.09763 9.32016 5.70711 9.71069Z" fill="#666666"/>
+                                </svg>
+                            </span>
+                        </a>
+                        <div class="dropdown-menu-select">
+                            <x-filters :items="$sizes" type="size" valueField="name" labelField="code" title="Sizes" :showColor="false" :showPercent="false" :sizeFilter="true" />
+                        </div>
+                    </div>
                 </div>
 
                 <div class="col-md-2 col-12">
@@ -46,38 +65,32 @@
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-md-2 col-12 sticky">
-            <div class="flex-end">
-                <h4>Filters</h4>
-                @if($filtersApplied)                    
-                    <a href="{{ url()->current() }}" class="btn btn-outline-dark btn-sm">Clear All</a>                    
-                @endif
-            </div>                                    
-            
-            <x-filters :items="$item3" type="category" valueField="sub_sub_category_slug" labelField="sub_sub_category_name" nameClass="name" title="Categories" :showColor="false" :showPercent="false" :limit="17" :selected="$categoryArray" />
-            <x-filters :items="$brands" type="brand" valueField="slug" labelField="name" nameClass="name" title="Brands" :showColor="false" :showPercent="false" :limit="17" />
+    <div class="row border-product">
+        <div class="col-md-2 col-12 sticky right-border">
+            <x-filters :items="$item3" type="category" valueField="sub_sub_category_slug" labelField="sub_sub_category_name" nameClass="name" title="Categories" :showColor="false" :showPercent="false" :limit="17" :selected="$categoryArray" :sizeFilter="false"  />
+            <x-filters :items="$brands" type="brand" valueField="slug" labelField="name" nameClass="name" title="Brands" :showColor="false" :showPercent="false" :limit="17" :sizeFilter="false"  />
 
             <div class="filter-group">
                 <h5 class="h5 mb-2">Price</h5>
                 <input type="text" class="js-range-slider" name="my_range" value="" />
             </div>
 
-            <x-filters :items="$sizes" type="size" valueField="name" labelField="name" title="Sizes" :showColor="false" :showPercent="false" />
-            <x-filters :items="$colors" type="color" valueField="name" labelField="name" title="Color" :showColor="true" :showPercent="false" />
-            <x-filters :items="$discounts" type="discount" valueField="percentage" labelField="percentage" title="Discount" :showColor="false" :showPercent="true"  />
+            <x-filters :items="$colors" type="color" valueField="name" labelField="name" title="Color" :showColor="true" :showPercent="false" :sizeFilter="false"  />
+            <x-filters :items="$discounts" type="discount" valueField="percentage" labelField="percentage" title="Discount Range" :showColor="false" :showPercent="true" :sizeFilter="false" />
         </div>
 
         <div class="col-md-10 col-12">
-            <div class="row">
-                @foreach($products as $product)         
-                    <div class="col-md-3 col-6">  
-                        <x-products :product="$product" />
-                    </div>
-                @endforeach
-            </div>
-            <div class="col-md-12 pt-5">
-                {{ $products->withQueryString()->links() }}
+            <div class="listing-products">
+                <div class="row">
+                    @foreach($products as $product)      
+                        <div class="col-md-3 col-6">  
+                            <x-products :product="$product" />
+                        </div>
+                    @endforeach
+                </div>
+                <div class="col-md-12 pt-5">
+                    {{ $products->withQueryString()->links() }}
+                </div>
             </div>
         </div>
     </div>
@@ -86,6 +99,21 @@
 
 @section('customJs')
     <script>
+        $(document).ready(function () {                
+            $('.dropdown').click(function (e) {
+                e.stopPropagation();
+                $(this).find('i').toggleClass('rotate');
+
+                $('.custom-dropdown-select').removeClass('active'); // close others
+                $(this).parent().toggleClass('active');
+            });
+
+            // Click outside to close
+            $(document).click(function () {
+                $('.custom-dropdown-select').removeClass('active');
+            });
+        });
+
         $('.form-check-input').on('change', function () {
             let url = new URL(window.location.href);
             let params = url.searchParams;

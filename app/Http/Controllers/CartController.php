@@ -34,7 +34,7 @@ class CartController extends Controller {
         }
 
         $variantId = $request->variant_id;
-        $size      = $request->size ?? 'Default Size';
+        $size      = $request->size ?? null;
         $color     = $request->color ?? null;
 
         // Get selected variant (if exists)
@@ -127,7 +127,7 @@ class CartController extends Controller {
         }
 
         $variantId = $request->variant_id;
-        $size      = $request->size ?? 'Default Size';
+        $size      = $request->size ?? null;
         $color     = $request->color ?? null;
 
         // Get selected variant (if exists)
@@ -206,8 +206,6 @@ class CartController extends Controller {
         ]);
     }
 
-
-
     public function cart() {
         $cartContent = Cart::content();
         $appliedCouponId = session('coupon_discount.id'); 
@@ -255,13 +253,7 @@ class CartController extends Controller {
         $discount_price = $cartItems->sum(function ($item) {
             return ($item->options->discount_price ?? 0) * $item->qty;
         });
-
-        // $discount_percentage = $cartItems->sum(function ($item) {
-        //     return ($item->options->discount_percent ?? 0) * $item->qty;
-        // });
-                
-        $discountPrice = $discount_price;
-        //$discountPercent = $discount_percentage;
+                        
         $store_discount = session()->get('coupon_discount');
         $coupon_discount = session()->get('coupon_discount.discount', 0);
         $coupon_code = session()->get('coupon_discount.code', 0);        
@@ -270,8 +262,7 @@ class CartController extends Controller {
         //dd(session('coupon_discount'));                
 
         return view('front.checkout.cart', [
-            'discountPrice'         => $discountPrice,
-            //'discountPercent'       => $discountPercent,
+            'discount_price'        => $discount_price,                        
             'store_discount'        => $store_discount,
             'coupon_code'           => $coupon_code,
             'coupon_discount'       => $coupon_discount,
