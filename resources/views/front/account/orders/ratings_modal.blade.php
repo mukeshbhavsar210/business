@@ -1,5 +1,5 @@
 <div class="modal fade" id="ratingsModal_{{ $item->product->id }}" tabindex="-1" aria-labelledby="ratingsModal_{{ $item->product->id }}Label" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <form action="{{ route('reviews.store') }}" method="POST">
                 @csrf
@@ -10,35 +10,66 @@
                 </div>
                 
                 <div class="modal-body">                                                                          
-                    {{-- @foreach ($orderItems as $item) --}}
-                     @foreach($order->items as $item)
-                        <div class="image-area">
+                    <div class="accordion" id="reviewAccordion">
+                        @foreach($order->items as $key => $item)
                             @php
                                 $userReview = $userReviews[$item->product->id] ?? null;
+                                $product = $item->product;
+                                $productImage = optional($product->images->first())->image;
                             @endphp
 
-                            @if(!$userReview)                                
-                                <div class="img">
-                                    <img src="{{ asset('uploads/product/small/'.$item->product->images->first()->image ?? '') }}"  class="img-fluid">
-                                </div>
-                                <div class="right-review">                                                                                
-                                    <h5>{{ Str::limit($item->product->title, 70, '...') }}</h5>                                                                                
+                            <div class="accordion-item">
+                                <div class="accordion-header" id="heading{{ $key }}">
+                                    <button class="accordion-button {{ $key != 0 ? 'collapsed' : '' }}" 
+                                            type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ $key }}">
+                                        
+                                        <img src="{{ $productImage 
+                                                ? asset('uploads/product/small/'.$productImage) 
+                                                : asset('admin-assets/img/default-150x150.png') }}" 
+                                            class="rounded">
 
-                                    <div class="modal-rating" data-product="{{ $item->product->id }}">
-                                        @for ($i = 1; $i <= 5; $i++)
-                                            <i class="star" data-value="{{ $i }}">☆</i>
-                                        @endfor
+                                        <div>
+                                            <h5>{{ Str::limit($product->title, 60) }}</h5>
+                                            <p class="text-muted tiny-font">{{ Str::limit($product->short_description, 80) }}</p>
+
+                                            @if(!$userReview)
+                                                <div class="d-flex">                                                                                        
+                                                    <div class="modal-rating mt-2" data-product="{{ $product->id }}">
+                                                        @for ($i = 1; $i <= 5; $i++)                                                            
+                                                            <i class="star" data-value="{{ $i }}"></i>
+                                                        @endfor
+                                                    </div>
+                                                    <input type="hidden" name="rating[{{ $product->id }}]" class="rating-value">                                                    
+                                                </div>
+                                            @else                                                                                                    
+                                                <div class="mt-2">
+                                                    @for ($i = 1; $i <= 5; $i++)
+                                                        <i class="star {{ $i <= $userReview->rating ? 'active' : '' }}"></i>                                                        
+                                                    @endfor
+                                                </div>                                                
+                                            @endif
+                                        </div>
+                                    </button>
+                                </div>
+                                
+                                <div id="collapse{{ $key }}" class="accordion-collapse collapse {{ $key == 0 ? 'show' : '' }}" data-bs-parent="#reviewAccordion">
+                                    <div class="accordion-body p-0">
+                                        <div class="already-comments">
+                                            @if(!$userReview)
+                                                <textarea name="review[{{ $product->id }}]" class="form-control mt-2" cols="4" rows="4"
+                                                    placeholder="Write your Product review..."></textarea>
+                                            @else                                            
+                                                <p><b>Your comments:</b></p>
+                                                <p class="text-muted tiny-font" >{{ $userReview->review }}</p>                                            
+                                            @endif
+                                        </div>
                                     </div>
-
-                                    <input type="hidden" name="rating[{{ $item->product->id }}]" class="rating-value" >
-                                    <textarea name="review[{{ $item->product->id }}]" class="form-control mt-2"
-                                    placeholder="Please Write Product review here" cols="3" rows="3" placeholder=""></textarea>
                                 </div>
-                            @endif
+                            </div>
+                            @endforeach
                         </div>
-                    @endforeach
 
-                    <p class="tiny-font text-muted mt-2">By submitting review you give us consent to publish and process personal information in accordance with Terms of use and Privacy Policy</p>
+                    <p class="tiny-font text-muted mt-3 mb-3">By submitting review you give us consent to publish and process personal information in accordance with Terms of use and Privacy Policy</p>
                 </div>                                                                
                 <div class="modal-footer">                                                                    
                     <button type="submit" class="btn btn-primary w-100">Submit</button>
@@ -54,43 +85,49 @@
     $(document).ready(function(){   
         $(document).on('click', '.open-modal', function () {
             let value = $(this).data('value');
-            let productId = $(this).data('product');
-
-            let modal = $('#ratingsModal_' + productId);
+            let product_id = $(this).data('product');
+            let modal = $('#ratingsModal_' + product_id);
             let stars = modal.find('.modal-rating .star');
 
-            // reset
-            stars.removeClass('active').html('☆');
-
-            // fill till clicked value
-            stars.each(function () {
-                if ($(this).data('value') <= value) {
-                    $(this).addClass('active').html('★');
-                }
-            });
-
-            // set hidden input
             modal.find('.rating-value').val(value);
         });
 
-
-        $(document).on('click', '.modal-rating .star', function () {
+        // ⭐ HOVER EFFECT
+        $(document).on('mouseenter', '.star', function () {
             let value = $(this).data('value');
-            let parent = $(this).closest('.modal-rating');
-            let productId = parent.data('product');
+            let parent = $(this).closest('.rating, .modal-rating');
 
-            // reset stars (ONLY inside this modal)
-            parent.find('.star').html('☆');
-
-            // fill stars
             parent.find('.star').each(function () {
-                if ($(this).data('value') <= value) {
-                    $(this).html('★');
-                }
+                $(this).toggleClass('active', $(this).data('value') <= value);
+            });
+        });
+
+        // ⭐ REMOVE HOVER (restore selected)
+        $(document).on('mouseleave', '.rating, .modal-rating', function () {
+            let parent = $(this);
+            let selected = parent.data('selected') || 0;
+            parent.find('.star').each(function () {
+                $(this).toggleClass('active', $(this).data('value') <= selected);
+            });
+        });
+
+
+        // ⭐ CLICK (final selection)
+        $(document).on('click', '.star', function () {
+            let value = $(this).data('value');
+            let parent = $(this).closest('.rating, .modal-rating');
+            let product_id = parent.data('product');
+
+            // store selected value
+            parent.data('selected', value);
+
+            // update UI
+            parent.find('.star').each(function () {
+                $(this).toggleClass('active', $(this).data('value') <= value);
             });
 
-            // set correct hidden input
-            $('input[name="rating[' + productId + ']"]').val(value);
+            // update hidden input
+            $('input[name="rating[' + product_id + ']"]').val(value);
         });
     });
 </script>

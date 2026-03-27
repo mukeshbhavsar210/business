@@ -79,13 +79,10 @@
                     </div>
 
                     <div class="wrapper">
-                         <p><b>Item in this order</b></p>
-                        @if (ucfirst($status) == 'Delivered')
-                            <p class="tiny-font mb-3"><span class="text-muted">Exchange/Return window closed on</span> Sun, 2 Mar 2025</p>
-                        @endif
+                        <p><b>Item in this order</b></p>
 
                         @foreach($order->orderItems as $item)
-                            <div class="row mb-2">
+                            <div class="row mb-2 mt-3">
                                 <div class="col-md-9 col-9">
                                     <div class="rate-product">
                                         <div class="inline">
@@ -105,39 +102,45 @@
                                     </div>                                    
                                 </div>
                                 <div class="col-md-3 col-3">
-                                    @php
-                                        $userReview = $userReviews[$item->product->id] ?? null;
-                                    @endphp
+                                    <div class="mt-3">
+                                        @php
+                                            $userReview = $userReviews[$item->product->id] ?? null;
+                                        @endphp
 
-                                    @if($userReview)                                          
-                                        @for ($i = 1; $i <= 5; $i++)
-                                            @if ($i <= $userReview->rating)
-                                                ⭐                                            
+                                        @if($userReview)                                          
+                                            @for ($i = 1; $i <= 5; $i++)
+                                                @if ($i <= $userReview->rating)
+                                                    <span class="star star_active"></span>                                                                                        
+                                                @endif
+                                            @endfor                                         
+                                            <p class="tiny-font">{{ Str::limit($userReview->review, 30, '...') }}</p>
+                                        @else
+                                            <a href="javascript:0" class="btn btn-outline-primary mt-3 btn-sm open-modal"                                                                    
+                                                data-product="{{ $item->product->id }}" data-bs-toggle="modal"
+                                                data-bs-target="#ratingsModal_{{ $item->product->id }}">Give Rating</a>
+
+                                                @include('front.account.orders.ratings_modal') 
+                                                                                                    
+                                                {{-- @for ($i = 1; $i <= 5; $i++)
+                                                        <i class="star open-modal"
+                                                            data-value="{{ $i }}"
+                                                            data-product="{{ $item->product->id }}"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#ratingsModal_{{ $item->product->id }}">
+                                                        ☆
+                                                        </i>
+                                                @endfor --}}
                                             @endif
-                                        @endfor                                         
-                                        <p class="tiny-font">{{ Str::limit($userReview->review, 30, '...') }}</p>
-                                    @else
-                                        <a href="javascript:0" class="btn btn-outline-primary mt-3 btn-sm open-modal"                                                                    
-                                            data-product="{{ $item->product->id }}" data-bs-toggle="modal"
-                                            data-bs-target="#ratingsModal_{{ $item->product->id }}">Give Rating</a>
-
-                                            @include('front.account.orders.ratings_modal') 
-                                                                                                
-                                            {{-- @for ($i = 1; $i <= 5; $i++)
-                                                    <i class="star open-modal"
-                                                        data-value="{{ $i }}"
-                                                        data-product="{{ $item->product->id }}"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#ratingsModal_{{ $item->product->id }}">
-                                                    ☆
-                                                    </i>
-                                            @endfor --}}                                                    
-                                    @endif
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        @endforeach                        
-
-                        <p class="text-muted ">On this item you saved a total of <b>₹{{ $order->orderItems->sum('discounted_price') }}/-</b></p>
+                            @endforeach                        
+                            
+                            <hr />
+                        @if (ucfirst($status) == 'Delivered')
+                            <p class="tiny-font"><span class="text-muted">Exchange/Return window closed on</span> Sun, 2 Mar 2025</p>
+                        @endif
+                        <p class="text-muted tiny-font">On this item you saved a total of <b>₹{{ $order->orderItems->sum('discounted_price') }}/-</b></p>
                     </div>
 
                     @if($relatedProducts)
@@ -207,15 +210,20 @@
                     </div>
 
                     <div class="wrapper">
-                        <h6>Updates sent to</h6>
-                        <p class="mt-1 tiny-font text-muted">Mobile: {{ $order->user->mobile }}</p>
-                        <p class="text-muted tiny-font">Email: {{ $order->user->email }}</p>
-                    </div>
-
-                    <div class="wrapper">
-                        <h6>Order details</h6>
-                        <p class="text-muted tiny-font">Order ID # {{ $order->id }}</p>
-                        <p class="text-muted tiny-font">Order Placed on: <b>{{ \Carbon\Carbon::parse($order->created_at)->format('d M Y') }}</b></p>
+                        <div class="row">
+                            <div class="col-md-7 col-12">
+                                <h6>Updates sent to</h6>
+                                <p class="mt-1 tiny-font text-muted">Mobile: {{ $order->user->mobile }}</p>
+                                <p class="text-muted tiny-font">Email: {{ $order->user->email }}</p>
+                            </div>
+                            <div class="col-md-5 col-12">
+                                <div class="text-right">
+                                    <h6>Order details</h6>
+                                    <p class="text-muted tiny-font">Order ID # {{ $order->id }}</p>
+                                    <p class="text-muted tiny-font">Order Placed on: <b>{{ \Carbon\Carbon::parse($order->created_at)->format('d M Y') }}</b></p>
+                                </div>
+                            </div>
+                        </div>                        
                     </div>
                 </div>    
 
