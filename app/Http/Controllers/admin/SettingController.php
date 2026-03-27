@@ -7,6 +7,8 @@ use App\Models\Brand;
 use App\Models\Color;
 use App\Models\DiscountCoupon;
 use App\Models\Page;
+use App\Models\Rating;
+use App\Models\Review;
 use App\Models\User;
 use App\Models\State;
 use App\Models\ShippingCharge;
@@ -1131,5 +1133,32 @@ class SettingController extends Controller {
             'status' => true,
             'message' => $message
         ]);
+    }
+
+    public function rating_index(Request $request, ){
+        $reviews = Review::with(['product.product_images', 'user'])->latest('id');   
+        $total = Review::count();
+        $reviews = $reviews->paginate(10);
+
+        return view('admin.settings.ratings', [
+            'reviews' => $reviews,
+            'total'   => $total,
+        ]);
+    }
+
+    public function approve($id) {
+        $review = Review::findOrFail($id);
+        $review->status = 1;
+        $review->save();
+
+        return back()->with('success', 'Review approved successfully!');
+    }
+
+    public function reject($id) {
+        $review = Review::findOrFail($id);
+        $review->status = 0;
+        $review->save();
+
+        return back()->with('success', 'Review rejected successfully!');
     }
 }

@@ -38,6 +38,10 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    public function reviews() {
+        return $this->hasMany(Review::class);
+    }
+
     public function address() {
         return $this->hasOne(CustomerAddress::class, 'user_id');
     }

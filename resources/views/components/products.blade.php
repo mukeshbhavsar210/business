@@ -65,10 +65,7 @@
                     @if ($product->images && $product->images->count() > 0)
                         @foreach($product->images as $image)
                             <div class="slider-item">   
-                                <a href="{{ route('front.product', [  
-                                    $product->subCategory->sub_category_slug,                               
-                                    $product->subSubCategory->sub_sub_category_slug,
-                                    'slug' => $product->slug]) }}" target="_blank" title="{{ $product->slug }}">
+                                <a href="{{ $product->url }}" target="_blank" title="{{ $product->slug }}">
                                     <img src="{{ asset('uploads/product/small/'.$image->image) }}">
                                     {{-- <img src="{{ asset('uploads/product/small/'.$product->images->first()->image) }}" > --}}
                                 </a>
@@ -216,7 +213,14 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 24 24"><path fill="#282C3F" fill-rule="nonzero" d="M15.854 8.146a.495.495 0 0 0-.703 0L12 11.296l-3.15-3.15a.495.495 0 0 0-.704 0 .495.495 0 0 0 0 .703L11.297 12l-3.15 3.15a.5.5 0 1 0 .35.85.485.485 0 0 0 .349-.146l3.15-3.15 3.151 3.15a.5.5 0 0 0 .35.147.479.479 0 0 0 .35-.147.495.495 0 0 0 0-.703L12.702 12l3.15-3.15a.495.495 0 0 0 0-.704z"></path></svg>
             </button> --}}
             
-            <a href="{{ route('front.product', [
+            <a href="{{ $wishlist->product->url }}" target="_blank" class="product-img">
+                @if($image)
+                    <img src="{{ asset('uploads/product/small/'.$image->image) }}" class="rounded" alt="{{ $wishlist->product->title }}">
+                @else
+                    <img src="{{ asset('admin-assets/img/default-150x150.png') }}" class="rounded">
+                @endif
+            </a>
+            {{-- <a href="{{ route('front.product', [
                     $wishlist->product->subCategory->sub_category_slug,                               
                     $wishlist->product->subSubCategory->sub_sub_category_slug,
                     $wishlist->product->slug] ) }}" target="_blank" class="product-img">
@@ -225,7 +229,7 @@
                 @else
                     <img src="{{ asset('admin-assets/img/default-150x150.png') }}" class="rounded">
                 @endif
-            </a>              
+            </a>               --}}
             
             <div class="hover-product">    
                 <button onclick="wishlistToCart({{ $wishlist->id }}, {{ $wishlist->product_id }})" class="btn btn-outline-danger btn-sm" type="button">

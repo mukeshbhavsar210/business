@@ -274,22 +274,22 @@ class ShopController extends Controller {
             $relatedProducts = Product::whereIn('id',$productArray)->where('status',1)->with('product_images')->get();
         }
 
-        $ratings = Review::where('product_id', $product->id)
+        $ratings = Review::where([['product_id', '=', $product->id],['status', '=', 1],])
             ->selectRaw('rating, COUNT(*) as count')
             ->groupBy('rating')
-            ->pluck('count','rating')
+            ->pluck('count', 'rating')
             ->toArray();
-
+        
         for ($i = 1; $i <= 5; $i++) {
             $ratings[$i] = $ratings[$i] ?? 0;
         }
 
         krsort($ratings);                    
         
-        $totalRatings = Review::where('product_id', $product->id)->count();
-        $averageRating = Review::avg('rating');
-        $reviews = Review::with('user')->where('product_id', $product->id)->latest()->take(3)->get();      
-        $totalReviews = Review::where('product_id', $product->id)->count();           
+        $totalRatings = Review::where([['product_id', '=', $product->id],['status', '=', 1],])->count();        
+        $averageRating = Review::where('product_id', $product->id)->where('status', 1)->avg('rating');
+        $reviews = Review::with('user')->where([['product_id', '=', $product->id],['status', '=', 1],])->latest()->take(3)->get();      
+        $totalReviews = Review::where([['product_id', '=', $product->id],['status', '=', 1],])->count();           
        
         $data['product'] = $product;
         $data['coupon'] = $coupon;
@@ -385,7 +385,6 @@ class ShopController extends Controller {
         return view('front.products.category',$data);
     }
 
-
     public function store(Request $request) {
         Rating::create([
             'product_id' => $request->product_id,
@@ -458,6 +457,4 @@ class ShopController extends Controller {
     //         'subsubcategory' => $subsubcategory ?? null,
     //     ];
     // }
-
-
 }

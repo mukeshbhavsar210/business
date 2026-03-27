@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 26, 2026 at 09:26 AM
+-- Generation Time: Mar 27, 2026 at 09:28 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -434,7 +434,15 @@ INSERT INTO `order_status_histories` (`id`, `order_id`, `tracking_number`, `cour
 (168, 202, NULL, NULL, NULL, 'Ordered by mistake', 'By mistake order placed', 'Cancelled', '2026-03-26 02:32:06', '2026-03-26 02:32:06', '2026-03-26 02:32:06'),
 (169, 201, '789789', 'Shadofax', 'test', NULL, NULL, 'Shipped', NULL, '2026-03-26 02:40:00', '2026-03-26 02:40:00'),
 (170, 201, NULL, 'Shadofax', 'note', NULL, NULL, 'Out for Delivery', NULL, '2026-03-26 02:41:40', '2026-03-26 02:41:40'),
-(171, 202, NULL, 'Shadofax', NULL, NULL, NULL, 'Out for Delivery', NULL, '2026-03-26 02:53:22', '2026-03-26 02:53:22');
+(171, 202, NULL, 'Shadofax', NULL, NULL, NULL, 'Out for Delivery', NULL, '2026-03-26 02:53:22', '2026-03-26 02:53:22'),
+(172, 202, NULL, 'Shadofax', NULL, NULL, NULL, 'Delivered', NULL, '2026-03-26 05:30:16', '2026-03-26 05:30:16'),
+(173, 201, NULL, 'Shadofax', 'note', NULL, NULL, 'Cancelled', NULL, '2026-03-26 05:54:55', '2026-03-26 05:54:55'),
+(174, 201, NULL, 'Shadofax', 'note', NULL, NULL, 'Packed', NULL, '2026-03-26 06:03:46', '2026-03-26 06:03:46'),
+(175, 201, NULL, 'Shadofax', 'note', NULL, NULL, 'Shipped', NULL, '2026-03-26 06:06:56', '2026-03-26 06:06:56'),
+(176, 201, NULL, 'Shadofax', 'note', NULL, NULL, 'Out for Delivery', NULL, '2026-03-26 06:14:42', '2026-03-26 06:14:42'),
+(177, 201, NULL, 'Shadofax', 'note', NULL, NULL, 'Returned', NULL, '2026-03-26 06:18:28', '2026-03-26 06:18:28'),
+(178, 201, NULL, 'Shadofax', 'note', NULL, NULL, 'Exchanged', NULL, '2026-03-26 06:24:44', '2026-03-26 06:24:44'),
+(179, 201, NULL, 'Shadofax', 'note', NULL, NULL, 'Shipped', NULL, '2026-03-26 06:25:23', '2026-03-26 06:25:23');
 
 -- --------------------------------------------------------
 
@@ -716,9 +724,19 @@ CREATE TABLE `reviews` (
   `product_id` bigint(20) UNSIGNED NOT NULL,
   `rating` tinyint(4) NOT NULL,
   `review` text DEFAULT NULL,
+  `status` int(3) NOT NULL DEFAULT 0,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `reviews`
+--
+
+INSERT INTO `reviews` (`id`, `user_id`, `product_id`, `rating`, `review`, `status`, `created_at`, `updated_at`) VALUES
+(1, 7, 68, 3, 'Awesome Product', 1, NULL, '2026-03-27 02:22:42'),
+(8, 3, 68, 5, 'Awesome Product 3', 1, NULL, '2026-03-27 02:22:42'),
+(9, 3, 68, 5, 'Awesome Product 33', 1, NULL, '2026-03-27 02:22:42');
 
 -- --------------------------------------------------------
 
@@ -1320,7 +1338,7 @@ ALTER TABLE `order_items`
 -- AUTO_INCREMENT for table `order_status_histories`
 --
 ALTER TABLE `order_status_histories`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=172;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=180;
 
 --
 -- AUTO_INCREMENT for table `pages`
@@ -1386,7 +1404,7 @@ ALTER TABLE `ratings`
 -- AUTO_INCREMENT for table `reviews`
 --
 ALTER TABLE `reviews`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `shipping_charges`

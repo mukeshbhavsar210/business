@@ -30,6 +30,10 @@ class Product extends Model {
         return $query;
     }
 
+    public function reviews() {
+        return $this->hasMany(Review::class);
+    }
+
     public function items(){
         return $this->hasMany(OrderItem::class);
     }
@@ -126,5 +130,13 @@ class Product extends Model {
             'product_id',
             'discount_coupons_id'
         );
+    }
+
+    public function getUrlAttribute() {
+        return route('front.product', [
+            'item2' => $this->subCategory->sub_category_slug ?? '',
+            'item3' => $this->subSubCategory->sub_sub_category_slug ?? '',
+            'slug'  => $this->slug
+        ]);
     }
 }

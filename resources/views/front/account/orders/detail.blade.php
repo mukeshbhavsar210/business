@@ -79,14 +79,14 @@
                     </div>
 
                     <div class="wrapper">
-                        <p><b>Item in this order</b></p>
+                         <p><b>Item in this order</b></p>
                         @if (ucfirst($status) == 'Delivered')
                             <p class="tiny-font mb-3"><span class="text-muted">Exchange/Return window closed on</span> Sun, 2 Mar 2025</p>
                         @endif
 
-                        <div class="row">
-                            @foreach($order->orderItems as $item)
-                                <div class="col-12 mb-2">
+                        @foreach($order->orderItems as $item)
+                            <div class="row mb-2">
+                                <div class="col-md-9 col-9">
                                     <div class="rate-product">
                                         <div class="inline">
                                             <div class="product-img">
@@ -96,31 +96,48 @@
                                             </div>
                                             <div>
                                                 <h5>{{ Str::limit($item->product->title, 70, '...') }}</h5>
-                                                <p class="tiny-font text-muted">{{ Str::limit($item->product->short_description, 70, '...') }}</p>
-                                                <p>₹{{ $item->discounted_price }}/-</p>
+                                                <p class="tiny-font text-muted">
+                                                    {{ Str::limit($item->product->short_description, 70, '...') }}<br />
+                                                    <b>₹{{ $item->discounted_price }}/-</b>
+                                                </p>
                                             </div>
                                         </div>
-
-                                        <div class="rating-delivered">                                                                                       
-                                            <div class="rating-rateBox">
-                                                <div class="myRating">
-                                                    <span class="sprites rating-star2-ico"></span>
-                                                    <span class="sprites rating-star2-ico"></span>
-                                                    <span class="sprites rating-star1-ico"></span>
-                                                    <span class="sprites rating-star1-ico"></span>
-                                                    <span class="sprites rating-star1-ico"></span>
-                                                </div>
-                                                <p>Rate & Review</p>
-                                            </div>                                              
-                                        </div>                                        
                                     </div>                                    
                                 </div>
-                            @endforeach
-                        </div>    
+                                <div class="col-md-3 col-3">
+                                    @php
+                                        $userReview = $userReviews[$item->product->id] ?? null;
+                                    @endphp
 
-                        <p class="text-muted ">On this item you saved a total of <b>₹{{ $order->orderItems->sum('discounted_price') }}</b></p>
+                                    @if($userReview)                                          
+                                        @for ($i = 1; $i <= 5; $i++)
+                                            @if ($i <= $userReview->rating)
+                                                ⭐                                            
+                                            @endif
+                                        @endfor                                         
+                                        <p class="tiny-font">{{ Str::limit($userReview->review, 30, '...') }}</p>
+                                    @else
+                                        <a href="javascript:0" class="btn btn-outline-primary mt-3 btn-sm open-modal"                                                                    
+                                            data-product="{{ $item->product->id }}" data-bs-toggle="modal"
+                                            data-bs-target="#ratingsModal_{{ $item->product->id }}">Give Rating</a>
 
-                        
+                                            @include('front.account.orders.ratings_modal') 
+                                                                                                
+                                            {{-- @for ($i = 1; $i <= 5; $i++)
+                                                    <i class="star open-modal"
+                                                        data-value="{{ $i }}"
+                                                        data-product="{{ $item->product->id }}"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#ratingsModal_{{ $item->product->id }}">
+                                                    ☆
+                                                    </i>
+                                            @endfor --}}                                                    
+                                    @endif
+                                </div>
+                            </div>
+                        @endforeach                        
+
+                        <p class="text-muted ">On this item you saved a total of <b>₹{{ $order->orderItems->sum('discounted_price') }}/-</b></p>
                     </div>
 
                     @if($relatedProducts)
@@ -247,7 +264,56 @@
                     </div>
                 </div>
             </div>
+            
         </div>
     </div>
 </div>
+@endsection
+
+
+@section('customJs')
+<script>
+    $(document).ready(function(){   
+        $(document).on('click', '.open-modal', function () {
+            let value = $(this).data('value');
+            let productId = $(this).data('product');
+
+            let modal = $('#ratingsModal_' + productId);
+            let stars = modal.find('.modal-rating .star');
+
+            // reset
+            stars.removeClass('active').html('☆');
+
+            // fill till clicked value
+            stars.each(function () {
+                if ($(this).data('value') <= value) {
+                    $(this).addClass('active').html('★');
+                }
+            });
+
+            // set hidden input
+            modal.find('.rating-value').val(value);
+        });
+
+
+        $(document).on('click', '.modal-rating .star', function () {
+            let value = $(this).data('value');
+            let parent = $(this).closest('.modal-rating');
+            let productId = parent.data('product');
+
+            // reset stars (ONLY inside this modal)
+            parent.find('.star').html('☆');
+
+            // fill stars
+            parent.find('.star').each(function () {
+                if ($(this).data('value') <= value) {
+                    $(this).html('★');
+                }
+            });
+
+            // set correct hidden input
+            $('input[name="rating[' + productId + ']"]').val(value);
+        });
+    });
+</script>
 @endsection

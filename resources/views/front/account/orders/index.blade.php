@@ -173,23 +173,87 @@
                                         @foreach($order->items as $item)
                                             <a href="{{ route('account.orderDetail',$order->id) }}" class="product-details-link">  
                                                 @include('front.account.orders.product_card')
-                                            </a>
-                                        @endforeach                                           
+                                            </a>                                            
+
+                                            @include('front.account.orders.ratings_modal') 
+                                        @endforeach
+                                        
 
                                         @if(ucfirst($status) == 'Delivered')
+                                            @php
+                                                $userReview = $userReviews[$item->product->id] ?? null;
+                                            @endphp
+
+                                            @if($userReview)
+                                                <p>       
+                                                    @for ($i = 1; $i <= 5; $i++)
+                                                        @if ($i <= $userReview->rating)
+                                                            ⭐                                            
+                                                        @endif
+                                                    @endfor                                       
+                                                </p>          
+                                                <p class="tiny-font">{{ $userReview->review }}</p>
+                                            @else
+                                                <div class="rating-delivered">                                                                                       
+                                                    <div class="rating-rateBox">  
+                                                        <div class="myRating">
+                                                            <div class="rating">
+                                                                <a href="javascript:0" class="btn btn-outline-primary btn-sm open-modal"                                                                    
+                                                                            data-product="{{ $item->product->id }}"
+                                                                            data-bs-toggle="modal"
+                                                                            data-bs-target="#ratingsModal_{{ $item->product->id }}">Give Rating</a>
+                                                                {{-- @for ($i = 1; $i <= 5; $i++)
+                                                                        <i class="star open-modal"
+                                                                            data-value="{{ $i }}"
+                                                                            data-product="{{ $item->product->id }}"
+                                                                            data-bs-toggle="modal"
+                                                                            data-bs-target="#ratingsModal_{{ $item->product->id }}">
+                                                                        ☆
+                                                                        </i>
+                                                                @endfor --}}
+                                                            </div>
+                                                        </div>
+                                                    
+                                                        @include('front.account.orders.ratings_modal') 
+                                                    </div>
+                                                </div>
+                                            @endif
+
                                             <div class="rating-delivered">                                               
                                                 <div class="rating-icon">
                                                     <span class="sprites rating-ico"></span>
                                                 </div>
                                                 <div class="rating-rateBox">
+                                                    <p>Rate & Review</p>                                                    
                                                     <div class="myRating">
-                                                        <span class="sprites rating-star2-ico"></span>
-                                                        <span class="sprites rating-star2-ico"></span>
-                                                        <span class="sprites rating-star1-ico"></span>
-                                                        <span class="sprites rating-star1-ico"></span>
-                                                        <span class="sprites rating-star1-ico"></span>
+                                                        @for ($i = 1; $i <= 5; $i++)
+                                                            <i class="star open-modal"
+                                                                data-value="{{ $i }}"
+                                                                data-product="{{ $item->product->id }}"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#ratingsModal_{{ $item->product->id }}">
+                                                            ☆
+                                                            </i>
+                                                        @endfor                                                        
+                                                    </div>                                                    
+
+                                                    <div class="modal fade" id="commonReviewModal">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content" id="reviewModalContent">
+                                                                <!-- AJAX content will load here -->
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                    <p>Rate & Review</p>
+
+                                                    {{-- @include('front.account.orders.ratings_modal')  --}}
+                                                    
+                                                    {{-- <div class="myRating">
+                                                        <span class="sprites rating-star2-ico"></span>
+                                                        <span class="sprites rating-star2-ico"></span>
+                                                        <span class="sprites rating-star1-ico"></span>
+                                                        <span class="sprites rating-star1-ico"></span>
+                                                        <span class="sprites rating-star1-ico"></span>
+                                                    </div> --}}                                                    
                                                 </div>                                              
                                             </div>
                                         @endif                                        
@@ -367,5 +431,20 @@
             });
         });
     });
+
+
+    $(document).on('click', '.open-review-modal', function () {        
+        let orderId = $(this).data('order-id');
+
+        $.ajax({
+            url: '/get-order-items/' + orderId,
+            type: 'GET',
+            success: function (res) {
+                $('#reviewModalContent').html(res);
+                $('#commonReviewModal').modal('show');
+            }
+        });
+    });
+
 </script>
 @endsection
