@@ -12,6 +12,8 @@ ul,li { padding: 0; margin: 0;}
 
 .tiny-font { font-size: 13px;}
 
+.btn-sm { padding:4px 10px 5px 10px !important; height: 30px !important; font-size: 12px !important;}
+
 .sprites{background:url(../../front-assets/images/sprites.svg) no-repeat; display: block;}
 .green-tick-icon { background-position:-3px -30px; height:20px; width: 20px; }
 .red-tick-icon { background-position:-25px -30px; height:20px; width: 20px; }
@@ -25,9 +27,13 @@ ul,li { padding: 0; margin: 0;}
 .refresh-icon span { background-position:-53px -27px; height:28px; width: 28px; margin-right: 10px; margin-top: 5px; }
 .refresh-icon:hover span { background-position:-81px -27px;  }
 
+.flex-star { display: flex;}
+.star { background-position:-341px 0; width: 20px; height: 20px; cursor: pointer; display: block; }
+.star-active { background-position:-361px 0; width: 20px; height: 20px; cursor: pointer; display: block; }
+
 .content-header { padding:0px;}
 .content-header h1 { font-size: 1.6rem; }
-.btn { padding:7px 13px; font-size: 12px; height: 35px; border-radius: 4px; font-weight: bold; text-transform: uppercase;}
+.btn { padding:5px 13px 6px 13px; font-size: 12px; height: 37px; border-radius: 4px; font-weight: bold; text-transform: uppercase;}
 .flexContainer { display: flex;  justify-content: end;}
 
 .table td, .table th { padding:0.5rem;}

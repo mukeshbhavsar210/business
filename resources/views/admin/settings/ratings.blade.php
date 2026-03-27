@@ -24,11 +24,11 @@
                 <table class="table mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th class="border-top-0" width="20%">Product</th>
-                            <th class="border-top-0" width="15%">Rating</th>
-                            <th class="border-top-0" width="35%">Comments</th>
-                            <th class="border-top-0" width="8%">Status</th>
-                            <th class="border-top-0" width="5%">Action</th>                            
+                            <th class="border-top-0" width="10%">Product</th>
+                            <th class="border-top-0" width="45%">Comments</th>
+                            <th class="border-top-0" width="6%">User</th>
+                            <th class="border-top-0" width="6%">Status</th>
+                            <th class="border-top-0" width="4%">Action</th>                            
                         </tr>
                     </thead>                     
                     <tbody>
@@ -38,6 +38,7 @@
                                     <td>
                                         @php
                                             $productImage = optional($review->product)->product_images->first();
+                                            $userImage = $review->user->image ?? null;
                                         @endphp
 
                                         <div class="d-flex align-items-center">
@@ -50,29 +51,37 @@
                                             </a>
 
                                             <div class="flex-grow-1 text-truncate">
-                                                <h5 class="product-title ">
-                                                    <a href="{{ route('products.edit', $review->product->id) }}">
-                                                        {{ Str::limit($review->product->title, 70, '...') }}                                                                                                             
-                                                    </a>                                                    
+                                                <h5 class="product-title">
+                                                    <a href="{{ $review->product->url }}" target="_blank" class="show-tooltip"> 
+                                                        {{ Str::limit($review->product->title, 70, '...') }}
+                                                    </a>
                                                 </h5>
-                                                <p class="small-fonts"><span class="text-muted">{{ $review->id }} / </span></p>                                                
+                                                <p class="small-fonts"><span class="text-muted">{{ $review->id }}</span></p>
+                                                <div class="flex-star mt-1">
+                                                    @for ($i = 1; $i <= 5; $i++)
+                                                        @if ($i <= $review->rating)
+                                                            <span class="sprites star-active"></span>                                                        
+                                                        @else
+                                                            <span class="sprites star"></span>                                                        
+                                                        @endif
+                                                    @endfor
+                                                </div>
+                                                {{-- <b>{{ $review->rating }}</b> --}}
+                                                
                                             </div>
                                         </div>                                       
                                     </td>
-                                    <td>                                        
-                                        <p>{{ $review->user->name }} ({{ $review->user->id }})</p>
-                                        <p>
-                                            @for ($i = 1; $i <= 5; $i++)
-                                                @if ($i <= $review->rating)
-                                                    ⭐
-                                                @else
-                                                    <span style="color: #ccc;">☆</span>
-                                                @endif
-                                            @endfor
-                                            <b>{{ $review->rating }}</b>                                            
-                                        </p>                                        
-                                    </td>
                                     <td><p>{{ $review->review }}</p></td>
+                                    <td> 
+                                        <div class="flex show-tooltip">
+                                            <img src="{{ $review->user && $review->user->image 
+                                                ? asset('uploads/user/'.$review->user->image) 
+                                                : asset('admin-assets/img/default-user.png') }}" 
+                                            width="50" height="50" class="rounded-circle" >
+
+                                            <p class="tooltip" style="bottom: 13px; left:55px;">{{ $review->user->name }} ({{ $review->user->id }})</p>
+                                        </div>
+                                    </td>                                    
                                     <td>
                                         @if($review->status == 1)
                                             <span class="badge bg-success">Approved</span>
@@ -84,7 +93,7 @@
                                         @if($review->status == 0)
                                             <a href="{{ route('review.approve', $review->id) }}" class="btn btn-sm btn-outline-primary">Approve</a>
                                         @else
-                                            <a href="{{ route('review.reject', $review->id) }}" class="btn btn-sm btn-outline-primary">Reject</a>
+                                            <a href="{{ route('review.reject', $review->id) }}" class="btn btn-sm btn-outline-danger">Reject</a>
                                         @endif
                                     </td>                                     
                                 </tr>

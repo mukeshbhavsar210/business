@@ -12,7 +12,7 @@
     </div>
 </div>
 
-<div class="container-fluid">
+<div class="container mt-4">
     <div class="row">
         <div class="col-md-6 col-12 sticky">
             <div class="row">
@@ -100,13 +100,13 @@
                             @if($product->colors->isNotEmpty())
                                 <div class="part">
                                     <div class="flex">
-                                        <h3 style="margin-top: 22px;">Colors:</h3>                                    
+                                        <h3 style="margin-top: 17px;">Colors:</h3>                                    
                                         <ul class="color-list">
                                             @foreach($product->colors as $color)
                                                 <li>
                                                     <a href="javascript:void(0);" class="color-option show-tooltip" data-color="{{ $color->name }}">
                                                         <span class="color" style="background-color: {{ $color->code }}"></span>
-                                                        <span class="tooltip" style="bottom: 47px;">{{ $color->name }}</span>
+                                                        <span class="tooltip" style="bottom: 37px;">{{ $color->name }}</span>
                                                     </a>
                                                 </li>
                                             @endforeach
@@ -150,132 +150,157 @@
                             @endif                        
                         @endif   
                         <a class="btn btn-outline-dark" onclick="addToWishlist({{ $product->id }})" href="javascript:void(0)">
-                            <span class="sprites wishlist-ico-btn"></span>
-                            Wishlist
+                            <span class="sprites wishlist-ico-btn"></span>                            
                         </a>   
                     </div>
                 </div>
 
-                <div class="part">
-                    <h3>Delivery Options</h3>
-                    <div class="delivery-check">                        
-                        @if($product->delivery_min_days)
-                            <p>{{ $product->delivery_min_days }}</p>
-                            <p>{{ $product->delivery_max_days }}</p>
-                        @endif
+                <div class="accordion details-accordion" id="accordionExample">
+                    <div class="accordion-item">
+                        <div class="accordion-header" id="headingOne">
+                            <button class="accordion-button collapsed" 
+                                    type="button" 
+                                    data-bs-toggle="collapse" 
+                                    data-bs-target="#collapseOne" 
+                                    aria-expanded="false" 
+                                    aria-controls="collapseOne">
+                                
+                                <div class="icon-wrapper">
+                                    <div class="icon-left"></div>
+                                    <div class="title-right">
+                                        <h5>Product Description</h5>
+                                        <p>Manufacture, Care and Fit</p>
+                                    </div>
+                                </div>                                
+                            </button>
+                        </div>
+
+                        <div id="collapseOne" 
+                            class="accordion-collapse collapse" 
+                            aria-labelledby="headingOne" 
+                            data-bs-parent="#accordionExample">
+
+                            <div class="accordion-body">                                
+                                @if ($product->discount_price > 0)
+                                    <span class="mrp">
+                                        Best Price: ₹{{ $product->discount_price }}
+                                    </span>                        
+                                @endif  
+                                                                                            
+                                {{ $coupon }}
+                                {!! $product->description !!}
+                            </div>
+                        </div>
                     </div>
-                    <ul>
-                        <li>100% Original Products</li>
-                        <li>Pay on delivery might be available</li>
-                        @if($product->is_returnable)
-                            <li>Easy {{ $product->return_days }} returns and exchanges</li>
-                        @else
-                            <li>Non-returnable product</li>
-                        @endif                       
-                    </ul>
-                </div>
 
-                <div class="part">
-                    <h3>BEST OFFERS</h3>
-                    @if ($product->compare_price > 0)
-                        <span class="mrp">
-                            Best Price: ₹{{ $product->compare_price }}
-                        </span>                        
-                    @endif  
+                    <!-- ITEM 2 -->
+                    <div class="accordion-item">
+                        <div class="accordion-header" id="headingTwo">
+                            <button class="accordion-button collapsed" 
+                                    type="button" 
+                                    data-bs-toggle="collapse" 
+                                    data-bs-target="#collapseTwo" 
+                                    aria-expanded="false" 
+                                    aria-controls="collapseTwo">
 
-                    
+                                <div class="icon-wrapper">
+                                    <div class="icon-left"></div>
+                                    <div class="title-right">
+                                        <h5>15 DAY RETURNS</h5>
+                                        <p>Know about return & exchange policy</p>
+                                    </div>
+                                </div>                                
+                            </button>
+                        </div>
 
-                    {{-- Coupon code: MYNTRASAVE
-                    Coupon Discount: 30% off (Your total saving: Rs. 425)
-                    Applicable on: Orders above Rs. 750 (only on first purchase)
+                        <div id="collapseTwo" 
+                            class="accordion-collapse collapse" 
+                            aria-labelledby="headingTwo" 
+                            data-bs-parent="#accordionExample">
 
-                    View Eligible Products
-                    7.5% Assured Cashback on Flipkart Axis Bank & SBI Credit Cards.
-                    Flat 7.5% Cashback on Flipkart Axis Bank & SBI Credit Cards on a min spend of ₹100
-                    Terms & Condition --}}
+                            <div class="accordion-body">
+                                @if($product->is_returnable)
+                                    <p>Easy {{ $product->return_days }} returns and exchanges</p>
+                                @else
+                                    <p>Non-returnable product</p>
+                                @endif
+                                
+                                <div class="delivery-check mt-3">
+                                    @if($product->delivery_min_days)
+                                        <p>{{ $product->delivery_min_days }}</p>
+                                        <p>{{ $product->delivery_max_days }}</p>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="part">
-                    <div class="product-details">
-                        <h3>Product Details</h3>
-
-                        {{ $coupon }}
-                        
-                        {!! $product->description !!}
-                    </div>
-                </div>
-
-                <div class="part">
-                    <h3>Specifications</h3>
-                </div>
-
-                <div class="price-wrapper">
-                    <div class="part">
-                        <h3>Ratings</h3> 
-                        <div class="rating-breakdown">
-                            <div class="total-numbers">
-                                <div class="title">
-                                    <h4>{{ number_format($averageRating,1) }} </h4>
-                                    <span class="star">
-                                        <svg fill="#666666" width="20px" height="20px" viewBox="0 0 1920 1920" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M1915.918 737.475c-10.955-33.543-42.014-56.131-77.364-56.131h-612.029l-189.063-582.1v-.112C1026.394 65.588 995.335 43 959.984 43c-35.237 0-66.41 22.588-77.365 56.245L693.443 681.344H81.415c-35.35 0-66.41 22.588-77.365 56.131-10.955 33.544.79 70.137 29.478 91.03l495.247 359.831-189.177 582.212c-10.955 33.657 1.13 70.25 29.817 90.918 14.23 10.278 30.946 15.487 47.66 15.487 16.716 0 33.432-5.21 47.775-15.6l495.134-359.718 495.021 359.718c28.574 20.781 67.087 20.781 95.662.113 28.687-20.668 40.658-57.261 29.703-91.03l-189.176-582.1 495.36-359.83c28.574-20.894 40.433-57.487 29.364-91.03" fill-rule="evenodd"/>
-                                        </svg> 
-                                    </span>
-                                </div>                            
-                                <p>{{ $totalRatings >= 1000 ? round($totalRatings / 1000, 1).'k' : $totalRatings }} Verified Buyers</p>
-                            </div>
-                            <div class="breakdown">
-                            @foreach($ratings as $star => $count)
-                                @php
-                                    $percentage = $totalRatings > 0 ? ($count / $totalRatings) * 100 : 0;
-                                    if($star >= 4){
-                                        $color = 'green';
-                                    } elseif($star == 3){
-                                        $color = 'yellow';
-                                    } else {
-                                        $color = 'red';
-                                    }
-                                @endphp
-
-                                <div class="rating-row">
-                                    <div class="rating-label">{{ $star }} ★</div>
-                                    <div class="rating-bar">
-                                        <div class="rating-fill {{ $color }}" style="width: {{ $percentage }}%"></div>
-                                    </div>
-                                    <div class="rating-count">{{ $count }}</div>
-                                </div>
-                                @endforeach
-                            </div>
+                    <h3>Ratings</h3> 
+                    <div class="rating-breakdown">
+                        <div class="total-numbers">
+                            <div class="title">
+                                <h4>{{ number_format($averageRating,1) }} </h4>
+                                <span class="star">
+                                    <svg fill="#666666" width="20px" height="20px" viewBox="0 0 1920 1920" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M1915.918 737.475c-10.955-33.543-42.014-56.131-77.364-56.131h-612.029l-189.063-582.1v-.112C1026.394 65.588 995.335 43 959.984 43c-35.237 0-66.41 22.588-77.365 56.245L693.443 681.344H81.415c-35.35 0-66.41 22.588-77.365 56.131-10.955 33.544.79 70.137 29.478 91.03l495.247 359.831-189.177 582.212c-10.955 33.657 1.13 70.25 29.817 90.918 14.23 10.278 30.946 15.487 47.66 15.487 16.716 0 33.432-5.21 47.775-15.6l495.134-359.718 495.021 359.718c28.574 20.781 67.087 20.781 95.662.113 28.687-20.668 40.658-57.261 29.703-91.03l-189.176-582.1 495.36-359.83c28.574-20.894 40.433-57.487 29.364-91.03" fill-rule="evenodd"/>
+                                    </svg> 
+                                </span>
+                            </div>                            
+                            <p>{{ $totalRatings >= 1000 ? round($totalRatings / 1000, 1).'k' : $totalRatings }} Verified Buyers</p>
                         </div>
-                    
-                        <div class="rating-customers">
-                            <p><b>Customer Reviews ({{ $totalReviews }})</b></p>
+                        <div class="breakdown">
+                        @foreach($ratings as $star => $count)
+                            @php
+                                $percentage = $totalRatings > 0 ? ($count / $totalRatings) * 100 : 0;
+                                if($star >= 4){
+                                    $color = 'green';
+                                } elseif($star == 3){
+                                    $color = 'yellow';
+                                } else {
+                                    $color = 'red';
+                                }
+                            @endphp
 
-                            @foreach($reviews as $review)
-                                <div class="repeate">
-                                    <div class="left">
-                                        <span class="star">{{ $review->rating }} ★</span>
-                                    </div>
-                                    <div class="right">                            
-                                        <p>{{ $review->review }}</p>
-                                        <p class="customer">
-                                            <b>{{ $review->user->name ?? 'Guest' }}</b>
-                                            | {{ \Carbon\Carbon::parse($review->created_at)->format('d M Y')}}
-                                        </p>
-                                    </div>
+                            <div class="rating-row">
+                                <div class="rating-label">{{ $star }} ★</div>
+                                <div class="rating-bar">
+                                    <div class="rating-fill {{ $color }}" style="width: {{ $percentage }}%"></div>
                                 </div>
+                                <div class="rating-count">{{ $count }}</div>
+                            </div>
                             @endforeach
-                    
-                            @if($totalReviews > 2)
-                                <a href="{{ route('product.reviews', $product->id) }}" class="link">View all {{ $count }} reviews </a>
-                            @endif
-
-                            <div class="product-code">
-                                Product Code: {{ $product->id }}                            
-                            </div>
                         </div>
                     </div>
-                </div>
+                
+                    <div class="rating-customers">
+                        <p><b>Customer Reviews ({{ $totalReviews }})</b></p>
+
+                        @foreach($reviews as $review)
+                            <div class="repeate">
+                                <div class="left">
+                                    <span class="star">{{ $review->rating }} ★</span>
+                                </div>
+                                <div class="right">                            
+                                    <p>{{ $review->review }}</p>
+                                    <p class="customer">
+                                        <b>{{ $review->user->name ?? 'Guest' }}</b>
+                                        | {{ \Carbon\Carbon::parse($review->created_at)->format('d M Y')}}
+                                    </p>
+                                </div>
+                            </div>
+                        @endforeach
+                
+                        @if($totalReviews > 2)
+                            <a href="{{ route('product.reviews', $product->id) }}" class="link">View all {{ $count }} reviews </a>
+                        @endif
+
+                        <div class="product-code">
+                            Product Code: {{ $product->id }}                            
+                        </div>
+                    </div>
+                </div>                
             </div>
         </div> 
     </div>
