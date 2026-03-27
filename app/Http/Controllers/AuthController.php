@@ -797,8 +797,6 @@ class AuthController extends Controller {
         ]);
 
         $user = auth()->user();
-
-        // deactivate account
         $user->is_active = 0;
         $user->save();
 
@@ -808,16 +806,16 @@ class AuthController extends Controller {
     }
 
     public function review_store(Request $request) {
-        foreach ($request->rating as $productId => $rating) {
+        foreach ($request->rating as $product_id => $rating) {
 
             //dd($request->all());
             //dd($productId, $rating);
 
             Review::create([
                 'user_id' => auth()->id(),
-                'product_id' => $productId,
+                'product_id' => $product_id,
                 'rating' => $rating,
-                'review' => $request->review[$productId] ?? null,
+                'review' => $request->review[$product_id] ?? null,
             ]);
         }
 
