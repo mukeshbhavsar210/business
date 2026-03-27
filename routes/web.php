@@ -29,7 +29,6 @@ Route::post('/set-intended-url', function (Request $request) {session(['url.inte
 
 Route::controller(ShopController::class)->group(function() {
     Route::get('/products/{item1?}/{item2?}/{item3?}','listing')->name('front.shop');
-    //Route::get('/{item2?}-{item3?}/{slug}', 'product')->name('front.product');
     Route::get('/details/{item2?}-{item3?}/{slug}', 'product')->name('front.product');
 
     //Category
@@ -122,6 +121,8 @@ Route::group(['prefix' => 'account'], function(){
             Route::post('/order/{order}/cancel_order', 'cancelOrder')->name('account.order.cancel');
             Route::get('/account/order/cancelled-orders', 'cancelledOrders')->name('account.orders.cancelled');
             Route::get('/order-tracking/{id}', 'tracking')->name('account.order.tracking');
+            Route::post('/reviews-store', 'review_store')->name('reviews.store');
+            Route::get('/get-order-items/{id}', 'getOrderItems');
 
             Route::get('/wishlist','wishlist')->name('account.wishlist');
             Route::post('/remove-product-from-wishlist','removeProductFromWishlist')->name('account.removeProductFromWishlist');
@@ -212,7 +213,7 @@ Route::group(['prefix' => 'admin'], function(){
             Route::post('/process-change-password', 'processChangePassword')->name('admin.processChangePassword');        
 
             //Brands
-            Route::get('/settings/brands', 'brand_index')->name('brands.index');            
+            Route::get('/settings/brands', 'brand_index')->name('brands.index');
             Route::post('/settings/brands', 'brand_store')->name('brands.store');            
             Route::delete('/settings/brands/{brand}', 'brand_destroy')->name('brands.delete');
 
@@ -247,6 +248,11 @@ Route::group(['prefix' => 'admin'], function(){
             Route::get('/settings/shipping/index', 'shipping_index')->name('shipping.index');
             Route::post('/settings/shipping', 'shipping_store')->name('shipping.store');
             Route::delete('/settings/shipping/{id}', 'shipping_destroy')->name('shipping.delete');
+
+            //Ratings
+            Route::get('/settings/ratings', 'rating_index')->name('ratings.index');
+            Route::get('/settings/review/approve/{id}', 'approve')->name('review.approve');
+            Route::get('/settings/review/rejecte/{id}', 'reject')->name('review.reject');
         });  
            
 

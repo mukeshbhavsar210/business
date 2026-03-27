@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\OrderStatusHistory;
 use App\Models\Product;
+use App\Models\Review;
 use App\Models\State;
 use App\Models\User;
 use App\Models\Wishlist;
@@ -16,6 +17,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
+use SebastianBergmann\Environment\Console;
 
 class AuthController extends Controller {
     public function login(Request $request){
@@ -280,9 +282,7 @@ class AuthController extends Controller {
                 'error' => $validator->errors()
             ]);
         }
-    }
-
-    
+    }    
 
     public function profile(){
         $userId = Auth::user()->id;
@@ -433,7 +433,6 @@ class AuthController extends Controller {
         return redirect()->route('front.home')->with('success','You successfully logged out!');;
     }
 
-
     public function orders(Request $request) {
         $user = Auth::user();
 
@@ -482,6 +481,7 @@ class AuthController extends Controller {
         if ($request->time == '1_year') {
             $query->where('created_at', '>=', Carbon::now()->subYear());
         }
+        
 
         // Get Orders
         $orders = $query->latest()->paginate(10);
@@ -498,12 +498,17 @@ class AuthController extends Controller {
             //'totalCancelledItems' => $totalCancelledItems
         ]);
     }
-
     
     public function orderDetail($id) {
         $user = Auth::user();
         $order = Order::with(['orderItems','latestStatus'])->where('user_id',$user->id)->where('id',$id)->firstOrFail();
-        $orderItems = OrderItem::with('product')->where('order_id',$id)->get();
+        $orderItems = OrderItem::with('product')->where('order_id',$id)->get();      
+
+        $productIds = $orderItems->pluck('product_id');
+        $userReviews = Review::whereIn('product_id', $productIds)
+                        ->where('user_id', auth()->id())
+                        ->get()
+                        ->keyBy('product_id');
 
         $data['order'] = $order;
         $data['orderItems'] = $orderItems;
@@ -523,6 +528,7 @@ class AuthController extends Controller {
         }
 
         $data['relatedProducts'] = $relatedProducts;
+        $data['userReviews'] = $userReviews;            
 
         // dd($orderItems->discounted_price);
         // dd($order);
@@ -801,4 +807,30 @@ class AuthController extends Controller {
         return redirect('/')->with('success','Your account has been deactivated.');
     }
 
+    public function review_store(Request $request) {
+        foreach ($request->rating as $productId => $rating) {
+
+            //dd($request->all());
+            //dd($productId, $rating);
+
+            Review::create([
+                'user_id' => auth()->id(),
+                'product_id' => $productId,
+                'rating' => $rating,
+                'review' => $request->review[$productId] ?? null,
+            ]);
+        }
+
+        return back()->with('success', 'Review submitted successfully!');
+    }
+
+
+    public function getOrderItems($id) {
+        
+        $orderItems = OrderItem::with('product')->where('order_id', $id)->get();
+                    
+        //return view('front.account.orders.index', compact('orderItems'))->render();
+        return view('front.account.orders.ratings_modal', compact('orderItems'))->render();
+    }
+  
 }

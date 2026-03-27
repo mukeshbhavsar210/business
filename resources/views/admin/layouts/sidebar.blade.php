@@ -33,6 +33,12 @@
         </a>
     </li>
     <li class="nav-item">
+        <a href="{{ route('ratings.index') }}" class="nav-link">
+            <i class="iconoir-journal-page menu-icon"></i>
+            <span>Ratings</span>
+        </a>
+    </li>
+    <li class="nav-item">
         <a class="nav-link" href="#extra" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarApplications">
             <i class="iconoir-page-star menu-icon"></i>
             <span>Settings</span>
