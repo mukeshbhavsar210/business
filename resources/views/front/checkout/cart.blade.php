@@ -129,7 +129,7 @@
                                         $minDate = $item->options->delivery_min_days;
                                         $maxDate = $item->options->delivery_max_days;
                                     @endphp
-                                    <p>Delivery between {{ \Carbon\Carbon::parse($minDate)->format('d M')}} - {{ \Carbon\Carbon::parse($maxDate)->format('d M')}}</p>
+                                    <p>Delivery between <b>{{ \Carbon\Carbon::parse($minDate)->format('d M')}} - {{ \Carbon\Carbon::parse($maxDate)->format('d M')}}</b></p>
                                 </div>
                             </div>
 
@@ -240,7 +240,7 @@
                                 @foreach (Cart::content() as $item)
                                     <div class="repeate-row show-tooltip strike">
                                         <p>{{ $item->name }}</p>
-                                        <span class="tiny-font mt-1">{{ \Carbon\Carbon::parse($minDate)->format('d, M')}} - {{ \Carbon\Carbon::parse($maxDate)->format('d, M')}}</span> 
+                                        <span class="tiny-font mt-1">{{ \Carbon\Carbon::parse($minDate)->format('d M')}} - {{ \Carbon\Carbon::parse($maxDate)->format('d M')}}</span> 
                                     </div>                        
                                 @endforeach        
                             </div>

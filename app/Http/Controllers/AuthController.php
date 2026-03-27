@@ -807,10 +807,6 @@ class AuthController extends Controller {
 
     public function review_store(Request $request) {
         foreach ($request->rating as $product_id => $rating) {
-
-            //dd($request->all());
-            //dd($productId, $rating);
-
             Review::create([
                 'user_id' => auth()->id(),
                 'product_id' => $product_id,
