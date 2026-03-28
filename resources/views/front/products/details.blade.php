@@ -15,7 +15,25 @@
 <div class="container mt-4">
     <div class="row">
         <div class="col-md-6 col-12 sticky">
-            <div class="row">
+            <div class="product-gallery">
+                <div class="slider-nav">
+                    @foreach($product->product_images as $productImage)
+                        <div class="thumb">
+                            <img src="{{ asset('uploads/product/small/'.$productImage->image) }}" alt="Product Image">
+                        </div>
+                    @endforeach
+                </div>
+
+                <div class="slider-for">
+                    @foreach($product->product_images as $productImage)
+                        <div class="main-image">
+                            <img src="{{ asset('uploads/product/large/'.$productImage->image) }}" alt="Product Image">
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+
+            {{-- <div class="row">
                 @if(request()->filled('variant') && $selectedVariant && $selectedVariant->image)                    
                     <div class="col-md-12 col-12">
                         <img class="w-100 h-100" src="{{ asset('uploads/product/large/'.$selectedVariant->image) }}" alt="Variant Image">
@@ -29,7 +47,7 @@
                         @endforeach
                     @endif
                 @endif                          
-            </div>
+            </div> --}}
         </div>
         <div class="col-md-6 col-12">
             <div class="product-details-wrapper">
@@ -166,7 +184,9 @@
                                     aria-controls="collapseOne">
                                 
                                 <div class="icon-wrapper">
-                                    <div class="icon-left"></div>
+                                    <div class="icon-left">
+                                        <span class="sprites list-icon"></span>
+                                    </div>
                                     <div class="title-right">
                                         <h5>Product Description</h5>
                                         <p>Manufacture, Care and Fit</p>
@@ -192,8 +212,7 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- ITEM 2 -->
+                    
                     <div class="accordion-item">
                         <div class="accordion-header" id="headingTwo">
                             <button class="accordion-button collapsed" 
@@ -204,7 +223,9 @@
                                     aria-controls="collapseTwo">
 
                                 <div class="icon-wrapper">
-                                    <div class="icon-left"></div>
+                                    <div class="icon-left">
+                                        <span class="sprites exchange-icon"></span>
+                                    </div>
                                     <div class="title-right">
                                         <h5>15 DAY RETURNS</h5>
                                         <p>Know about return & exchange policy</p>
@@ -236,19 +257,23 @@
                     </div>
                 </div>
                 
-                <div class="part">
-                    <h3>Ratings</h3> 
+                <div class="part">    
+                    @if($totalReviews > 0)
+                        <p class="flex">
+                            <span class="sprites thumb-icon"></span>
+                            <span class="text-muted"><b>{{ $percentage }}%</b> of verified buyers recommend this product</span>                            
+                        </p>
+                    @else
+                        <p>No reviews yet</p>
+                    @endif
+                    
                     <div class="rating-breakdown">
                         <div class="total-numbers">
                             <div class="title">
                                 <h4>{{ number_format($averageRating,1) }} </h4>
-                                <span class="star">
-                                    <svg fill="#666666" width="20px" height="20px" viewBox="0 0 1920 1920" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M1915.918 737.475c-10.955-33.543-42.014-56.131-77.364-56.131h-612.029l-189.063-582.1v-.112C1026.394 65.588 995.335 43 959.984 43c-35.237 0-66.41 22.588-77.365 56.245L693.443 681.344H81.415c-35.35 0-66.41 22.588-77.365 56.131-10.955 33.544.79 70.137 29.478 91.03l495.247 359.831-189.177 582.212c-10.955 33.657 1.13 70.25 29.817 90.918 14.23 10.278 30.946 15.487 47.66 15.487 16.716 0 33.432-5.21 47.775-15.6l495.134-359.718 495.021 359.718c28.574 20.781 67.087 20.781 95.662.113 28.687-20.668 40.658-57.261 29.703-91.03l-189.176-582.1 495.36-359.83c28.574-20.894 40.433-57.487 29.364-91.03" fill-rule="evenodd"/>
-                                    </svg> 
-                                </span>
+                                <span class="sprites green-star-icon"></span>
                             </div>                            
-                            <p>{{ $totalRatings >= 1000 ? round($totalRatings / 1000, 1).'k' : $totalRatings }} Verified Buyers</p>
+                            <p>{{ $totalRatings >= 1000 ? round($totalRatings / 1000, 1).'k' : $totalRatings }} ratings</p>
                         </div>
                         <div class="breakdown">
                         @foreach($ratings as $star => $count)
@@ -268,38 +293,64 @@
                                 <div class="rating-bar">
                                     <div class="rating-fill {{ $color }}" style="width: {{ $percentage }}%"></div>
                                 </div>
-                                <div class="rating-count">{{ $count }}</div>
+                                <div class="rating-count">({{ $count }})</div>
                             </div>
                             @endforeach
                         </div>
                     </div>
-                
-                    <div class="rating-customers">
-                        <p><b>Customer Reviews ({{ $totalReviews }})</b></p>
+                    
+                    <div class="accordion details-accordion" id="accordionRatings">
+                        <div class="accordion-item">
+                            <div class="accordion-header" id="ratingsDetails">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                        data-bs-target="#collapseRatings" aria-expanded="false" aria-controls="collapseRatings">
+                                    
+                                    <div class="icon-wrapper">
+                                        <div class="icon-left">
+                                            <span class="sprites reviews-icon"></span>
+                                        </div>
+                                        <div class="title-right">
+                                            <h5>Customer Reviews ({{ $totalReviews }})</h5>
+                                            <p>Product Code: {{ $product->id }}</p>                                              
+                                        </div>
+                                    </div>                                
+                                </button>
+                            </div>
 
-                        @foreach($reviews as $review)
-                            <div class="repeate">
-                                <div class="left">
-                                    <span class="star">{{ $review->rating }} ★</span>
-                                </div>
-                                <div class="right">                            
-                                    <p>{{ $review->review }}</p>
-                                    <p class="customer">
-                                        <b>{{ $review->user->name ?? 'Guest' }}</b>
-                                        | {{ \Carbon\Carbon::parse($review->created_at)->format('d M Y')}}
-                                    </p>
+                            <div id="collapseRatings" class="accordion-collapse collapse" aria-labelledby="ratingsDetails" data-bs-parent="#accordionRatings">
+                                <div class="accordion-body">                                
+                                    <div class="rating-customers">                                        
+                                        @foreach($reviews as $review)
+                                            <div class="repeate">
+                                                <div class="left">
+                                                    @if($review->rating == 1)
+                                                        <span class="star-show one_two">{{ $review->rating }} ★</span>    
+                                                    @elseif($review->rating == 2)
+                                                        <span class="star-show one_two">{{ $review->rating }} ★</span>
+                                                    @elseif($review->rating == 3)
+                                                        <span class="star-show three">{{ $review->rating }} ★</span>
+                                                    @elseif($review->rating == 4 || $review->rating == 5)
+                                                        <span class="star-show four_five">{{ $review->rating }} ★</span>
+                                                    @endif                                                    
+                                                </div>
+                                                <div class="right">                            
+                                                    <p>{{ $review->review }}</p>
+                                                    <p class="customer">
+                                                        {{ $review->user->name ?? 'Guest' }}
+                                                        | {{ \Carbon\Carbon::parse($review->created_at)->format('d M Y')}}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                
+                                        @if($totalReviews > 2)
+                                            <a href="{{ route('product.reviews', $product->id) }}" class="link">View all {{ $count }} reviews </a>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
-                        @endforeach
-                
-                        @if($totalReviews > 2)
-                            <a href="{{ route('product.reviews', $product->id) }}" class="link">View all {{ $count }} reviews </a>
-                        @endif
-
-                        <div class="product-code">
-                            Product Code: {{ $product->id }}                            
                         </div>
-                    </div>
+                    </div>                    
                 </div>                
             </div>
         </div> 
@@ -316,7 +367,6 @@
         </div>
     @endif
 </div>    
-
 @endsection
 
 @section('customJs')

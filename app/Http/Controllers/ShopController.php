@@ -275,10 +275,7 @@ class ShopController extends Controller {
         }
 
         $ratings = Review::where([['product_id', '=', $product->id],['status', '=', 1],])
-            ->selectRaw('rating, COUNT(*) as count')
-            ->groupBy('rating')
-            ->pluck('count', 'rating')
-            ->toArray();
+                    ->selectRaw('rating, COUNT(*) as count')->groupBy('rating')->pluck('count', 'rating')->toArray();
         
         for ($i = 1; $i <= 5; $i++) {
             $ratings[$i] = $ratings[$i] ?? 0;
@@ -289,7 +286,12 @@ class ShopController extends Controller {
         $totalRatings = Review::where([['product_id', '=', $product->id],['status', '=', 1],])->count();        
         $averageRating = Review::where('product_id', $product->id)->where('status', 1)->avg('rating');
         $reviews = Review::with('user')->where([['product_id', '=', $product->id],['status', '=', 1],])->latest()->take(3)->get();      
-        $totalReviews = Review::where([['product_id', '=', $product->id],['status', '=', 1],])->count();           
+        $totalReviews = Review::where([['product_id', '=', $product->id],['status', '=', 1],])->count();      
+        $productId = $product->id;
+        $recommendedCount = Review::where('product_id', $productId)->where('rating', '>=', 4)->count();
+        $percentage = $totalReviews > 0 
+            ? round(($recommendedCount / $totalReviews) * 100)
+            : 0;
        
         $data['product'] = $product;
         $data['coupon'] = $coupon;
@@ -299,6 +301,8 @@ class ShopController extends Controller {
         $data['averageRating'] = $averageRating;
         $data['reviews'] = $reviews;
         $data['totalReviews'] = $totalReviews;
+        $data['recommendedCount'] = $recommendedCount;
+        $data['percentage'] = $percentage;
         $data['colors'] = $colors;        
         $data['sizes'] = $sizes;
         $data['relatedProducts'] = $relatedProducts; 
