@@ -95,6 +95,7 @@ class CartController extends Controller {
                     'variant_id'        => $variantId,
                     'size'              => $size,
                     'color'             => $color,
+                    'cod'               => $product->cod,
                     'return_days'       => $product->return_days,
                     'delivery_min_days' => $product->delivery_min_days,
                     'delivery_max_days' => $product->delivery_max_days,

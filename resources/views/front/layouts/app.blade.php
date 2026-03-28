@@ -46,6 +46,10 @@
 
 @include('front.layouts.login_register')
 
+<a href="javascript:0" id="backToTop" class="back-top-icon">
+    <span class="sprites"></span>
+</a>
+
 <script src="{{ asset('front-assets/js/jquery-3.6.0.min.js') }}"></script>
 {{-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script> --}}
 <script src="{{ asset('front-assets/js/bootstrap.bundle.5.1.3.min.js') }}"></script>
@@ -56,6 +60,29 @@
 <script src="{{ asset('front-assets/js/documentReady.js') }}"></script>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
+    $(document).on('click', '.toggle-category', function(e) {
+        e.preventDefault();
+        let target = $(this).data('target');
+        // close others (optional)
+        $('.toggle-category').not(this).removeClass('active');
+        $('.mobile-dropdown').not(target).removeClass('show');
+
+        // toggle current
+        $(this).toggleClass('active');    
+        $(target).toggleClass('show');
+    });
+
+    $(document).on('click', '.toggle-subcategory', function(e) {
+        e.preventDefault();
+        let target = $(this).data('target');
+
+        $('.toggle-subcategory').not(this).removeClass('active');
+        $(this).closest('ul').find('.sub-dropdown').not(target).removeClass('show');
+
+        $(this).toggleClass('active');
+        $(target).toggleClass('show');
+    });
+
     $('.checkoutBtn').click(function () {            
         $.ajax({
             url: "/set-intended-url",

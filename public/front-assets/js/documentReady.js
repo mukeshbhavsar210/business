@@ -155,7 +155,16 @@ $(document).ready(function(){
         slidesToScroll: 1,
         arrows: true,
         fade: false,
-        asNavFor: '.slider-nav'
+        asNavFor: '.slider-nav',
+
+        responsive: [
+            {
+                breakpoint: 768,
+                settings: {
+                    asNavFor: null 
+                }
+            }
+        ]
     });
 
     $('.slider-nav').slick({
@@ -166,7 +175,15 @@ $(document).ready(function(){
         focusOnSelect: true,
         vertical: true,
         verticalSwiping: true,
-        arrows: true
+        arrows: true,
+
+        responsive: [
+            {
+                breakpoint: 768,
+                dots: true,
+                settings: "unslick" 
+            }
+        ]
     });
     
     $("#related-products").not('.slick-initialized').slick({
@@ -221,6 +238,21 @@ $(document).ready(function(){
                 slidesToScroll: 1,      
             }
         }]     
+    });
+
+    // Show / Hide button
+    $(window).scroll(function() {
+        if ($(this).scrollTop() > 200) {
+            $('#backToTop').fadeIn();
+        } else {
+            $('#backToTop').fadeOut();
+        }
+    });
+
+    // Scroll to top
+    $('#backToTop').click(function() {
+        $('html, body').animate({ scrollTop: 0 }, 600);
+        return false;
     });
 });
 

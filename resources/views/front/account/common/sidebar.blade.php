@@ -1,4 +1,4 @@
-<div class="sticky">
+<div class="sticky d-none d-md-block">
     <ul class="admin-leftbar">
         <li><a href="{{ route('account.dashboard') }}" class="{{ request()->routeIs('account.dashboard') ? 'active' : '' }}" >Overview</a></li>
         <hr />

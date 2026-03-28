@@ -8,47 +8,40 @@
 
 <div class="container">
     <div class="light-font">
-        @include('front/layouts/breadcrumb')        
+        @include('front/layouts/breadcrumb')
     </div>
 </div>
 
 <div class="container mt-4">
     <div class="row">
         <div class="col-md-6 col-12 sticky">
-            <div class="product-gallery">
-                <div class="slider-nav">
-                    @foreach($product->product_images as $productImage)
-                        <div class="thumb">
-                            <img src="{{ asset('uploads/product/small/'.$productImage->image) }}" alt="Product Image">
-                        </div>
-                    @endforeach
+             @if(request()->filled('variant') && $selectedVariant && $selectedVariant->image)                    
+                <div class="col-md-12 col-12">
+                    <img class="w-100 h-100" src="{{ asset('uploads/product/large/'.$selectedVariant->image) }}" alt="Variant Image">
                 </div>
-
-                <div class="slider-for">
-                    @foreach($product->product_images as $productImage)
-                        <div class="main-image">
-                            <img src="{{ asset('uploads/product/large/'.$productImage->image) }}" alt="Product Image">
+            @else
+                @if ($product->product_images && $product->product_images->count())
+                    <div class="product-gallery">
+                        <div class="slider-nav">
+                            @foreach($product->product_images as $productImage)
+                                <div class="thumb">
+                                    <img src="{{ asset('uploads/product/small/'.$productImage->image) }}" alt="Product Image">
+                                </div>
+                            @endforeach
                         </div>
-                    @endforeach
-                </div>
-            </div>
 
-            {{-- <div class="row">
-                @if(request()->filled('variant') && $selectedVariant && $selectedVariant->image)                    
-                    <div class="col-md-12 col-12">
-                        <img class="w-100 h-100" src="{{ asset('uploads/product/large/'.$selectedVariant->image) }}" alt="Variant Image">
+                        <div class="slider-for">
+                            @foreach($product->product_images as $productImage)
+                                <div class="main-image">
+                                    <img src="{{ asset('uploads/product/large/'.$productImage->image) }}" alt="Product Image">
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
-                @else                    
-                    @if ($product->product_images && $product->product_images->count())
-                        @foreach ($product->product_images as $productImage)
-                            <div class="col-md-6 col-12 mb-4">
-                                <img class="w-100 h-100" src="{{ asset('uploads/product/large/'.$productImage->image) }}" alt="Product Image">
-                            </div>
-                        @endforeach
-                    @endif
-                @endif                          
-            </div> --}}
+                @endif
+            @endif
         </div>
+
         <div class="col-md-6 col-12">
             <div class="product-details-wrapper">
                 <h1>{{ $product->title }}</h1>
@@ -70,16 +63,23 @@
                 @endif                                       
                 
                 <div class="price-wrapper">
-                    <div class="price">                                   
-                        @if($product->discount_percent > 0)
-                            <span class="dark">₹{{ round($product->discount_price) }}</span>
-                            <span class="mrp">MRP <del>₹{{ $product->price }}</del></span>
-                            <span class="discount">{{ $product->discount_percent }}% OFF</span>
-                        @else
-                            <span class="dark">₹{{ number_format($product->price, 2) }}</span>
-                        @endif
+                    <div class="price">
+                        <div class="details-price">
+                            @if($product->discount_percent > 0)
+                                <span class="dark">₹{{ round($product->discount_price) }}</span>
+                                <span class="mrp"><del>₹{{ $product->price }}</del></span>
+                                <span class="discount">{{ $product->discount_percent }}% OFF</span>
+                            @else
+                                <span class="dark">₹{{ number_format($product->price, 2) }}</span>
+                            @endif                     
+                        </div>                       
+                        <p class="inclusive">Inclusive of all taxes</p>
                     </div>
-                    <p class="inclusive">Inclusive of all taxes</p>
+                    <div class="rating-right">
+                        <p class="star-position"><span class="sprites rating-star2-ico"></span></p>
+                        <p>{{ number_format($averageRating,1) }} |</p>
+                        <p>{{ $totalRatings >= 1000 ? round($totalRatings / 1000, 1).'k' : $totalRatings }}</p>                        
+                    </div>
                 </div>
                 
                 @if($product->variants->count() > 0)
@@ -244,20 +244,34 @@
                                     <p>Easy {{ $product->return_days }} returns and exchanges</p>
                                 @else
                                     <p>Non-returnable product</p>
-                                @endif
-                                
-                                <div class="delivery-check mt-3">
-                                    @if($product->delivery_min_days)
-                                        <p>{{ $product->delivery_min_days }}</p>
-                                        <p>{{ $product->delivery_max_days }}</p>
-                                    @endif
-                                </div>
+                                @endif                                                                                                                            
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <div class="original-products">
+                    <div class="details">
+                        <div class="icon">
+                            <span class="sprites original-icon1"></span>
+                        </div>
+                        <p>100% Genuie<br /> Product</p>
+                    </div>
+                    <div class="details">
+                        <div class="icon">
+                            <span class="sprites original-icon1"></span>
+                        </div>
+                        <p>100% Secure <br />Payment</p>
+                    </div>
+                    <div class="details">
+                        <div class="icon">
+                            <span class="sprites original-icon1"></span>
+                        </div>
+                        <p>Easy Returns & <br /> Instant Refunds</p>
+                    </div>
+                </div>
                 
-                <div class="part">    
+                <div class="part">
                     @if($totalReviews > 0)
                         <p class="flex">
                             <span class="sprites thumb-icon"></span>

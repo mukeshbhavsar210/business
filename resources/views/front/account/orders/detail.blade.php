@@ -3,7 +3,7 @@
 @section('title', 'Order Details')
 
 @section('content')
-<div class="container-small">
+<div class="container">
     <div class="small-title">
         <h4>Account</h4>        
         <p>{{ currentUserName() }}</p>
@@ -83,7 +83,7 @@
 
                         @foreach($order->orderItems as $item)
                             <div class="row mb-2 mt-3">
-                                <div class="col-md-9 col-9">
+                                <div class="col-md-9 col-12">
                                     <div class="rate-product">
                                         <div class="inline">
                                             <div class="product-img">
@@ -101,7 +101,7 @@
                                         </div>
                                     </div>                                    
                                 </div>
-                                <div class="col-md-3 col-3">
+                                <div class="col-md-3 col-12">
                                     <div class="mt-3">
                                         @php
                                             $userReview = $userReviews[$item->product->id] ?? null;
