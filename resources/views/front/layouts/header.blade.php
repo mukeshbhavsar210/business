@@ -1,72 +1,15 @@
 <header class="header">    
     <div class="row">
         <nav class="navbar navbar-expand-lg">							
-            <div class="col-md-7 col-12">
+            <div class="col-md-7 col-9">
                 <div class="logo-controls">
-                    <a href="{{ route('front.home') }}" class="logo" >
-                        <img src="{{ asset('front-assets/images/logo.svg') }}" alt="Business">
-                    </a>					
-
-                    <div class="d-block d-md-none">
-                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
-                            Menu
-                            <span class="navbar-toggler-icon"></span>
-                        </button>
-                    </div>						
-                                
-                    <div class="collapse navbar-collapse" id="mainNavbar">
-                        <ul class="navbar-nav">
-                            @if (getCategories()->isNotEmpty())
-                                @foreach (getCategories() as $item1)
-                                    <li class="nav-item dropdown position-static">
-                                        <a href="{{ route('front.category', [$item1->category_slug]) }}" class="nav-link dropdown-toggle" >
-                                            {{ $item1->category_name }}
-                                        </a>
-
-                                        @if ($item1->subCategories->isNotEmpty())														
-                                            <ul class="dropdown-menu">
-                                                <div class="container">
-                                                    <div class="row">
-                                                        @foreach ($item1->subCategories as $item2)
-                                                            @if ($item2->subSubCategories->isNotEmpty())																	
-                                                                <div class="col-md-2 col-12">
-                                                                    <ul>
-                                                                        <li class="dropdown-header">
-                                                                            <a href="{{ route('front.shop', [$item1->category_slug, $item2->sub_category_slug]) }}">
-                                                                                {{ $item2->sub_category_title }}
-                                                                            </a>
-                                                                        </li>                                                                
-                                                                        @foreach ($item2->subSubCategories as $item3)
-                                                                            <li>                                                                            
-                                                                                <a class="dropdown-item" href="{{ route('front.shop', [$item1->category_slug, $item2->sub_category_slug, $item3->sub_sub_category_slug]) }}">
-                                                                                    {{ $item3->sub_sub_category_name }}
-                                                                                </a>
-                                                                            </li>
-                                                                        @endforeach
-                                                                    </ul>
-                                                                </div>
-                                                            @else
-                                                                <li>
-                                                                    <a class="dropdown-item" href="{{ route('front.shop', [$item1->slug, $item2->slug]) }}" title="{{ $item2->slug }}">
-                                                                        {{ $item2->name }}
-                                                                    </a>
-                                                                </li>
-                                                            @endif
-                                                        @endforeach
-                                                    </div>
-                                                </div>
-                                            </ul>
-                                        @endif
-                                    </li>
-                                @endforeach
-                            @endif
-                        </ul>
-                    </div>
+                    @include('front/layouts/header/mobile_menu')
+                    @include('front/layouts/header/default_menu')
                 </div>
-            </div>
-            <div class="col-md-5 col-12">
+            </div>        
+            <div class="col-md-5 col-3">
                 <div class="search-controls">
-                    <form class="search-form" action="{{ route('front.shop') }}">
+                    <form class="search-form d-none d-md-block" action="{{ route('front.shop') }}">
                         <div class="search-control">
                             <span class="sprites search-icon"></span> 
                             <input value="{{ Request::get('search') }}" type="text" placeholder="Search for products, brands and more" class="form-control" name="search" id="search">
@@ -74,14 +17,14 @@
                     </form>
 
                     <ul class="icon-controls">
-                        <li class="item">
+                        <li class="item d-none d-md-block">
                             <div class="hover-parent">
                                 <a href="{{ route('account.profile') }}" class="link">
                                     <span class="sprites user-icon"></span>     
                                     @if (Auth::check())
-                                        <span>Account</span>
+                                        <span class="d-none d-md-block">Account</span>
                                     @else
-                                        <span>Profile</span>
+                                        <span class="d-none d-md-block">Profile</span>
                                     @endif
                                 </a>
 
@@ -180,13 +123,13 @@
                         <li class="item">
                             <a href="{{ route('account.wishlist') }}" class="link">
                                 <span class="sprites wishlist-icon"></span>
-                                <span class="label">Wishlist</span>	                                        
+                                <span class="label d-none d-md-block">Wishlist</span>	                                        
                             </a>
                         </li>
                         <li class="item">
                             <a href="{{ route('front.cart') }}" class="link">
                                 <span class="sprites bag-icon"></span> 
-                                <span class="label">Bag</span>
+                                <span class="label d-none d-md-block">Bag</span>
 
                                 <span id="cartCount" class="card-count">
                                     {{ Cart::count() }}
@@ -195,9 +138,16 @@
                         </li>
                     </ul>
                 </div>				
-            </div>											
+            </div>        
         </nav>
     </div>							    
+
+    <form class="search-form d-block d-md-none" action="{{ route('front.shop') }}">
+        <div class="search-control">
+            <span class="sprites search-icon"></span> 
+            <input value="{{ Request::get('search') }}" type="text" placeholder="Search for products, brands and more" class="form-control" name="search" id="search">
+        </div>
+    </form>
 </header>
 
 <div class="menu-overlay"></div>

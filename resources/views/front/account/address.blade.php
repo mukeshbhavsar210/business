@@ -4,7 +4,7 @@
 
 @section('content')
 
-<div class="container-small">
+<div class="container">
     <div class="small-title">
         <div class="row">
             <div class="col-md-3 col-12">

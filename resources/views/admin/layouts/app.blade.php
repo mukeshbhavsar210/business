@@ -87,7 +87,7 @@
 
         <div class="startbar d-print-none">
             <div class="brand">
-                <a href="" class="logo" title=""><span><img class="logo-sm" src="{{ asset('admin-assets/img/Heaven.jpg') }}" alt="" /></span></a>
+                <a href="" class="logo" title=""><span><img class="logo-sm" src="{{ asset('front-assets/images/logo.png') }}" alt="" /></span></a>
             </div>
             <div class="startbar-menu">
                 <div class="startbar-collapse simplebar-scrollable-y" id="startbarCollapse" data-simplebar="init">

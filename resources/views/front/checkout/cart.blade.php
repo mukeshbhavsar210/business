@@ -271,15 +271,6 @@
                                                             <path d="M11.383 13.644A1.03 1.03 0 0 1 9.928 15.1L6 11.172 2.072 15.1a1.03 1.03 0 1 1-1.455-1.456l3.928-3.928L.617 5.79a1.03 1.03 0 1 1 1.455-1.456L6 8.261l3.928-3.928a1.03 1.03 0 0 1 1.455 1.456L7.455 9.716z"></path>
                                                         </svg>
                                                     </button>
-
-                                                    {{-- <form action="{{ route('front.removeCoupon') }}" method="POST" onsubmit="event.stopPropagation();">
-                                                        @csrf
-                                                        <button type="submit" class="remove_coupon">
-                                                            <svg fill="#ff0000" width="11px" height="11px" viewBox="-3.5 0 19 19">
-                                                                <path d="M11.383 13.644A1.03 1.03 0 0 1 9.928 15.1L6 11.172 2.072 15.1a1.03 1.03 0 1 1-1.455-1.456l3.928-3.928L.617 5.79a1.03 1.03 0 1 1 1.455-1.456L6 8.261l3.928-3.928a1.03 1.03 0 0 1 1.455 1.456L7.455 9.716z"></path>
-                                                            </svg>
-                                                        </button>
-                                                    </form> --}}
                                                 </div>
                                             </div>
 
@@ -317,21 +308,26 @@
                                 <a href="https://www.myntra.com/privacypolicy" target="_blank" class="privaryPolicyTermsOfUseStrip-base-link">Privacy Policy</a>
                             </div>
 
-                            <div class="order-btn mt-3">                                            
-                                <div class="btn-group w-100 mb-3" role="group">
-                                    <input type="radio" class="btn-check" name="payment_method" id="payment_cod" value="cod" autocomplete="off" checked>
-                                    <label class="btn btn-outline-primary" for="payment_cod">COD</label>
+                            <input type="hidden" name="grand_total" id="grand_total_input">
 
-                                    <input type="radio" class="btn-check" name="payment_method" id="payment_razorpay" value="razorpay" autocomplete="off">
-                                    <label class="btn btn-outline-primary" for="payment_razorpay">RazorPay</label>
-                                </div>
+                                @if($item->options->cod == 1)
+                                    <div class="order-btn mt-3">                                            
+                                        <div class="btn-group w-100 mb-3" role="group">
+                                            <input type="radio" class="btn-check" name="payment_method" id="payment_cod" value="cod" autocomplete="off" checked>
+                                            <label class="btn btn-outline-primary" for="payment_cod">COD</label>
 
-                                <div class="mt-2">
-                                    <button id="cod-form" class="btn-primary btn btn-block w-100 {{ Auth::check() ? '' : 'checkoutBtn' }}" type="submit">Pay on COD</button>
-                                    <input type="hidden" name="grand_total" id="grand_total_input">
-                                    <button id="razorpay-form" class="btn-primary btn btn-block w-100 d-none {{ Auth::check() ? 'placeOrderBtn' : 'checkoutBtn' }}" type="submit">Pay <span class="grand_total_button"></span></button>
-                                </div>  
-                            </div>                             
+                                            <input type="radio" class="btn-check" name="payment_method" id="payment_razorpay" value="razorpay" autocomplete="off">
+                                            <label class="btn btn-outline-primary" for="payment_razorpay">RazorPay</label>
+                                        </div>
+
+                                        <div class="mt-2">
+                                            <button id="cod-form" class="btn-primary btn btn-block w-100 {{ Auth::check() ? '' : 'checkoutBtn' }}" type="submit">Pay on COD</button>
+                                            <button id="razorpay-form" class="btn-primary btn btn-block w-100 d-none {{ Auth::check() ? 'placeOrderBtn' : 'checkoutBtn' }}" type="submit">Pay <span class="grand_total_button"></span></button>
+                                        </div>  
+                                    </div>  
+                                @else                                    
+                                    <button id="razorpay-form" class="btn-primary btn btn-block w-100  {{ Auth::check() ? 'placeOrderBtn' : 'checkoutBtn' }}" type="submit">Pay <span class="grand_total_button"></span></button>
+                                @endif                                                       
                         </form>                  
                     </div>
                 </div>
