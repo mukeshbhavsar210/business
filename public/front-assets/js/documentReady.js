@@ -149,6 +149,25 @@ $(document).ready(function(){
             }
         ]
     });
+
+    $('.slider-for').slick({
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        arrows: true,
+        fade: false,
+        asNavFor: '.slider-nav'
+    });
+
+    $('.slider-nav').slick({
+        slidesToShow: 4,
+        slidesToScroll: 1,
+        asNavFor: '.slider-for',
+        dots: false,
+        focusOnSelect: true,
+        vertical: true,
+        verticalSwiping: true,
+        arrows: true
+    });
     
     $("#related-products").not('.slick-initialized').slick({
         centerMode: false,
