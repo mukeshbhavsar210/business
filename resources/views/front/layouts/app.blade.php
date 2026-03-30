@@ -36,13 +36,13 @@
     @include('front.layouts.toast')
 </div>
 
-@include(request()->routeIs(['front.cart','front.checkout','front.checkout.thankyou']) ? 'front.layouts.cart_header' : 'front.layouts.header')
+@include(request()->routeIs(['front.cart','front.checkout','front.checkout.thankyou']) ? 'front.layouts.header.cart_header' : 'front.layouts.header.index')
 
 <main>
     @yield('content')
 </main>
 
-@include(request()->routeIs(['front.cart','front.checkout','front.checkout.thankyou']) ? 'front.layouts.cart_footer' : 'front.layouts.footer')
+@include(request()->routeIs(['front.cart','front.checkout','front.checkout.thankyou']) ? 'front.layouts.header.cart_footer' : 'front.layouts.header.footer')
 
 @include('front.layouts.login_register')
 

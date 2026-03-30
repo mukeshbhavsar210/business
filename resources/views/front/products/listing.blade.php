@@ -9,56 +9,58 @@
 @section('content')
     
 <div class="container-fluid">
-    <div class="light-font">
-        <ol class="breadcrumb primary-color">
-            <li class="breadcrumb-item"><a href="{{ route('front.home') }}">Home</a></li>
-            <li class="breadcrumb-item active">{{ $selected_item2->sub_category_title ?? '' }} / {{ $selected_item3->sub_sub_category_name ?? '' }}</li>                    
-        </ol>
-    </div>
-    <p>                                                
-        <b>{{ $selected_item1->category_name ?? '' }} / {{ $selected_item2->sub_category_title ?? '' }} / {{ $selected_item3->sub_sub_category_name ?? '' }}</b>
-        <span class="text-muted">- {{ $products->total() }} items</span>
-    </p> 
-
-    <div class="row mt-3">
-        <div class="col-md-2 col-12">            
-            <div class="flex-end">
-                <h5>FILTERS</h5>
-                @if($filtersApplied)                    
-                    <a href="{{ url()->current() }}" class="btn btn-outline-dark btn-sm">Clear All</a>                    
-                @endif
-            </div>
+    <div class="d-none d-md-block">
+        <div class="light-font">
+            <ol class="breadcrumb primary-color">
+                <li class="breadcrumb-item"><a href="{{ route('front.home') }}">Home</a></li>
+                <li class="breadcrumb-item active">{{ $selected_item2->sub_category_title ?? '' }} / {{ $selected_item3->sub_sub_category_name ?? '' }}</li>                    
+            </ol>
         </div>
+        <p>                                                
+            <b>{{ $selected_item1->category_name ?? '' }} / {{ $selected_item2->sub_category_title ?? '' }} / {{ $selected_item3->sub_sub_category_name ?? '' }}</b>
+            <span class="text-muted">- {{ $products->total() }} items</span>
+        </p> 
+    
+        <div class="row mt-3 col-12">
+            <div class="col-md-2 ">            
+                <div class="flex-end">
+                    <h5>FILTERS</h5>
+                    @if($filtersApplied)                    
+                        <a href="{{ url()->current() }}" class="btn btn-outline-dark btn-sm">Clear All</a>                    
+                    @endif
+                </div>
+            </div>
 
-        <div class="col-md-10 col-12">
-            <div class="row">
-                <div class="col-md-10 col-12">
-                    <div class="custom-dropdown">
-                        <a href="javascript:0" class="dropdown">
-                            Size
-                            <span class="rotate">
-                                <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M5.70711 9.71069C5.31658 10.1012 5.31658 10.7344 5.70711 11.1249L10.5993 16.0123C11.3805 16.7927 12.6463 16.7924 13.4271 16.0117L18.3174 11.1213C18.708 10.7308 18.708 10.0976 18.3174 9.70708C17.9269 9.31655 17.2937 9.31655 16.9032 9.70708L12.7176 13.8927C12.3271 14.2833 11.6939 14.2832 11.3034 13.8927L7.12132 9.71069C6.7308 9.32016 6.09763 9.32016 5.70711 9.71069Z" fill="#666666"/>
-                                </svg>
-                            </span>
-                        </a>
-                        <div class="dropdown-menu-select">
-                            <x-filters :items="$sizes" type="size" valueField="name" labelField="code" title="Sizes" :showColor="false" :showPercent="false" :sizeFilter="true" />
+            <div class="col-md-10 col-12">
+                <div class="row">
+                    <div class="col-md-10 col-12">
+                        <div class="custom-dropdown">
+                            <a href="javascript:0" class="dropdown">
+                                Size
+                                <span class="rotate">
+                                    <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M5.70711 9.71069C5.31658 10.1012 5.31658 10.7344 5.70711 11.1249L10.5993 16.0123C11.3805 16.7927 12.6463 16.7924 13.4271 16.0117L18.3174 11.1213C18.708 10.7308 18.708 10.0976 18.3174 9.70708C17.9269 9.31655 17.2937 9.31655 16.9032 9.70708L12.7176 13.8927C12.3271 14.2833 11.6939 14.2832 11.3034 13.8927L7.12132 9.71069C6.7308 9.32016 6.09763 9.32016 5.70711 9.71069Z" fill="#666666"/>
+                                    </svg>
+                                </span>
+                            </a>
+                            <div class="dropdown-menu-select">
+                                <x-filters :items="$sizes" type="size" valueField="name" labelField="code" title="Sizes" :showColor="false" :showPercent="false" :sizeFilter="true" :mobileView="false" />
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="col-md-2 col-12">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <select class="form-select" id="sortFilter">
-                            <option value="latest" {{ request('sort') == 'recommended' ? 'selected' : '' }}>Recommended</option>
-                            <option value="latest" {{ request('sort') == 'latest' ? 'selected' : '' }}>What's New</option>
-                            <option value="popularity" {{ request('sort') == 'popularity' ? 'selected' : '' }}>Popularity</option>
-                            <option value="discount" {{ request('sort') == 'discount' ? 'selected' : '' }}>Better Discount</option>
-                            <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>Price: High to Low</option>
-                            <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>Price: Low to High</option>
-                            <option value="rating" {{ request('sort') == 'rating' ? 'selected' : '' }}>Customer Rating</option>
-                        </select>                    
+                    <div class="col-md-2 col-12">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <select class="form-select" id="sortFilter">
+                                <option value="latest" {{ request('sort') == 'recommended' ? 'selected' : '' }}>Recommended</option>
+                                <option value="latest" {{ request('sort') == 'latest' ? 'selected' : '' }}>What's New</option>
+                                <option value="popularity" {{ request('sort') == 'popularity' ? 'selected' : '' }}>Popularity</option>
+                                <option value="discount" {{ request('sort') == 'discount' ? 'selected' : '' }}>Better Discount</option>
+                                <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>Price: High to Low</option>
+                                <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>Price: Low to High</option>
+                                <option value="rating" {{ request('sort') == 'rating' ? 'selected' : '' }}>Customer Rating</option>
+                            </select>                    
+                        </div>
                     </div>
                 </div>
             </div>
@@ -66,17 +68,17 @@
     </div>
 
     <div class="row border-product">
-        <div class="col-md-2 col-12 sticky right-border">
-            <x-filters :items="$item3" type="category" valueField="sub_sub_category_slug" labelField="sub_sub_category_name" nameClass="name" title="Categories" :showColor="false" :showPercent="false" :limit="17" :selected="$categoryArray" :sizeFilter="false"  />
-            <x-filters :items="$brands" type="brand" valueField="slug" labelField="name" nameClass="name" title="Brands" :showColor="false" :showPercent="false" :limit="17" :sizeFilter="false"  />
+        <div class="col-md-2 col-12 sticky right-border d-none d-md-block">
+            <x-filters :items="$item3" type="category" valueField="sub_sub_category_slug" labelField="sub_sub_category_name" nameClass="name" title="Categories" :showColor="false" :showPercent="false" :limit="17" :selected="$categoryArray" :sizeFilter="false" :mobileView="false"  />
+            <x-filters :items="$brands" type="brand" valueField="slug" labelField="name" nameClass="name" title="Brands" :showColor="false" :showPercent="false" :limit="17" :sizeFilter="false"  :mobileView="false" />
 
             <div class="filter-group">
                 <h5 class="h5 mb-2">Price</h5>
-                <input type="text" class="js-range-slider" name="my_range" value="" />
+                <input type="text" class="js-range-slider-desktop" name="my_range" value="" />
             </div>
 
-            <x-filters :items="$colors" type="color" valueField="name" labelField="name" title="Color" :showColor="true" :showPercent="false" :sizeFilter="false"  />
-            <x-filters :items="$discounts" type="discount" valueField="percentage" labelField="percentage" title="Discount Range" :showColor="false" :showPercent="true" :sizeFilter="false" />
+            <x-filters :items="$colors" type="color" valueField="name" labelField="name" title="Color" :showColor="true" :showPercent="false" :sizeFilter="false" :mobileView="false"  />
+            <x-filters :items="$discounts" type="discount" valueField="percentage" labelField="percentage" title="Discount Range" :showColor="false" :showPercent="true" :sizeFilter="false" :mobileView="false" />
         </div>
 
         <div class="col-md-10 col-12">
@@ -95,6 +97,121 @@
         </div>
     </div>
 </div>
+
+<div class="d-block d-md-none">
+    <div class="mobile-filter-control">
+        <a href="javascript:0" type="button" class="btn-custom filter-btn-1" data-bs-toggle="modal" data-bs-target="#mobile-filter2-Modal">
+            <div class="flex-mobile">
+                <span class="sprites"></span>
+                <span class="label">Sort</span>
+            </div>        
+        </a>
+        <a href="javascript:0" type="button" class="btn-custom filter-btn-2" data-bs-toggle="modal" data-bs-target="#mobile-filter1-Modal">
+            <div class="flex-mobile">
+                <span class="sprites"></span>
+                <span class="label">Filter</span>
+            </div>
+        </a>
+    </div>
+</div>
+
+<div class="modal fade bottom-modal1" id="mobile-filter1-Modal" tabindex="-1" aria-labelledby="mobile-filter1-ModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="mobile-filter1-ModalLabel">Filters</h5>
+        <div>
+            @if($filtersApplied)                    
+                <a href="{{ url()->current() }}" class="btn btn-outline-dark btn-sm">Clear All</a>                    
+            @endif
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div class="mobile-filter-tabs">
+            <div class="left">
+                <div class="nav flex-column nav-pills" id="v-tab" role="tablist">
+                    <a href="javascript:0" class="nav-link active" data-bs-toggle="pill" data-bs-target="#tab1">
+                        Categories
+                    </a>
+                    <a href="javascript:0" class="nav-link" data-bs-toggle="pill" data-bs-target="#tab2">
+                        Size
+                    </a>
+                    <a href="javascript:0" class="nav-link" data-bs-toggle="pill" data-bs-target="#tab3">
+                        Price
+                    </a>
+                    <a href="javascript:0" class="nav-link" data-bs-toggle="pill" data-bs-target="#tab4">
+                        Brand
+                    </a>
+                    <a href="javascript:0" class="nav-link" data-bs-toggle="pill" data-bs-target="#tab5">
+                        Color
+                    </a>
+                    <a href="javascript:0" class="nav-link" data-bs-toggle="pill" data-bs-target="#tab6">
+                        Discount
+                    </a>
+                    <a href="javascript:0" class="nav-link" data-bs-toggle="pill" data-bs-target="#tab7">
+                        More filters
+                    </a>
+                </div>
+            </div>
+
+            <div class="right">
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="tab1">
+                        <x-filters :items="$item3" type="category" valueField="sub_sub_category_slug" labelField="sub_sub_category_name" nameClass="name" title="" :showColor="false" :showPercent="false" :limit="17" :selected="$categoryArray" :sizeFilter="false" :mobileView="true" />
+                    </div>
+                    <div class="tab-pane fade" id="tab2">
+                        <x-filters :items="$sizes" type="size" valueField="name" labelField="code" title="Size" :showColor="false" :showPercent="false" :sizeFilter="true" :mobileView="true" />
+                    </div>
+                    <div class="tab-pane fade" id="tab3">                        
+                        <div class="filter-group">
+                            <p class="text-muted">Selected Price range</p>
+                            <h6 class="mb-4"><span id="selectedPriceRange"></span></h6>
+                            <input type="text" class="js-range-slider-mobile" name="my_range" value="" />
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="tab4">
+                        <x-filters :items="$brands" type="brand" valueField="slug" labelField="name" nameClass="name" title="Brands" :showColor="false" :showPercent="false" :limit="17" :sizeFilter="false" :mobileView="true" />
+                    </div>
+                    <div class="tab-pane fade" id="tab5">
+                        <x-filters :items="$colors" type="color" valueField="name" labelField="name" title="Color" :showColor="true" :showPercent="false" :sizeFilter="false" :mobileView="true" />
+                    </div>
+                    <div class="tab-pane fade" id="tab6">
+                        <x-filters :items="$discounts" type="discount" valueField="percentage" labelField="percentage" title="Discount" :showColor="false" :showPercent="true" :sizeFilter="false" :mobileView="true" />
+                    </div>
+                    <div class="tab-pane fade" id="tab7">
+                        More filters
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>      
+    </div>
+  </div>
+</div>
+
+<div class="modal fade bottom-modal2" id="mobile-filter2-Modal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">      
+      <div class="modal-header">
+        <h5 class="modal-title">Sort By</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <ul class="sort-options">            
+            <li><span class="sprites sort-icon1"></span><a href="?sort=popularity" class="sort-item {{ request('sort') == 'popularity' ? 'active' : '' }}">Popularity</a></li>
+            <li><span class="sprites sort-icon1"></span><a href="?sort=latest" class="sort-item {{ request('sort') == 'latest' ? 'active' : '' }}">What's New</a></li>        
+            <li><span class="sprites sort-icon1"></span><a href="?sort=discount" class="sort-item {{ request('sort') == 'discount' ? 'active' : '' }}">Better Discount</a></li>
+            <li><span class="sprites sort-icon1"></span><a href="?sort=price_desc" class="sort-item {{ request('sort') == 'price_desc' ? 'active' : '' }}">Price: High to Low</a></li>
+            <li><span class="sprites sort-icon1"></span><a href="?sort=price_asc" class="sort-item {{ request('sort') == 'price_asc' ? 'active' : '' }}">Price: Low to High</a></li>
+            <li><span class="sprites sort-icon1"></span><a href="?sort=rating" class="sort-item {{ request('sort') == 'rating' ? 'active' : '' }}">Customer Rating</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
 @endsection
 
 @section('customJs')
@@ -112,6 +229,19 @@
             $(document).click(function () {
                 $('.custom-dropdown-select').removeClass('active');
             });
+
+            $('.form-check-input:checked').each(function () {
+                $(this).parent().addClass('active');                
+            });
+            
+        });
+
+        $(document).on('change', '.form-check-input', function () {            
+            if ($(this).is(':checked')) {
+                $(this).parent().addClass('active');                
+            } else {
+                $(this).parent().removeClass('active');                
+            }
         });
 
         $('.form-check-input').on('change', function () {
@@ -242,7 +372,7 @@
             window.location.href = '{{ url()->current() }}?' + params.toString();
         }
 
-        rangeSlider = $(".js-range-slider").ionRangeSlider({
+        rangeSlider = $(".js-range-slider-desktop").ionRangeSlider({
             type: "double",
             min: 0,
             max: 5000,
@@ -254,13 +384,13 @@
             prefix: "₹",
             onFinish: function(){
                 apply_price_filters()
-            }
+            }            
         });
 
-        var slider = $(".js-range-slider").data("ionRangeSlider");
+        var slider = $(".js-range-slider-desktop").data("ionRangeSlider");
 
         function apply_price_filters() {
-            var slider = $(".js-range-slider").data("ionRangeSlider");
+            var slider = $(".js-range-slider-desktop").data("ionRangeSlider");
 
             var min = slider.result.from;
             var max = slider.result.to;
@@ -273,6 +403,51 @@
 
             window.location.href = '{{ url()->current() }}?' + params.toString();
         }        
+
+
+        rangeSlider = $(".js-range-slider-mobile").ionRangeSlider({
+            type: "double",
+            min: 0,
+            max: 5000,
+            from: {{ ($priceMin) }},
+            to: {{ ($priceMax) }},
+            step: 20,
+            skin: "flat",
+            prefix: "₹",
+
+            onStart: function (data) {
+                updatePriceDisplay(data.from, data.to);
+            },
+
+            onChange: function (data) {
+                updatePriceDisplay(data.from, data.to);
+            },
+
+            onFinish: function () {
+                apply_price_filters();
+            }
+        });
+
+        function updatePriceDisplay(min, max) {
+            $("#selectedPriceRange").text("₹" + min + " - ₹" + max);
+        }
+
+        function apply_price_filters() {
+            var slider = $(".js-range-slider-mobile").data("ionRangeSlider");
+
+            var min = slider.result.from;
+            var max = slider.result.to;
+
+            var params = new URLSearchParams(window.location.search);
+
+            params.set('price_min', min);
+            params.set('price_max', max);
+
+            window.location.href = '{{ url()->current() }}?' + params.toString();
+        }
+
+         
+
         // function apply_search_filters(){            
         //     var keyword = $('#search').val();
         //     if(keyword.length > 0){
@@ -280,5 +455,23 @@
         //     }            
         //     window.location.href = url;
         // }
+
+        // $(window).on('scroll', function () {
+        //     var footerTop = $('footer').offset().top;
+        //     var scrollTop = $(window).scrollTop();
+        //     var windowHeight = $(window).height();
+
+        //     if (scrollTop + windowHeight >= footerTop) {
+        //         $('.mobile-filter-control').css({
+        //             position: 'absolute',
+        //             bottom: '0px'
+        //         });
+        //     } else {
+        //         $('.mobile-filter-control').css({
+        //             position: 'fixed',
+        //             bottom: '100px'
+        //         });
+        //     }
+        // });
     </script>
 @endsection
