@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="container">
-    <div class="small-title">
+    <div class="small-title d-none d-md-block">
         <h4>Account</h4>        
         <p>{{ currentUserName() }}</p>
     </div>

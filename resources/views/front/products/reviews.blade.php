@@ -21,7 +21,7 @@
                 @endif                
             </div>        
 
-            <div class="col-md-8 col-12">  
+            <div class="col-md-8 col-12">
                 <h1>{{ $product->title }}</h1>
                 <p class="tag">{{ $product->short_description }}</p>
 
