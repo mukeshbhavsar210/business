@@ -1,12 +1,12 @@
 <div class="d-block d-md-none">
-    <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu">
-        ☰
-    </button>
+    <a href="javascript:0" class="navbar-toggler mobile-menu-icon" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu">
+        <span class="sprites"></span>
+    </a>
 </div>
 
 <div class="offcanvas offcanvas-start d-md-none" tabindex="-1" id="mobileMenu">
     <div class="mobile-ad">
-        Mukesh
+        
     </div>
 
     <div class="offcanvas-body">                            

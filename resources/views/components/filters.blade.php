@@ -1,6 +1,6 @@
 <div class="{{ $sizeFilter ? 'filter-size' : 'filter-group' }}">
     
-    @if(!$sizeFilter)
+    @if(!$mobileView)
         <h5>{{ $title }}</h5>
     @endif
     
@@ -13,25 +13,35 @@
             @foreach($items as $item)
                 <div class="form-check">
                     <label class="custom-checkbox" for="{{ $type }}-{{ $item->id }}">                        
-                        <input class="form-check-input {{ $type }}-label" type="checkbox"
-                            name="{{ $type }}[]" value="{{ $item->$valueField }}" id="{{ $type }}-{{ $item->id }}"
-                            {{ in_array($item->$valueField, $selected) ? 'checked' : '' }} >
+                        <input class="form-check-input {{ $type }}-label " type="checkbox"
+                                name="{{ $type }}[]" value="{{ $item->$valueField }}" id="{{ $type }}-{{ $item->id }}"
+                                {{ in_array($item->$valueField, $selected) ? 'checked' : '' }} >
 
-                            <span class="checkmark"></span>
+                            @if(!$mobileView)
+                                <span class="checkmark"></span>
+                            @else
+                                
+                            @endif                             
 
                             @if($showColor && isset($item->code))
                                 <span class="color-code" style="background-color: {{ $item->code }}"></span>
                             @endif
 
-                            <span class="{{ $nameClass ?? $type.'-name' }}">
-                                {{ (isset($limit)
-                                    ? Str::limit($item->$labelField, $limit, '...')
-                                    : $item->$labelField).($showPercent ? '% and above' : '') }}
-                            </span>
+                            <p class="mobile-control">
+                                <span class="{{ $nameClass ?? $type.'-name' }}">
+                                    {{ (isset($limit)
+                                        ? Str::limit($item->$labelField, $limit, '...')
+                                        : $item->$labelField).($showPercent ? '% and above' : '') }}
+                                </span>
 
-                            @if(isset($item->products_count))
-                                <span class="text-muted tiny-font">({{ $item->products_count }})</span>
-                            @endif
+                                @if(isset($item->products_count))
+                                    @if(!$mobileView)
+                                        <span class="text-muted tiny-font">({{ $item->products_count }})</span>
+                                    @else
+                                        <span class="text-muted tiny-font">{{ $item->products_count }}</span>
+                                    @endif                                    
+                                @endif
+                            </p>
                     </label>
                 </div>
             @endforeach

@@ -175,16 +175,17 @@ textarea { font-family: var(--body-font); font-size: 12px !important;}
 .list-icon { background-position:-135px -61px; height: 21px; width: 21px; margin: 5px auto; }
 .exchange-icon { background-position:-113px -62px; height: 21px; width: 21px; margin: 5px auto; }
 .reviews-icon { background-position:-157px -60px; height: 25px; width: 25px; margin: 5px auto; }
-
 .green-star-icon { background-position:-379px 0; height: 21px; width: 21px; margin-top: 21px; }
-
 .search-icon { background-position:-69px 0; height: 22px; width: 19px; }
 .empty-order { background-position:-6px -127px; height: 66px; width: 67px; margin: 0 auto;}
 .delete-icon span { background-position:-228px -29px; height: 17px; width: 17px; }
 .delete-icon:hover span { background-position:-248px -29px; }
-
 .mobile-arrow-1 { background-position: -322px -61px; height: 17px; width: 12px; }
 .mobile-arrow-2 { background-position: -227px -61px; height: 17px; width: 12px; }
+
+.mobile-menu-icon { height: 20px; width: 20px; display: block; }
+.mobile-menu-icon span { background-position:-359px -60px; height: 20px; width: 19px; }
+.mobile-menu-icon:hover span { background-position:-381px -60px; }
 
 .text-primary { color: var(--primary)  !important;}
 .text-secondary { color: var(--secondary) !important; }
@@ -1071,6 +1072,7 @@ footer .original-banner .text { padding-top: 3px; }
 footer .original-banner .text h6 { font-size: 14px; font-weight: normal; color: var(--black); line-height: 20px; }
 footer .original-banner .text h6 span { font-size: 14px; font-weight: bold;  }
 
+
 @media only screen and (max-width: 640px) {
     
 }
@@ -1082,16 +1084,57 @@ footer .original-banner .text h6 span { font-size: 14px; font-weight: bold;  }
     body .navbar .nav-link:hover { border: none; color: var(--black);}
     body .toggle-category.active, body .toggle-subcategory.active { font-weight: bold;}
     body .dropdown-item.active, .dropdown-item:active { color: var(--black); background: none;}
-    body .dropdown-item { margin: 5px 0;}
+    body .dropdown-item { margin: 8px 0;}
     body .mobile-ad { height: 80px; width: 100%; background-color: var(--primary); padding: 10px; color: var(--white);}
     body .details-accounts, body .orders-details { width: 100%;}
     body header { padding: 5px 10px;}
-    body header .logo { margin-top: 5px;}
+    body header .logo { margin-top: 5px; margin-left: 15px;}
     body header .logo img { width: 50px;}
     body .offcanvas-start { width: 75%;}
     body .search-controls .icon-controls { margin-top: 5px;}
     body .toast { top:65px; right:10px;}
     body .hover-content { top:44px; }
+    body .dropdown-item:hover, .dropdown-item:focus { background: none;}
+
+    .bottom-modal1 .modal-body { padding: 10px 18px 0 0;}
+    .mobile-filter-tabs { display: flex; column-gap: 15px;}
+    .mobile-filter-tabs .left { width: 26%; background-color: var(--gray-light); height: 100vh;}
+    .mobile-filter-tabs .left .nav-pills .nav-link { text-align: left; border-radius: 0; color: var(--black); border-bottom: 1px #ccc solid; font-size: 12px; padding: 13px 0 13px 15px;}
+    .mobile-filter-tabs .left .nav-pills .nav-link.active { background-color: var(--white); color: var(--black); font-weight: bold; }
+    .mobile-filter-tabs .right { width: 74%;}
+    .mobile-filter-tabs .right .tab-content .filter-size .test { display: block;}
+
+    .filter-group .form-check { border-bottom: 1px #ccc solid; padding: 10px 0;}
+
+    .bottom-modal1 .modal-header { display: flex; justify-content: space-between;}
+    .mobile-filter-tabs .right .tab-content .filter-group { padding: 0; border: none; }
+    .mobile-filter-tabs .right .tab-content .filter-group .filter-scroll { height: auto;}
+    .mobile-filter-tabs .right .tab-content .filter-group .test, .filter-size .test .form-check { width: 100%;}    
+    .mobile-control { display: flex; justify-content: space-between; width: 100%;}    
+
+    .custom-checkbox.active .mobile-control, .custom-checkbox.active .mobile-control .name { color: var(--black); font-weight: bold; }
+
+    .bottom-modal1 .modal-dialog, .bottom-modal2 .modal-dialog { position: fixed; bottom: 0; margin: 0; width: 100%; max-width: 100%; }
+    .bottom-modal1 .modal-content { height: 93vh;  border-radius: 10px 10px 0 0; overflow: hidden; }
+    .bottom-modal1 .modal-body, .bottom-modal2 .modal-body { overflow-y: auto; }
+    .bottom-modal1.fade .modal-dialog, .bottom-modal2.fade .modal-dialog { transform: translateY(100%); transition: transform 0.3s ease-out; }
+    .bottom-modal1.show .modal-dialog, .bottom-modal2.show .modal-dialog { transform: translateY(0); }
+    .bottom-modal2 .modal-content { height: 40vh;  border-radius: 10px 10px 0 0; overflow: hidden; }
+
+    .bottom-modal2 .modal-body { padding: 10px 18px 0 18px;}
+    .sort-options li { margin: 8px 0; }
+    .sort-options li .sort-item { text-decoration: none; color: var(--gray); }
+    .sort-options li .sort-item:hover { color: var(--black); }
+    .sort-options li .sort-item.active { color: var(--black); font-weight: bold; }
+
+    .mobile-filter-control { display: flex; padding: 13px 30px 15px 30px; border-bottom: 1px #ccc solid; border-top: 1px #ccc solid; position: sticky; top: 10px; left:0; width: 100%; background-color: var(--white); }
+    .mobile-filter-control .btn-custom { width: 48%; display: block; text-align: center;}
+    .mobile-filter-control .btn-custom .flex-mobile { display: flex; column-gap: 5px; width: 55px; margin: 0 auto;}
+    .mobile-filter-control .filter-btn-1 span { background-position:-306px -27px; height: 20px; width: 20px;}
+    .mobile-filter-control .filter-btn-1:hover span { background-position:-324px -27px; }
+    .mobile-filter-control .filter-btn-2 span { background-position:-269px -28px; height: 20px; width: 20px;}
+    .mobile-filter-control .filter-btn-2:hover span { background-position:-288px -28px; }
+    .mobile-filter-control .filter-btn-1:hover, .mobile-filter-control .filter-btn-2:hover { color: var(--black);}
 
     /* Product Listing Section */
     body .listing-products { padding: 0; }
@@ -1127,7 +1170,6 @@ footer .original-banner .text h6 span { font-size: 14px; font-weight: bold;  }
     body .placed-order-summary .wrapper-inside .confirmation-card p { font-size: 12px;}
     body .placed-order-summary .wrapper-inside .btn-action { display: block;}
     body .placed-order-summary .wrapper-inside .btn-action .btn { margin-bottom: 10px; width: 100%; }
-
 
     .mobile-dropdown { display: none; position: static; box-shadow: none; padding-left: 15px;  }
     .mobile-dropdown.show { display: block; }
