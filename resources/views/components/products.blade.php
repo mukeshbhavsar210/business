@@ -103,7 +103,7 @@
                         </a>
                     @endif
                     
-                    <div class="size-wrapper">
+                    {{-- <div class="size-wrapper">
                         <p class="tiny-font mt-1">Sizes:</p>
                         <ul class="size-list-small">                        
                             @foreach($product->sizes as $size)
@@ -115,7 +115,7 @@
                                 </li>
                             @endforeach                       
                         </ul>
-                    </div>
+                    </div> --}}
                 </div>  
             @else
                 <div class="product-info">

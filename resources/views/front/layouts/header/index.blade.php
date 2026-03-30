@@ -1,22 +1,25 @@
 <header class="header">    
-    <div class="row">
+    <div class="row row-hide">
         <nav class="navbar navbar-expand-lg">							
-            <div class="col-md-7 col-9">
-                <div class="logo-controls">
+            <div class="col-md-7 col-8">
+                <div class="logo-controls">                
                     @include('front/layouts/header/mobile_menu')
                     @include('front/layouts/header/default_menu')
                 </div>
             </div>        
-            <div class="col-md-5 col-3">
-                <div class="search-controls">
-                    <form class="search-form d-none d-md-block" action="{{ route('front.shop') }}">
+            <div class="col-md-5 col-4">
+                <div class="search-controls">                                      
+                    <form class="search-form desktop-form d-none d-md-block" action="{{ route('front.shop') }}">
                         <div class="search-control">
                             <span class="sprites search-icon"></span> 
                             <input value="{{ Request::get('search') }}" type="text" placeholder="Search for products, brands and more" class="form-control" name="search" id="search">
                         </div>
                     </form>
-
+                    
                     <ul class="icon-controls">
+                        <li class="item d-block d-md-none">
+                            <a href="javascript:0" class="search-btn"><span class="sprites search-icon"></span></a>
+                        </li>
                         <li class="item d-none d-md-block">
                             <div class="hover-parent">
                                 <a href="{{ route('account.profile') }}" class="link">
@@ -137,15 +140,18 @@
                             </a>
                         </li>
                     </ul>
-                </div>				
+                </div> 
             </div>        
         </nav>
     </div>							    
 
-    <form class="search-form d-block d-md-none" action="{{ route('front.shop') }}">
+    <form class="search-form bottom-form d-none" action="{{ route('front.shop') }}">
         <div class="search-control">
             <span class="sprites search-icon"></span> 
-            <input value="{{ Request::get('search') }}" type="text" placeholder="Search for products, brands and more" class="form-control" name="search" id="search">
+            <input value="{{ Request::get('search') }}" type="text" placeholder="Search for products, brands and more" class="form-control" name="search" id="search">            
+            <a href="javascript:0" class="close-search-icon d-none">
+                <span class="sprites"></span> 
+            </a>
         </div>
     </form>
 </header>

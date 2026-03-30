@@ -60,6 +60,49 @@
 <script src="{{ asset('front-assets/js/documentReady.js') }}"></script>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
+    $(document).ready(function(){                
+        $('.track-order-btn').click(function(){
+            let orderId = $(this).data('order-id');
+            let url = "{{ route('account.order.tracking', ':id') }}";
+            url = url.replace(':id', orderId);
+
+            $.ajax({
+                url: url,
+                type: "GET",
+                success: function(response){
+                    let html = '';
+                    if(response.length === 0){
+                        html = '<li>No tracking available</li>';
+                    }else{
+                        response.forEach(function(status){
+                            html += `<li class="active">
+                                        <span class="sprites dark-green-tick-icon"></span>                                        
+                                        <p class="text-muted tiny-font"><b>${status.status.replaceAll('_',' ')}</b><br>on ${status.date}</p>
+                                    </li>
+                                    `;
+                                });
+                    }
+                    $('#trackingTimeline').html(html);
+                }
+            });
+        });
+    });
+
+
+    $(document).on('click', '.search-btn', function () {
+        $('.search-form').toggleClass('d-none');
+        $('.bottom-form').removeClass('d-none');
+        $('.close-search-icon').removeClass('d-none');
+        $('.row-hide').addClass('d-none');
+    });
+
+    $(document).on('click', '.close-search-icon', function () {
+        $('.row-hide').removeClass('d-none');
+        $('.bottom-form').addClass('d-none');        
+        $('.close-search-icon').addClass('d-none');
+        $('.desktop-form').addClass('d-none');        
+    });
+    
     $(document).on('click', '.toggle-category', function(e) {
         e.preventDefault();
         let target = $(this).data('target');

@@ -1,5 +1,5 @@
 <div class="modal fade" id="deliveryAddress" tabindex="-1" aria-labelledby="deliveryAddressLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="deliveryAddressLabel">Select Delivery address</h5>
@@ -81,7 +81,7 @@
 </div>
 
 <div class="modal fade" id="commonCartUpdateModal" tabindex="-1">
-    <div class="modal-dialog modal-sm">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="cartModalTitle">Sizes</h5>

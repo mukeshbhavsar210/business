@@ -1,8 +1,14 @@
-<div class="d-block d-md-none">
-    <a href="javascript:0" class="navbar-toggler mobile-menu-icon" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu">
+@if(request()->routeIs(['front.home']))
+    <div class="d-block d-md-none">
+        <a href="javascript:0" class="navbar-toggler mobile-menu-icon" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu">
+            <span class="sprites"></span>
+        </a>
+    </div>    
+@else
+    <a href="{{ url()->previous() }}" class="navbar-toggler mobile-back-icon">
         <span class="sprites"></span>
-    </a>
-</div>
+    </a>    
+@endif
 
 <div class="offcanvas offcanvas-start d-md-none" tabindex="-1" id="mobileMenu">
     <div class="mobile-ad">

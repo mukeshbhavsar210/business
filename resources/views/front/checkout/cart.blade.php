@@ -91,13 +91,15 @@
                                 <p class="short-desc">{{ $item->options->short_description ?? '' }}</p>
 
                                 <div class="manuplate">
-                                    @if(!$item->options->size == null || !$item->options->size == null)
+                                    @if(!$item->options->size == null)
                                         <div class="select">                                    
                                             <a href="javascript:void(0);" class="update-cart-modal" data-type="size" data-productid="{{ $item->id }}" data-rowid="{{ $item->rowId }}" data-selected="{{ $item->options->size }}">
                                                 Size: <b>{{ $item->options->size }}</b> <span class="caret"></span>
                                             </a>
                                         </div>
-                                    
+                                    @endif
+
+                                    @if(!$item->options->color == null)
                                         <div class="select">                                
                                             <a href="javascript:void(0);" class="update-cart-modal" data-type="color" data-productid="{{ $item->id }}" data-rowid="{{ $item->rowId }}" data-selected="{{ $item->options->color }}">
                                                 Color: <b>{{ $item->options->color }}</b> <span class="caret"></span>

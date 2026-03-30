@@ -351,42 +351,6 @@
 
 @section('customJs')
 <script>
-    $(document).ready(function(){        
-        $('.track-order-btn').click(function(){
-            let orderId = $(this).data('order-id');
-
-            let url = "{{ route('account.order.tracking', ':id') }}";
-            url = url.replace(':id', orderId);
-
-            $.ajax({
-                url: url,
-                type: "GET",
-                success: function(response){
-                    let html = '';
-                    if(response.length === 0){
-                        html = '<li>No tracking available</li>';
-                    }else{
-                        response.forEach(function(status){
-                            html += `
-                                <li class="active">
-                                    <svg fill="#cccccc" width="22px" height="22px" viewBox="0 0 24 24">
-                                        <path d="M12,2A10,10,0,1,0,22,12,10,10,0,0,0,12,2Zm5.676,8.237-6,5.5a1,1,0,0,1-1.383-.03l-3-3a1,1,0,1,1,1.414-1.414l2.323,2.323,5.294-4.853a1,1,0,1,1,1.352,1.474Z"/>
-                                    </svg>
-                                    <p>
-                                        <b>${status.status.replaceAll('_',' ')}</b><br>
-                                        on ${status.date}
-                                    </p>
-                                </li>
-                            `;
-                        });
-                    }
-                    $('#trackingTimeline').html(html);
-                }
-            });
-        });
-    });
-
-
     $(document).on('click', '.open-review-modal', function () {        
         let orderId = $(this).data('order-id');
 
@@ -399,8 +363,5 @@
             }
         });
     });
-
-    
-
 </script>
 @endsection
