@@ -66,7 +66,17 @@
                                     @endphp
 
                                     <ul class="navbar-listings">
-                                        <li><a class="{{ request()->routeIs(['account.orders', 'account.orderDetail', 'account.order.view', 'account.orders.cancelled']) ? 'active' : '' }}"
+                                        <li>
+                                            <a class="{{ request()->routeIs(['account.dashboard', 'account.orderDetail', 'account.order.view', 'account.orders.cancelled']) ? 'active' : '' }}"
+                                                @if(Auth::check()) href="{{ route('account.dashboard') }}" 
+                                                @else 
+                                                {!! $guestAttr !!} 
+                                                @endif
+                                                >Dashboard
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="{{ request()->routeIs(['account.orders', 'account.orderDetail', 'account.order.view', 'account.orders.cancelled']) ? 'active' : '' }}"
                                                 @if(Auth::check()) href="{{ route('account.orders') }}" 
                                                 @else 
                                                 {!! $guestAttr !!} 

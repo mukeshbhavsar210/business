@@ -102,7 +102,10 @@ class Product extends Model {
     //     return $this->belongsTo(SubCategory::class,'sub_category_id');
     // }   
 
-    
+
+    public function discounts() {
+        return $this->hasMany(Discount::class);
+    }    
 
     public function discount(){
         return $this->belongsTo(DiscountPercentage::class, 'discount_percentage_id');

@@ -219,23 +219,27 @@
                 @else
                     <img src="{{ asset('admin-assets/img/default-150x150.png') }}" class="rounded">
                 @endif
-            </a>
-            {{-- <a href="{{ route('front.product', [
-                    $wishlist->product->subCategory->sub_category_slug,                               
-                    $wishlist->product->subSubCategory->sub_sub_category_slug,
-                    $wishlist->product->slug] ) }}" target="_blank" class="product-img">
-                @if($image)
-                    <img src="{{ asset('uploads/product/small/'.$image->image) }}" class="rounded" alt="{{ $wishlist->product->title }}">
-                @else
-                    <img src="{{ asset('admin-assets/img/default-150x150.png') }}" class="rounded">
-                @endif
-            </a>               --}}
+            </a>            
             
             <div class="hover-product">    
-                <button onclick="wishlistToCart({{ $wishlist->id }}, {{ $wishlist->product_id }})" class="btn btn-outline-danger btn-sm" type="button">
-                    <i class="fas fa-trash-alt me-2"></i> Move to Bag
-                </button>
-                <p class="show-size">Size: {{ $wishlist->product->size->code ?? '' }}</p>
+                <button 
+                    class="btn btn-outline-danger btn-sm move-to-cart"
+                    data-wishlist-id="{{ $wishlist->id }}"
+                    data-product-id="{{ $wishlist->product_id }}"
+                    data-size-id="{{ optional($wishlist->product->sizes->first())->id }}"
+                    data-color-id="{{ optional($wishlist->product->colors->first())->id }}"
+                    type="button">
+                    Move to Bag
+                </button>                
+                <p class="show-size">
+                    @if(optional($wishlist->product->sizes->first())->code)
+                        Size: {{ optional($wishlist->product->sizes->first())->code ?? 'N/A' }} |    
+                    @endif
+
+                    @if(optional($wishlist->product->colors->first())->name)
+                        Color: {{ optional($wishlist->product->colors->first())->name ?? 'N/A' }}   
+                    @endif
+                </p>
             </div>
 
             <div class="product-info">
@@ -243,17 +247,14 @@
                 <p class="short">{{ Str::limit($wishlist->product->short_description, 30, '...') }}</p>                                                                
             </div>
 
-            <div class="price">
-                <span class="dark">₹ {{ $wishlist->product->price }}</span>
-                @if ($wishlist->product->compare_price > 0)
-                    <span class="h6 text-underline">
-                        <del>₹ {{ $wishlist->product->compare_price }}</del>
-                    </span>
-                    @php
-                        $discount = round((($wishlist->product->compare_price - $wishlist->product->price) / $wishlist->product->compare_price) * 100);
-                    @endphp
-                    <span class="discount">{{ $discount }}% OFF</span>
-                @endif                                        
+            <div class="price">                
+                @if($wishlist->product->discount_percent > 0)
+                    <span class="dark">₹{{ round($wishlist->product->discount_price) }}</span>
+                    <span class="mrp"><del>₹{{ $wishlist->product->price }}</del></span>
+                    <span class="discount">({{ $wishlist->product->discount_percent }}% OFF)</span>
+                @else
+                    <span class="dark">₹{{ number_format($wishlist->product->price, 2) }}</span>
+                @endif
             </div>
         </div>
     </div>

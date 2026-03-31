@@ -85,13 +85,87 @@ class AuthController extends Controller {
         }
     }
 
+    // public function dashboard(){
+    //     $userId = Auth::user()->id;        
+    //     $user = User::where('id',$userId)->first();        
+
+    //     return view('front.account.dashboard',[
+    //         'user' => $user,                        
+    //     ]);
+    // }
+
     public function dashboard(){
         $userId = Auth::user()->id;        
         $user = User::where('id',$userId)->first();        
 
-        return view('front.account.dashboard',[
-            'user' => $user,                        
-        ]);
+        $data = [
+            'user' => $user,                    
+            'profileFormConfig' => [
+                'title' => 'Edit Profile',
+                'modal_id' => 'editProfileModal',                
+                'action' => route('account.updateProfile'),
+                'modal_size' => null,
+                'method' => 'POST',
+                'button' => 'Update Profile',
+                'button_class' => 'w-100',          
+                'modal_body' => null,
+                'fields' => [
+                    [
+                        'type' => 'text',
+                        'name' => 'name',
+                        'label' => 'Name',                        
+                        'animate_label' => 'floating-input',
+                        'col' => 'col-6 mt-2'
+                    ],
+                    [
+                        'type' => 'text',
+                        'name' => 'phone',
+                        'label' => 'Phone',                        
+                        'animate_label' => 'floating-input',
+                        'col' => 'col-6 mt-2'
+                    ],
+                    [
+                        'type' => 'email',
+                        'name' => 'email',
+                        'label' => 'Email',                        
+                        'animate_label' => 'floating-input',
+                        'col' => 'col-12 mt-2'
+                    ],                    
+                    [
+                        'type' => 'text',
+                        'name' => 'mobile',
+                        'label' => 'Mobile',                        
+                        'animate_label' => 'floating-input',
+                        'col' => 'col-6 mt-2'
+                    ],                                   
+                    [
+                        'type' => 'date',
+                        'name' => 'birthdate',
+                        'label' => 'Birthdate',                        
+                        'animate_label' => 'floating-input',
+                        'col' => 'col-6 mt-2'
+                    ],
+                    [
+                        'type' => 'file',
+                        'name' => 'image',
+                        'label' => 'User Photo',
+                        'col' => 'col-6 mt-2'
+                    ],
+                    [
+                        'type' => 'radio',
+                        'name' => 'gender',
+                        'label' => 'Gender',
+                        'options' => [
+                            'male' => 'Male',
+                            'female' => 'Female',
+                        ],
+                        'col' => 'col-6'
+                    ],                         
+                ]
+            ],        
+        ];  
+
+        return view('front.account.dashboard', $data);
     }
 
     public function address(){
@@ -291,8 +365,7 @@ class AuthController extends Controller {
         $address = CustomerAddress::where('user_id',$userId)->first();
 
         $data = [
-            'user' => $user,        
-            
+            'user' => $user,                    
             'profileFormConfig' => [
                 'title' => 'Edit Profile',
                 'modal_id' => 'editProfileModal',                
@@ -356,8 +429,7 @@ class AuthController extends Controller {
                     ],     
                     
                 ]
-            ],
-        
+            ],        
 
         'passwordFormConfig' => [
                 'title' => 'Change Password',

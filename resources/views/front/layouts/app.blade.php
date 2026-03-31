@@ -209,7 +209,7 @@
         });
     }  
 
-    function addToWishlist(id){
+    function addToWishlist(id){        
         $.ajax({
             url: '{{ route("front.addToWishlist") }}',
             type: 'POST',
@@ -227,28 +227,40 @@
                 }
             },
             error: function(xhr){
-                console.log(xhr.responseText); // So you can see real error
+                console.log(xhr.responseText); 
             }
         })
     } 
 
-    function wishlistToCart(wishlistId, productId){
+
+    $(document).on('click', '.move-to-cart', function(){
+        let wishlistId = $(this).data('wishlist-id');
+        let productId  = $(this).data('product-id');
+        let size_id    = $(this).data('size-id') || null;
+        let color_id   = $(this).data('color-id') || null;
+
+        wishlistToCart(wishlistId, productId, size_id, color_id);
+    });
+
+    function wishlistToCart(wishlistId, productId,  size_id = null, color_id = null) {        
         $.ajax({
             url: '{{ route("front.wishlistToCart") }}',
             type: 'POST',
             data: {
                 wishlist_id: wishlistId,
                 product_id: productId,
+                size_id: size_id,     // ✅ added
+                color_id: color_id,   // ✅ added
                 _token: '{{ csrf_token() }}'
             },
             success:function(response){
                 if(response.status){
-                    // remove from UI
                     $("#wishlist-item-"+wishlistId).fadeOut(300,function(){
                         $(this).remove();
                     });
                     $(".cart-count").text(response.cartCount);
                     $(".wishlist-count").text(response.wishlistCount);
+
                     showAlert(response.message,'success');
                     location.reload();
                 }else{
@@ -257,6 +269,7 @@
             }
         });
     }
+
 
     $("#registrationForm").submit(function(event){
         event.preventDefault();

@@ -13,4 +13,11 @@ class DiscountPercentage extends Model {
     public function products() {
         return $this->hasMany(Product::class,'discount_percentage_id');
     }
+
+
+    // public function products() {
+    //     return $this->hasMany(Product::class);
+    // }    
+
+   
 }

@@ -12,18 +12,23 @@
             @endif 
         </div>
         <div class="product-details-name">
-            <h3>{{ $item->product->title }}</h3>
+            <h3 class="{{ ucfirst($status) == 'Delivered' ? '' : 'mt-2' }}">{{ $item->product->title }}</h3>
             <p>{{ $item->product->short_description }}</p>
+
+            @php
+                $size = !empty($item->size_id) ? \App\Models\Size::find($item->size_id) : null;
+                $color = !empty($item->color_id) ? \App\Models\Color::find($item->color_id) : null;
+            @endphp
+
+            <p class="text-muted tiny-font">
+                @if(!empty($size?->name))
+                    Size: <b>{{ $size->name }}</b>
+                @endif                                  
             
-            <p class="m-0 text-muted tiny-font">
-                @if($item->size)
-                    Size: <b>{{ $item->size }}</b>,
-                @endif                
-                
-                @if($item->color)
-                    Color: <b>{{ $item->color }}</b>
-                @endif
-            </p>
+                @if(!empty($color?->name))
+                    Color: <b>{{ $color->name }}</b>                                        
+                @endif  
+            </p>                                    
 
             @if(ucfirst($status) == 'Delivered')
                 <div class="exchange-text">

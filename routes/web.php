@@ -144,6 +144,8 @@ Route::group(['prefix' => 'admin'], function(){
     Route::group(['middleware' => 'admin.auth'], function(){
         Route::controller(HomeController::class)->group(function() {
             Route::get('/dashboard', 'index')->name('admin.dashboard');
+            Route::get('/recent-orders', 'recentOrders')->name('admin.recentOrders');
+            Route::get('/charts', 'dashboardStats')->name('admin.dashboard.stats');
             Route::get('/logout', 'logout')->name('admin.logout');
         });
 
