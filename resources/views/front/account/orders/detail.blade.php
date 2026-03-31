@@ -53,13 +53,21 @@
                                     </a>
                                 </div>                                                        
                                 <h2 class="product-title">{{ $item->product->title }}</h2>
-                                <p class="text-muted">{{ Str::limit($item->product->short_description, 50, '...') }}</p>                                
+                                <p class="text-muted">{{ Str::limit($item->product->short_description, 50, '...') }}</p>
                                 {{-- <p class="text-muted">{{ $item->product->subcategory->sub_category_name ?? '' }}</p> --}}
                                 {{-- <p class="text-muted">Order ID # {{ $order->id }}</p>                                                                                                 --}}
-                                <p class="text-muted">
-                                    Size: <b>{{ $item->size ?? 'N/A' }}</b>
-                                    Color: <b>{{ $item->color ?? 'N/A' }}</b>                                    
-                                </p>
+                                
+                                @php
+                                    $size = \App\Models\Size::find($item->size_id);
+                                    $color = \App\Models\Color::find($item->color_id);
+                                @endphp
+
+                                <span class="text-muted">
+                                    Size: <b>{{ $size->name }}</b>,                                     
+                                </span>
+                                <span class="text-muted">
+                                    Color: <b>{{ $color->name }}</b>                                    
+                                </span>
                             </div>
                         @endif
                     </div>
@@ -210,20 +218,15 @@
                     </div>
 
                     <div class="wrapper">
-                        <div class="row">
-                            <div class="col-md-7 col-12">
-                                <h6>Updates sent to</h6>
-                                <p class="mt-1 tiny-font text-muted">Mobile: {{ $order->user->mobile }}</p>
-                                <p class="text-muted tiny-font">Email: {{ $order->user->email }}</p>
-                            </div>
-                            <div class="col-md-5 col-12">
-                                <div class="text-right">
-                                    <h6>Order details</h6>
-                                    <p class="text-muted tiny-font">Order ID # {{ $order->id }}</p>
-                                    <p class="text-muted tiny-font">Order Placed on: <b>{{ \Carbon\Carbon::parse($order->created_at)->format('d M Y') }}</b></p>
-                                </div>
-                            </div>
-                        </div>                        
+                        <h6>Updates sent to</h6>
+                        <p class="mt-1 tiny-font text-muted">Mobile: {{ $order->user->mobile }}</p>
+                        <p class="text-muted tiny-font">Email: {{ $order->user->email }}</p>                      
+                    </div>
+
+                    <div class="wrapper">
+                        <h6>Order details</h6>
+                        <p class="text-muted tiny-font">Order ID # {{ $order->id }}</p>
+                        <p class="text-muted tiny-font">Order Placed on: <b>{{ \Carbon\Carbon::parse($order->created_at)->format('d M Y') }}</b></p>                       
                     </div>
                 </div>    
 

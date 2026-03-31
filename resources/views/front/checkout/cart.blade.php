@@ -91,18 +91,24 @@
                                 <p class="short-desc">{{ $item->options->short_description ?? '' }}</p>
 
                                 <div class="manuplate">
-                                    @if(!$item->options->size == null)
-                                        <div class="select">                                    
-                                            <a href="javascript:void(0);" class="update-cart-modal" data-type="size" data-productid="{{ $item->id }}" data-rowid="{{ $item->rowId }}" data-selected="{{ $item->options->size }}">
-                                                Size: <b>{{ $item->options->size }}</b> <span class="caret"></span>
+                                    @php
+                                        $size = \App\Models\Size::find($item->options->size_id);
+                                        $color = \App\Models\Color::find($item->options->color_id);
+                                    @endphp
+
+                                    @if($item->options->size_id)
+                                        <div class="select">
+                                            <a href="javascript:void(0);" class="update-cart-modal" data-type="size" data-productid="{{ $item->id }}"
+                                            data-rowid="{{ $item->rowId }}" data-selected="{{ $item->options->size_id }}">
+                                                Size: <b>{{ $size->name ?? '' }}</b> <span class="caret"></span>
                                             </a>
                                         </div>
                                     @endif
-
-                                    @if(!$item->options->color == null)
+                                    @if($item->options->color_id)
                                         <div class="select">                                
-                                            <a href="javascript:void(0);" class="update-cart-modal" data-type="color" data-productid="{{ $item->id }}" data-rowid="{{ $item->rowId }}" data-selected="{{ $item->options->color }}">
-                                                Color: <b>{{ $item->options->color }}</b> <span class="caret"></span>
+                                            <a href="javascript:void(0);" class="update-cart-modal" data-type="color" data-productid="{{ $item->id }}"
+                                                data-rowid="{{ $item->rowId }}" data-selected="{{ $item->options->color_id }}">
+                                                Color: <b>{{ $color->name ?? '' }}</b> <span class="caret"></span>
                                             </a>
                                         </div>
                                     @endif
@@ -380,8 +386,8 @@
 
                     let html = '';
                     options.forEach(function(option){
-                        let active = (option.code == selected) ? 'selected' : '';
-                        html += `<li><a href="#" class="select-option show-tooltip ${active}" data-value="${option.code}">
+                        let active = (option.id == selected) ? 'selected' : '';
+                        html += `<li><a href="#" class="select-option show-tooltip ${active}" data-value="${option.id}">
                                         ${option.code}
                                     <span class="tooltip" style="bottom:48px;">${option.name}</span>
                                 </a></li>`;
@@ -405,8 +411,8 @@
                     let options = res.colors;
                     let html = '';
                     options.forEach(function(option){
-                        let active = (option.name == selected) ? 'selected' : '';
-                        html += `<li><a href="#" class="select-option ${active} show-tooltip" data-value="${option.name}">
+                        let active = (option.id == selected) ? 'selected' : '';
+                        html += `<li><a href="#" class="select-option ${active} show-tooltip" data-value="${option.id}">
                                         <span class="color" style="background-color:${option.code}"></span>
                                         <span class="tooltip" style="bottom:48px;">${option.name}</span>
                                 </a></li>`;

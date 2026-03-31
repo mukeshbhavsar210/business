@@ -75,6 +75,7 @@ class Order extends Model {
         return $this->belongsTo(Size::class);
     }
 
+    
     // public function latestStatus() {
     //     return $this->hasOne(OrderStatusHistory::class)->latestOfMany('date');
     // }
