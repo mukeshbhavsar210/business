@@ -81,9 +81,7 @@ class OrderController extends Controller {
 
         $orderHistory = OrderStatusHistory::where('order_id',$orderId)
                 ->orderBy('date','asc')
-                ->get();
-
-        
+                ->get();                
 
         return view('admin.orders.detail', [
             'order' => $order,

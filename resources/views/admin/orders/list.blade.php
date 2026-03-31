@@ -33,7 +33,10 @@
                     <tbody >
                         @foreach($orders as $key => $order)
                             <tr>
-                                <td><p class="mt-2">{{ $order->id }}</p></td>
+                                <td><p class="mt-2">
+                                        <a href="{{ route('orders.detail',$order->id) }}" >{{ $order->id }}</a>
+                                    </p>
+                                </td>
                                 <td>                                    
                                     <div class="img-group">
                                         @foreach($order->items as $item)
@@ -48,21 +51,32 @@
                                                         'slug' => $item->product->slug
                                                     ]) }}" target="_blank" class="user-avatar position-relative d-inline-block ms-n2">
                                                 @if($productImage && !empty($productImage->image))
-                                                    <img src="{{ asset('uploads/product/small/'.$productImage->image) }}" height="80" class="thumb-md shadow-sm rounded-circle" />
+                                                    <img src="{{ asset('uploads/product/small/'.$productImage->image) }}" height="75" class="thumb-md shadow-sm rounded-circle" />
                                                 @else
-                                                    <img src="{{ asset('admin-assets/img/default-150x150.png') }}" height="80" class="thumb-md shadow-sm rounded-circle" />
+                                                    <img src="{{ asset('admin-assets/img/default-150x150.png') }}" height="75" class="thumb-md shadow-sm rounded-circle" />
                                                 @endif
                                             </a>       
-                                            <span class="counts">{{ $order->items->count() }}</span>                                    
+                                            @if($order->items->count() > 1)
+                                                <span class="counts">{{ $order->items->count() }}</span>    
+                                            @endif                                            
                                         @endforeach
                                     </div>                                                                            
                                 </td>       
-                                <td>                                     
-                                    @foreach($order->items as $item)                                                                                                                            
+                                <td>    
+                                    <h5 class="mb-0">
+                                        <a href="{{ route('orders.detail',$order->id) }}" >                                            
+                                            <p>{{ $item->product->title }}</p>
+                                        </a>
+                                    </h5>                              
+                                    <p class="mt-0 text-muted tiny-font">
+                                        {{ \Carbon\Carbon::parse(optional($order->items->first())->created_at)->format('d M, Y') }}<br />
+                                        {{ optional($order->items->first())->payment_method == 'cod' ? 'COD' : 'Razorpay' }}
+                                    </p>
+                                    {{-- @foreach($order->items as $item)                                                                                                                            
                                         <a href="{{ route('orders.detail',$order->id) }}" title="{{ $order->id }}">                                            
                                             <p>{{ $item->product->title }}</p>
                                         </a> 
-                                    @endforeach                                        
+                                    @endforeach                                         --}}
                                 </td>                  
                                 {{-- <td class="text-end">
                                     <h5 class="mb-0">₹{{ number_format($order->subtotal,2) }} </h5>
@@ -72,31 +86,35 @@
                                 </td>                                    --}}
                                 <td class="text-end">
                                     @php
-                                        $size = \App\Models\Size::find($item->size_id);
-                                        $color = \App\Models\Color::find($item->color_id);
+                                        $size = !empty($item->size_id) ? \App\Models\Size::find($item->size_id) : null;
+                                        $color = !empty($item->color_id) ? \App\Models\Color::find($item->color_id) : null;
                                     @endphp
-                                    <p class="show-tooltip">{{ $size->name }}
-                                        <span class="tooltip" style="bottom: -23px; left:45px;">Size ID: {{ $size->id }}</span>
-                                    </p>
+
+                                    @if(!empty($size?->name))
+                                        <p class="show-tooltip mt-2">
+                                            {{ $size->name }}
+                                            <span class="tooltip" style="bottom: -23px; left:45px;">
+                                                Size ID: {{ $size->id }}
+                                            </span>
+                                        </p>    
+                                    @endif                                  
                                 </td>
                                 <td class="text-end">
-                                    <p class="show-tooltip">{{ $color->name }}
-                                        <span class="tooltip" style="bottom: -23px; left:40px;">Color ID: {{ $color->id }}</span>
-                                    </p>
+                                    @if(!empty($color?->name))
+                                        <p class="show-tooltip mt-2">
+                                            {{ $color->name }}
+                                            <span class="tooltip" style="bottom: -23px; left:45px;">
+                                                Size ID: {{ $color->id }}
+                                            </span>
+                                        </p>    
+                                    @endif                                     
                                 </td>
                                 <td class="text-end">
-                                    <h5 class="mb-0">₹{{ round($order->grandtotal) }}</h5>
-                                    <p class="m-0 text-muted tiny-font">
-                                        {{ \Carbon\Carbon::parse(optional($order->items->first())->created_at)->format('d M, Y') }}<br />
-                                        {{ optional($order->items->first())->payment_method == 'cod' ? 'COD' : 'Razorpay' }}
-                                    </p>
+                                    <h5 class="mt-2">₹{{ round($order->grandtotal) }}</h5>                                    
                                 </td>                                                                
                                 <td class="text-end">
-                                    <h5 class="mb-0">{{ $order->latestStatus->courier ?? '-' }}</h5>
-                                    <p class="m-0 text-muted tiny-font">
-                                        Shipping: ₹{{ number_format(optional($order->items->first())->shipping,2) }}<br />
-                                        {{ $order->latestStatus->tracking_number ?? 'No Tracking' }}
-                                    </p>
+                                    <h5 class="mt-2">{{ $order->latestStatus->courier ?? '-' }}</h5>
+                                    {{-- <p class="m-0 text-muted tiny-font">{{ $order->latestStatus->tracking_number ?? 'No Tracking' }}</p> --}}
                                 </td>                                                                
                                 <td class="text-end">                                                               
                                     <a href="#" class="track-order-btn show-tooltip" data-order-id="{{ $order->id }}" data-bs-toggle="modal" data-bs-target="#orderTrackingModal">
@@ -111,7 +129,7 @@
                                             ];
                                         @endphp
                                         
-                                        <span class="badge {{ $badgeClasses[$status] ?? 'bg-dark' }}">
+                                        <span class="badge mt-2 {{ $badgeClasses[$status] ?? 'bg-dark' }}">
                                             {{ ucfirst(str_replace('_',' ',$status)) }}
                                         </span>
                                         

@@ -96,23 +96,18 @@
                                         $color = \App\Models\Color::find($item->options->color_id);
                                     @endphp
 
-                                    @if($item->options->size_id)
-                                        <div class="select">
-                                            <a href="javascript:void(0);" class="update-cart-modal" data-type="size" data-productid="{{ $item->id }}"
-                                            data-rowid="{{ $item->rowId }}" data-selected="{{ $item->options->size_id }}">
-                                                Size: <b>{{ $size->name ?? '' }}</b> <span class="caret"></span>
-                                            </a>
-                                        </div>
-                                    @endif
-                                    @if($item->options->color_id)
-                                        <div class="select">                                
-                                            <a href="javascript:void(0);" class="update-cart-modal" data-type="color" data-productid="{{ $item->id }}"
-                                                data-rowid="{{ $item->rowId }}" data-selected="{{ $item->options->color_id }}">
-                                                Color: <b>{{ $color->name ?? '' }}</b> <span class="caret"></span>
-                                            </a>
-                                        </div>
-                                    @endif
-                                    
+                                    <div class="select">
+                                        <a href="javascript:void(0);" class="update-cart-modal" data-type="size_id" data-productid="{{ $item->id }}"
+                                        data-rowid="{{ $item->rowId }}" data-selected="{{ $item->options->size_id }}">
+                                            Size: <b>{{ $size->name ?? '' }}</b> <span class="caret"></span>
+                                        </a>
+                                    </div>
+                                    <div class="select">                                
+                                        <a href="javascript:void(0);" class="update-cart-modal" data-type="color_id" data-productid="{{ $item->id }}"
+                                            data-rowid="{{ $item->rowId }}" data-selected="{{ $item->options->color_id }}">
+                                            Color: <b>{{ $color->name ?? '' }}</b> <span class="caret"></span>
+                                        </a>
+                                    </div>
                                     <div class="select">   
                                         <a href="javascript:void(0);" class="update-cart-modal" data-type="qty" data-rowid="{{ $item->rowId }}" data-selected="{{ $item->qty }}">
                                             Qty: <b>{{ $item->qty }}</b> <span class="caret"></span>
@@ -377,7 +372,7 @@
             let title = '';
             let options = [];
 
-            if(currentType === 'size'){
+            if(currentType === 'size_id'){
                 title = 'Select Size';                
                 let productId = $(this).data('productid');
 
@@ -403,7 +398,7 @@
                 return; // ❗ stop further execution
             }
 
-            if(currentType === 'color'){
+            if(currentType === 'color_id'){
                 title = 'Select Color';
                 let productId = $(this).data('productid');
 
@@ -444,6 +439,9 @@
         });
 
 
+       
+
+
         $(document).on('click', '.select-option', function(e){
             e.preventDefault();
             let value = $(this).data('value');
@@ -454,8 +452,8 @@
             };
 
             if(currentType === 'qty'){ data.qty = value; }
-            if(currentType === 'size'){ data.size = value; }
-            if(currentType === 'color'){ data.color = value; }
+            if(currentType === 'size_id'){ data.size_id = value; }
+            if(currentType === 'color_id'){ data.color_id = value; }
 
             $.post('{{ route("front.updateCartOption") }}', data, function(res){
                 if(res.status){

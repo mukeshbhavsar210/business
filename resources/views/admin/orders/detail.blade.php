@@ -35,64 +35,50 @@
                         <div class="col-md-4 col-12">
                             <div class="card border mb-2">
                                 <div class="card-body">
-                                    {{-- <div class="flex-details">
-                                        <p class="label">Invoice No.</p>
-                                        <p class="right">: {{ $order->id }}</p>
-                                    </div> --}}
-                                    <div class="flex-details">
-                                        <p class="label">Order ID</p>
-                                        <p class="right">: {{ $order->id }}</p>
-                                    </div>
-                                    <div class="flex-details">
-                                        <p class="label">Payment Mode</p>
-                                        <p class="right">: {{ $order->payment_method }}</p>
-                                    </div>
-                                    <div class="flex-details">
-                                        <p class="label">Total</p>
-                                        <p class="right">: ₹{{ number_format($order->grandtotal,2) }}</p>
-                                    </div>
-                                    <div class="flex-details">
-                                        <p class="label">Shipped Date</p>
-                                        <p class="right">:                                        
-                                            @if (!empty($order->shipped_date))
-                                                {{ \Carbon\Carbon::parse($order->shipped_date)->format('d M, Y')}}
-                                            @else
-                                                Pending
-                                            @endif                                        
-                                        </p>                           
-                                    </div>
-                                    <div class="flex-details">
-                                        <p class="label">Status</p>                                        
-                                        <p class="right">:
-                                            @php
-                                                $status = $order->latestStatus->status ?? 'confirmed';
-
-                                                $badgeClasses = [
-                                                    'Confirmed'         => 'bg-secondary',
-                                                    'Shipped'           => 'bg-primary',
-                                                    'Out for Delivery'  => 'bg-warning',
-                                                    'Delivered'         => 'bg-success',
-                                                    'Cancelled'         => 'bg-danger'
-                                                ];
-                                            @endphp
-
-                                            <span class="badge {{ $badgeClasses[$status] ?? 'bg-dark' }}">
-                                                {{ ucfirst(str_replace('_',' ',$status)) }}
-                                            </span>
-
-                                            {{-- @if ($latestStatus && $latestStatus->status == 'Placed')
-                                                <span class="badge bg-success">Placed</span>
-                                            @elseif ($latestStatus && $latestStatus->status == 'Packed')
-                                                <span class="badge bg-success">Packed</span>
-                                            @elseif ($latestStatus && $latestStatus->status == 'Shipped')
-                                                <span class="badge bg-success">Shipped</span>
-                                            @elseif ($latestStatus && $latestStatus->status == 'Out for Delivery')
-                                                <span class="badge bg-success">Out for Delivery</span>
-                                            @elseif ($latestStatus && $latestStatus->status == 'Delivered')
-                                                <span class="badge bg-success">Delivered</span>
-                                            @endif --}}
-                                        </p>                                                                                
-                                    </div>                                
+                                    @foreach ($orderItems as $value)
+                                        <div class="flex-details">
+                                            <p class="label">Order ID</p>
+                                            <p class="right">: {{ $value->order_id }}</p>
+                                        </div>
+                                        <div class="flex-details">
+                                            <p class="label">Payment Mode</p>
+                                            <p class="right">: {{ $value->payment_method  }}</p>
+                                        </div>
+                                        <div class="flex-details">
+                                            <p class="label">Total</p>
+                                            <p class="right">: ₹{{ number_format($value->grandtotal,2) }}</p>
+                                        </div>
+                                        <div class="flex-details">
+                                            <p class="label">Shipped Date</p>
+                                            <p class="right">:                                        
+                                                @if (!empty($value->shipped_date))
+                                                    {{ \Carbon\Carbon::parse($value->shipped_date)->format('d M, Y')}}
+                                                @else
+                                                    Pending
+                                                @endif                                        
+                                            </p>                           
+                                        </div>
+                                        <div class="flex-details">
+                                            <p class="label">Status</p>                                        
+                                            <p class="right">:
+                                                @php
+                                                    $status = $order->latestStatus->status ?? 'confirmed';
+                                                    $badgeClasses = [
+                                                        'Confirmed'         => 'bg-secondary',
+                                                        'Shipped'           => 'bg-primary',
+                                                        'Out for Delivery'  => 'bg-warning',
+                                                        'Delivered'         => 'bg-success',
+                                                        'Cancelled'         => 'bg-danger',
+                                                        'Exchanged'         => 'bg-danger',
+                                                        'Returned'          => 'bg-danger'
+                                                    ];
+                                                @endphp
+                                                <span class="badge {{ $badgeClasses[$status] ?? 'bg-dark' }}">
+                                                    {{ ucfirst(str_replace('_',' ',$status)) }}
+                                                </span>                                           
+                                            </p>                                                                                
+                                        </div>  
+                                    @endforeach                                                                  
                                 </div>
                             </div>
                         </div>
@@ -124,7 +110,7 @@
                                                             'slug' => $item->product->slug
                                                         ]) }}" target="_blank">
                                                         @if($image)
-                                                            <img src="{{ asset('uploads/product/small/'.$image->image) }}" height="90" class="me-3 align-self-center rounded">
+                                                            <img src="{{ asset('uploads/product/small/'.$image->image) }}" height="100" class="me-3 align-self-center rounded">
                                                         @else
                                                             <img src="{{ asset('images/no-image.png') }}" width="60">
                                                         @endif
@@ -138,29 +124,39 @@
                                                                         'slug' => $item->product->slug
                                                                     ]) }}" target="_blank">{{ Str::limit($item->product->title, 75, '...') }}</a>
                                                         </h5>
-                                                        <div class="small-fonts">                                                            
+                                                        <p class="text-muted tiny-font">{{ Str::limit($item->product->short_description, 75, '...') }}</p>
+                                                        <div class="small-fonts">
                                                             @php
-                                                                $size = \App\Models\Size::find($item->size_id);
-                                                                $color = \App\Models\Color::find($item->color_id);
+                                                                $size = !empty($item->size_id) ? \App\Models\Size::find($item->size_id) : null;
+                                                                $color = !empty($item->color_id) ? \App\Models\Color::find($item->color_id) : null;
                                                             @endphp
-                                                            <p class="show-tooltip mb-0">Size: <b>{{ $size->name }}</b>
-                                                                <span class="tooltip" style="bottom: -4px; left:65px;">Size ID: {{ $size->id }}</span>
-                                                            </p>
+
+                                                            @if(!empty($size?->name))
+                                                                <p class="show-tooltip mb-0"><b>{{ $size->name }}</b>
+                                                                    <span class="tooltip" style="bottom: -4px; left:65px;">
+                                                                        Size ID: {{ $size->id }}
+                                                                    </span>
+                                                                </p>    
+                                                            @endif                                  
                                                         
-                                                            <p class="show-tooltip mb-0">Color: <b>{{ $color->name }}</b>
-                                                                <span class="tooltip" style="bottom: -4px; left:65px;">Color ID: {{ $color->id }}</span>
-                                                            </p>
+                                                            @if(!empty($color?->name))
+                                                                <p class="show-tooltip mb-0"><b>{{ $color->name }}</b>
+                                                                    <span class="tooltip" style="bottom: -4px; left:65px;">
+                                                                        Size ID: {{ $color->id }}
+                                                                    </span>
+                                                                </p>    
+                                                            @endif  
                                                         </div>
                                                     </div>
                                                 </div>
                                             </td>                                                                                                            
-                                            <td class="text-end"><p class="mt-3">{{ $item->qty }}</p></td>
+                                            <td class="text-end"><p>{{ $item->qty }}</p></td>
                                             <td class="text-end">
                                                 @if($item->discounted_price)
-                                                    <p class="mt-3">₹{{ round($item->qty*$item->discounted_price) }}</p>
+                                                    <p class="mt-1">₹{{ round($item->qty*$item->discounted_price) }}</p>
                                                     <p class="tiny-font text-muted">₹{{ $item->qty*$item->price }} (O. Price)</p>
                                                 @else
-                                                    <p class="mt-3">₹{{ round($item->qty*$item->price) }}</p>
+                                                    <p class="mt-1">₹{{ round($item->qty*$item->price) }}</p>
                                                 @endif                                                
                                             </td>                                            
                                         </tr>

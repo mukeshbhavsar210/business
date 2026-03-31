@@ -49,6 +49,43 @@ ul,li { padding: 0; margin: 0;}
 
 .small-fonts { font-size: 13px;}
 
+.y-axis {
+    height: 190px;
+    font-size: 12px; font-weight: bold;
+    text-align: right;
+}
+
+.bar-chart {
+    height: 200px; /* must match Y-axis */
+    align-items: flex-end;
+}
+
+.bar {
+    width: 20px;
+    border-radius: 5px;
+}
+
+.y-axis span {
+    position: relative;
+}
+
+.y-axis span::after {
+    content: '';
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    width: 300px;
+    height: 1px;
+    background: #eee;
+}
+
+.bar { border-radius: 5px; transition: 0.3s; z-index: 99; position: relative; margin: 0 auto; }
+.bar.active { box-shadow: 0 0 10px rgba(0,255,0,0.5); }
+
+#chartContainer { width: 100%; }
+#chartContainer .col { padding: 0; text-align: center;}
+#chartContainer .months { border-bottom: 1px #ccc solid; padding: 0 0 10px 0; margin-bottom: 10px; font-size: 12px; font-weight: bold; }
+
 .chip-wrapper { display: flex; column-gap: 10px; flex-wrap: wrap; }
 .chip-wrapper .color-chip { border: 1px #e5e5e5 solid; padding:8px 10px 6px 10px; display: flex; margin-bottom: 10px; border-radius: 6px; justify-content: space-between;}
 .chip-wrapper .color-chip .badge { border-radius: 100px; display: block; margin-right: 8px; height: 20px; width: 20px;}

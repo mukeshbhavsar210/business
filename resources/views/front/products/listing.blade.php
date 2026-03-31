@@ -38,29 +38,36 @@
                             <a href="javascript:0" class="dropdown">
                                 Size
                                 <span class="rotate">
-                                    <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M5.70711 9.71069C5.31658 10.1012 5.31658 10.7344 5.70711 11.1249L10.5993 16.0123C11.3805 16.7927 12.6463 16.7924 13.4271 16.0117L18.3174 11.1213C18.708 10.7308 18.708 10.0976 18.3174 9.70708C17.9269 9.31655 17.2937 9.31655 16.9032 9.70708L12.7176 13.8927C12.3271 14.2833 11.6939 14.2832 11.3034 13.8927L7.12132 9.71069C6.7308 9.32016 6.09763 9.32016 5.70711 9.71069Z" fill="#666666"/>
-                                    </svg>
+                                    <span class="sprites down-arrow-icon"></span>                                    
                                 </span>
                             </a>
                             <div class="dropdown-menu-select">
-                                <x-filters :items="$sizes" type="size" valueField="name" labelField="code" title="Sizes" :showColor="false" :showPercent="false" :sizeFilter="true" :mobileView="false" />
+                                <x-filters :items="$sizes" type="size" valueField="name" labelField="code" title="" :showColor="false" :showPercent="false" :sizeFilter="true" :mobileView="false" />
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-md-2 col-12">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <select class="form-select" id="sortFilter">
-                                <option value="latest" {{ request('sort') == 'recommended' ? 'selected' : '' }}>Recommended</option>
-                                <option value="latest" {{ request('sort') == 'latest' ? 'selected' : '' }}>What's New</option>
-                                <option value="popularity" {{ request('sort') == 'popularity' ? 'selected' : '' }}>Popularity</option>
-                                <option value="discount" {{ request('sort') == 'discount' ? 'selected' : '' }}>Better Discount</option>
-                                <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>Price: High to Low</option>
-                                <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>Price: Low to High</option>
-                                <option value="rating" {{ request('sort') == 'rating' ? 'selected' : '' }}>Customer Rating</option>
-                            </select>                    
-                        </div>
+                    <div class="col-md-2 col-12">                        
+                            <div class="custom-dropdown">
+                                <a href="javascript:0" class="dropdown">
+                                    Sort
+                                    <span class="rotate">
+                                        <span class="sprites down-arrow-icon"></span>                                    
+                                    </span>
+                                </a>
+                                <div class="dropdown-menu-select sort-filter">
+                                    <ul class="sort-options">   
+                                        <li><span class="sprites sort-icon1"></span><a href="{{ request()->fullUrlWithQuery(['sort' => 'recommended']) }}" class="sort-item {{ request('sort') == 'recommended' ? 'active' : '' }}">Recommended</a></li>
+                                        <li><span class="sprites sort-icon1"></span><a href="{{ request()->fullUrlWithQuery(['sort' => 'popularity']) }}" class="sort-item {{ request('sort') == 'popularity' ? 'active' : '' }}">Popularity</a></li>
+                                        <li><span class="sprites sort-icon1"></span><a href="{{ request()->fullUrlWithQuery(['sort' => 'latest']) }}" class="sort-item {{ request('sort') == 'latest' ? 'active' : '' }}">What's New</a></li>        
+                                        <li><span class="sprites sort-icon1"></span><a href="{{ request()->fullUrlWithQuery(['sort' => 'discount']) }}" class="sort-item {{ request('sort') == 'discount' ? 'active' : '' }}">Better Discount</a></li>
+                                        <li><span class="sprites sort-icon1"></span><a href="{{ request()->fullUrlWithQuery(['sort' => 'price_desc']) }}" class="sort-item {{ request('sort') == 'price_desc' ? 'active' : '' }}">Price: High to Low</a></li>                                        
+                                        <li><span class="sprites sort-icon1"></span><a href="{{ request()->fullUrlWithQuery(['sort' => 'price_asc']) }}" class="sort-item {{ request('sort') == 'price_asc' ? 'active' : '' }}">Price: Low to High</a></li>                                        
+                                        <li><span class="sprites sort-icon1"></span><a href="{{ request()->fullUrlWithQuery(['sort' => 'rating']) }}" class="sort-item {{ request('sort') == 'rating' ? 'active' : '' }}">Customer Rating</a></li>
+                                    </ul>
+                                </div>
+                            </div>                            
+                        
                     </div>
                 </div>
             </div>
@@ -445,8 +452,6 @@
 
             window.location.href = '{{ url()->current() }}?' + params.toString();
         }
-
-         
 
         // function apply_search_filters(){            
         //     var keyword = $('#search').val();

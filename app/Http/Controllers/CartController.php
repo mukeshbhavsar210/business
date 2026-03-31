@@ -23,8 +23,7 @@ use Illuminate\Support\Facades\Mail;
 
 class CartController extends Controller {
     public function addToCart(Request $request) {
-        $product = Product::with(['product_images','variants'])
-            ->find($request->product_id);
+        $product = Product::with(['product_images','variants'])->find($request->product_id);
 
         if (!$product) {
             return response()->json([
@@ -93,8 +92,8 @@ class CartController extends Controller {
                     'short_description' => $product->short_description,                    
                     'productImage'      => $image,
                     'variant_id'        => $variantId,
-                    'size_id'              => $size_id,
-                    'color_id'             => $color_id,
+                    'size_id'           => $size_id,
+                    'color_id'          => $color_id,
                     'cod'               => $product->cod,
                     'return_days'       => $product->return_days,
                     'delivery_min_days' => $product->delivery_min_days,
@@ -114,11 +113,10 @@ class CartController extends Controller {
             "message"   => $message,
             "cartCount" => Cart::count(),
         ]);
-    }
+    }   
 
     public function wishlistToCart(Request $request) { 
-        $product = Product::with(['product_images','variants'])
-            ->find($request->product_id);
+        $product = Product::with(['product_images','variants','discount'])->find($request->product_id);
 
         if (!$product) {
             return response()->json([
@@ -128,8 +126,8 @@ class CartController extends Controller {
         }
 
         $variantId = $request->variant_id;
-        $size      = $request->size ?? null;
-        $color     = $request->color ?? null;
+        $size_id      = $request->size_id ?? null;
+        $color_id     = $request->color_id ?? null;
 
         // Get selected variant (if exists)
         $variant = null;
@@ -149,16 +147,24 @@ class CartController extends Controller {
             if (
                 $item->id == $product->id &&
                 $item->options->variant_id == $variantId &&
-                $item->options->size == $size
+                $item->options->size_id == $size_id &&
+                $item->options->color_id == $color_id
             ) {
                 $alreadyExists = true;
                 break;
             }
         }
 
-        if (!$alreadyExists) {
+        if (!$alreadyExists) {  
+            
+            $discountPercent = 0;
+
+            if ($product->discount) {
+                $discountPercent = $product->discount->percentage;
+            }
             // ✅ Get discount percent safely
-            $discountPercent = optional($product->discounts->first())->percentage ?? 0;
+            $discountPercent = (int) optional($product->discount)->percentage;
+            //$discountPercent = optional($product->discounts->first())->percentage ?? 0;
 
             // ✅ Calculate discount price
             $discount_price = $product->price;
@@ -166,6 +172,12 @@ class CartController extends Controller {
             if ($discountPercent > 0) {
                 $discount_price = $product->price - ($product->price * $discountPercent / 100);
             }
+
+            // $discountPercent = optional($product->discounts->first())->percentage ?? 0;
+            // $discount_price = $product->price;
+            // if ($discountPercent > 0) {
+            //     $discount_price = $product->price - ($product->price * $discountPercent / 100);
+            // }
 
             Cart::add([
                 'id'      => $product->id,
@@ -176,12 +188,13 @@ class CartController extends Controller {
                 'options' => [
                     'original_price'    => $product->price,
                     'discount_price'    => round($discount_price),
-                    'discount_percent'  => $discountPercent,                    
+                    'discount_percent'  => $discountPercent,                                  
                     'short_description' => $product->short_description,                    
                     'productImage'      => $image,
                     'variant_id'        => $variantId,
-                    'size'              => $size,
-                    'color'             => $color,
+                    'size_id'           => $size_id,
+                    'color_id'          => $color_id,
+                    'cod'               => $product->cod,
                     'return_days'       => $product->return_days,
                     'delivery_min_days' => $product->delivery_min_days,
                     'delivery_max_days' => $product->delivery_max_days,
@@ -278,6 +291,184 @@ class CartController extends Controller {
             'shipping_charge'       => $shipping_charge,
         ]);
     }   
+
+    public function processCheckout(Request $request) {
+        // Step 1: Validate selected shipping address
+        $validator = Validator::make($request->all(), [
+            'customer_address_id' => 'required|exists:customer_addresses,id',
+            'payment_method' => 'required|in:cod,razorpay'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Please fix the errors',
+                'status'  => false,
+                'errors'  => $validator->errors()
+            ]);
+        }
+
+        $user = Auth::user();
+
+        // Step 2: Get Selected Address (Security Check: must belong to user)
+        $selectedAddress = CustomerAddress::where('id', $request->customer_address_id)
+            ->where('user_id', $user->id)
+            ->first();
+
+        if (!$selectedAddress) {
+            return response()->json([
+                'message' => 'Invalid shipping address selected.',
+                'status'  => false
+            ]);
+        }
+
+        // Step 3: Calculate Subtotal
+        //$subTotal = Cart::subtotal(2, '.', '');
+        $subTotal = 0;
+        foreach (Cart::content() as $item) {
+            $price = $item->options->discount_price ?? $item->price;
+            $subTotal += $price * $item->qty;
+        }
+
+        $discount = 0;
+        $shipping = 0;
+        $discountCodeId = null;
+        $promoCode = '';
+
+        // Step 4: Apply Coupon (if exists)
+        if(session()->has('coupon_discount')){
+            $coupon = session('coupon_discount');
+
+            if($coupon['type'] == 'percent'){
+                $discount = ($coupon['value'] / 100) * $subTotal;
+            }else{
+                $discount = $coupon['value'];
+            }
+
+            $discountCodeId = $coupon['id'];
+            $promoCode = $coupon['code'];
+        }
+
+        // Step 5: Calculate Shipping Based On Selected Address State
+        $qty = Cart::content()->sum('qty');
+
+        $shippingInfo = ShippingCharge::where('state_id', $selectedAddress->state_id)->first();
+
+        if ($shippingInfo) {
+            $shipping = $shippingInfo->amount ?? 0;
+        } else {
+            $restState = ShippingCharge::where('state_id', 'rest_of_state')->first();
+            $shipping = $qty * ($restState->amount ?? 0);
+        }
+
+        $grandTotal = ($subTotal - $discount) + $shipping;
+
+        // Step 6: Create Order
+        $order = new Order;
+        $order->user_id = $user->id;
+        $order->product_id = $order->id;
+        $order->product_variant_id = $item->options->variant_id ?? null;
+        $order->customer_address_id = $request->customer_address_id;
+        $order->subtotal = $subTotal;
+        $order->grandtotal = $grandTotal;
+        $order->save();
+
+        //Step 7: Get entried Order Status in OrderStatusHistory
+        OrderStatusHistory::create([
+            'order_id' => $order->id,
+            'courier' => 'Shadofox',
+            'note' => 'note',
+            'status' => 'confirmed',
+            'date' => now()
+        ]);
+
+        //Step 8: Store Order Items + Update Stock
+        foreach (Cart::content() as $item) {
+            $orderItem = new OrderItem;
+            $orderItem->order_id = $order->id;
+            $orderItem->product_id = $item->id;
+            $orderItem->product_variant_id = $item->options->variant_id ?? null;
+            $orderItem->size_id = $item->options->size_id;
+            $orderItem->color_id = $item->options->color_id;
+            $orderItem->discounted_price = $item->options->discount_price ?? null;
+            $orderItem->discount_percent = $item->options->discount_percent ?? null;            
+            $orderItem->qty = $item->qty;
+            $orderItem->price = $item->price;                                               
+            $orderItem->discount = $discount;            
+            $orderItem->coupon_code = $promoCode;
+            $orderItem->coupon_code_id = $discountCodeId;    
+            $orderItem->shipping = $shipping;        
+            $orderItem->subTotal = $subTotal;
+            $orderItem->grandtotal = $grandTotal;            
+            $orderItem->payment_status = 'not paid';
+            $orderItem->payment_method = $request->payment_method;   
+            $orderItem->return_days = $item->options->return_days ?? null;
+            $orderItem->delivery_min_days = $item->options->delivery_min_days ?? null;
+            $orderItem->delivery_max_days = $item->options->delivery_max_days ?? null;
+            $orderItem->save();
+
+            // Update Variant Stock
+            $variant = ProductVariant::find($item->id);
+            if ($variant) {
+                $variant->qty -= $item->qty;
+                $variant->save();
+            }
+
+            // Update Stock
+            $product = Product::find($item->id);
+            if ($product && $product->track_qty == 'Yes') {
+                $product->qty -= $item->qty;
+                $product->save();
+            }
+        }
+
+        if($order->coupon_id){
+            DiscountCoupon::where('id',$order->coupon_id)->increment('used_count');
+        }
+
+        // Step 9: Send Order Confirmation Email
+        orderEmail($order->id, 'customer');
+
+        // Step 10: Clear Cart & Coupon
+        Cart::destroy();
+        session()->forget('coupon_discount');
+
+        // Step 11: Handle COD
+        if($request->payment_method == 'cod'){
+            return response()->json([
+                'status' => true,
+                'orderId' => $order->id,
+                'payment_method' => 'cod'
+            ]);
+        }
+
+        // Setp 12: Razorpay payment
+        $grandTotal = $request->grand_total;
+        
+        $api = new Api(config('razorpay.key'),config('razorpay.secret'));        
+
+        $orderData = [
+            'receipt'         => 'order_'.$order->id,
+            'amount'          => $grandTotal * 100, // Razorpay uses paise
+            'currency'        => 'INR',            
+        ];
+
+        $razorpayOrder = $api->order->create($orderData);
+
+        return response()->json([
+            'status' => true,
+            'orderId' => $order->id,
+            'razorpay_order_id' => $razorpayOrder['id'],
+            'amount' => $orderData['amount'],
+            'key' => config('razorpay.key')
+        ]);
+       
+        return response()->json([
+            'message' => 'Order placed successfully.',
+            'orderId' => $order->id,
+            'payment_method' => $request->payment_method,
+            'status'  => true,
+        ]);
+    }
 
      // Generate Razorpay Order
     public function processCheckout_latest(Request $request) {
@@ -412,12 +603,9 @@ class CartController extends Controller {
                 'product_id' => $item->id,
                 'customer_address_id' => $item->customer_address_id,                
                 'subtotal' => $subTotal,
-                'shipping' => $shipping,
                 'coupon_code' => $promoCode,
                 'coupon_code_id' => $discountCodeId,
                 'discount' => $discount,
-                // 'qty' => $item->qty,
-                // 'price' => $item->price,
                 'grandtotal' => $grandTotal,
                 'status' => 'pending',
             ]);        
@@ -428,8 +616,8 @@ class CartController extends Controller {
                     'product_id' => $item->id,                    
                     'product_variant_id' => $item->options->variant_id,
                     'name' => $item->name,                    
-                    'color' => $item->options->color,
-                    'size' => $item->options->size,                    
+                    'color_id' => $item->options->color_id,
+                    'size_id' => $item->options->size_id,
                     'qty' => $item->qty,
                     'price' => $item->price,
                     'total' => $item->price * $item->qty,                    
@@ -509,183 +697,7 @@ class CartController extends Controller {
         }
     }
 
-    public function processCheckout(Request $request) {
-        // Step 1: Validate selected shipping address
-        $validator = Validator::make($request->all(), [
-            'customer_address_id' => 'required|exists:customer_addresses,id',
-            'payment_method' => 'required|in:cod,razorpay'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Please fix the errors',
-                'status'  => false,
-                'errors'  => $validator->errors()
-            ]);
-        }
-
-        $user = Auth::user();
-
-        // Step 2: Get Selected Address (Security Check: must belong to user)
-        $selectedAddress = CustomerAddress::where('id', $request->customer_address_id)
-            ->where('user_id', $user->id)
-            ->first();
-
-        if (!$selectedAddress) {
-            return response()->json([
-                'message' => 'Invalid shipping address selected.',
-                'status'  => false
-            ]);
-        }
-
-        // Step 3: Calculate Subtotal
-        //$subTotal = Cart::subtotal(2, '.', '');
-        $subTotal = 0;
-        foreach (Cart::content() as $item) {
-            $price = $item->options->discount_price ?? $item->price;
-            $subTotal += $price * $item->qty;
-        }
-
-        $discount = 0;
-        $shipping = 0;
-        $discountCodeId = null;
-        $promoCode = '';
-
-        // Step 4: Apply Coupon (if exists)
-        if(session()->has('coupon_discount')){
-            $coupon = session('coupon_discount');
-
-            if($coupon['type'] == 'percent'){
-                $discount = ($coupon['value'] / 100) * $subTotal;
-            }else{
-                $discount = $coupon['value'];
-            }
-
-            $discountCodeId = $coupon['id'];
-            $promoCode = $coupon['code'];
-        }
-
-        // Step 5: Calculate Shipping Based On Selected Address State
-        $qty = Cart::content()->sum('qty');
-
-        $shippingInfo = ShippingCharge::where('state_id', $selectedAddress->state_id)->first();
-
-        if ($shippingInfo) {
-            $shipping = $shippingInfo->amount ?? 0;
-        } else {
-            $restState = ShippingCharge::where('state_id', 'rest_of_state')->first();
-            $shipping = $qty * ($restState->amount ?? 0);
-        }
-
-        $grandTotal = ($subTotal - $discount) + $shipping;
-
-        // Step 6: Create Order
-        $order = new Order;
-        $order->user_id = $user->id;
-        $order->product_id = $order->id;
-        $order->product_variant_id = $item->options->variant_id ?? null;
-        $order->customer_address_id = $request->customer_address_id;
-        $order->subtotal = $subTotal;
-        $order->shipping = $shipping;
-        $order->grandtotal = $grandTotal;        
-        $order->save();
-
-        OrderStatusHistory::create([
-            'order_id' => $order->id,
-            'courier' => 'Shadofox',
-            'note' => 'note',
-            'status' => 'confirmed',
-            'date' => now()
-        ]);
-
-        // Step 7: Store Order Items + Update Stock
-        foreach (Cart::content() as $item) {
-            $orderItem = new OrderItem;
-            $orderItem->order_id = $order->id;
-            $orderItem->product_id = $item->id;
-            $orderItem->product_variant_id = $item->options->variant_id ?? null;
-            $orderItem->size_id = $item->options->size_id;
-            $orderItem->color_id = $item->options->color_id;
-            $orderItem->discounted_price = $item->options->discount_price ?? null;
-            $orderItem->discount_percent = $item->options->discount_percent ?? null;            
-            $orderItem->qty = $item->qty;
-            $orderItem->price = $item->price;                                               
-            $orderItem->discount = $discount;            
-            $orderItem->coupon_code = $promoCode;
-            $orderItem->coupon_code_id = $discountCodeId;    
-            $orderItem->shipping = $shipping;        
-            $orderItem->subTotal = $subTotal;
-            $orderItem->grandtotal = $grandTotal;            
-            $orderItem->payment_status = 'not paid';
-            $orderItem->payment_method = $request->payment_method;   
-            $orderItem->return_days = $item->options->return_days ?? null;
-            $orderItem->delivery_min_days = $item->options->delivery_min_days ?? null;
-            $orderItem->delivery_max_days = $item->options->delivery_max_days ?? null;
-            $orderItem->save();
-
-            // Update Variant Stock
-            $variant = ProductVariant::find($item->id);
-            if ($variant) {
-                $variant->qty -= $item->qty;
-                $variant->save();
-            }
-
-            // Update Stock
-            $product = Product::find($item->id);
-            if ($product && $product->track_qty == 'Yes') {
-                $product->qty -= $item->qty;
-                $product->save();
-            }
-        }
-
-        if($order->coupon_id){
-            DiscountCoupon::where('id',$order->coupon_id)->increment('used_count');
-        }
-
-        // Step 8: Send Order Confirmation Email
-        orderEmail($order->id, 'customer');
-
-        // Step 9: Clear Cart & Coupon
-        Cart::destroy();
-        session()->forget('coupon_discount');
-
-        // Step 10: Handle COD
-        if($request->payment_method == 'cod'){
-            return response()->json([
-                'status' => true,
-                'orderId' => $order->id,
-                'payment_method' => 'cod'
-            ]);
-        }
-
-        // Setp 11: Razorpay payment
-        $grandTotal = $request->grand_total;
-        
-        $api = new Api(config('razorpay.key'),config('razorpay.secret'));        
-
-        $orderData = [
-            'receipt'         => 'order_'.$order->id,
-            'amount'          => $grandTotal * 100, // Razorpay uses paise
-            'currency'        => 'INR',            
-        ];
-
-        $razorpayOrder = $api->order->create($orderData);
-
-        return response()->json([
-            'status' => true,
-            'orderId' => $order->id,
-            'razorpay_order_id' => $razorpayOrder['id'],
-            'amount' => $orderData['amount'],
-            'key' => config('razorpay.key')
-        ]);
-       
-        return response()->json([
-            'message' => 'Order placed successfully.',
-            'orderId' => $order->id,
-            'payment_method' => $request->payment_method,
-            'status'  => true,
-        ]);
-    }
+    
 
     public function thankyou($id){
         $order = Order::where('id', $id)
@@ -917,12 +929,12 @@ class CartController extends Controller {
         
         $options = $item->options->toArray();
 
-        if ($request->has('color')) {
-            $options['color'] = $request->color;
+        if ($request->has('color_id')) {
+            $options['color_id'] = $request->color_id;
         }
 
-        if ($request->has('size')) {
-            $options['size'] = $request->size;
+        if ($request->has('size_id')) {
+            $options['size_id'] = $request->size_id;
         }
 
         // Important: DO NOT overwrite whole options blindly
@@ -957,8 +969,8 @@ class CartController extends Controller {
             $request->qty,
             $item->price,
             [
-                'size' => $request->size,
-                'color' => $request->color,
+                'size_id' => $request->size_id,
+                'color_id' => $request->color_id,
                 'short_description' => $item->options->short_description,
             ]
         );
