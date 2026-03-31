@@ -7,7 +7,7 @@
 @else
     <a href="{{ url()->previous() }}" class="navbar-toggler mobile-back-icon">
         <span class="sprites"></span>
-    </a>    
+    </a>
 @endif
 
 <div class="offcanvas offcanvas-start d-md-none" tabindex="-1" id="mobileMenu">

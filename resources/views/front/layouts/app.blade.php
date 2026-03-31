@@ -177,7 +177,7 @@
         }       
         
         let urlParams = new URLSearchParams(window.location.search);
-        let variantId = urlParams.get('variant'); // null if not selected
+        let variantId = urlParams.get('variant'); 
 
         $.ajax({
             url: '{{ route("front.addToCart") }}',
@@ -186,8 +186,8 @@
                 _token: '{{ csrf_token() }}',
                 product_id: id,
                 variant_id: variantId ? variantId : '',
-                size: selectedSize,
-                color: selectedColor,
+                size_id: selectedSize,
+                color_id: selectedColor,
             },
             dataType: 'json',
             success: function(response){

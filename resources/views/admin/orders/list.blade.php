@@ -60,18 +60,7 @@
                                 <td>                                     
                                     @foreach($order->items as $item)                                                                                                                            
                                         <a href="{{ route('orders.detail',$order->id) }}" title="{{ $order->id }}">                                            
-                                            <p>
-                                                {{ $item->product->title }}
-                                                <span class="text-muted">- 
-                                                    {{-- @if($item->product->size->code)
-                                                        {{ $item->product->size->code }},    
-                                                    @endif
-
-                                                    @if($item->product->size->code)
-                                                        {{ $item->product->size->code }}   
-                                                    @endif                                                              --}}
-                                                </span>
-                                            </p>
+                                            <p>{{ $item->product->title }}</p>
                                         </a> 
                                     @endforeach                                        
                                 </td>                  
@@ -82,10 +71,18 @@
                                     </p>
                                 </td>                                    --}}
                                 <td class="text-end">
-                                    {{ optional($order->items->first())->size }}                                    
+                                    @php
+                                        $size = \App\Models\Size::find($item->size_id);
+                                        $color = \App\Models\Color::find($item->color_id);
+                                    @endphp
+                                    <p class="show-tooltip">{{ $size->name }}
+                                        <span class="tooltip" style="bottom: -23px; left:45px;">Size ID: {{ $size->id }}</span>
+                                    </p>
                                 </td>
                                 <td class="text-end">
-                                    {{ optional($order->items->first())->color }}                                    
+                                    <p class="show-tooltip">{{ $color->name }}
+                                        <span class="tooltip" style="bottom: -23px; left:40px;">Color ID: {{ $color->id }}</span>
+                                    </p>
                                 </td>
                                 <td class="text-end">
                                     <h5 class="mb-0">₹{{ round($order->grandtotal) }}</h5>

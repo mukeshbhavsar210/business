@@ -138,9 +138,18 @@
                                                                         'slug' => $item->product->slug
                                                                     ]) }}" target="_blank">{{ Str::limit($item->product->title, 75, '...') }}</a>
                                                         </h5>
-                                                        <div class="small-fonts">
-                                                            <p class="mb-0"><span class="text-muted">Size: </span> {{ $item->size }}</p>
-                                                            <p class="mb-0"><span class="text-muted">Color: </span>{{ $item->color }}</p>
+                                                        <div class="small-fonts">                                                            
+                                                            @php
+                                                                $size = \App\Models\Size::find($item->size_id);
+                                                                $color = \App\Models\Color::find($item->color_id);
+                                                            @endphp
+                                                            <p class="show-tooltip mb-0">Size: <b>{{ $size->name }}</b>
+                                                                <span class="tooltip" style="bottom: -4px; left:65px;">Size ID: {{ $size->id }}</span>
+                                                            </p>
+                                                        
+                                                            <p class="show-tooltip mb-0">Color: <b>{{ $color->name }}</b>
+                                                                <span class="tooltip" style="bottom: -4px; left:65px;">Color ID: {{ $color->id }}</span>
+                                                            </p>
                                                         </div>
                                                     </div>
                                                 </div>

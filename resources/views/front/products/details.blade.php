@@ -122,7 +122,7 @@
                                         <ul class="color-list">
                                             @foreach($product->colors as $color)
                                                 <li>
-                                                    <a href="javascript:void(0);" class="color-option show-tooltip" data-color="{{ $color->name }}">
+                                                    <a href="javascript:void(0);" class="color-option show-tooltip" data-color="{{ $color->id }}">
                                                         <span class="color" style="background-color: {{ $color->code }}"></span>
                                                         <span class="tooltip" style="bottom: 37px;">{{ $color->name }}</span>
                                                     </a>
@@ -141,7 +141,7 @@
                             <ul class="size-list">
                                 @foreach($product->sizes as $size)
                                     <li>
-                                        <a href="javascript:void(0);" class="size-option show-tooltip" data-size="{{ $size->code }}">
+                                        <a href="javascript:void(0);" class="size-option show-tooltip" data-size="{{ $size->id }}">
                                             {{ $size->code }}
                                             <span class="tooltip" style="bottom: 47px;">{{ $size->name }}</span>
                                         </a>

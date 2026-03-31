@@ -34,8 +34,8 @@ class CartController extends Controller {
         }
 
         $variantId = $request->variant_id;
-        $size      = $request->size ?? null;
-        $color     = $request->color ?? null;
+        $size_id      = $request->size_id ?? null;
+        $color_id     = $request->color_id ?? null;
 
         // Get selected variant (if exists)
         $variant = null;
@@ -55,8 +55,8 @@ class CartController extends Controller {
             if (
                 $item->id == $product->id &&
                 $item->options->variant_id == $variantId &&
-                $item->options->size == $size &&
-                $item->options->color == $color
+                $item->options->size_id == $size_id &&
+                $item->options->color_id == $color_id
             ) {
                 $alreadyExists = true;
                 break;
@@ -93,8 +93,8 @@ class CartController extends Controller {
                     'short_description' => $product->short_description,                    
                     'productImage'      => $image,
                     'variant_id'        => $variantId,
-                    'size'              => $size,
-                    'color'             => $color,
+                    'size_id'              => $size_id,
+                    'color_id'             => $color_id,
                     'cod'               => $product->cod,
                     'return_days'       => $product->return_days,
                     'delivery_min_days' => $product->delivery_min_days,
@@ -603,13 +603,13 @@ class CartController extends Controller {
             $orderItem = new OrderItem;
             $orderItem->order_id = $order->id;
             $orderItem->product_id = $item->id;
-            $orderItem->qty = $item->qty;
-            $orderItem->price = $item->price;                       
-            $orderItem->discounted_price = $item->options->discount_price ?? null;
-            $orderItem->discount_percent = $item->options->discount_percent ?? null;
             $orderItem->product_variant_id = $item->options->variant_id ?? null;
-            $orderItem->size = $item->options->size ?? null;
-            $orderItem->color = $item->options->color ?? null;
+            $orderItem->size_id = $item->options->size_id;
+            $orderItem->color_id = $item->options->color_id;
+            $orderItem->discounted_price = $item->options->discount_price ?? null;
+            $orderItem->discount_percent = $item->options->discount_percent ?? null;            
+            $orderItem->qty = $item->qty;
+            $orderItem->price = $item->price;                                               
             $orderItem->discount = $discount;            
             $orderItem->coupon_code = $promoCode;
             $orderItem->coupon_code_id = $discountCodeId;    
