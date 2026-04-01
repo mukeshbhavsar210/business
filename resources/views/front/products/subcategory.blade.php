@@ -6,14 +6,10 @@
     
 <div class="container">    
     <div class="row">
-        <h2>Sub Categories</h2>
-        
-        {{-- {{ $products->subCategory->sub_category_name }} --}}
+        <h4 class="mb-3">Sub Category</h4>
 
-        @foreach($products as $product)         
-            <div class="col-md-3 col-6">
-                <x-products :product="$product" :slider="true" :hover="true"/>
-            </div>
+        @foreach($subcategories as $subcategory)                     
+            <x-products :subcategory="$subcategory" :class_desktop="2" :class_mobile="6" :title_limit="20" :short_limit="7" :slider="true" :hover="true"/>            
         @endforeach
 
         {{ $products->withQueryString()->links() }}    

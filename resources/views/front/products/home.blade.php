@@ -8,7 +8,7 @@
         <div class="brand-slider">
             @foreach(getBrands() as $brand)                
                 <div class="brand-item">
-                    <x-products :brand="$brand" :slider="true" :hover="true" />
+                    <x-products :brand="$brand" section="show_brands" :slider="true" :hover="true" />
                 </div>
             @endforeach
         </div>
@@ -17,34 +17,23 @@
         <div class="row">
             @foreach(getCategories() as $category)                
                 @foreach($category->subCategories as $subCategory)    
-                    <div class="col-md-2 col-6">                   
-                        <x-products 
-                            :category="$category" 
-                            :subcategory="$subCategory"
-                            :slider="true" 
-                            :hover="true" 
-                        />
-                    </div>
+                    <div class="col-md-2 col-6">
+                        <div class="product-card">
+                            <div class="product-image-wrapper">                                
+                                {{-- <x-gallery :category="$category" :subcategory="$subCategory" section="show_products" variable="show_subcategory" />
+                                <x-products :category="$category" :subcategory="$subCategory" section="show_products" variable="show_subcategory" :title_limit="27" :short_limit="30"  />
+                                <x-price :category="$category" :subcategory="$subCategory" section="show_products" variable="show_subcategory" :title_limit="27" :short_limit="30"  />
+                                <x-hover :category="$category" :subcategory="$subCategory" section="show_products" /> --}}
+
+                                <x-gallery :category="$category" :subcategory="$subCategory" section="show_subcategory" variable="subcategory" />
+                                <x-products :category="$category" :subcategory="$subCategory" section="show_subcategory" variable="subcategory" :title_limit="27" :short_limit="30"/>
+                                <x-hover section="show_category" section="show_subcategory" variable="subcategory"  /> 
+                            </div>
+                        </div>
+                    </div>                    
                     {{-- {{ $subCategory->sub_category_name }} --}}
                 @endforeach
-            @endforeach
-
-            {{-- @foreach(getCategories() as $category)                
-                @foreach($category->subCategories as $subCategory)                       
-                        {{ $subCategory->sub_category_name }}                    
-                    @foreach($subCategory->subSubCategories as $subSubCategory)                        
-                        {{ $subSubCategory->sub_sub_category_name }}                        
-                    @endforeach
-                @endforeach
-            @endforeach --}}
-
-            {{-- @if (getCategories()->isNotEmpty())
-                @foreach (getCategories() as $category)                
-                    <div class="col-md-2 col-6">
-                        <x-products :category="$category" :slider="true" :hover="true" />
-                    </div>
-                @endforeach
-            @endif --}}
+            @endforeach          
         </div>
     </div>    
 @endsection

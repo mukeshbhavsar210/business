@@ -91,9 +91,16 @@
         <div class="col-md-10 col-12">
             <div class="listing-products">
                 <div class="row">
-                    @foreach($products as $product)      
-                        <div class="col-md-3 col-6">  
-                            <x-products :product="$product" />
+                    @foreach($products as $product) 
+                        <div class="col-md-3 col-6">
+                            <div class="product-card">
+                                <div class="product-image-wrapper">
+                                    <x-gallery :product="$product" section="show_products" variable="product" />
+                                    <x-products :product="$product" section="show_products" variable="product" :title_limit="27" :short_limit="30"  />
+                                    <x-price :product="$product" section="show_products" variable="product" />
+                                    <x-hover :product="$product" section="show_products" />
+                                </div>
+                            </div>
                         </div>
                     @endforeach
                 </div>
