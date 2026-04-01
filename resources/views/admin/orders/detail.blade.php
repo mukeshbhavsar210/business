@@ -35,50 +35,52 @@
                         <div class="col-md-4 col-12">
                             <div class="card border mb-2">
                                 <div class="card-body">
-                                    @foreach ($orderItems as $value)
-                                        <div class="flex-details">
-                                            <p class="label">Order ID</p>
-                                            <p class="right">: {{ $value->order_id }}</p>
-                                        </div>
-                                        <div class="flex-details">
-                                            <p class="label">Payment Mode</p>
-                                            <p class="right">: {{ $value->payment_method  }}</p>
-                                        </div>
-                                        <div class="flex-details">
-                                            <p class="label">Total</p>
-                                            <p class="right">: ₹{{ number_format($value->grandtotal,2) }}</p>
-                                        </div>
-                                        <div class="flex-details">
-                                            <p class="label">Shipped Date</p>
-                                            <p class="right">:                                        
-                                                @if (!empty($value->shipped_date))
-                                                    {{ \Carbon\Carbon::parse($value->shipped_date)->format('d M, Y')}}
-                                                @else
-                                                    Pending
-                                                @endif                                        
-                                            </p>                           
-                                        </div>
-                                        <div class="flex-details">
-                                            <p class="label">Status</p>                                        
-                                            <p class="right">:
-                                                @php
-                                                    $status = $order->latestStatus->status ?? 'confirmed';
-                                                    $badgeClasses = [
-                                                        'Confirmed'         => 'bg-secondary',
-                                                        'Shipped'           => 'bg-primary',
-                                                        'Out for Delivery'  => 'bg-warning',
-                                                        'Delivered'         => 'bg-success',
-                                                        'Cancelled'         => 'bg-danger',
-                                                        'Exchanged'         => 'bg-danger',
-                                                        'Returned'          => 'bg-danger'
-                                                    ];
-                                                @endphp
-                                                <span class="badge {{ $badgeClasses[$status] ?? 'bg-dark' }}">
-                                                    {{ ucfirst(str_replace('_',' ',$status)) }}
-                                                </span>                                           
-                                            </p>                                                                                
-                                        </div>  
-                                    @endforeach                                                                  
+                                    <div class="flex-details">
+                                        <p class="label">Order ID</p>
+                                        <p class="right">: {{ $order->id }}</p>
+                                    </div>
+
+                                    <div class="flex-details">
+                                        <p class="label">Payment Mode</p>
+                                        <p class="right">: {{ $order->payment_method }}</p>
+                                    </div>
+
+                                    <div class="flex-details">
+                                        <p class="label">Total</p>
+                                        <p class="right">: ₹{{ number_format($order->grandtotal,2) }}</p>
+                                    </div>
+
+                                    <div class="flex-details">
+                                        <p class="label">Shipped Date</p>
+                                        <p class="right">:                                        
+                                            @if (!empty($order->shipped_date))
+                                                {{ \Carbon\Carbon::parse($order->shipped_date)->format('d M, Y')}}
+                                            @else
+                                                Pending
+                                            @endif                                        
+                                        </p>                           
+                                    </div>
+
+                                    <div class="flex-details">
+                                        <p class="label">Status</p>                                        
+                                        <p class="right">:
+                                            @php
+                                                $status = $order->latestStatus->status ?? 'confirmed';
+                                                $badgeClasses = [
+                                                    'Confirmed'         => 'bg-secondary',
+                                                    'Shipped'           => 'bg-primary',
+                                                    'Out for Delivery'  => 'bg-warning',
+                                                    'Delivered'         => 'bg-success',
+                                                    'Cancelled'         => 'bg-danger',
+                                                    'Exchanged'         => 'bg-danger',
+                                                    'Returned'          => 'bg-danger'
+                                                ];
+                                            @endphp
+                                            <span class="badge {{ $badgeClasses[$status] ?? 'bg-dark' }}">
+                                                {{ ucfirst(str_replace('_',' ',$status)) }}
+                                            </span>                                           
+                                        </p>                                                                                
+                                    </div>                                                                 
                                 </div>
                             </div>
                         </div>
@@ -126,26 +128,20 @@
                                                         </h5>
                                                         <p class="text-muted tiny-font">{{ Str::limit($item->product->short_description, 75, '...') }}</p>
                                                         <div class="small-fonts">
-                                                            @php
-                                                                $size = !empty($item->size_id) ? \App\Models\Size::find($item->size_id) : null;
-                                                                $color = !empty($item->color_id) ? \App\Models\Color::find($item->color_id) : null;
-                                                            @endphp
+                                                             @php $firstItem = $order->orderItems->first(); @endphp
 
-                                                            @if(!empty($size?->name))
-                                                                <p class="show-tooltip mb-0"><b>{{ $size->name }}</b>
-                                                                    <span class="tooltip" style="bottom: -4px; left:65px;">
-                                                                        Size ID: {{ $size->id }}
-                                                                    </span>
-                                                                </p>    
-                                                            @endif                                  
-                                                        
-                                                            @if(!empty($color?->name))
-                                                                <p class="show-tooltip mb-0"><b>{{ $color->name }}</b>
-                                                                    <span class="tooltip" style="bottom: -4px; left:65px;">
-                                                                        Size ID: {{ $color->id }}
-                                                                    </span>
-                                                                </p>    
-                                                            @endif  
+                                                            <p class="show-tooltip mb-0">
+                                                                Size: <b>{{ $firstItem->size->name ?? '-' }}</b>
+                                                                <span class="tooltip" style="bottom: 18px; left:55px;">
+                                                                    Size ID: {{ $firstItem->size->id }}
+                                                                </span>
+                                                            </p>
+                                                            <p class="show-tooltip mb-0">
+                                                                Color: <b>{{ $firstItem->color->name ?? '-' }}</b>
+                                                                <span class="tooltip" style="bottom: 18px; left:55px;">
+                                                                    Color ID: {{ $firstItem->color->id }}
+                                                                </span>
+                                                            </p>
                                                         </div>
                                                     </div>
                                                 </div>

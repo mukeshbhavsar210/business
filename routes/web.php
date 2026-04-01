@@ -145,6 +145,7 @@ Route::group(['prefix' => 'admin'], function(){
         Route::controller(HomeController::class)->group(function() {
             Route::get('/dashboard', 'index')->name('admin.dashboard');
             Route::get('/recent-orders', 'recentOrders')->name('admin.recentOrders');
+            Route::get('/top-products', 'topProducts')->name('admin.top.products');
             Route::get('/charts', 'dashboardStats')->name('admin.dashboard.stats');
             Route::get('/logout', 'logout')->name('admin.logout');
         });

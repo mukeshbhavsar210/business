@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 class OrderController extends Controller {
     public function index(Request $request) {
         $orders = Order::with(array_merge($this->orderRelations(), [
-                'latestStatus', 'items', 
+                'latestStatus', 'items', 'items.product',
                 'items.product.category',
                 'items.product.subCategory',
                 'items.product.subSubCategory',                
@@ -21,11 +21,12 @@ class OrderController extends Controller {
             ->paginate(20);
 
         // Order counts
-        $totalOrders = Order::count();                
+        $totalOrders = Order::count();             
+            
 
         return view('admin.orders.list', [
             'orders' => $orders,
-            'totalOrders' => $totalOrders,            
+            'totalOrders' => $totalOrders,                        
         ]);
     }
 
@@ -34,9 +35,10 @@ class OrderController extends Controller {
         return [
             'user',
             'items',
+            'items.product',
             'orderItems.product.images',
-            'orderItems.product.size',
-            'orderItems.product.color',
+            'orderItems.size',
+            'orderItems.color',
             'items.product.size',
             'items.product.color',
             'items.size',
@@ -54,7 +56,8 @@ class OrderController extends Controller {
                 'items.product.subCategory',
                 'items.product.subSubCategory',
                 'items.size', 
-                'items.color'
+                'items.color',
+                'orderItems',
             ])
             ->select(
                 'orders.*',
@@ -81,7 +84,7 @@ class OrderController extends Controller {
 
         $orderHistory = OrderStatusHistory::where('order_id',$orderId)
                 ->orderBy('date','asc')
-                ->get();                
+                ->get();                        
 
         return view('admin.orders.detail', [
             'order' => $order,
@@ -120,6 +123,13 @@ class OrderController extends Controller {
         $order->status = $request->status;
         $order->date = $request->date;
         $order->save();
+
+        // 👉 Update main order table
+        $order = Order::find($request->order_id);
+        if ($order) {
+            $order->status = $request->status;
+            $order->save();
+        }
 
         $message = 'Order track status updated successfully';
 

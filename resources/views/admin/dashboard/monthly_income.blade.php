@@ -1,11 +1,11 @@
 <div class="card">
     <div class="card-header">
         <div class="row align-items-center">
-            <div class="col">                      
-                <h4 class="card-title">Monthly Avg. Income</h4>                      
+            <div class="col-10">                      
+                <h5>Monthly Avg. Income</h5>
             </div>
-            <div class="col-auto"> 
-                <select onchange="loadDashboard(this.value)" class="form-select form-select-sm w-auto">
+            <div class="col-2"> 
+                <select onchange="loadDashboard(this.value)" class="form-select">
                     <option value="today">Today</option>
                     <option value="week">Last Week</option>
                     <option value="month">This Month</option>
@@ -21,14 +21,13 @@
             <div class="row" id="chartContainer"></div>
         </div>
         
-        <div class="row">
+        <div class="row mt-3">
             <div class="col-md-6 col-lg-3"> 
                 <div class="card shadow-none border mb-3 mb-lg-0">
                     <div class="card-body">
                         <div class="row align-items-center">
                             <div class="col text-center">         
-                                <span class="fs-18 fw-semibold" id="totalIncome">₹0</span>
-                                {{-- <span >₹{{ number_format($totalRevenue, 2) }}</span>       --}}
+                                <span class="fs-18 fw-semibold" id="totalIncome">₹0</span>                                
                                 <h6 class="text-uppercase text-muted mt-2 m-0">Today's Revenue</h6>                
                             </div>
                         </div> 

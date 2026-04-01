@@ -26,12 +26,13 @@
                             <th class="border-top-0 text-end" width="120">Size</th>
                             <th class="border-top-0 text-end" width="120">Color</th>
                             <th class="border-top-0 text-end" width="130">Grand Total</th>
-                            <th class="border-top-0 text-end" width="150">Courier</th>
+                            <th class="border-top-0 text-end" width="120">Order On</th>
+                            <th class="border-top-0 text-end" width="100">Courier</th>
                             <th class="border-top-0 text-end" width="120">Status</th> 
                         </tr>
                     </thead>
                     <tbody >
-                        @foreach($orders as $key => $order)
+                        @foreach($orders as $key => $order)                          
                             <tr>
                                 <td><p class="mt-2">
                                         <a href="{{ route('orders.detail',$order->id) }}" >{{ $order->id }}</a>
@@ -58,60 +59,35 @@
                                             </a>       
                                             @if($order->items->count() > 1)
                                                 <span class="counts">{{ $order->items->count() }}</span>    
-                                            @endif                                            
+                                            @endif  
                                         @endforeach
                                     </div>                                                                            
                                 </td>       
-                                <td>    
-                                    <h5 class="mb-0">
-                                        <a href="{{ route('orders.detail',$order->id) }}" >                                            
-                                            <p>{{ $item->product->title }}</p>
-                                        </a>
-                                    </h5>                              
-                                    <p class="mt-0 text-muted tiny-font">
-                                        {{ \Carbon\Carbon::parse(optional($order->items->first())->created_at)->format('d M, Y') }}<br />
-                                        {{ optional($order->items->first())->payment_method == 'cod' ? 'COD' : 'Razorpay' }}
-                                    </p>
-                                    {{-- @foreach($order->items as $item)                                                                                                                            
-                                        <a href="{{ route('orders.detail',$order->id) }}" title="{{ $order->id }}">                                            
-                                            <p>{{ $item->product->title }}</p>
-                                        </a> 
-                                    @endforeach                                         --}}
-                                </td>                  
-                                {{-- <td class="text-end">
-                                    <h5 class="mb-0">₹{{ number_format($order->subtotal,2) }} </h5>
-                                    <p class="m-0 text-muted tiny-font">  
-                                        <del>₹{{ number_format(optional($order->items->first())->price,2) }}</del><br />                                        
-                                    </p>
-                                </td>                                    --}}
-                                <td class="text-end">
-                                    @php
-                                        $size = !empty($item->size_id) ? \App\Models\Size::find($item->size_id) : null;
-                                        $color = !empty($item->color_id) ? \App\Models\Color::find($item->color_id) : null;
-                                    @endphp
+                                <td>
+                                    @foreach($order->items as $item)
+                                        <h5 class="mb-0">
+                                            <a href="{{ route('orders.detail',$order->id) }}" >                                            
+                                                {{ $item->product->title }}
+                                            </a>
+                                        </h5>          
+                                    @endforeach
+                                </td>   
+                                
+                                @php $firstItem = $order->orderItems->first(); @endphp
 
-                                    @if(!empty($size?->name))
-                                        <p class="show-tooltip mt-2">
-                                            {{ $size->name }}
-                                            <span class="tooltip" style="bottom: -23px; left:45px;">
-                                                Size ID: {{ $size->id }}
-                                            </span>
-                                        </p>    
-                                    @endif                                  
+                                <td class="text-end">
+                                    <p class="mt-2">{{ $firstItem->size->name ?? '-' }}</p>
                                 </td>
                                 <td class="text-end">
-                                    @if(!empty($color?->name))
-                                        <p class="show-tooltip mt-2">
-                                            {{ $color->name }}
-                                            <span class="tooltip" style="bottom: -23px; left:45px;">
-                                                Size ID: {{ $color->id }}
-                                            </span>
-                                        </p>    
-                                    @endif                                     
+                                    <p class="mt-2">{{ $firstItem->color->name ?? '-' }}</p>
                                 </td>
                                 <td class="text-end">
                                     <h5 class="mt-2">₹{{ round($order->grandtotal) }}</h5>                                    
-                                </td>                                                                
+                                </td> 
+                                <td class="text-end">
+                                    <p class="mt-2">{{ \Carbon\Carbon::parse(optional($order->items->first())->created_at)->format('d M, Y') }}<br /></p>
+                                    {{-- {{ optional($order->items->first())->payment_method == 'cod' ? 'COD' : 'Razorpay' }} --}}
+                                </td>                                                               
                                 <td class="text-end">
                                     <h5 class="mt-2">{{ $order->latestStatus->courier ?? '-' }}</h5>
                                     {{-- <p class="m-0 text-muted tiny-font">{{ $order->latestStatus->tracking_number ?? 'No Tracking' }}</p> --}}
