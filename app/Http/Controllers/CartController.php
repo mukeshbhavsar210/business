@@ -365,9 +365,10 @@ class CartController extends Controller {
         // Step 6: Create Order
         $order = new Order;
         $order->user_id = $user->id;
-        $order->product_id = $order->id;
+        $order->product_id = $item->id;
         $order->product_variant_id = $item->options->variant_id ?? null;
         $order->customer_address_id = $request->customer_address_id;
+        $order->payment_method = $request->payment_method;
         $order->subtotal = $subTotal;
         $order->grandtotal = $grandTotal;
         $order->save();
@@ -400,7 +401,7 @@ class CartController extends Controller {
             $orderItem->subTotal = $subTotal;
             $orderItem->grandtotal = $grandTotal;            
             $orderItem->payment_status = 'not paid';
-            $orderItem->payment_method = $request->payment_method;   
+            $orderItem->payment_method = $request->payment_method;
             $orderItem->return_days = $item->options->return_days ?? null;
             $orderItem->delivery_min_days = $item->options->delivery_min_days ?? null;
             $orderItem->delivery_max_days = $item->options->delivery_max_days ?? null;

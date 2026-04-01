@@ -13,6 +13,10 @@ class Order extends Model {
                             
     ];
 
+    public function products(){
+        return $this->hasMany(Product::class);
+    }
+
     public function product_images(){
         return $this->hasMany(ProductImage::class);
     }
