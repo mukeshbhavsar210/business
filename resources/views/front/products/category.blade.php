@@ -5,15 +5,22 @@
 @section('content')
     
 <div class="container">    
-    <h2>Category</h2>
+    <h4>Category: {{ ucfirst($selected_category) }}</h4>
+
     <div class="row mt-3">
-        @foreach($products as $product)         
-            <div class="col-md-3 col-6">
-                <x-products :product="$product" :slider="true" :hover="true"/>
-            </div>
+        @foreach($categories as $category)         
+            <div class="col-md-2 col-6">
+                    <div class="product-card">
+                        <div class="product-image-wrapper">                                                            
+                            <x-gallery :category="$category" section="show_category" variable="category" />
+                            <x-products :category="$category" section="show_category" :title_limit="20" :short_limit="7" />
+                            <x-hover section="show_category" section="show_subcategory" variable="category"  /> 
+                        </div>
+                    </div>
+                </div> 
         @endforeach
 
-        {{ $products->withQueryString()->links() }}    
+        {{ $categories->withQueryString()->links() }}    
     </div>
 </div>
 @endsection

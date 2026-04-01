@@ -50,9 +50,7 @@ Route::controller(CartController::class)->group(function() {
     Route::post('/checkout/delete-item','deleteItem')->name('front.deleteItem.cart');
     Route::post('/move-to-wishlist', 'moveToWishlist')->name('front.moveToWishlist.cart');    
     Route::post('/cart/bulk-action', 'bulkAction')->name('cart.bulk.action');    
-
     Route::post('/cart/select-item','selectItem');
-
     Route::get('/get-product-colors/{id}', 'getProductColors');
     Route::get('/get-product-sizes/{id}', 'getProductSizes');
 

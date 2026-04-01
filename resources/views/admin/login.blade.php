@@ -21,7 +21,7 @@
 									<div class="card-body p-0 bg-black auth-header-box rounded-top">
 										<div class="text-center p-3">
 											<a href="index.html" class="logo logo-admin">
-												<img src="{{ asset('admin-assets/img/Heaven_Prints.jpg') }}" height="50" alt="logo" class="auth-logo">
+												<img src="{{ asset('front-assets/images/logo.png') }}" alt=""  height="50" alt="logo" class="auth-logo"/>
 											</a>											
 										</div>
 									</div>

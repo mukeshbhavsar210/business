@@ -334,33 +334,34 @@ class ShopController extends Controller {
     }
 
     public function category(Request $request, $item1=null) {    
-        $products = Product::with('ratings')->where('status',1);                
+        $categories = Product::with('ratings')->where('status',1);
+        $selected_category = $item1;
         
         if (!empty($item1)) {
             $values = explode(',', $item1);
             $ids = Category::whereIn('category_slug', $values)->pluck('id')->toArray();
             $selected_item1 = $values;
-            $products->whereIn('category_id', $ids);
+            $categories->whereIn('category_id', $ids);
         }
 
-        $products = $products->paginate(10);                   
+        $categories = $categories->paginate(10);        
 
-        return view('front.products.category', compact('products', 'item1', ));
+        return view('front.products.category', compact('categories', 'item1', 'selected_category' ));
     }
 
     public function subcategory(Request $request, $item2=null) {            
-        $products = Product::with(['subCategory', 'ratings'])->where('status',1);        
+        $subcategories = Product::with(['subCategory', 'ratings'])->where('status',1);     
         
         if (!empty($item2)) {
             $values = explode(',', $item2);
             $ids = SubCategory::whereIn('sub_category_slug', $values)->pluck('id')->toArray();
             $selected_item2 = $values;
-            $products->whereIn('sub_category_id', $ids);
+            $subcategories->whereIn('sub_category_id', $ids);
         }
         
-        $products = $products->paginate(10);        
+        $subcategories = $subcategories->paginate(10);        
 
-        return view('front.products.subcategory', compact('products', 'item2',));
+        return view('front.products.subcategory', compact('subcategories', 'item2'));
     }
 
     public function category_old(Request $request, $item1 = null) {
