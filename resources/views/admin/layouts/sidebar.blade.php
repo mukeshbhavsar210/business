@@ -33,7 +33,7 @@
         </a>
     </li>
     <li class="nav-item">
-        <a href="{{ route('ratings.index') }}" class="nav-link">
+        <a href="{{ route('review.index') }}" class="nav-link">
             <i class="iconoir-journal-page menu-icon"></i>
             <span>Ratings</span>
         </a>

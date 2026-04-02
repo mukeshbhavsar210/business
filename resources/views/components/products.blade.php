@@ -70,9 +70,7 @@
         @elseif($gallery == 'category')
              <a href="{{ route('front.subcategory', [$subcategory->sub_category_slug]) }}" >
                 @if ($subcategory->image != "")
-                    <img src="{{ asset('uploads/category/'.$subcategory->image) }} " alt="" class="product-img rounded">
-                @else
-                    <img class="card-img-top" src="{{ asset('admin-assets/img/default-150x150.png') }}" alt="" />
+                    <img src="{{ asset('uploads/category/subcategory/'.$subcategory->image) }} " alt="" class="product-img rounded">
                 @endif
             </a>
 

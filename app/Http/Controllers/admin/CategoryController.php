@@ -119,7 +119,7 @@ class CategoryController extends Controller {
                                 'type' => 'select',
                                 'name' => 'category_id',
                                 'label' => 'Select Parent Category',
-                                'options' => ['Select Category' => 'Select Category'] + $categories->pluck('category_name','id')->toArray(),
+                                'options' => $categories->pluck('category_name','id')->toArray(),
                                 'col' => 'col-md-6 col-12'
                             ],   
                             [
@@ -219,7 +219,7 @@ class CategoryController extends Controller {
                                 'name' => 'sub_sub_category_slug',
                                 'label' => 'Category slug',
                                 'placeholder' => 'Enter Category name',                                
-                                'id'    => 'slug_3',
+                                'id' => 'slug_3',
                                 'col' => 'col-md-12 col-12  d-none'
                             ],                            
                         ]
@@ -265,7 +265,7 @@ class CategoryController extends Controller {
                 $imageName = $id . '_' . $name . '.' . $image->getClientOriginalExtension();
                 $img = $manager->read($image->getRealPath());
                 //$img->scale(width: 300);
-                $img->resize(300, 400);
+                $img->resize(200, 250);
                 $img->save($path.$imageName);
                 $category->image = $imageName;
                 $category->save();
@@ -328,7 +328,7 @@ class CategoryController extends Controller {
 
                     // Read image
                     $image = $manager->read($sourcePath);
-                    $image->cover(400, 500);
+                    $image->cover(200, 250);
                     $image->save($destinationPath, quality: 100);
 
                     // Update database
@@ -401,9 +401,8 @@ class CategoryController extends Controller {
             if ($request->hasFile('image')) {
                 $image = $request->file('image');
                 $imageName = $id . '_' . $name . '.' . $image->getClientOriginalExtension();
-                $img = $manager->read($image->getRealPath());
-                //$img->scale(width: 300);
-                $img->resize(300, 400);
+                $img = $manager->read($image->getRealPath());                
+                $img->resize(200, 250);
                 $img->save($path.$imageName);
                 $subCategory->image = $imageName;
                 $subCategory->save();
@@ -529,9 +528,7 @@ class CategoryController extends Controller {
             'status' => true,
             'message' => 'Category deleted successfully'
         ]);
-    }
-
-    
+    }    
 
     public function subSubCategory_store(Request $request){
         $validator = Validator::make($request->all(), [
@@ -617,5 +614,4 @@ class CategoryController extends Controller {
         ]);
     }
 
-    
 }

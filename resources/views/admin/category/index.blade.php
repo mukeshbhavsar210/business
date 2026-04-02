@@ -85,10 +85,9 @@
 
                     <div id="catCollapse{{ $category->id }}" class="accordion-collapse collapse" data-bs-parent="#categoryAccordion">
                         <div class="accordion-body">
-                            <div class="flex-justify mb-1">
-                                <h5 class="mt-1">Sub Category</h5>
-                                <div>
-                                    <a href="javascript:0" class="btn btn-outline-primary"
+                            <div class="flex">
+                                <h5>Sub Category</h5>
+                                <a href="javascript:0" class="edit-icon"
                                         data-id="{{ $category->id }}"
                                         data-category_name="{{ $category->category_name }}"
                                         data-status="{{ $category->status }}"
@@ -98,12 +97,11 @@
                                         data-bs-toggle="modal" 
                                         data-bs-target="#categoryModal"                                                
                                         >
-                                        Edit
+                                        <span class="sprites"></span>
                                     </a>
-                                    <a href="#" class="btn btn-outline-danger" onclick="deleteCategory({{ $category->id }})" >
-                                        Delete
+                                    <a href="#" class="delete-icon" onclick="deleteCategory({{ $category->id }})" >
+                                        <span class="sprites"></span>
                                     </a> 
-                                </div>
                             </div>
                         
                             <div class="accordion" id="subAccordion{{ $category->id }}">
@@ -135,8 +133,8 @@
                                                         @endforeach   
                                                     </div>  
                                                     {{-- <h5>Sub Sub Category <span class="counts">{{ $sub->subSubCategories->count() }}</span></h5> --}}
-                                                    <div>
-                                                        <a class="btn btn-outline-primary" href="javascript:0"
+                                                    <div class="flex">
+                                                        <a class="edit-icon" href="javascript:0"
                                                             data-id="{{ $sub->id }}"
                                                             data-sub_category_name="{{ $sub->sub_category_name }}"
                                                             data-status="{{ $sub->status }}"
@@ -144,11 +142,11 @@
                                                             onclick="editSubCategoryModal(this)"
                                                             data-bs-toggle="modal"
                                                             data-bs-target="#subCategoryModal">
-                                                            Edit
+                                                            <span class="sprites"></span>
                                                         </a>
                                                             
-                                                        <a href="#" class="btn btn-outline-danger" onclick="deleteSubCategory({{ $sub->id }})" >
-                                                            Delete
+                                                        <a href="#" class="delete-icon" onclick="deleteSubCategory({{ $sub->id }})" >
+                                                            <span class="sprites"></span>
                                                         </a> 
                                                     </div>                                                               
                                                 </div>
