@@ -242,7 +242,7 @@
         wishlistToCart(wishlistId, productId, size_id, color_id);
     });
 
-    function wishlistToCart(wishlistId, productId,  size_id = null, color_id = null) {        
+    function wishlistToCart(wishlistId, productId, size_id = null, color_id = null) {        
         $.ajax({
             url: '{{ route("front.wishlistToCart") }}',
             type: 'POST',

@@ -20,12 +20,6 @@
                     <div class="col-md-2 col-6">
                         <div class="product-card">
                             <div class="product-image-wrapper">                                
-                                {{-- <x-gallery :category="$category" :subcategory="$subCategory" section="show_products" variable="show_subcategory" />
-                                <x-products :category="$category" :subcategory="$subCategory" section="show_products" variable="show_subcategory" :title_limit="27" :short_limit="30"  />
-                                <x-price :category="$category" :subcategory="$subCategory" section="show_products" variable="show_subcategory" :title_limit="27" :short_limit="30"  />
-                                <x-hover :category="$category" :subcategory="$subCategory" section="show_products" /> --}}
-
-                                <x-gallery :category="$category" :subcategory="$subCategory" section="show_subcategory" variable="subcategory" />
                                 <x-products :category="$category" :subcategory="$subCategory" section="show_subcategory" variable="subcategory" :title_limit="27" :short_limit="30"/>
                                 <x-hover section="show_category" section="show_subcategory" variable="subcategory"  /> 
                             </div>
