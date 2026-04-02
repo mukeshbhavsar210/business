@@ -23,31 +23,32 @@ use Illuminate\Support\Facades\Mail;
 
 class CartController extends Controller {
     public function addToCart(Request $request) {
-        $product = Product::with(['product_images','variants'])->find($request->product_id);
+        $product = Product::with(['product_images','variants','colors','discount'])
+            ->findOrFail($request->product_id);
 
-        if (!$product) {
-            return response()->json([
-                "status" => false,
-                "message" => "Product not found"
-            ]);
+        // ✅ Color: user selected OR fallback to first
+        $color_id = $request->color_id;
+        if (empty($color_id)) {
+            $color_id = optional($product->colors->first())->id;
         }
 
-        $variantId = $request->variant_id;
-        $size_id      = $request->size_id ?? null;
-        $color_id     = $request->color_id ?? null;
+        // ✅ Size (optional)
+        $size_id = $request->size_id ?? null;
 
-        // Get selected variant (if exists)
+        // ✅ Variant (optional)
+        $variantId = $request->variant_id ?? null;
         $variant = null;
+
         if (!empty($variantId)) {
             $variant = $product->variants->where('id', $variantId)->first();
         }
 
-        // Determine correct image
-        $image = $variant && $variant->image
-                    ? $variant->image
-                    : optional($product->product_images->first())->image;
+        // ✅ Image selection (variant > product)
+        $image = ($variant && $variant->image)
+            ? $variant->image
+            : optional($product->product_images->first())->image;
 
-        // Unique rowId check (product + variant + size)
+        // ✅ Prevent duplicate (product + variant + size + color)
         $alreadyExists = false;
 
         foreach (Cart::content() as $item) {
@@ -55,7 +56,7 @@ class CartController extends Controller {
                 $item->id == $product->id &&
                 $item->options->variant_id == $variantId &&
                 $item->options->size_id == $size_id &&
-                $item->options->color_id == $color_id
+                $item->options->color_id == $color_id // ✅ fixed
             ) {
                 $alreadyExists = true;
                 break;
@@ -63,18 +64,11 @@ class CartController extends Controller {
         }
 
         if (!$alreadyExists) {
-            $discountPercent = 0;
 
-            if ($product->discount) {
-                $discountPercent = $product->discount->percentage;
-            }
-            // ✅ Get discount percent safely
+            // ✅ Discount
             $discountPercent = (int) optional($product->discount)->percentage;
-            //$discountPercent = optional($product->discounts->first())->percentage ?? 0;
 
-            // ✅ Calculate discount price
             $discount_price = $product->price;
-
             if ($discountPercent > 0) {
                 $discount_price = $product->price - ($product->price * $discountPercent / 100);
             }
@@ -82,18 +76,18 @@ class CartController extends Controller {
             Cart::add([
                 'id'      => $product->id,
                 'name'    => $product->title,
-                'qty'     => 1,                
-                'price'   => round($product->price),                
+                'qty'     => 1,
+                'price'   => round($product->price),
                 'weight'  => 0,
                 'options' => [
                     'original_price'    => $product->price,
                     'discount_price'    => round($discount_price),
-                    'discount_percent'  => $discountPercent,                    
-                    'short_description' => $product->short_description,                    
+                    'discount_percent'  => $discountPercent,
+                    'short_description' => $product->short_description,
                     'productImage'      => $image,
                     'variant_id'        => $variantId,
                     'size_id'           => $size_id,
-                    'color_id'          => $color_id,
+                    'color_id'          => $color_id, // ✅ correct value used
                     'cod'               => $product->cod,
                     'return_days'       => $product->return_days,
                     'delivery_min_days' => $product->delivery_min_days,
@@ -104,16 +98,96 @@ class CartController extends Controller {
             $status  = true;
             $message = $product->title . ' added to Bag.';
             session()->flash('success', $message);
+
         } else {
             $status  = false;
-            $message = $product->title.' already added in cart';
+            $message = $product->title . ' already added in cart';
         }
+
         return response()->json([
             "status"    => $status,
             "message"   => $message,
             "cartCount" => Cart::count(),
         ]);
-    }   
+    }
+
+
+     public function cart() {
+        $cartContent = Cart::content();
+        $appliedCouponId = session('coupon_discount.id'); 
+
+        $coupons = DiscountCoupon::where('status', 1)
+            ->where(function ($q) {
+                $q->whereNull('expires_at')
+                ->orWhere('expires_at', '>=', now());
+            })
+            ->get();   
+        
+        if(auth()->check()){
+            $address = auth()->user()->addresses()->with('state')->get();
+            $customerAddress = Auth::user()->address;
+        }else{
+            $address = collect(); // empty collection
+        }
+        $addressTypes = CustomerAddress::pluck('address_type')->toArray();        
+        $states = State::orderBy('name', 'ASC')->get(); 
+        $delivery_address = CustomerAddress::with('state')->get();
+        $homeExists = CustomerAddress::where('user_id', auth()->id())
+            ->where('address_type', 'Home')
+            ->exists();        
+
+        $qty = Cart::count();
+        $selectedIds = $request->cart_ids ?? [];
+        $shipping_charge = 0;
+        $customerAddress = CustomerAddress::where('user_id', Auth::id())->first();        
+
+        if($customerAddress){
+            $shippingInfo = ShippingCharge::where('state_id', $customerAddress->state_id)->first();
+
+            if($shippingInfo && Cart::count() > 0){
+                $shipping_charge = $shippingInfo->amount;
+            }
+        }
+
+        $cartItems = Cart::content()->filter(function($item) use ($selectedIds){
+            return in_array($item->rowId, $selectedIds);
+        });
+
+        // IMPORTANT: remove formatting to avoid string math
+        $cartItems = Cart::content();
+
+        $discount_price = $cartItems->sum(function ($item) {
+            return ($item->options->discount_price ?? 0) * $item->qty;
+        });
+                        
+        $store_discount = session()->get('coupon_discount');
+        $coupon_discount = session()->get('coupon_discount.discount', 0);
+        $coupon_code = session()->get('coupon_discount.code', 0);    
+        
+        $hasValidCoupon = DiscountCoupon::where('status', 1)
+            ->whereDate('expires_at', '>=', Carbon::today())
+            ->exists();
+            
+        //dd(Cart::content());
+        //dd(session('coupon_discount'));                
+
+        return view('front.checkout.cart', [
+            'discount_price'        => $discount_price,                        
+            'store_discount'        => $store_discount,
+            'coupon_code'           => $coupon_code,
+            'coupon_discount'       => $coupon_discount,
+            'homeExists'            => $homeExists,            
+            'delivery_address'      => $delivery_address,
+            'address'               => $address,
+            'addressTypes'          => $addressTypes,
+            'states'                => $states,
+            'cartContent'           => $cartContent,
+            'coupons'               => $coupons,
+            'appliedCouponId'       => $appliedCouponId,
+            'shipping_charge'       => $shipping_charge,
+            'hasValidCoupon'        => $hasValidCoupon
+        ]);
+    } 
 
     public function wishlistToCart(Request $request) { 
         $product = Product::with(['product_images','variants','discount'])->find($request->product_id);
@@ -220,77 +294,7 @@ class CartController extends Controller {
         ]);
     }
 
-    public function cart() {
-        $cartContent = Cart::content();
-        $appliedCouponId = session('coupon_discount.id'); 
-
-        $coupons = DiscountCoupon::where('status', 1)
-            ->where(function ($q) {
-                $q->whereNull('expires_at')
-                ->orWhere('expires_at', '>=', now());
-            })
-            ->get();   
-        
-        if(auth()->check()){
-            $address = auth()->user()->addresses()->with('state')->get();
-            $customerAddress = Auth::user()->address;
-        }else{
-            $address = collect(); // empty collection
-        }
-        $addressTypes = CustomerAddress::pluck('address_type')->toArray();        
-        $states = State::orderBy('name', 'ASC')->get(); 
-        $delivery_address = CustomerAddress::with('state')->get();
-        $homeExists = CustomerAddress::where('user_id', auth()->id())
-            ->where('address_type', 'Home')
-            ->exists();        
-
-        $qty = Cart::count();
-        $selectedIds = $request->cart_ids ?? [];
-        $shipping_charge = 0;
-        $customerAddress = CustomerAddress::where('user_id', Auth::id())->first();        
-
-        if($customerAddress){
-            $shippingInfo = ShippingCharge::where('state_id', $customerAddress->state_id)->first();
-
-            if($shippingInfo && Cart::count() > 0){
-                $shipping_charge = $shippingInfo->amount;
-            }
-        }
-
-        $cartItems = Cart::content()->filter(function($item) use ($selectedIds){
-            return in_array($item->rowId, $selectedIds);
-        });
-
-        // IMPORTANT: remove formatting to avoid string math
-        $cartItems = Cart::content();
-
-        $discount_price = $cartItems->sum(function ($item) {
-            return ($item->options->discount_price ?? 0) * $item->qty;
-        });
-                        
-        $store_discount = session()->get('coupon_discount');
-        $coupon_discount = session()->get('coupon_discount.discount', 0);
-        $coupon_code = session()->get('coupon_discount.code', 0);        
-            
-        //dd(Cart::content());
-        //dd(session('coupon_discount'));                
-
-        return view('front.checkout.cart', [
-            'discount_price'        => $discount_price,                        
-            'store_discount'        => $store_discount,
-            'coupon_code'           => $coupon_code,
-            'coupon_discount'       => $coupon_discount,
-            'homeExists'            => $homeExists,            
-            'delivery_address'      => $delivery_address,
-            'address'               => $address,
-            'addressTypes'          => $addressTypes,
-            'states'                => $states,
-            'cartContent'           => $cartContent,
-            'coupons'               => $coupons,
-            'appliedCouponId'       => $appliedCouponId,
-            'shipping_charge'       => $shipping_charge,
-        ]);
-    }   
+     
 
     public function processCheckout(Request $request) {
         // Step 1: Validate selected shipping address
@@ -759,20 +763,20 @@ class CartController extends Controller {
     }
 
     public function bulkAction(Request $request) {        
+        $cartIds  = $request->cart_ids ?? [];
+        $action  = $request->action;
 
-        $checkedIds = $request->cart_ids ?? [];
-        
         foreach (Cart::content() as $item) {
-            if (!in_array($item->rowId, $checkedIds)) {
+            if (!in_array($item->rowId, $cartIds)) {
                 Cart::remove($item->rowId);
             }
-        }
+        }   
 
-        $cartIds = $request->cart_ids;   // rowIds
-        $action  = $request->action;     // remove or wishlist
-
-        if (!$cartIds || count($cartIds) == 0) {
-            return back()->with('error', 'No items selected.');
+        if (empty($cartIds)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'No items selected.'
+            ]);
         }
 
         // REMOVE ITEMS
@@ -780,15 +784,20 @@ class CartController extends Controller {
             foreach ($cartIds as $rowId) {
                 Cart::remove($rowId);
             }
-            return back()->with('success', 'Selected items removed.');
+            
+            return response()->json([
+                'status' => true,
+                'message' => 'Selected items removed.',
+                'cartCount' => Cart::count()
+            ]);
         }
 
         // MOVE TO WISHLIST
         if ($action === 'wishlist') {
             foreach ($cartIds as $rowId) {
                 $item = Cart::get($rowId);
-                if ($item) {
-                    // Optional: prevent duplicate wishlist entry
+
+                if ($item) {                    
                     $exists = Wishlist::where('user_id', auth()->id())
                         ->where('product_id', $item->id)
                         ->exists();
@@ -802,11 +811,20 @@ class CartController extends Controller {
                     Cart::remove($rowId);
                 }
             }
-            return back()->with('success', 'Selected items moved to wishlist.');
+
+             return response()->json([
+                'status' => true,
+                'message' => 'Selected items moved to wishlist.',
+                'cartCount' => Cart::count()
+            ]);            
         }
 
-        return back();
+        return response()->json([
+            'status' => false,
+            'message' => 'Invalid action'
+        ]);
     }
+
 
     public function payment(Request $request) {
         $selectedIds = $request->cart_ids ?? [];
@@ -1254,16 +1272,16 @@ class CartController extends Controller {
         return $this->getOrderSummary($request);
     }
 
-    public function removeCoupon() {
-        if(session()->has('coupon_discount')){
-            session()->forget('coupon_discount');
-        }
+    // public function removeCoupon() {
+    //     if(session()->has('coupon_discount')){
+    //         session()->forget('coupon_discount');
+    //     }
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Coupon removed successfully'
-        ]);
-    }
+    //     return response()->json([
+    //         'status' => true,
+    //         'message' => 'Coupon removed successfully'
+    //     ]);
+    // }
 
     //Razorpay
     public function razorpayPayment(Request $request){
@@ -1397,6 +1415,18 @@ class CartController extends Controller {
                     'code' => $size->code 
                 ];
             })
+        ]);
+    }
+
+
+    public function removeCoupon(Request $request) {
+        // Remove coupon data from session
+        session()->forget('coupon');
+        session()->forget('coupon_discount');
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Coupon removed successfully'
         ]);
     }
 

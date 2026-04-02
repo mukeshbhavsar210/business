@@ -1161,4 +1161,23 @@ class SettingController extends Controller {
 
         return back()->with('success', 'Review rejected successfully!');
     }
+
+    public function review_delete($id, Request $request){
+        $review = Review::find($id);
+        if(empty($review)){
+            $request->session()->flash('error','Record not found');
+            return response([
+                'status' => false,
+                'notFound' => true,
+            ]);
+        }
+        $review->delete();
+        $request->session()->flash('success', 'Review deleted successfully');
+
+        return response([
+            'status' => true,
+            'message' => 'Review deleted successfully',
+        ]);
+    }
+
 }

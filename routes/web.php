@@ -67,6 +67,8 @@ Route::controller(CartController::class)->group(function() {
     Route::get('/thanks/{orderId}','thankyou')->name('front.checkout.thankyou');
     Route::post('/get-order-summary','getOrderSummary')->name('front.getOrderSummary');
 
+    Route::post('/removecoupon','removeCoupon')->name('front.removeCoupon');
+
     //Payment routes
     Route::post('checkout/razorpay', 'razorpayPayment')->name('checkout.razorpay');
     Route::get('checkout/payment-success','razorpaySuccess')->name('checkout.success');
@@ -251,9 +253,10 @@ Route::group(['prefix' => 'admin'], function(){
             Route::delete('/settings/shipping/{id}', 'shipping_destroy')->name('shipping.delete');
 
             //Ratings
-            Route::get('/settings/ratings', 'rating_index')->name('ratings.index');
+            Route::get('/settings/ratings', 'rating_index')->name('review.index');
             Route::get('/settings/review/approve/{id}', 'approve')->name('review.approve');
             Route::get('/settings/review/rejecte/{id}', 'reject')->name('review.reject');
+            Route::delete('/settings/review/delete/{id}', 'review_delete')->name('review.delete');
         });  
            
 

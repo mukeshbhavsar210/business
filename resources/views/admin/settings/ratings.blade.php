@@ -26,9 +26,10 @@
                         <tr>
                             <th class="border-top-0" width="10%">Product</th>
                             <th class="border-top-0" width="45%">Comments</th>
-                            <th class="border-top-0" width="6%">User</th>
-                            <th class="border-top-0" width="6%">Status</th>
-                            <th class="border-top-0" width="4%">Action</th>                            
+                            <th class="border-top-0 text-end" width="8%">User</th>
+                            <th class="border-top-0 text-end" width="8%">Status</th>
+                            <th class="border-top-0 text-end" width="5%">Action</th>
+                            <th class="border-top-0 text-end" width="5%">Delete</th>
                         </tr>
                     </thead>                     
                     <tbody>
@@ -66,14 +67,13 @@
                                                         @endif
                                                     @endfor
                                                 </div>
-                                                {{-- <b>{{ $review->rating }}</b> --}}
-                                                
+                                                {{-- <b>{{ $review->rating }}</b> --}}                                                
                                             </div>
                                         </div>                                       
                                     </td>
                                     <td><p>{{ $review->review }}</p></td>
-                                    <td> 
-                                        <div class="flex show-tooltip">
+                                    <td class="text-end">
+                                        <div class="pull-right show-tooltip">
                                             <img src="{{ $review->user && $review->user->image 
                                                 ? asset('uploads/user/'.$review->user->image) 
                                                 : asset('admin-assets/img/default-user.png') }}" 
@@ -82,20 +82,25 @@
                                             <p class="tooltip" style="bottom: 13px; left:55px;">{{ $review->user->name }} ({{ $review->user->id }})</p>
                                         </div>
                                     </td>                                    
-                                    <td>
+                                    <td class="text-end">
                                         @if($review->status == 1)
                                             <span class="badge bg-success">Approved</span>
                                         @else
                                             <span class="badge bg-warning">Pending</span>
                                         @endif                                     
                                     </td>
-                                    <td>
+                                    <td class="text-end">
                                         @if($review->status == 0)
                                             <a href="{{ route('review.approve', $review->id) }}" class="btn btn-sm btn-outline-primary">Approve</a>
                                         @else
                                             <a href="{{ route('review.reject', $review->id) }}" class="btn btn-sm btn-outline-danger">Reject</a>
                                         @endif
-                                    </td>                                     
+                                    </td>     
+                                    <td class="text-end">
+                                        <a href="javascript:0" onclick="deleteReview( {{ $review->id }} )" class="delete-icon pull-right">
+                                            <span class="sprites"></span>
+                                        </a>                                        
+                                    </td>                                
                                 </tr>
                             @endforeach
                         @else
@@ -113,4 +118,30 @@
         </div>
     </div>
 </section>
+@endsection
+
+
+@section('customJs')
+<script>
+    function deleteReview(id){
+        var url = '{{ route("review.delete","ID") }}'
+        var newUrl = url.replace("ID",id)
+
+        if(confirm("Are you sure you want to delete?")){
+            $.ajax({
+                url: newUrl,
+                type: 'delete',
+                data: {},
+                dataType: 'json',
+                success: function(response){
+                    if(response["status"]){
+                        window.location.href="{{ route('review.index') }}"
+                    } else {
+                        window.location.href="{{ route('review.index') }}"
+                    }
+                }
+            });
+        }
+    }
+</script>
 @endsection

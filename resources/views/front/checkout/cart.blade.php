@@ -50,7 +50,7 @@
                             </div> 
                         </div>
                     @endif
-                
+
                     <div class="product-title-cart">                            
                         <div class="title">
                             <label class="custom-checkbox">
@@ -60,9 +60,15 @@
                             </label>                                
                         </div>
 
-                        <div class="btn-group">
-                            <button type="submit" name="action" value="remove" class="btn bulk-action">Remove</button>
-                            <button type="submit" name="action" value="wishlist" class="btn">Move to Wishlist</button>
+                        <div class="btn-group priceDetailsBox">
+                            <button type="submit" name="action" value="remove" class="btn bulk-action">Remove All</button>                            
+                            {{-- @auth                                
+                                <button type="submit" name="action" value="wishlist" class="btn bulk-action">Move to Wishlist</button>                               
+                            @else
+                                <a href="#" class="btn btn-link text-secondary" data-bs-toggle="modal" data-bs-target="#login" >
+                                    Move Wishlist
+                                </a>
+                            @endauth --}}
                         </div>                            
                     </div>
                 
@@ -167,7 +173,6 @@
                                             <a href="#" class="btn btn-link text-secondary w-50" onclick="deleteItem('{{ $item->rowId}}' );" data-bs-dismiss="modal">
                                                 Remove
                                             </a>
-
                                             @auth
                                                 <a href="#" class="btn btn-link text-secondary w-50" onclick="moveToWishlist('{{ $item->rowId }}')" data-bs-dismiss="modal">
                                                     Move to Wishlist
@@ -265,17 +270,15 @@
                                     </div>
 
                                     @if($coupon_discount)
-                                        <div class="repeate-row priceDetailsBox">
+                                        <div class="repeate-row mb-2 priceDetailsBox">
                                             <div class="left">
                                                 <div class="flex">
                                                     Coupon Discount
-                                                    <button type="button" class="remove_coupon" onclick="removeCoupon()">
-                                                        <svg fill="#ff0000" width="11px" height="11px" viewBox="-3.5 0 19 19">
-                                                            <path d="M11.383 13.644A1.03 1.03 0 0 1 9.928 15.1L6 11.172 2.072 15.1a1.03 1.03 0 1 1-1.455-1.456l3.928-3.928L.617 5.79a1.03 1.03 0 1 1 1.455-1.456L6 8.261l3.928-3.928a1.03 1.03 0 0 1 1.455 1.456L7.455 9.716z"></path>
-                                                        </svg>
-                                                    </button>
+                                                    <a href="javascript:0" class="remove_coupon delete-discount" onclick="removeCoupon()">
+                                                        <span class="sprites"></span>                                                        
+                                                    </a>
                                                 </div>
-                                            </div>
+                                            </div>                                             
 
                                             <div class="right">
                                                 <input type="hidden" id="coupon_discount" value="{{ $coupon_discount }}">
@@ -283,12 +286,14 @@
                                             </div>
                                         </div>
                                     @else
-                                        <div class="repeate-row mb-1">
-                                            <div class="left">Coupon Discount</div>
-                                            <div class="right">
-                                                <a href="#" data-bs-toggle="modal" data-bs-target="#discount">Apply Discount</a>
+                                        @if($hasValidCoupon)
+                                            <div class="repeate-row mb-1">
+                                                <div class="left">Coupon Discount</div>
+                                                <div class="right">
+                                                    <a href="#" data-bs-toggle="modal" data-bs-target="#discount">Apply Discount</a>
+                                                </div>
                                             </div>
-                                        </div>
+                                        @endif
                                     @endif
 
                                     @auth
@@ -439,9 +444,6 @@
         });
 
 
-       
-
-
         $(document).on('click', '.select-option', function(e){
             e.preventDefault();
             let value = $(this).data('value');
@@ -588,6 +590,109 @@
             $(this).closest('.coupon-box').addClass('active');
         });
 
+        // $(document).ready(function () {          
+        //     function updateSelectedCount() {
+        //         let count = $('.item-checkbox:checked').length;
+        //         $('#selectedCount').text(count);
+
+        //         let total = $('.item-checkbox').length;
+        //         let checked = $('.item-checkbox:checked').length;
+
+        //         $('#selectedCount').text(checked);
+
+        //         if(checked === 0){
+        //             $('.price-details').hide();
+        //         } else {
+        //             $('.price-details').show();
+        //         }
+        //     }                   
+
+        //     $('.item-checkbox').on('change', function() {
+        //         $('#selectAll').prop(
+        //             'checked',
+        //             $('.item-checkbox:checked').length === $('.item-checkbox').length
+        //         );
+        //         updateSelectedCount();
+        //     });
+
+        //     updateSelectedCount();
+
+        //     function updateSelectedCount() {
+        //         let count = $('.item-checkbox:checked').length;
+        //         $('#selectedCount').text(count);
+        //     }           
+
+        //     $('.bulk-action').on('click', function(e) {
+        //         e.preventDefault();
+
+        //         let selected = $('.item-checkbox:checked');
+
+        //         if (selected.length === 0) {
+        //             alert('Select any item to remove from bag.');
+        //             return;
+        //         }
+
+        //         $.ajax({
+        //             url: "{{ route('cart.bulk.action') }}",
+        //             type: "POST",
+        //             data: $('#cartForm').serialize(),
+        //             headers: {
+        //                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        //             },
+        //             success: function(response) {
+        //                 selected.each(function(){
+        //                     let rowId = $(this).data('rowid');
+        //                     $("#cart-item-" + rowId).fadeOut(300, function(){
+        //                         $(this).remove();
+        //                     });
+        //                     location.reload();
+        //                 });
+
+        //                 $('#cartCount').text(response.cartCount);
+        //                 showAlert(response.message, 'success');
+        //             }
+        //         });
+        //     });
+
+        //     function updateMainCheckbox() {
+        //         let total = $('.item-checkbox').length;
+        //         let checked = $('.item-checkbox:checked').length;
+
+        //         if (checked === 0) {
+        //             $('#selectAll')
+        //                 .prop('checked', false)
+        //                 .prop('indeterminate', false);
+
+        //         } else if (checked === total) {
+        //             $('#selectAll')
+        //                 .prop('checked', true)
+        //                 .prop('indeterminate', false);
+
+        //         } else {
+        //             $('#selectAll')
+        //                 .prop('checked', false)
+        //                 .prop('indeterminate', true);
+        //         }
+        //     }
+           
+        //     $('.item-checkbox').on('change', function() {
+        //         updateMainCheckbox();
+        //     });
+
+        //     updateMainCheckbox();            
+
+        //     $('input[name="coupon_id"]').on('change', function () {
+        //         let code = $(this).data('code');
+        //         $('#discount_code').val(code);
+        //     });
+
+        //     @if(session('success'))
+        //         var toast = new bootstrap.Toast(document.getElementById('liveToast'));
+        //         toast.show();
+        //     @endif           
+        // });
+
+
         $(document).ready(function () {          
             function updateSelectedCount() {
                 let count = $('.item-checkbox:checked').length;
@@ -605,18 +710,14 @@
                 }
             }                   
 
-            // Individual Checkbox
             $('.item-checkbox').on('change', function() {
-                // Auto toggle Select All
                 $('#selectAll').prop(
                     'checked',
                     $('.item-checkbox:checked').length === $('.item-checkbox').length
                 );
-
                 updateSelectedCount();
             });
 
-            // Initial load
             updateSelectedCount();
 
             function updateSelectedCount() {
@@ -642,7 +743,6 @@
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
                     success: function(response) {
-                        // ✅ Remove selected items from UI
                         selected.each(function(){
                             let rowId = $(this).data('rowid');
                             $("#cart-item-" + rowId).fadeOut(300, function(){
@@ -651,10 +751,7 @@
                             location.reload();
                         });
 
-                        // ✅ Update cart count
                         $('#cartCount').text(response.cartCount);
-
-                        // ✅ Optional: show toast
                         showAlert(response.message, 'success');
                     }
                 });
@@ -665,31 +762,26 @@
                 let checked = $('.item-checkbox:checked').length;
 
                 if (checked === 0) {
-                    // none selected
                     $('#selectAll')
                         .prop('checked', false)
                         .prop('indeterminate', false);
 
                 } else if (checked === total) {
-                    // all selected
                     $('#selectAll')
                         .prop('checked', true)
                         .prop('indeterminate', false);
 
                 } else {
-                    // partially selected
                     $('#selectAll')
                         .prop('checked', false)
                         .prop('indeterminate', true);
                 }
             }
            
-            // When individual checkbox changes
-            // $('.item-checkbox').on('change', function() {
-            //     updateMainCheckbox();
-            // });
+            $('.item-checkbox').on('change', function() {
+                updateMainCheckbox();
+            });
 
-            // Initial load
             updateMainCheckbox();            
 
             $('input[name="coupon_id"]').on('change', function () {
@@ -830,6 +922,27 @@
             // $('.item-checkbox').change(function() {
             //     $('#cartForm').submit();
             // });
+        });
+
+
+        $(document).on('click', '.remove_coupon', function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: "{{ route('front.removeCoupon') }}",
+                type: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}"
+                },
+                success: function(response) {
+                    if (response.status) {
+                        $('.coupon_discount').text('0');
+                        $('#coupon_discount').val(0);
+                        $('.compare-discount').hide();
+                        location.reload(); 
+                        showAlert(response.message, 'success');
+                    }
+                }
+            });
         });
     </script>
 @endsection

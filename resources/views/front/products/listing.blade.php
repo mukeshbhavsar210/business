@@ -57,13 +57,13 @@
                                 </a>
                                 <div class="dropdown-menu-select sort-filter">
                                     <ul class="sort-options">   
-                                        <li><span class="sprites sort-icon1"></span><a href="{{ request()->fullUrlWithQuery(['sort' => 'recommended']) }}" class="sort-item {{ request('sort') == 'recommended' ? 'active' : '' }}">Recommended</a></li>
-                                        <li><span class="sprites sort-icon1"></span><a href="{{ request()->fullUrlWithQuery(['sort' => 'popularity']) }}" class="sort-item {{ request('sort') == 'popularity' ? 'active' : '' }}">Popularity</a></li>
-                                        <li><span class="sprites sort-icon1"></span><a href="{{ request()->fullUrlWithQuery(['sort' => 'latest']) }}" class="sort-item {{ request('sort') == 'latest' ? 'active' : '' }}">What's New</a></li>        
-                                        <li><span class="sprites sort-icon1"></span><a href="{{ request()->fullUrlWithQuery(['sort' => 'discount']) }}" class="sort-item {{ request('sort') == 'discount' ? 'active' : '' }}">Better Discount</a></li>
-                                        <li><span class="sprites sort-icon1"></span><a href="{{ request()->fullUrlWithQuery(['sort' => 'price_desc']) }}" class="sort-item {{ request('sort') == 'price_desc' ? 'active' : '' }}">Price: High to Low</a></li>                                        
-                                        <li><span class="sprites sort-icon1"></span><a href="{{ request()->fullUrlWithQuery(['sort' => 'price_asc']) }}" class="sort-item {{ request('sort') == 'price_asc' ? 'active' : '' }}">Price: Low to High</a></li>                                        
-                                        <li><span class="sprites sort-icon1"></span><a href="{{ request()->fullUrlWithQuery(['sort' => 'rating']) }}" class="sort-item {{ request('sort') == 'rating' ? 'active' : '' }}">Customer Rating</a></li>
+                                        <li><a href="{{ request()->fullUrlWithQuery(['sort' => 'recommended']) }}" class="sort-item {{ request('sort') == 'recommended' ? 'active' : '' }}">Recommended</a></li>
+                                        <li><a href="{{ request()->fullUrlWithQuery(['sort' => 'popularity']) }}" class="sort-item {{ request('sort') == 'popularity' ? 'active' : '' }}">Popularity</a></li>
+                                        <li><a href="{{ request()->fullUrlWithQuery(['sort' => 'latest']) }}" class="sort-item {{ request('sort') == 'latest' ? 'active' : '' }}">What's New</a></li>        
+                                        <li><a href="{{ request()->fullUrlWithQuery(['sort' => 'discount']) }}" class="sort-item {{ request('sort') == 'discount' ? 'active' : '' }}">Better Discount</a></li>
+                                        <li><a href="{{ request()->fullUrlWithQuery(['sort' => 'price_desc']) }}" class="sort-item {{ request('sort') == 'price_desc' ? 'active' : '' }}">Price: High to Low</a></li>                                        
+                                        <li><a href="{{ request()->fullUrlWithQuery(['sort' => 'price_asc']) }}" class="sort-item {{ request('sort') == 'price_asc' ? 'active' : '' }}">Price: Low to High</a></li>                                        
+                                        <li><a href="{{ request()->fullUrlWithQuery(['sort' => 'rating']) }}" class="sort-item {{ request('sort') == 'rating' ? 'active' : '' }}">Customer Rating</a></li>
                                     </ul>
                                 </div>
                             </div>                            
@@ -207,12 +207,12 @@
 
       <div class="modal-body">
         <ul class="sort-options">            
-            <li><span class="sprites sort-icon1"></span><a href="?sort=popularity" class="sort-item {{ request('sort') == 'popularity' ? 'active' : '' }}">Popularity</a></li>
-            <li><span class="sprites sort-icon1"></span><a href="?sort=latest" class="sort-item {{ request('sort') == 'latest' ? 'active' : '' }}">What's New</a></li>        
-            <li><span class="sprites sort-icon1"></span><a href="?sort=discount" class="sort-item {{ request('sort') == 'discount' ? 'active' : '' }}">Better Discount</a></li>
-            <li><span class="sprites sort-icon1"></span><a href="?sort=price_desc" class="sort-item {{ request('sort') == 'price_desc' ? 'active' : '' }}">Price: High to Low</a></li>
-            <li><span class="sprites sort-icon1"></span><a href="?sort=price_asc" class="sort-item {{ request('sort') == 'price_asc' ? 'active' : '' }}">Price: Low to High</a></li>
-            <li><span class="sprites sort-icon1"></span><a href="?sort=rating" class="sort-item {{ request('sort') == 'rating' ? 'active' : '' }}">Customer Rating</a></li>
+            <li><a href="?sort=popularity" class="sort-item {{ request('sort') == 'popularity' ? 'active' : '' }}">Popularity</a></li>
+            <li><a href="?sort=latest" class="sort-item {{ request('sort') == 'latest' ? 'active' : '' }}">What's New</a></li>        
+            <li><a href="?sort=discount" class="sort-item {{ request('sort') == 'discount' ? 'active' : '' }}">Better Discount</a></li>
+            <li><a href="?sort=price_desc" class="sort-item {{ request('sort') == 'price_desc' ? 'active' : '' }}">Price: High to Low</a></li>
+            <li><a href="?sort=price_asc" class="sort-item {{ request('sort') == 'price_asc' ? 'active' : '' }}">Price: Low to High</a></li>
+            <li><a href="?sort=rating" class="sort-item {{ request('sort') == 'rating' ? 'active' : '' }}">Customer Rating</a></li>
         </ul>
       </div>
     </div>

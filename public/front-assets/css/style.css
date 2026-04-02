@@ -184,6 +184,9 @@ textarea { font-family: var(--body-font); font-size: 12px !important;}
 .empty-order { background-position:-6px -127px; height: 66px; width: 67px; margin: 0 auto;}
 .delete-icon span { background-position:-228px -29px; height: 17px; width: 17px; }
 .delete-icon:hover span { background-position:-248px -29px; }
+
+.delete-discount span { background-position:-24px -29px; height:21px; width:21px; }
+
 .mobile-arrow-1 { background-position: -322px -61px; height: 17px; width: 12px; }
 .mobile-arrow-2 { background-position: -227px -61px; height: 17px; width: 12px; }
 
@@ -264,7 +267,7 @@ header { position:relative; z-index:999; }
 .checkout-steps .step1 { margin: 0 5px 0 0; }
 .checkout-steps .step { display: inline-block; }
 
-.remove_coupon { background:none; border:1px red solid; border-radius: 100px; padding: 1px 2px 1px 3px; height: 20px; width: 20px; cursor: pointer; position: relative; top:3px;}
+.remove_coupon { background:none; cursor: pointer; }
 
 .navbar-nav { gap: 15px;}
 .navbar { padding:0; margin: 0;}
@@ -624,7 +627,7 @@ header { position:relative; z-index:999; }
 .custom-dropdown.active .dropdown { background-color: #e5e5e5; font-weight: bold;}
 .custom-dropdown.active .down-arrow-icon { background-position: -333px -69px; }
 
-.sort-filter { right:90px; left:auto !important; width: 190px !important;}
+.sort-filter { right:90px; left:auto !important; width: 157px !important;}
 
 .sort-options li { display: flex; column-gap: 10px; margin: 7px 0;}
 .sort-options li a { color: var(--gray); font-size: 13px;}
@@ -977,7 +980,7 @@ header { position:relative; z-index:999; }
 .list-unstyled li a { border: 1px #e5e5e5 solid; padding: 8px; text-align: center; border-radius: 100px; display: block;  height: 40px; width: 40px; text-align: center; color: var(--gray); font-size: 13px; }
 .list-unstyled li a:hover { border-color: var(--gray); color: var(--black); font-weight: bold;}
 .list-unstyled li a.selected { border-color: var(--primary); color: var(--black); font-weight: bold;}
-.list-unstyled li a .color { height:23px; width:23px; border-radius: 100px; display: block; }
+.list-unstyled li a .color { height:23px; width:23px; border-radius: 100px; display: block; box-shadow: 1px 1px 1px #666; }
 
 .hover-content {
     display: none;
