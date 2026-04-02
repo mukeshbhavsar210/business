@@ -1,148 +1,160 @@
 @props([
-    'product' => null,
-    'category' => null,
+    'item' => null,    
     'subcategory' => null,
-    'wishlist' => null,
-    'brand' => null,
     'class' => null,
     "section" => null,
     "variable" => null,    
+    'hover' => true,
+    'producttitle' => null,
+    'description' => null,    
+    'amount' => null,
+    'gallery' => null,
+    'class' => null,      
+    'title_limit' => null
 ])
 
-@if($section == 'show_products' || $section == 'show_wishlist')
-    @php
-        $item = ${$variable};
-        $product = $item->product ?? $item;        
-        $title = $product->title ?? '';
-        $short = $product->short_description ?? '';
-        $price = $product->price ?? '';
-        $discount_price = $product->discount_price ?? '';
-        $discount_percent = $product->discount_percent ?? '';
-        $qty = $product->qty ?? '';
+@php
+    $product = $item->product ?? $item;
+    $title = $product->title ?? '';
+    $short = $product->short_description ?? '';
+    $price = $product->price ?? '';
+    $discount_price = $product->discount_price ?? '';
+    $discount_percent = $product->discount_percent ?? '';
+    $qty = $product->qty ?? '';
+    $images = $product->images ?? collect();
+    $single = $product->product_images ? $product->product_images->first() : null;
+    $url = $product->url ?? null;
+    $rating = $product->average_rating ?? 0;
+    $count  = $product->rating_count ?? 0;
+@endphp
 
-        $images = $item->product->images ?? $item->images ?? collect();
-        $title = $item->product->title ?? $item->slug ?? '';
-        $url = $item->url ?? null;
-        $rating = ${$variable}->average_rating ?? 0;
-        $count  = ${$variable}->rating_count ?? 0;
-    @endphp
+<div class="product-card {{ $class }}">
+    <div class="product-image-wrapper">
+        @if ($count > 0)
+            <div class="rating-wrapper">
+                <small>
+                    {{ ${$variable}->average_rating }}
+                    <svg fill="#666666" width="15px" height="15px" viewBox="0 0 1920 1920" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M1915.918 737.475c-10.955-33.543-42.014-56.131-77.364-56.131h-612.029l-189.063-582.1v-.112C1026.394 65.588 995.335 43 959.984 43c-35.237 0-66.41 22.588-77.365 56.245L693.443 681.344H81.415c-35.35 0-66.41 22.588-77.365 56.131-10.955 33.544.79 70.137 29.478 91.03l495.247 359.831-189.177 582.212c-10.955 33.657 1.13 70.25 29.817 90.918 14.23 10.278 30.946 15.487 47.66 15.487 16.716 0 33.432-5.21 47.775-15.6l495.134-359.718 495.021 359.718c28.574 20.781 67.087 20.781 95.662.113 28.687-20.668 40.658-57.261 29.703-91.03l-189.176-582.1 495.36-359.83c28.574-20.894 40.433-57.487 29.364-91.03" fill-rule="evenodd"/>
+                    </svg> 
+                    <small>{{ ${$variable}->rating_count ?? 0 }}</small>
+                </small>
+            </div>
+        @endif  
 
-    @if ($count > 0)
-        <div class="rating-wrapper">
-            <small>
-                {{ ${$variable}->average_rating }}
-                <svg fill="#666666" width="15px" height="15px" viewBox="0 0 1920 1920" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M1915.918 737.475c-10.955-33.543-42.014-56.131-77.364-56.131h-612.029l-189.063-582.1v-.112C1026.394 65.588 995.335 43 959.984 43c-35.237 0-66.41 22.588-77.365 56.245L693.443 681.344H81.415c-35.35 0-66.41 22.588-77.365 56.131-10.955 33.544.79 70.137 29.478 91.03l495.247 359.831-189.177 582.212c-10.955 33.657 1.13 70.25 29.817 90.918 14.23 10.278 30.946 15.487 47.66 15.487 16.716 0 33.432-5.21 47.775-15.6l495.134-359.718 495.021 359.718c28.574 20.781 67.087 20.781 95.662.113 28.687-20.668 40.658-57.261 29.703-91.03l-189.176-582.1 495.36-359.83c28.574-20.894 40.433-57.487 29.364-91.03" fill-rule="evenodd"/>
-                </svg> 
-                <small>{{ ${$variable}->rating_count ?? 0 }}</small>
-            </small>
-        </div>
-    @endif  
+        @if($gallery == 'yes')
+            <div class="product-slider">
+                @if($images->count() > 0)
+                    @foreach($images as $image)
+                        <div class="slider-item">
+                            @if($url)
+                                <a href="{{ $url }}" target="_blank" title="{{ $title }}">
+                            @endif
+                                <img src="{{ asset('uploads/product/small/'.$image->image) }}" class="rounded" alt="{{ $title }}">
+                            @if($url)
+                                </a>
+                            @endif
+                        </div>
+                    @endforeach
+                @else
+                    <img src="{{ asset('admin-assets/img/default-150x150.png') }}" class="rounded">
+                @endif
+            </div>
 
-    <div class="product-slider">
-        @if($images->count() > 0)
-            @foreach($images as $image)
-                <div class="slider-item">
-                    @if($url)
-                        <a href="{{ $url }}" target="_blank" title="{{ $title }}">
-                    @endif
-                        <img src="{{ asset('uploads/product/small/'.$image->image) }}" class="rounded" alt="{{ $title }}">
-                    @if($url)
+        @elseif($gallery == 'no')
+            <a href="{{ $url }}" class="product-img" target="_blank">
+                <img src="{{ $single ? asset('uploads/product/small/'.$single->image) : asset('admin-assets/img/default-150x150.png') }}" 
+                    class="img-fluid rounded" alt="{{ $product->title }}" />
+            </a>
+
+        @elseif($gallery == 'category')
+             <a href="{{ route('front.subcategory', [$subcategory->sub_category_slug]) }}" >
+                @if ($subcategory->image != "")
+                    <img src="{{ asset('uploads/category/'.$subcategory->image) }} " alt="" class="product-img rounded">
+                @else
+                    <img class="card-img-top" src="{{ asset('admin-assets/img/default-150x150.png') }}" alt="" />
+                @endif
+            </a>
+
+            <div class="product-info">
+                <h2>{{ Str::limit($subcategory->sub_category_title, 27, '...') }}</h2>                
+                <p class="text-muted tiny-font"><b>{{ $item->products_count }} Products</b></p>
+            </div>      
+
+        @elseif($gallery == 'brand')
+            <a href="{{ route('front.shop') }}?brand={{ $item->slug }}" class="brand-details">
+                <div class="photo">
+                    <img src="{{ asset('uploads/brands/' . $item->logo) }}" class="logo">
+                    <img src="{{ asset('uploads/brands/' . $item->model) }}" class="model">
+                </div>
+                <div class="details">
+                    <p class="title">{{ $item->description }}</p>
+                    <p class="discount">{{ $item->discount }}</p>
+                </div>
+            </a>
+        @endif
+
+        @if($producttitle)
+            <div class="product-info">            
+                <h2>{{ isset($title_limit) ? Str::limit($title, $title_limit, '...') : $title }}</h2>
+                @if($description)
+                    <p class="short">{{ isset($short_limit) ? Str::limit($short, $short_limit, '...') : $short }}</p>
+                @endif
+            </div>
+        @endif
+
+        @if($amount)
+            <div class="price">
+                @if($discount_percent > 0)
+                    <span class="dark">₹{{ round($discount_price) }}</span>
+                    <span class="mrp"><del>₹{{ $price }}</del></span>  
+                    <span class="discount">({{ $discount_percent }}% OFF)</span>
+                @else
+                    <span class="dark">₹{{ $price }}</span>
+                @endif        
+            </div>
+        @endif 
+        
+        @if($hover)
+            <div class="hover-product">
+                @if($section == 'show_products')                        
+                    @if (Auth::check())
+                        <a onclick="addToWishlist({{ ${$variable}->id }})" class="btn btn-outline" href="javascript:void(0)">
+                            <span class="sprites wishlist-ico-btn"></span>
+                            Wishlist
+                        </a>
+                    @else
+                        <a class="btn btn-outline" href="#" data-bs-toggle="modal" data-bs-target="#login">
+                            <span class="sprites wishlist-ico-btn"></span>
+                            Wishlist
                         </a>
                     @endif
-                </div>
-            @endforeach
+
+                @elseif($section == 'show_wishlist')        
+                    @if ($qty < 1)
+                        <div class="out-stock"><span>Out of Stock</span></div>
+                    @else
+                        <button 
+                            class="btn btn-outline-danger btn-sm move-to-cart"
+                            data-wishlist-id="{{ $item->id }}" data-product-id="{{ $product->id }}"
+                            data-size-id="{{ optional($product->sizes->first())->id }}"
+                            data-color-id="{{ optional($product->colors->first())->id }}" type="button">
+                            Move to Bag 
+                        </button>                                     
+                    @endif
+                        <p class="show-size">
+                            @if(optional($product->sizes->first())->code)
+                                Size: {{ optional($product->sizes->first())->code ?? 'N/A' }} |    
+                            @endif
+
+                            @if(optional($product->colors->first())->name)
+                                Color: {{ optional($product->colors->first())->name ?? 'N/A' }}   
+                            @endif
+                        </p>            
+                    @endif
+                </div> 
         @else
-            <img src="{{ asset('admin-assets/img/default-150x150.png') }}" class="rounded">
+                        
         @endif
     </div>
-
-    <div class="product-info">
-        <h2>{{ isset($title_limit) ? Str::limit($title, $title_limit, '...') : $title }}</h2>
-        <p class="short">{{ isset($short_limit) ? Str::limit($short, $short_limit, '...') : $short }}</p>
-    </div>
-
-    <div class="price">
-        @if($discount_percent > 0)
-            <span class="dark">₹{{ round($discount_price) }}</span>
-            <span class="mrp"><del>₹{{ $price }}</del></span>  
-            <span class="discount">(₹{{ $discount_percent }}% OFF)</span>
-        @else
-            <span class="dark">₹{{ $price }}</span>
-        @endif        
-    </div>
-    
-    <div class="hover-product">
-        @if($section == 'show_products')                        
-            @if (Auth::check())
-                <a onclick="addToWishlist({{ ${$variable}->id }})" class="btn btn-outline" href="javascript:void(0)">
-                    <span class="sprites wishlist-ico-btn"></span>
-                    Wishlist
-                </a>
-            @else
-                <a class="btn btn-outline" href="#" data-bs-toggle="modal" data-bs-target="#login">
-                    <span class="sprites wishlist-ico-btn"></span>
-                    Wishlist
-                </a>
-            @endif
-
-        @elseif($section == 'show_wishlist')        
-            @if ($qty < 1)
-                <div class="out-stock"><span>Out of Stock</span></div>
-            @else
-                <button 
-                    class="btn btn-outline-danger btn-sm move-to-cart"
-                    data-wishlist-id="{{ $item->id }}" data-product-id="{{ $product->id }}"
-                    data-size-id="{{ optional($product->sizes->first())->id }}"
-                    data-color-id="{{ optional($product->colors->first())->id }}" type="button">
-                    Move to Bag 
-                </button>                                     
-            @endif
-                <p class="show-size">
-                    @if(optional($product->sizes->first())->code)
-                        Size: {{ optional($product->sizes->first())->code ?? 'N/A' }} |    
-                    @endif
-
-                    @if(optional($product->colors->first())->name)
-                        Color: {{ optional($product->colors->first())->name ?? 'N/A' }}   
-                    @endif
-                </p>            
-            @endif    
-        </div>
-           
-@elseif($section == 'show_category' || $section == 'show_subcategory')   
-    @if($section == 'show_category')
-        <div class="product-info">
-            <h2>{{ Str::limit($category->category_name, 27, '...') }}</h2>
-        </div>
-        <div class="price">
-            <p class="text-muted"><b>{{ $category->products_count }} Products</b></p>
-        </div>
-    @else
-        <a href="{{ route('front.subcategory', [$subcategory->sub_category_slug]) }}" >
-            @if ($subcategory->image != "")
-                <img src="{{ asset('uploads/category/'.$subcategory->image) }} " alt="" class="product-img rounded">
-            @else
-                <img class="card-img-top" src="{{ asset('admin-assets/img/default-150x150.png') }}" alt="" />
-            @endif
-        </a> 
-        <div class="product-info">
-            <h2>{{ Str::limit($subcategory->sub_category_title, 27, '...') }}</h2>
-            {{-- <h2>{{ Str::limit($category->category_name, 27, '...') }}</h2> --}}
-        </div>          
-    @endif
-    
-@elseif($section == 'show_brands')    
-    <a href="{{ route('front.shop') }}?brand={{ $brand->slug }}" class="brand-details">
-        <div class="photo">
-            <img src="{{ asset('uploads/brands/' . $brand->logo) }}" class="logo">
-            <img src="{{ asset('uploads/brands/' . $brand->model) }}" class="model">
-        </div>
-        <div class="details">
-            <p class="title">{{ $brand->description }}</p>
-            <p class="discount">{{ $brand->discount }}</p>
-        </div>
-    </a>    
-@else
-    
-@endif
+</div>

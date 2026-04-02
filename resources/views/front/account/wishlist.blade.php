@@ -16,11 +16,7 @@
         @if ($wishlists->isNotEmpty())
             @foreach ($wishlists as $wishlist)
                 <div class="col-md-3 col-6">
-                    <div class="product-card">
-                        <div class="product-image-wrapper">                            
-                            <x-products :wishlist="$wishlist" section="show_wishlist" label="wishlist" variable="wishlist" :title_limit="27" :short_limit="35"  />                            
-                        </div>
-                    </div>
+                    <x-products :item="$wishlist" section="show_wishlist" gallery="yes" variable="wishlist" class="wishlist" :producttitle="true" :hover="true" :description="true" :amount="true" :title_limit="27" :short_limit="35"  />                            
                 </div>
             @endforeach
         @else
