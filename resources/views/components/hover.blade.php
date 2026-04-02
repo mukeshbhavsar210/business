@@ -46,23 +46,23 @@
     </div>
 @elseif($section == 'show_wishlist')
      <div class="hover-product">    
-        <button 
+        {{-- <button 
             class="btn btn-outline-danger btn-sm move-to-cart"
             data-wishlist-id="{{ $wishlist->id }}"
             data-product-id="{{ $wishlist->product_id }}"
             data-size-id="{{ optional($wishlist->product->sizes->first())->id }}"
             data-color-id="{{ optional($wishlist->product->colors->first())->id }}"
             type="button">
-            Move to Bag
+            Move to Bag {$variable}
         </button>                
         <p class="show-size">
-            @if(optional($wishlist->product->sizes->first())->code)
-                Size: {{ optional($wishlist->product->sizes->first())->code ?? 'N/A' }} |    
+            @if(optional(${$variable}->product->sizes->first())->code)
+                Size: {{ optional(${$variable}->product->sizes->first())->code ?? 'N/A' }} |    
             @endif
 
-            @if(optional($wishlist->product->colors->first())->name)
-                Color: {{ optional($wishlist->product->colors->first())->name ?? 'N/A' }}   
+            @if(optional(${$variable}->product->colors->first())->name)
+                Color: {{ optional(${$variable}->product->colors->first())->name ?? 'N/A' }}   
             @endif
-        </p>
+        </p> --}}
     </div>
 @endif

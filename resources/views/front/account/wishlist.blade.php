@@ -14,14 +14,11 @@
 
     <div class="row">
         @if ($wishlists->isNotEmpty())
-            @foreach ($wishlists as $wishlist)                
+            @foreach ($wishlists as $wishlist)
                 <div class="col-md-3 col-6">
                     <div class="product-card">
-                        <div class="product-image-wrapper">
-                            <x-gallery :wishlist="$wishlist" section="show_wishlist" variable="wishlist" />
-                            <x-products :wishlist="$wishlist" section="show_wishlist" variable="wishlist" :title_limit="27" :short_limit="35"  />
-                            <x-price :wishlist="$wishlist" section="show_wishlist" variable="wishlist" />
-                            <x-hover :wishlist="$wishlist" section="show_wishlist" />
+                        <div class="product-image-wrapper">                            
+                            <x-products :wishlist="$wishlist" section="show_wishlist" label="wishlist" variable="wishlist" :title_limit="27" :short_limit="35"  />                            
                         </div>
                     </div>
                 </div>

@@ -39,12 +39,12 @@
           
 @elseif($section == 'show_wishlist')
     <div class="price">                
-        @if($wishlist->product->discount_percent > 0)
-            <span class="dark">₹{{ round($wishlist->product->discount_price) }}</span>
-            <span class="mrp"><del>₹{{ $wishlist->product->price }}</del></span>
-            <span class="discount">({{ $wishlist->product->discount_percent }}% OFF)</span>
+        @if(${$variable}->product->discount_percent > 0)
+            <span class="dark">₹{{ round(${$variable}->product->discount_price) }}</span>
+            <span class="mrp"><del>₹{{ ${$variable}->product->price }}</del></span>
+            <span class="discount">({{ ${$variable}->product->discount_percent }}% OFF)</span>
         @else
-            <span class="dark">₹{{ number_format($wishlist->product->price, 2) }}</span>
+            <span class="dark">₹{{ number_format(${$variable}->product->price, 2) }}</span>
         @endif
     </div>              
 @else

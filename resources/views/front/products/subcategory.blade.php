@@ -12,7 +12,7 @@
             <x-products :subcategory="$subcategory" :class_desktop="2" :class_mobile="6" :title_limit="20" :short_limit="7" :slider="true" :hover="true"/>            
         @endforeach
 
-        {{ $products->withQueryString()->links() }}    
+        {{ $subcategories->withQueryString()->links() }}    
     </div>
 </div>
 @endsection
