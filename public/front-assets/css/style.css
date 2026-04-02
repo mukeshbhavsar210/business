@@ -334,7 +334,7 @@ header { position:relative; z-index:999; }
 .filter-group h5 .text-muted { text-transform:capitalize; font-weight: normal;}
 
 .product-card { position: relative;}
-.product-card:hover { box-shadow: 0 4px 6px 0 #0000001f; transition: all 0.3s ease; border-radius: 10px; }
+.product:hover, .wishlist:hover { box-shadow: 0 4px 6px 0 #0000001f; transition: all 0.3s ease; border-radius: 10px; }
 .product-image-wrapper .gallery-icon { position: absolute; display: none; z-index: 1; bottom:150px; left:0; width: 100%; padding: 5px 15px; }
 .product-image-wrapper .gallery-icon .color-details { padding:8px 25px; background-color: rgba(0, 0, 0, 0.4); border-radius: 3px; }
 .product-image-wrapper .gallery-icon .color-details .img-group { display: flex; position: relative; }
@@ -347,7 +347,7 @@ header { position:relative; z-index:999; }
 .product-image-wrapper .rating-wrapper svg { fill: var(--green); position: relative; top:2px;}
 .product-image-wrapper .out-stock { position: absolute; z-index: 1; top:0px; left:0px; background: rgba(255, 255, 255, 0.7);  border-radius: 3px;  height:255px; width: 100%; text-align: center; padding:120px 0; }
 .product-image-wrapper .out-stock span { border: 1px solid black; padding: 7px 10px; border-radius: 5px; background-color: var(--white); font-weight: bold; font-size: 13px; text-transform: uppercase;}
-.product-card .product-info { padding: 9px 10px 0 10px;   }
+.product-card .product-info { padding: 9px 10px 0 10px; }
 .product-card .product-info h2 { font-size: 15px; font-weight: bold;}
 .product-card .product-info .short { font-size: 13px; color: var(--gray); margin: 2px 0;}
 .product-card .price { background-color: var(--white); z-index: 9; position: relative; padding: 3px 12px 10px 12px;}
@@ -355,6 +355,8 @@ header { position:relative; z-index:999; }
 .product-card .price span.mrp { color: var(--gray); font-size: 12px;}
 .product-card .price span.text-underline { font-weight: normal; font-size: 12px; color: var(--gray); margin-left: 4px; margin-right: 4px;}
 .product-card .price span.discount { color: var(--orange); font-size: 12px;}
+.category_page .product-info, .sub_category_page .product-info { padding: 5px 0 0 0 !important; }
+.home .product-info { padding: 5px 0 10px 0 !important; }
 
 .hover-product { position: absolute; padding: 25px 13px 3px 13px; bottom: -100px; background: #fff; width: 100%;   transition: all 0.3s ease; z-index: 2; }
 .product-card:hover .hover-product { bottom: 40px; }

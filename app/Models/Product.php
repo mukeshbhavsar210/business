@@ -144,4 +144,8 @@ class Product extends Model {
             'slug'  => $this->slug
         ]);
     }
+
+    public function getFirstImageAttribute() {
+        return $this->product_images->first()->image ?? 'default-150x150.png';
+    }
 }
