@@ -379,78 +379,58 @@
             window.location.href = '{{ url()->current() }}?' + params.toString();
         }
 
-        rangeSlider = $(".js-range-slider-desktop").ionRangeSlider({
-            type: "double",
-            min: 0,
-            max: 5000,
-            from: {{ ($priceMin) }},
-            to: {{ ($priceMax) }},
-            step: 20,
-            skin: "flat",
-            max_position: "+",
-            prefix: "₹",
-            onFinish: function(){
-                apply_price_filters()
-            }            
+
+        $(document).ready(function () {
+            initPriceSlider(
+                ".js-range-slider-desktop",
+                {{ $priceMin }},
+                {{ $priceMax }}
+            );
+
+            initPriceSlider(
+                ".js-range-slider-mobile",
+                {{ $priceMin }},
+                {{ $priceMax }},
+                true
+            );
         });
 
-        var slider = $(".js-range-slider-desktop").data("ionRangeSlider");
+        function initPriceSlider(selector, minVal, maxVal, showLabel = false) {
+            $(selector).ionRangeSlider({
+                type: "double",
+                min: 0,
+                max: 5000,
+                from: minVal,
+                to: maxVal,
+                step: 20,
+                skin: "round",
+                prefix: "₹",
 
-        function apply_price_filters() {
-            var slider = $(".js-range-slider-desktop").data("ionRangeSlider");
+                onStart: function (data) {
+                    if (showLabel) updatePriceDisplay(data.from, data.to);
+                },
 
-            var min = slider.result.from;
-            var max = slider.result.to;
+                onChange: function (data) {
+                    if (showLabel) updatePriceDisplay(data.from, data.to);
+                },
 
-            var params = new URLSearchParams(window.location.search);
-
-            // Set price values
-            params.set('price_min', min);
-            params.set('price_max', max);
-
-            window.location.href = '{{ url()->current() }}?' + params.toString();
-        }        
-
-
-        rangeSlider = $(".js-range-slider-mobile").ionRangeSlider({
-            type: "double",
-            min: 0,
-            max: 5000,
-            from: {{ ($priceMin) }},
-            to: {{ ($priceMax) }},
-            step: 20,
-            skin: "flat",
-            prefix: "₹",
-
-            onStart: function (data) {
-                updatePriceDisplay(data.from, data.to);
-            },
-
-            onChange: function (data) {
-                updatePriceDisplay(data.from, data.to);
-            },
-
-            onFinish: function () {
-                apply_price_filters();
-            }
-        });
+                onFinish: function (data) {
+                    applyPriceFilter(data.from, data.to);
+                }
+            });
+        }
 
         function updatePriceDisplay(min, max) {
             $("#selectedPriceRange").text("₹" + min + " - ₹" + max);
         }
 
-        function apply_price_filters() {
-            var slider = $(".js-range-slider-mobile").data("ionRangeSlider");
-
-            var min = slider.result.from;
-            var max = slider.result.to;
-
-            var params = new URLSearchParams(window.location.search);
+        function applyPriceFilter(min, max) {
+            let params = new URLSearchParams(window.location.search);
 
             params.set('price_min', min);
             params.set('price_max', max);
 
-            window.location.href = '{{ url()->current() }}?' + params.toString();
+            window.location.href = window.location.pathname + '?' + params.toString();
         }
 
         // function apply_search_filters(){            

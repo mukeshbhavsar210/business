@@ -120,10 +120,11 @@ class ShopController extends Controller {
 
         // Price slider
         if ($request->filled('price_min') && $request->filled('price_max')) {
-            $min = intval($request->get('price_min'));
-            $max = intval($request->get('price_max'));
+            $min = intval($request->price_min);
+            $max = intval($request->price_max);
+
             $products = $products->whereBetween('price', [$min, $max]);
-        }
+        }        
 
         //Search main header
         if (!empty($request->get('search'))){
@@ -177,8 +178,7 @@ class ShopController extends Controller {
             $request->filled('color') ||
             $request->filled('size') ||
             $request->filled('item') ||
-            $request->filled('price_min') ||
-            $request->filled('price_max') ||
+            $request->filled('price_min') || $request->filled('price_max') ||            
             $request->filled('sort') ||
             $request->filled('discount') ||
             $request->filled('search')
@@ -212,7 +212,7 @@ class ShopController extends Controller {
 
         $data = array_merge($data, [
             'priceMin' => $request->get('price_min', 0),
-            'priceMax' => $request->get('price_max', 5000),
+            'priceMax' => $request->get('price_max', 5000),            
             'sort'     => $request->get('sort'),
         ]);                    
 
@@ -220,7 +220,7 @@ class ShopController extends Controller {
     }
 
     public function product($item2=null, $item3=null, $slug, Request $request) {
-        $product = Product::where('slug',$slug)->with(['colors', 'sizes', 'product_images', 'variants', 'subSubCategory.subCategory.category'])->first();
+        $product = Product::where('slug',$slug)->with(['variants.color', 'colors', 'sizes', 'product_images', 'variants', 'subSubCategory.subCategory.category'])->first();
         $colors = Color::get();
         $sizes = Size::get();
 

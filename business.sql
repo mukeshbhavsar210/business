@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 31, 2026 at 07:29 AM
+-- Generation Time: Apr 07, 2026 at 10:14 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -173,9 +173,8 @@ CREATE TABLE `discounts` (
 --
 
 INSERT INTO `discounts` (`id`, `product_id`, `discount_percentages_id`, `start_date`, `end_date`, `status`, `created_at`, `updated_at`) VALUES
-(9, 64, 5, '2026-03-24', '2026-04-23', 1, '2026-03-23 02:46:20', '2026-03-24 01:06:15'),
+(9, 64, 5, '2026-04-07', '2026-05-07', 1, '2026-03-23 02:46:20', '2026-04-07 02:33:23'),
 (10, 59, 3, '2026-03-28', '2026-04-27', 1, '2026-03-23 09:24:04', '2026-03-28 07:51:36'),
-(11, 65, 5, '2026-03-24', '2026-04-23', 1, '2026-03-24 01:22:00', '2026-03-24 01:22:00'),
 (12, 67, 5, '2026-03-24', '2026-04-23', 1, '2026-03-24 01:34:37', '2026-03-24 01:34:37'),
 (13, 68, 1, '2026-03-24', '2026-04-23', 1, '2026-03-24 06:47:47', '2026-03-24 06:47:47');
 
@@ -210,8 +209,8 @@ CREATE TABLE `discount_coupons` (
 
 INSERT INTO `discount_coupons` (`id`, `code`, `image`, `name`, `description`, `max_uses`, `max_uses_user`, `type`, `discount_amount`, `min_amount`, `used_count`, `status`, `starts_at`, `expires_at`, `created_at`, `updated_at`) VALUES
 (4, 'IND30', 'coupon1.jpg', 'Save 161', '30%  off on minimum purchase of Rs. 300 .', '10', '3', 'percent', 10.00, 999.00, 1, 1, '2023-11-27 11:36:57', '2026-03-31 11:36:59', '2023-11-28 06:07:01', '2023-11-29 02:18:46'),
-(5, 'IND99', 'coupon2.jpg', 'Independence Day', '50%  off on minimum purchase of Rs. 300 .', '10', '2', 'fixed', 90.00, 1000.00, NULL, 1, '2023-11-28 11:39:33', '2026-04-30 11:36:59', '2023-11-28 06:09:46', '2023-11-29 02:17:51'),
-(13, 'IND999', 'coupon2.jpg', 'Independence Day', '50%  off on minimum purchase of Rs. 300 .', '10', '2', 'fixed', 90.00, 1000.00, NULL, 1, '2023-11-28 11:39:33', '2026-04-30 11:36:59', '2023-11-28 06:09:46', '2023-11-29 02:17:51');
+(5, 'IND99', 'coupon2.jpg', 'Independence Day', '50%  off on minimum purchase of Rs. 300 .', '10', '2', 'fixed', 90.00, 1000.00, NULL, 1, '2026-03-01 11:39:33', '2026-03-31 11:36:59', '2023-11-28 06:09:46', '2023-11-29 02:17:51'),
+(13, 'IND999', 'coupon2.jpg', 'April Fool Day', '50%  off on minimum purchase of Rs. 300 .', '10', '2', 'fixed', 999.00, 1000.00, NULL, 1, '2026-03-01 11:39:33', '2026-04-30 11:36:59', '2023-11-28 06:09:46', '2023-11-29 02:17:51');
 
 -- --------------------------------------------------------
 
@@ -338,7 +337,9 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (62, '2026_03_21_141335_add_discount_percentages_id_to_properties_table', 53),
 (63, '2026_03_30_140422_add_color_id_to_order_items_table', 54),
 (64, '2026_03_30_140655_add_size_id_to_order_items_table', 55),
-(65, '2026_03_30_142417_add_size_id_to_order_items_table', 56);
+(65, '2026_03_30_142417_add_size_id_to_order_items_table', 56),
+(66, '2026_04_07_070039_add_color_id_to_properties_table', 57),
+(67, '2026_04_07_071111_add_color_id_to_properties_table', 58);
 
 -- --------------------------------------------------------
 
@@ -353,8 +354,9 @@ CREATE TABLE `orders` (
   `product_variant_id` bigint(20) UNSIGNED DEFAULT NULL,
   `customer_address_id` bigint(20) UNSIGNED DEFAULT NULL,
   `subtotal` double(10,2) NOT NULL,
-  `shipping` double(10,2) NOT NULL,
   `grandtotal` double(10,2) NOT NULL,
+  `payment_method` varchar(20) DEFAULT NULL,
+  `status` enum('Confirmed','Placed','Packed','Shipped','Out for Delivery','Delivered','Cancelled','Returned','Exchanged') DEFAULT 'Confirmed',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -363,8 +365,10 @@ CREATE TABLE `orders` (
 -- Dumping data for table `orders`
 --
 
-INSERT INTO `orders` (`id`, `user_id`, `product_id`, `product_variant_id`, `customer_address_id`, `subtotal`, `shipping`, `grandtotal`, `created_at`, `updated_at`) VALUES
-(210, 7, NULL, NULL, 1, 1119.00, 50.00, 1169.00, '2026-03-30 23:29:43', '2026-03-30 23:29:43');
+INSERT INTO `orders` (`id`, `user_id`, `product_id`, `product_variant_id`, `customer_address_id`, `subtotal`, `grandtotal`, `payment_method`, `status`, `created_at`, `updated_at`) VALUES
+(217, 7, 68, NULL, 1, 3369.00, 3329.00, 'cod', 'Delivered', '2026-04-01 00:36:42', '2026-04-01 01:16:26'),
+(218, 7, 59, NULL, 1, 1119.00, 1169.00, 'online', 'Delivered', '2026-03-31 00:47:42', '2026-03-31 01:25:57'),
+(219, 7, 59, NULL, 1, 5595.00, 5555.00, 'cod', 'Confirmed', '2026-04-02 06:59:08', '2026-04-02 06:59:08');
 
 -- --------------------------------------------------------
 
@@ -382,8 +386,6 @@ CREATE TABLE `order_items` (
   `discount` double(10,2) DEFAULT NULL,
   `coupon_code` varchar(30) DEFAULT NULL,
   `coupon_code_id` int(10) DEFAULT NULL,
-  `color` varchar(20) DEFAULT NULL,
-  `size` varchar(255) DEFAULT NULL,
   `qty` int(11) NOT NULL,
   `price` double(10,2) NOT NULL,
   `discount_percent` int(10) DEFAULT NULL,
@@ -404,8 +406,11 @@ CREATE TABLE `order_items` (
 -- Dumping data for table `order_items`
 --
 
-INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `product_variant_id`, `size_id`, `color_id`, `discount`, `coupon_code`, `coupon_code_id`, `color`, `size`, `qty`, `price`, `discount_percent`, `discounted_price`, `shipping`, `subtotal`, `grandtotal`, `return_days`, `delivery_min_days`, `delivery_max_days`, `payment_status`, `payment_method`, `created_at`, `updated_at`) VALUES
-(41, 210, 59, NULL, 3, 8, 0.00, '', NULL, NULL, NULL, 1, 1599.00, 30, 1119.00, 50.00, 1119.00, 1169.00, '7 days', '2026-03-28', '2026-04-04', 'Not Paid', 'cod', '2026-03-30 23:29:44', '2026-03-30 23:29:44');
+INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `product_variant_id`, `size_id`, `color_id`, `discount`, `coupon_code`, `coupon_code_id`, `qty`, `price`, `discount_percent`, `discounted_price`, `shipping`, `subtotal`, `grandtotal`, `return_days`, `delivery_min_days`, `delivery_max_days`, `payment_status`, `payment_method`, `created_at`, `updated_at`) VALUES
+(45, 217, 59, NULL, 3, 4, 90.00, 'IND99', 5, 1, 1599.00, 30, 1119.00, 50.00, 3369.00, 3329.00, '7 days', '2026-03-28', '2026-04-04', 'Not Paid', 'cod', '2026-04-01 00:36:42', '2026-04-01 00:36:42'),
+(46, 217, 68, NULL, NULL, NULL, 90.00, 'IND99', 5, 1, 2500.00, 10, 2250.00, 50.00, 3369.00, 3329.00, '7 days', '2026-03-24', '2026-03-31', 'Not Paid', 'cod', '2026-04-01 00:36:42', '2026-04-01 00:36:42'),
+(47, 218, 59, NULL, 4, 3, 0.00, '', NULL, 1, 1599.00, 30, 1119.00, 50.00, 1119.00, 1169.00, '7 days', '2026-03-28', '2026-04-04', 'Not Paid', 'cod', '2026-04-01 00:47:42', '2026-04-01 00:47:42'),
+(48, 219, 59, NULL, 4, 4, 90.00, 'IND99', 5, 5, 1599.00, 30, 1119.00, 50.00, 5595.00, 5555.00, '7 days', '2026-03-28', '2026-04-04', 'Not Paid', 'cod', '2026-04-02 06:59:08', '2026-04-02 06:59:08');
 
 -- --------------------------------------------------------
 
@@ -432,7 +437,13 @@ CREATE TABLE `order_status_histories` (
 --
 
 INSERT INTO `order_status_histories` (`id`, `order_id`, `tracking_number`, `courier`, `note`, `cancel_reason`, `cancel_comments`, `status`, `date`, `created_at`, `updated_at`) VALUES
-(189, 210, NULL, 'Shadofox', 'note', NULL, NULL, 'Confirmed', '2026-03-30 23:29:44', '2026-03-30 23:29:44', '2026-03-30 23:29:44');
+(198, 217, NULL, 'Shadofox', 'note', NULL, NULL, 'Confirmed', '2026-04-01 00:36:42', '2026-04-01 00:36:42', '2026-04-01 00:36:42'),
+(199, 218, NULL, 'Shadofox', 'note', NULL, NULL, 'Confirmed', '2026-04-01 00:47:42', '2026-04-01 00:47:42', '2026-04-01 00:47:42'),
+(200, 218, NULL, 'Shadofax', 'note', NULL, NULL, 'Delivered', NULL, '2026-04-01 01:15:35', '2026-04-01 01:15:35'),
+(201, 217, NULL, 'Shadofax', 'note', NULL, NULL, 'Delivered', NULL, '2026-04-01 01:16:26', '2026-04-01 01:16:26'),
+(202, 217, NULL, 'Shadofax', 'note', NULL, NULL, 'Delivered', NULL, '2026-04-01 01:16:52', '2026-04-01 01:16:52'),
+(203, 218, NULL, 'Shadofax', 'note', NULL, NULL, 'Delivered', NULL, '2026-04-01 01:25:56', '2026-04-01 01:25:56'),
+(204, 219, NULL, 'Shadofox', 'note', NULL, NULL, 'Confirmed', '2026-04-02 06:59:08', '2026-04-02 06:59:08', '2026-04-02 06:59:08');
 
 -- --------------------------------------------------------
 
@@ -551,11 +562,10 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`id`, `title`, `slug`, `description`, `short_description`, `shipping_returns`, `related_products`, `price`, `category_id`, `sub_category_id`, `sub_sub_category_id`, `brand_id`, `discount_percentage_id`, `is_featured`, `sku`, `barcode`, `track_qty`, `qty`, `recommended`, `views`, `discount_percentage`, `average_rating`, `cod`, `is_returnable`, `return_days`, `delivery_min_days`, `delivery_max_days`, `status`, `created_at`, `updated_at`) VALUES
-(59, 'Park Avenue', 'park-avenue', 'test', 'Printed Polo Collar Slim Fit T-shirt', 'test', '', 1599.00, 82, 42, 1, 45, 3, 'Yes', 'tshirt_02', 'tshirt_000002', 'Yes', 75, NULL, NULL, NULL, NULL, 1, 1, '7 days', '2026-03-28', '2026-04-04', 1, '2026-03-20 02:52:28', '2026-03-30 23:29:44'),
-(64, 'Lux Cozi', 'lux-cozi', 'test', 'Polo Collar Lounge Tshirts', 'test', '', 700.00, 82, 42, 1, 46, 5, 'Yes', 'tshirt_011', 'tshirt_11', 'Yes', 95, NULL, NULL, NULL, NULL, 1, 1, '7 days', '2026-03-24', '2026-03-31', 1, '2026-03-20 09:48:06', '2026-03-30 08:30:12'),
-(65, 'Ponds', 'ponds', 'test', 'Polo Collar Lounge Tshirts', 'test', '', 500.00, 83, 46, 24, 46, 5, 'Yes', 'tshirt_011', 'tshirt_11', 'Yes', 99, NULL, NULL, NULL, NULL, 1, 1, '7 days', '2026-03-24', '2026-03-31', 1, '2026-03-20 09:48:06', '2026-03-24 01:22:00'),
+(59, 'Park Avenue', 'park-avenue', 'test', 'Printed Polo Collar Slim Fit T-shirt', 'test', '', 1599.00, 82, 42, 1, 45, 3, 'Yes', 'tshirt_02', 'tshirt_000002', 'Yes', 66, NULL, NULL, NULL, NULL, 1, 1, '7 days', '2026-03-28', '2026-04-04', 1, '2026-03-20 02:52:28', '2026-04-02 06:59:09'),
+(64, 'Lux Cozi', 'lux-cozi', 'test', 'Polo Collar Lounge Tshirts', 'test', '', 700.00, 82, 42, 1, 46, 5, 'Yes', 'tshirt_011', 'tshirt_11', 'Yes', 95, NULL, NULL, NULL, NULL, 1, 1, '7 days', '2026-04-07', '2026-04-14', 1, '2026-03-20 09:48:06', '2026-04-07 02:33:23'),
 (67, 'Kurtas', 'kurtas', 'test', 'Polo Collar Lounge Tshirts', 'test', '', 500.00, 83, 50, 26, 46, 5, 'Yes', 'tshirt_011', 'tshirt_11', 'Yes', 99, NULL, NULL, NULL, NULL, 1, 1, '7 days', '2026-03-24', '2026-03-31', 1, '2026-03-20 09:48:06', '2026-03-24 01:34:37'),
-(68, 'Boat Nirvana', 'boat-nirvana', 'test', 'Polo Collar Lounge Tshirts', 'test', '', 2500.00, 170, 53, 27, 47, 1, 'Yes', 'tshirt_011', 'tshirt_11', 'Yes', 96, NULL, NULL, NULL, NULL, 1, 1, '7 days', '2026-03-24', '2026-03-31', 1, '2026-03-20 09:48:06', '2026-03-26 02:24:05');
+(68, 'Boat Nirvana', 'boat-nirvana', 'test', 'Polo Collar Lounge Tshirts', 'test', '', 2500.00, 170, 53, 27, 47, 1, 'Yes', 'tshirt_011', 'tshirt_11', 'Yes', 94, NULL, NULL, NULL, NULL, 1, 1, '7 days', '2026-03-24', '2026-03-31', 1, '2026-03-20 09:48:06', '2026-04-01 00:36:42');
 
 -- --------------------------------------------------------
 
@@ -594,8 +604,8 @@ INSERT INTO `product_colors` (`id`, `product_id`, `color_id`) VALUES
 CREATE TABLE `product_images` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `product_id` bigint(20) UNSIGNED NOT NULL,
+  `color_id` bigint(20) UNSIGNED DEFAULT NULL,
   `image` varchar(255) NOT NULL,
-  `sort_order` int(11) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -604,20 +614,20 @@ CREATE TABLE `product_images` (
 -- Dumping data for table `product_images`
 --
 
-INSERT INTO `product_images` (`id`, `product_id`, `image`, `sort_order`, `created_at`, `updated_at`) VALUES
-(51, 64, '64-Lux Cozi-51-1774094908.jpg', NULL, '2026-03-21 06:38:28', '2026-03-21 06:38:28'),
-(52, 64, '64-Lux Cozi-52-1774094908.jpg', NULL, '2026-03-21 06:38:28', '2026-03-21 06:38:28'),
-(53, 64, '64-Lux Cozi-53-1774094908.jpg', NULL, '2026-03-21 06:38:28', '2026-03-21 06:38:28'),
-(54, 59, '59-Park Avenue-54.jpg', NULL, '2026-03-21 06:41:28', '2026-03-21 06:41:28'),
-(55, 59, '59-Park Avenue-55.jpg', NULL, '2026-03-21 06:41:28', '2026-03-21 06:41:28'),
-(56, 67, '67-Kurtas-56.jpg', NULL, '2026-03-24 01:34:38', '2026-03-24 01:34:38'),
-(57, 68, '68-Boat Nirvana-57.jpg', NULL, '2026-03-24 06:47:47', '2026-03-24 06:47:47'),
-(58, 68, '68-Boat Nirvana-58.jpg', NULL, '2026-03-24 06:47:48', '2026-03-24 06:47:48'),
-(59, 68, '68-Boat Nirvana-59.jpg', NULL, '2026-03-24 06:47:48', '2026-03-24 06:47:48'),
-(60, 68, '68-Boat Nirvana-60.jpg', NULL, '2026-03-24 06:47:48', '2026-03-24 06:47:48'),
-(64, 59, '68-Boat Nirvana-60.jpg', NULL, '2026-03-24 06:47:48', '2026-03-24 06:47:48'),
-(65, 59, '64-Lux Cozi-51-1774094908.jpg', NULL, '2026-03-21 06:38:28', '2026-03-21 06:38:28'),
-(66, 59, '64-Lux Cozi-53-1774094908.jpg', NULL, '2026-03-21 06:38:28', '2026-03-21 06:38:28');
+INSERT INTO `product_images` (`id`, `product_id`, `color_id`, `image`, `created_at`, `updated_at`) VALUES
+(51, 64, 5, '64-Lux Cozi-51-1774094908.jpg', '2026-03-21 06:38:28', '2026-04-07 02:33:24'),
+(52, 64, 5, '64-Lux Cozi-52-1774094908.jpg', '2026-03-21 06:38:28', '2026-04-07 02:33:24'),
+(53, 64, NULL, '64-Lux Cozi-53-1774094908.jpg', '2026-03-21 06:38:28', '2026-04-07 02:33:24'),
+(54, 59, NULL, '59-Park Avenue-54.jpg', '2026-03-21 06:41:28', '2026-03-21 06:41:28'),
+(55, 59, NULL, '59-Park Avenue-55.jpg', '2026-03-21 06:41:28', '2026-03-21 06:41:28'),
+(56, 67, NULL, '67-Kurtas-56.jpg', '2026-03-24 01:34:38', '2026-03-24 01:34:38'),
+(57, 68, NULL, '68-Boat Nirvana-57.jpg', '2026-03-24 06:47:47', '2026-03-24 06:47:47'),
+(58, 68, NULL, '68-Boat Nirvana-58.jpg', '2026-03-24 06:47:48', '2026-03-24 06:47:48'),
+(59, 68, NULL, '68-Boat Nirvana-59.jpg', '2026-03-24 06:47:48', '2026-03-24 06:47:48'),
+(60, 68, NULL, '68-Boat Nirvana-60.jpg', '2026-03-24 06:47:48', '2026-03-24 06:47:48'),
+(64, 59, NULL, '68-Boat Nirvana-60.jpg', '2026-03-24 06:47:48', '2026-03-24 06:47:48'),
+(65, 59, NULL, '64-Lux Cozi-51-1774094908.jpg', '2026-03-21 06:38:28', '2026-03-21 06:38:28'),
+(66, 59, NULL, '64-Lux Cozi-53-1774094908.jpg', '2026-03-21 06:38:28', '2026-03-21 06:38:28');
 
 -- --------------------------------------------------------
 
@@ -672,6 +682,7 @@ INSERT INTO `product_sizes` (`id`, `product_id`, `size_id`) VALUES
 CREATE TABLE `product_variants` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `product_id` bigint(20) UNSIGNED NOT NULL,
+  `color_id` bigint(20) UNSIGNED DEFAULT NULL,
   `image` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -681,13 +692,13 @@ CREATE TABLE `product_variants` (
 -- Dumping data for table `product_variants`
 --
 
-INSERT INTO `product_variants` (`id`, `product_id`, `image`, `created_at`, `updated_at`) VALUES
-(28, 64, '64-28-1774078887.jpg', '2026-03-21 02:11:27', '2026-03-21 02:11:27'),
-(29, 64, '64-29-1774093826.jpg', '2026-03-21 06:20:26', '2026-03-21 06:20:26'),
-(30, 64, '64-30-1774093827.jpg', '2026-03-21 06:20:27', '2026-03-21 06:20:27'),
-(35, 64, '64-Lux Cozi-35.jpg', '2026-03-24 00:10:35', '2026-03-24 00:10:35'),
-(36, 64, 'lux-cozi_64_36.jpg', '2026-03-24 00:12:38', '2026-03-24 00:12:38'),
-(37, 67, 'kurtas_67_37.jpg', '2026-03-24 01:34:37', '2026-03-24 01:34:37');
+INSERT INTO `product_variants` (`id`, `product_id`, `color_id`, `image`, `created_at`, `updated_at`) VALUES
+(28, 64, 8, '64-28-1774078887.jpg', '2026-03-21 02:11:27', '2026-04-07 02:33:23'),
+(29, 64, 4, '64-29-1774093826.jpg', '2026-03-21 06:20:26', '2026-04-07 02:33:23'),
+(30, 64, 7, '64-30-1774093827.jpg', '2026-03-21 06:20:27', '2026-04-07 02:33:23'),
+(35, 64, 12, '64-Lux Cozi-35.jpg', '2026-03-24 00:10:35', '2026-04-07 02:33:23'),
+(36, 64, 9, 'lux-cozi_64_36.jpg', '2026-03-24 00:12:38', '2026-04-07 02:33:23'),
+(37, 67, NULL, 'kurtas_67_37.jpg', '2026-03-24 01:34:37', '2026-03-24 01:34:37');
 
 -- --------------------------------------------------------
 
@@ -727,13 +738,7 @@ CREATE TABLE `reviews` (
 --
 
 INSERT INTO `reviews` (`id`, `user_id`, `product_id`, `rating`, `review`, `status`, `created_at`, `updated_at`) VALUES
-(8, 3, 68, 5, 'Awesome Product 3', 1, NULL, '2026-03-27 02:22:42'),
-(9, 3, 68, 5, 'Awesome Product 33', 1, NULL, '2026-03-27 02:22:42'),
-(13, 7, 59, 3, 'test', 1, '2026-03-27 07:13:41', '2026-03-27 07:13:41'),
-(16, 3, 59, 5, 'test', 1, '2026-03-27 07:13:41', '2026-03-27 07:13:41'),
-(17, 3, 59, 1, 'test', 1, '2026-03-27 07:13:41', '2026-03-27 07:13:41'),
-(18, 3, 59, 2, 'test', 1, '2026-03-27 07:13:41', '2026-03-27 07:13:41'),
-(19, 3, 59, 4, 'test', 1, '2026-03-27 07:13:41', '2026-03-27 07:13:41');
+(9, 3, 68, 5, 'Awesome Product 33', 1, NULL, '2026-03-27 02:22:42');
 
 -- --------------------------------------------------------
 
@@ -948,15 +953,11 @@ CREATE TABLE `temp_images` (
 --
 
 INSERT INTO `temp_images` (`id`, `name`, `created_at`, `updated_at`) VALUES
-(398, '1774354083.jpg', '2026-03-24 06:38:03', '2026-03-24 06:38:03'),
-(399, '1774354128.jpeg', '2026-03-24 06:38:48', '2026-03-24 06:38:48'),
-(400, '1774354134.jpg', '2026-03-24 06:38:54', '2026-03-24 06:38:54'),
-(401, '1774354232.jpg', '2026-03-24 06:40:32', '2026-03-24 06:40:32'),
-(402, '1774354313.jpg', '2026-03-24 06:41:53', '2026-03-24 06:41:53'),
-(403, '1774354644.jpg', '2026-03-24 06:47:24', '2026-03-24 06:47:24'),
-(404, '1774354647.jpg', '2026-03-24 06:47:27', '2026-03-24 06:47:27'),
-(405, '1774354649.jpg', '2026-03-24 06:47:29', '2026-03-24 06:47:29'),
-(406, '1774354651.jpg', '2026-03-24 06:47:31', '2026-03-24 06:47:31');
+(407, '1775549304.jpg', '2026-04-07 02:38:24', '2026-04-07 02:38:24'),
+(408, '1775549314.jpg', '2026-04-07 02:38:34', '2026-04-07 02:38:34'),
+(409, '1775549420.jpg', '2026-04-07 02:40:20', '2026-04-07 02:40:20'),
+(410, '1775549559.jpg', '2026-04-07 02:42:39', '2026-04-07 02:42:39'),
+(411, '1775549628.jpg', '2026-04-07 02:43:48', '2026-04-07 02:43:48');
 
 -- --------------------------------------------------------
 
@@ -990,7 +991,7 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`id`, `name`, `email`, `phone`, `mobile`, `birthdate`, `gender`, `role`, `image`, `status`, `email_verified_at`, `password`, `is_active`, `remember_token`, `created_at`, `updated_at`) VALUES
 (1, 'Admin', 'mukeshbhavsar210@gmail.com', '', NULL, NULL, NULL, 2, 'mukesh.webp', 1, NULL, '$2y$12$Iy5Wh1TVAkCYAvaefrR71OEKD4QDjhnnWBxknqjwnioSSM6sAJMnO', 1, NULL, '2023-11-17 23:52:06', '2023-12-01 05:59:34'),
 (3, 'Priyanka', 'p.bhavsar2610@gmail', '9538135005', '9978812324', '2026-02-18', 'female', 1, 'priyanka.png', 1, NULL, '$2y$12$Iy5Wh1TVAkCYAvaefrR71OEKD4QDjhnnWBxknqjwnioSSM6sAJMnO', 1, NULL, '2023-11-25 00:32:42', '2026-03-04 00:10:24'),
-(7, 'Dhruv', 'dhruvbhavsar210@gmail.com', '9538135005', '9978812324', '2026-02-18', 'male', 1, 'dhruv.webp', 1, NULL, '$2y$12$Iy5Wh1TVAkCYAvaefrR71OEKD4QDjhnnWBxknqjwnioSSM6sAJMnO', 1, NULL, '2023-11-25 00:32:42', '2026-03-17 08:37:16');
+(7, 'Dhruv Bhavsar', 'dhruvbhavsar210@gmail.com', '9538135005', '9978812324', '2026-02-18', 'male', 1, 'dhruv.webp', 1, NULL, '$2y$12$Iy5Wh1TVAkCYAvaefrR71OEKD4QDjhnnWBxknqjwnioSSM6sAJMnO', 1, NULL, '2023-11-25 00:32:42', '2026-03-31 07:01:33');
 
 -- --------------------------------------------------------
 
@@ -1005,13 +1006,6 @@ CREATE TABLE `wishlists` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `wishlists`
---
-
-INSERT INTO `wishlists` (`id`, `user_id`, `product_id`, `created_at`, `updated_at`) VALUES
-(104, 7, 64, '2026-03-25 00:54:47', '2026-03-25 00:54:47');
 
 --
 -- Indexes for dumped tables
@@ -1163,7 +1157,8 @@ ALTER TABLE `product_colors`
 --
 ALTER TABLE `product_images`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `product_images_product_id_foreign` (`product_id`);
+  ADD KEY `product_images_product_id_foreign` (`product_id`),
+  ADD KEY `product_images_color_id_foreign` (`color_id`);
 
 --
 -- Indexes for table `product_ratings`
@@ -1185,7 +1180,8 @@ ALTER TABLE `product_sizes`
 --
 ALTER TABLE `product_variants`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `product_variants_product_id_foreign` (`product_id`);
+  ADD KEY `product_variants_product_id_foreign` (`product_id`),
+  ADD KEY `product_variants_color_id_foreign` (`color_id`);
 
 --
 -- Indexes for table `ratings`
@@ -1329,25 +1325,25 @@ ALTER TABLE `failed_jobs`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=66;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
 
 --
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=211;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=220;
 
 --
 -- AUTO_INCREMENT for table `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
 
 --
 -- AUTO_INCREMENT for table `order_status_histories`
 --
 ALTER TABLE `order_status_histories`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=190;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=205;
 
 --
 -- AUTO_INCREMENT for table `pages`
@@ -1371,7 +1367,7 @@ ALTER TABLE `personal_access_tokens`
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=69;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=70;
 
 --
 -- AUTO_INCREMENT for table `product_colors`
@@ -1383,7 +1379,7 @@ ALTER TABLE `product_colors`
 -- AUTO_INCREMENT for table `product_images`
 --
 ALTER TABLE `product_images`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=67;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
 
 --
 -- AUTO_INCREMENT for table `product_ratings`
@@ -1449,7 +1445,7 @@ ALTER TABLE `sub_sub_categories`
 -- AUTO_INCREMENT for table `temp_images`
 --
 ALTER TABLE `temp_images`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=407;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=412;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -1461,7 +1457,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `wishlists`
 --
 ALTER TABLE `wishlists`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=105;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=128;
 
 --
 -- Constraints for dumped tables
@@ -1540,6 +1536,7 @@ ALTER TABLE `product_colors`
 -- Constraints for table `product_images`
 --
 ALTER TABLE `product_images`
+  ADD CONSTRAINT `product_images_color_id_foreign` FOREIGN KEY (`color_id`) REFERENCES `colors` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   ADD CONSTRAINT `product_images_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE;
 
 --
@@ -1559,6 +1556,7 @@ ALTER TABLE `product_sizes`
 -- Constraints for table `product_variants`
 --
 ALTER TABLE `product_variants`
+  ADD CONSTRAINT `product_variants_color_id_foreign` FOREIGN KEY (`color_id`) REFERENCES `colors` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   ADD CONSTRAINT `product_variants_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE;
 
 --

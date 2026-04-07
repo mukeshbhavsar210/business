@@ -132,11 +132,30 @@ class ProductController extends Controller {
                     }
 
                     ProductVariant::create([
-                        'product_id' => $product->id,                        
+                        'product_id' => $product->id,
+                        'color_id' => $variant['color_id'], 
                         'image' => $variantImage,
                     ]);
                 }
             }
+
+            // if ($request->variants) {
+            //     foreach ($request->variants as $key => $variant) {
+
+            //         $variantImage = null;
+
+            //         if ($request->hasFile("variant_images.$key")) {
+            //             $file = $request->file("variant_images.$key");
+            //             $variantImage = time().'_'.$file->getClientOriginalName();
+            //             $file->move(public_path('uploads/product/large'), $variantImage);
+            //         }
+
+            //         ProductVariant::create([
+            //             'product_id' => $product->id,                        
+            //             'image' => $variantImage,
+            //         ]);
+            //     }
+            // }
 
             if (!empty($request->image_array)) {
                 foreach ($request->image_array as $temp_image_id) {
@@ -305,9 +324,27 @@ class ProductController extends Controller {
                 Discount::where('product_id', $product->id)->delete(); // remove discount
             }
 
-            // 3️⃣ Save Variants
+            // 3️⃣ Save Variants with color_id
+            if ($request->filled('existing_variant_images')) {
+                foreach ($request->existing_variant_images as $variantData) {
+
+                    if (!empty($variantData['id'])) {
+                        ProductVariant::where('id', $variantData['id'])
+                            ->update([
+                                'color_id' => $variantData['color_id']
+                            ]);
+                    }
+                }
+            }
+
             if ($request->filled('variant_image_array') && is_array($request->variant_image_array)) {
-                foreach ($request->variant_image_array as $temp_image_id) {
+                foreach ($request->variant_image_array as $variant) {
+                    $temp_image_id = $variant['image_id'] ?? null;
+                    $color_id = $variant['color_id'] ?? null;
+
+                    if (!$temp_image_id || !$color_id) {
+                        continue;
+                    }
 
                     $tempImageInfo = TempImage::find($temp_image_id);
 
@@ -317,15 +354,15 @@ class ProductController extends Controller {
 
                     $ext = pathinfo($tempImageInfo->name, PATHINFO_EXTENSION);
 
-                    // Create variant record first (temporary image value)
+                    // Create variant record
                     $productVariant = new ProductVariant();
                     $productVariant->product_id = $product->id;
-                    $productVariant->image = 'temp.jpg'; 
+                    $productVariant->color_id = $color_id; // ✅ SAVE COLOR
+                    $productVariant->image = 'temp.jpg';
                     $productVariant->save();
 
-                    $imageName = $product->slug. '_' .$product->id. '_' .$productVariant->id. '.' .$ext;
+                    $imageName = $product->slug . '_' . $product->id . '_' . $productVariant->id . '.' . $ext;
 
-                    // Update image name
                     $productVariant->image = $imageName;
                     $productVariant->save();
 
@@ -337,27 +374,48 @@ class ProductController extends Controller {
 
                     $manager = new ImageManager(new Driver());
 
-                    // LARGE IMAGE (1000px width)
+                    // LARGE IMAGE
                     $largePath = public_path('/uploads/product/large/' . $imageName);
                     $image = $manager->read($sourcePath);
-                    //$image->scale(width: 1000);
                     $image->cover(540, 720);
                     $image->save($largePath, quality: 100);
 
-                    // SMALL IMAGE (300x300 exact)
+                    // SMALL IMAGE
                     $smallPath = public_path('/uploads/product/small/' . $imageName);
                     $image = $manager->read($sourcePath);
                     $image->cover(300, 300);
                     $image->save($smallPath, quality: 100);
 
-                    // Delete temp file
                     File::delete($sourcePath);
                 }
             }
 
-
             if ($request->filled('image_array') && is_array($request->image_array)) {
-                foreach ($request->image_array as $temp_image_id) {
+                foreach ($request->image_array as $imageData) {
+
+                 if ($request->filled('color_id')) {
+                    ProductImage::where('product_id', $product->id)
+                        ->update([
+                            'color_id' => $request->color_id
+                        ]);
+                }   
+                
+                    $temp_image_id = $imageData['image_id'] ?? null;
+                    $image_id = $imageData['image_id'] ?? null;
+                    $color_id = $imageData['color_id'] ?? null;
+                    
+                    if (!$temp_image_id) { continue; }
+
+                    if (!$image_id) {
+                        continue;
+                    }
+
+                    // ✅ UPDATE existing image
+                    ProductImage::where('id', $image_id)
+                        ->update([
+                            'color_id' => $color_id
+                        ]);
+
                     $tempImageInfo = TempImage::find($temp_image_id);
 
                     if (!$tempImageInfo) {
@@ -366,15 +424,15 @@ class ProductController extends Controller {
 
                     $ext = pathinfo($tempImageInfo->name, PATHINFO_EXTENSION);
 
-                    // Create record with temporary name
+                    // Create record
                     $productImage = new ProductImage();
                     $productImage->product_id = $product->id;
-                    $productImage->image = 'temp.jpg'; // temporary value (not null)
+                    $productImage->color_id = $color_id; 
+                    $productImage->image = 'temp.jpg';
                     $productImage->save();
 
-                    $imageName = $product->id. '-' .$product->title. '-' .$productImage->id. '.' .$ext;
+                    $imageName = $product->id . '-' . $product->title . '-' . $productImage->id . '.' . $ext;
 
-                    // Update with correct filename
                     $productImage->image = $imageName;
                     $productImage->save();
 
@@ -390,7 +448,6 @@ class ProductController extends Controller {
                     $largePath = public_path('/uploads/product/large/' . $imageName);
                     $image = $manager->read($sourcePath);
                     $image->cover(540, 720);
-                    //$image->scale(width: 1000);
                     $image->save($largePath, quality: 100);
 
                     // Small

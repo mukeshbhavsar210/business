@@ -267,25 +267,44 @@
 
             <div class="card mb-1">
                 <div class="card-body">
-                    <h5 class="mb-2">Product photos</h5>
-                    <div id="image" class="dropzone dz-clickable mb-2">
+                    <div class="row">
+                        <div class="col-md-9 col-8">
+                            <h5 class="mt-2">Product Photos</h5>
+                        </div>
+                        <div class="col-md-3 col-4">                                                    
+                            <select name="color_id" class="form-select">
+                                <option value="">Select Color</option>
+                                @foreach($colors as $color)
+                                    <option value="{{ $color->id }}"
+                                        @if(isset($product) && $product->images->isNotEmpty())
+                                            {{ $product->images->first()?->color_id == $color->id ? 'selected' : '' }}>
+                                        @endif
+                                        {{ $color->name }}
+                                    </option>
+                                @endforeach
+                            </select>                                                                                   
+                        </div>
+                    </div>
+                        
+                    <div id="image" class="dropzone dz-clickable mt-3 mb-2">
                         <div class="dz-message needsclick">Drop Product Image</div>
                     </div> 
 
                     <div class="row">
                         @if(isset($product) && $product->images->isNotEmpty())                        
-                            <div id="product-gallery" class="row" >                                    
-                                @foreach ($product->images as $image)
+                            <div id="product-gallery" class="row">                                    
+                                @foreach ($product->images as $index => $image)
                                     <div class="col-2 uploaded-images" id="image-row-{{ $image->id }}">                                        
-                                        <input type="hidden" name="image_array[]" value="{{ $image->id }}">
+                                        <input type="hidden" name="image_array[{{ $index }}][image_id]" value="{{ $image->id }}">
                                         <img src="{{ asset('uploads/product/small/'.$image->image) }}" class="rounded" />
+
                                         <a href="javascript:void(0)" class="deleteProductImg delete-icon-edit" data-id="{{ $image->id }}">
                                             <span class="sprites"></span>
                                         </a>
                                     </div>
-                                @endforeach
+                                @endforeach                                                            
                             </div>                               
-                        @endif   
+                        @endif
                                                 
                         <div class="row" id="product-gallery" ></div>         
                     </div> 
@@ -297,18 +316,36 @@
                     
                     <div class="row mt-2">
                         @if(isset($product) && $product->variants->isNotEmpty())                                                        
-                            @foreach ($product->variants as $variant)
+                            @foreach ($product->variants as $index => $variant)
                                 @if($variant->image)
                                     <div class="col-2 uploaded-images" id="variant-image-row-{{ $variant->id }}">
-                                        <input type="hidden" name="existing_variant_images[]" value="{{ $variant->id }}">
+
+                                        {{-- Store variant id --}}
+                                        <input type="hidden" name="existing_variant_images[{{ $index }}][id]" value="{{ $variant->id }}">
+
                                         <img src="{{ asset('uploads/product/small/'.$variant->image) }}" class="rounded" />
-                                        <a href="javascript:void(0)" data-id="{{ $variant->id }}" onclick="deleteVariantImage" class="deleteVariantImg delete-icon-edit">
+
+                                        <a href="javascript:void(0)" 
+                                        data-id="{{ $variant->id }}" 
+                                        onclick="deleteVariantImage(this)" 
+                                        class="deleteVariantImg delete-icon-edit">
                                             <span class="sprites"></span>
-                                        </a>                                        
+                                        </a>     
+
+                                        {{-- Color Dropdown --}}
+                                        <select name="existing_variant_images[{{ $index }}][color_id]" class="form-select mt-1">
+                                            <option value="">Select Color</option>
+                                            @foreach($colors as $color)
+                                                <option value="{{ $color->id }}" 
+                                                    {{ $variant->color_id == $color->id ? 'selected' : '' }}>
+                                                    {{ $color->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                 @endif
                             @endforeach                                
-                        @endif                           
+                        @endif   
                         
                         <div class="row" id="variant-gallery"></div>
                     </div>
@@ -579,6 +616,8 @@
     //File image uplaod
     Dropzone.autoDiscover = false;
 
+    let variantIndex = 0;
+
     const variantDropzone = $("#variant_image").dropzone({
         url: "{{ route('temp-images.create') }}",
         maxFiles: 10,
@@ -590,14 +629,29 @@
         },
 
         success: function(file, response){
+
             var html = `<div class="col-2 uploaded-images" id="variant-image-row-${response.image_id}">                            
-                            <input type="hidden" name="variant_image_array[]" value="${response.image_id}">
-                            <img src="${response.ImagePath}" class="rounded" />
-                            <a href="javascript:void(0)" onclick="deleteVariantImage(${response.image_id})" class="deleteCardImg2 delete-icon-edit">
-                                <span class="sprites"></span>
-                            </a>                            
-                        </div>`;
+
+                <input type="hidden" name="variant_image_array[${variantIndex}][image_id]" value="${response.image_id}">
+
+                <img src="${response.ImagePath}" class="rounded" />
+
+                <a href="javascript:void(0)" onclick="deleteVariantImage(${response.image_id})" class="deleteCardImg2 delete-icon-edit">
+                    <span class="sprites"></span>
+                </a>    
+
+                <select name="variant_image_array[${variantIndex}][color_id]" class="form-select mt-1">
+                    <option value="">Select Color</option>
+                    @foreach($colors as $color)
+                        <option value="{{ $color->id }}">{{ $color->name }}</option>
+                    @endforeach
+                </select>
+
+            </div>`;
+
             $("#variant-gallery").append(html);
+
+            variantIndex++; // ✅ important
         },
 
         complete: function(file){
