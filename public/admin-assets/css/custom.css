@@ -438,9 +438,10 @@ input:checked + .slider { box-shadow:0 0 0 2px #007bff,0 0 2px #007bff; }
 .flex-2 { display: flex; column-gap: 15px;}
 
 .color_code {  margin-bottom: 5px;}
-.color_code .color { height:25px; width:25px; border-radius:100px; display:block; box-shadow: 0 4px 6px 0 #0000002f; }
+.color_code .color { height:35px; width:35px; border-radius:100px; display:block; box-shadow: 0 4px 6px 0 #0000002f; }
 .color_code .size { height:25px; width:25px; border-radius:100px; display:block; border:1px #ccc solid; text-align: center; padding:1px 3px; font-size: 13px; background-color: var(--white);}
 
+.form-check-input { border-color: var(--gray);}
 .tooltip {
   position: absolute;
   bottom: 28px;
@@ -523,7 +524,7 @@ input:checked + .slider { box-shadow:0 0 0 2px #007bff,0 0 2px #007bff; }
 .dropzone { text-align: center; cursor: pointer; }
 .dropzone:hover { border-color: var(--black); background-color: #e5e5e5;}
 
-#product-gallery { margin-bottom: 20px;}
+
 .uploaded-images { position: relative; }
 .uploaded-images img { width: 100%;}
 .uploaded-images .deleteCardImg { position: absolute; right:15px; top:3px; background-color: var(--white); border-radius: 3px; padding: 2px 0; }

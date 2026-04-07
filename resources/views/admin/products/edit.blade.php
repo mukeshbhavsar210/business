@@ -1,7 +1,6 @@
 @extends('admin.layouts.app')
 
 @section('content')
-
     <x-product_update 
         :product="$product"
         :categories="$categories"            
