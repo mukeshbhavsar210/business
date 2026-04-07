@@ -95,6 +95,7 @@
                                             'slug' => $product->slug]) }}" 
                                             class="variant-btn {{ request('variant') ? '' : 'active' }}">
                                         <img src="{{ asset('uploads/product/small/'.$product->images->first()->image) }}" >
+                                        <span>{{ $product->images->first()->color->name ?? '' }}</span>
                                     </a>
                                 </li>
                             @endif
@@ -109,7 +110,9 @@
                                                     class="variant-btn {{ request('variant') == $variant->id ? 'active' : '' }}">
                                             <input type="hidden" name="existing_variant_images[]" value="{{ $variant->id }}">
                                             <img src="{{ asset('uploads/product/small/'.$variant->image) }}"  />
-                                        </a>
+
+                                            <span class="variant-color">{{ $variant->color->name ?? '' }}</span>
+                                        </a>   
                                     </li>
                                 @endif
                             @endforeach
@@ -124,7 +127,7 @@
                                                 <li>
                                                     <a href="javascript:void(0);" class="color-option show-tooltip {{ $loop->first ? 'active' : '' }}" data-color="{{ $color->id }}">
                                                         <span class="color" style="background-color: {{ $color->code }}"></span>
-                                                        <span class="tooltip" style="bottom: 37px;">{{ $color->name }}</span>
+                                                        <span class="tooltip" style="bottom: 37px;">{{ $color->name }}</span>                                                        
                                                     </a>
                                                 </li>
                                             @endforeach
