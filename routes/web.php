@@ -91,8 +91,6 @@ Route::group(['prefix' => 'account'], function(){
             Route::post('/login','authenticate')->name('account.authenticate');
             Route::get('/register','register')->name('account.register');
             Route::post('/process-register','processRegister')->name('account.processRegister');
-
-            
         });
     });
 

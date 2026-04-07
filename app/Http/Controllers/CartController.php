@@ -28,9 +28,9 @@ class CartController extends Controller {
 
         // ✅ Color: user selected OR fallback to first
         $color_id = $request->color_id;
-        if (empty($color_id)) {
-            $color_id = optional($product->colors->first())->id;
-        }
+        // if (empty($color_id)) {
+        //     $color_id = optional($product->colors->first())->id;
+        // }
 
         // ✅ Size (optional)
         $size_id = $request->size_id ?? null;
@@ -41,6 +41,16 @@ class CartController extends Controller {
 
         if (!empty($variantId)) {
             $variant = $product->variants->where('id', $variantId)->first();
+        }
+
+        // ✅ FIX: Color logic
+        if ($variant) {
+            // 👉 Priority: variant color
+            $color_id = $variant->color_id;
+        } else {
+            // 👉 fallback: request OR first product image color
+            $color_id = $request->color_id 
+                ?? optional($product->product_images->first())->color_id;
         }
 
         // ✅ Image selection (variant > product)
@@ -64,7 +74,6 @@ class CartController extends Controller {
         }
 
         if (!$alreadyExists) {
-
             // ✅ Discount
             $discountPercent = (int) optional($product->discount)->percentage;
 
@@ -87,7 +96,7 @@ class CartController extends Controller {
                     'productImage'      => $image,
                     'variant_id'        => $variantId,
                     'size_id'           => $size_id,
-                    'color_id'          => $color_id, // ✅ correct value used
+                    'color_id'          => $color_id, 
                     'cod'               => $product->cod,
                     'return_days'       => $product->return_days,
                     'delivery_min_days' => $product->delivery_min_days,

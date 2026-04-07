@@ -42,135 +42,84 @@
             <div class="card mb-1">
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-6 col-12">
+                        <div class="col-md-12 col-12">
                             <div class="form-group">
                                 <label for="title" class="form-label">Product Title</label>
                                 <input type="text" name="title" class="form-control slug-source" value="{{ old('title', $product->title ?? '') }}" data-target="#slug">
                                 <input type="hidden" readonly name="slug" id="slug" class="form-control" placeholder="Slug" value="{{ old('title', $product->slug ?? '') }}">                                
                             </div>
-                        </div>
-
-                        <div class="col-md-6 col-12">
+                        
                             <div class="form-group">
                                 <label for="short_description" class="form-label">Short Description</label>
                                 <input type="text" name="short_description" id="short_description" class="form-control" value="{{ old('title', $product->short_description ?? '') }}" >
                             </div>
-                        </div>
-
-                        <div class="col-md-12 col-12">
+                        
                             <div class="form-group">
                                 <label for="description" class="form-label">Description</label>
                                 <textarea name="description" class="form-control summernote" cols="30" rows="10" >                                
                                     {{ old('description', $product->description ?? '') }}
                                 </textarea>
                             </div>
-                        </div>
-
-                        <div class="col-md-8 col-6">
-                            <div class="form-group">
-                                <label for="shipping_returns" class="form-label">Shipping & Returns</label>
-                                <input type="text" name="shipping_returns" id="shipping_returns" class="form-control" value="{{ old('title', $product->shipping_returns ?? '') }}" >
-                            </div>
-                        </div>
-
-                        <div class="col-md-4 col-6">
-                            <div class="flex-2">
-                                <div class="form-group">                                
-                                    <label class="form-label">Is Returnable</label><br />
-                                    <div class="flex-2"> 
-                                        <div class="mt-2">                                        
-                                            <input type="hidden" name="is_returnable" value="0">
-                                            <input class="form-check-input" type="checkbox" name="is_returnable" value="1"
-                                            {{ old('is_returnable', $product->is_returnable ?? 0) == 1 ? 'checked' : '' }} >                                        
-                                        </div>
-                                        <div>
-                                            <select name="return_days" id="return_days" class="form-select" style="width: 90px">
-                                                <option value="7 days"
-                                                    {{ old('return_days', $product->return_days ?? '7 days') == '7 days' ? 'selected' : '' }}>
-                                                    7 days
-                                                </option>
-
-                                                <option value="14 days"
-                                                    {{ old('return_days', $product->return_days ?? '') == '14 days' ? 'selected' : '' }}>
-                                                    14 days
-                                                </option>
-                                            </select>
-                                        </div>                                    
-                                    </div>
-                                </div>                    
-                                <div>
-                                    <label class="form-label">Cash on delivery?</label><br />
-                                    <div class="mt-2">                                
-                                        <input type="hidden" name="cod" value="0">                                
-                                        <input class="form-check-input" type="checkbox" name="cod" value="1"
-                                            {{ old('cod', $product->cod ?? 0) == 1 ? 'checked' : '' }} >
-                                    </div>
-                                </div> 
-                            </div> 
-                        </div>                    
+                        
+                            
+                        </div>                                           
                     </div>
                 </div>
             </div>
 
             <div class="card mb-1">
                 <div class="card-body">
+                    <h5 class="mb-3">Product Category</h5>
                     <div class="row">
-                        <div class="col-md-9 col-12">
-                            <h5 class="mb-2">Product Category</h5>
-                            <div class="row">
-                                <div class="col-md-4 col-6">
-                                    <div class="form-group">
-                                        <label for="category_id">Category</label>
-                                         <select name="category" id="category" class="form-select">
-                                            <option value="">Select</option>
-                                            @if ($categories->isNotEmpty())
-                                                @foreach ($categories as $value)
-                                                    <option 
-                                                        value="{{ $value->id }}"
-                                                        {{ old('category_id', $product->category_id ?? '') == $value->id ? 'selected' : '' }}>
-                                                        {{ $value->category_name }}
-                                                    </option>
-                                                @endforeach
-                                            @endif
-                                        </select>
-                                        <p class="error"></p>
-                                    </div>
-                                </div>                                                                
+                        <div class="col-md-3 col-6">
+                            <div class="form-group">
+                                <label for="category_id">Category</label>
+                                    <select name="category" id="category" class="form-select">
+                                    <option value="">Select</option>
+                                    @if ($categories->isNotEmpty())
+                                        @foreach ($categories as $value)
+                                            <option 
+                                                value="{{ $value->id }}"
+                                                {{ old('category_id', $product->category_id ?? '') == $value->id ? 'selected' : '' }}>
+                                                {{ $value->category_name }}
+                                            </option>
+                                        @endforeach
+                                    @endif
+                                </select>
+                                <p class="error"></p>
+                            </div>
+                        </div>                                                                
 
-                                <div class="col-md-4 col-6">
-                                    <div class="form-group">
-                                        <label for="sub_category" class="form-label">Sub Category</label>                                        
-                                        <select name="sub_category" id="sub_category" class="form-select">
-                                            <option value="">Select Subcategory</option>
-                                            @if ($subcategories->isNotEmpty())
-                                                @foreach ($subcategories as $value)
-                                                    <option value="{{ $value->id }}"
-                                                        {{ $selectedsubcategory == $value->id ? 'selected' : '' }} >
-                                                        {{ $value->sub_category_name }}
-                                                    </option>
-                                                @endforeach
-                                            @endif
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-4 col-6">
-                                    <div class="form-group">
-                                        <label for="sub_sub_category" class="form-label">Sub Sub Category</label>
-                                        <select name="sub_sub_category" id="sub_sub_category" class="form-select">
-                                            <option value="">Select</option>
-                                            @if ($subsubcategories->isNotEmpty())
-                                                @foreach ($subsubcategories as $value)
-                                                    <option {{ ($selectedsubsubcategory == $value->id) ? 'selected' : '' }} value="{{ $value->id }}">{{ $value->sub_sub_category_name }}</option>
-                                                @endforeach
-                                            @endif
-                                        </select>    
-                                    </div>
-                                </div>
+                        <div class="col-md-3 col-6">
+                            <div class="form-group">
+                                <label for="sub_category" class="form-label">Sub Category</label>   
+                                <select name="sub_category" id="sub_category" class="form-select">                                            
+                                    @if ($subcategories->isNotEmpty())
+                                        @foreach ($subcategories as $value)
+                                            <option value="{{ $value->id }}"
+                                                {{ $selectedsubcategory == $value->id ? 'selected' : '' }} >
+                                                {{ $value->sub_category_name }}
+                                            </option>
+                                        @endforeach
+                                    @endif
+                                </select>
                             </div>
                         </div>
-                        <div class="col-md-3 col-12">                            
-                            <h5 class="mb-2">Product Brand</h5>
+
+                        <div class="col-md-3 col-6">
+                            <div class="form-group">
+                                <label for="sub_sub_category" class="form-label">Sub Sub Category</label>
+                                <select name="sub_sub_category" id="sub_sub_category" class="form-select">                                            
+                                    @if ($subsubcategories->isNotEmpty())
+                                        @foreach ($subsubcategories as $value)
+                                            <option {{ ($selectedsubsubcategory == $value->id) ? 'selected' : '' }} value="{{ $value->id }}">{{ $value->sub_sub_category_name }}</option>
+                                        @endforeach
+                                    @endif
+                                </select>    
+                            </div>
+                        </div>
+
+                        <div class="col-md-3 col-6">
                             <div class="form-group">
                                 <label class="form-label">Brand</label>
                                 <select name="brand" id="brand" class="form-select">
@@ -186,12 +135,10 @@
                                     @endif
                                 </select> 
                             </div>
-                        </div>                        
+                        </div>                                              
                     </div>
-                    <hr />
-
-                    <h5 class="mb-1">Pricing</h5>
-                    <div class="row">
+                    
+                    <div class="row mt-1">
                         <div class="col-md-3 col-6">
                             <div class="form-group">
                                 <label for="price" class="form-label">Price</label>
@@ -202,7 +149,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-3 col-6">
+                        <div class="col-md-2 col-6">
                             <div class="form-group">
                                 <label for="compare_price" class="form-label">Discount</label>
                                 <select name="discount_percent" class="form-select">
@@ -216,7 +163,7 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-3 col-6">
+                        <div class="col-md-2 col-6">
                             <div class="form-group">
                                 <label class="form-label">Colors</label>
                                 <div class="dropdown customDropdown">
@@ -238,7 +185,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-3 col-6">
+                        <div class="col-md-2 col-6">
                             <div class="form-group">
                                 <label class="form-label">Sizes</label>
                                 <div class="dropdown customDropdown">
@@ -260,8 +207,55 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="col-md-3 col-6">                                                        
+                            <label class="form-label mt-4">
+                                <input type="hidden" name="cod" value="0">                                
+                                <input class="form-check-input" type="checkbox" name="cod" value="1"
+                                    {{ old('cod', $product->cod ?? 0) == 1 ? 'checked' : '' }} >
+                                    Cash on delivery?
+                            </label>                            
+                        </div>
                     </div>
                     <p class="text-muted">To show a reduced price, move the product’s original price into Compare at price. Enter a lower value into Price.</p>
+
+                    <hr />
+
+                    <div class="row mt-1">
+                        <div class="col-md-10 col-12">
+                            <div class="form-group">
+                                <label for="shipping_returns" class="form-label">Shipping & Returns</label>
+                                <input type="text" name="shipping_returns" id="shipping_returns" class="form-control" value="{{ old('title', $product->shipping_returns ?? '') }}" >
+                            </div>
+                        </div>
+
+                        <div class="col-md-2 col-6">
+                            <div class="flex-2">
+                                <div class="form-group">                                
+                                    <label class="form-label">Is Returnable?</label><br />
+                                    <div class="flex"> 
+                                        <div class="mt-2">                                        
+                                            <input type="hidden" name="is_returnable" value="0">
+                                            <input class="form-check-input" type="checkbox" name="is_returnable" value="1"
+                                            {{ old('is_returnable', $product->is_returnable ?? 0) == 1 ? 'checked' : '' }} >                                        
+                                        </div>
+                                        <div>
+                                            <select name="return_days" id="return_days" class="form-select d-none" style="width: 90px;">
+                                                <option value="7 days"
+                                                    {{ old('return_days', $product->return_days ?? '7 days') == '7 days' ? 'selected' : '' }}>
+                                                    7 days
+                                                </option>
+
+                                                <option value="14 days"
+                                                    {{ old('return_days', $product->return_days ?? '') == '14 days' ? 'selected' : '' }}>
+                                                    14 days
+                                                </option>
+                                            </select>
+                                        </div>                                    
+                                    </div>
+                                </div>
+                            </div> 
+                        </div>
+                    </div>                    
                 </div>
             </div>
 
@@ -277,8 +271,9 @@
                                 @foreach($colors as $color)
                                     <option value="{{ $color->id }}"
                                         @if(isset($product) && $product->images->isNotEmpty())
-                                            {{ $product->images->first()?->color_id == $color->id ? 'selected' : '' }}>
+                                            {{ $product->images->first()?->color_id == $color->id ? 'selected' : '' }}
                                         @endif
+                                        >
                                         {{ $color->name }}
                                     </option>
                                 @endforeach
@@ -306,8 +301,10 @@
                             </div>                               
                         @endif
                                                 
-                        <div class="row" id="product-gallery" ></div>         
+                        <div class="row" id="product-gallery"></div>         
                     </div> 
+
+                    <hr />
                     
                     <h5 class="mb-2">Uploaded Variant</h5> 
                     <div id="variant_image" class="dropzone dz-clickable">
@@ -352,22 +349,22 @@
                 </div>
             </div>
 
-                <div class="card">
-                    <div class="card-body">
-                    <h5 class="mb-2">Related products</h5>
-                    <select multiple class="related-product " name="related_products[]" id="related_products">
-                        @if (!empty($relatedProducts))
-                            @foreach ($relatedProducts as $relProduct)
-                                <option selected value="{{ $relProduct->id }}">{{ $relProduct->title }}</option>
-                            @endforeach
-                        @endif
-                    </select>
+            <div class="card">
+                <div class="card-body">
+                <h5 class="mb-2">Related products</h5>
+                <select multiple class="related-product " name="related_products[]" id="related_products">
+                    @if (!empty($relatedProducts))
+                        @foreach ($relatedProducts as $relProduct)
+                            <option selected value="{{ $relProduct->id }}">{{ $relProduct->title }}</option>
+                        @endforeach
+                    @endif
+                </select>
 
-                    <div class="col-md-3 col-12 mt-3">
-                        <button type="submit" class="btn btn-primary"> {{ $buttonText }}</button>
-                        <a href="{{ route('products.index') }}" class="btn btn-outline-dark ml-3">Cancel</a>
-                    </div>
+                <div class="col-md-3 col-12 mt-3">
+                    <button type="submit" class="btn btn-primary"> {{ $buttonText }}</button>
+                    <a href="{{ route('products.index') }}" class="btn btn-outline-dark ml-3">Cancel</a>
                 </div>
+            </div>
             </div>
         </div>
 
@@ -615,9 +612,7 @@
 
     //File image uplaod
     Dropzone.autoDiscover = false;
-
     let variantIndex = 0;
-
     const variantDropzone = $("#variant_image").dropzone({
         url: "{{ route('temp-images.create') }}",
         maxFiles: 10,
@@ -632,7 +627,8 @@
 
             var html = `<div class="col-2 uploaded-images" id="variant-image-row-${response.image_id}">                            
 
-                <input type="hidden" name="variant_image_array[${variantIndex}][image_id]" value="${response.image_id}">
+                {{-- ✅ SAME ARRAY --}}
+                <input type="hidden" name="variants[${variantIndex}][image_id]" value="${response.image_id}">
 
                 <img src="${response.ImagePath}" class="rounded" />
 
@@ -640,18 +636,17 @@
                     <span class="sprites"></span>
                 </a>    
 
-                <select name="variant_image_array[${variantIndex}][color_id]" class="form-select mt-1">
+                <select name="variants[${variantIndex}][color_id]" class="form-select mt-1">
                     <option value="">Select Color</option>
                     @foreach($colors as $color)
                         <option value="{{ $color->id }}">{{ $color->name }}</option>
                     @endforeach
                 </select>
-
             </div>`;
 
             $("#variant-gallery").append(html);
 
-            variantIndex++; // ✅ important
+            variantIndex++;
         },
 
         complete: function(file){
@@ -684,6 +679,24 @@
                         form.find(target).val(response.slug);
                     }
                 }
+            });
+        });
+
+        $(document).ready(function () {
+            function toggleReturnDays() {
+                if ($('input[name="is_returnable"]').is(':checked')) {
+                    $('#return_days').removeClass('d-none');
+                } else {                    
+                    $('#return_days').addClass('d-none');
+                }
+            }
+
+            // Run on page load
+            toggleReturnDays();
+
+            // Run on checkbox change
+            $(document).on('change', 'input[name="is_returnable"]', function () {
+                toggleReturnDays();
             });
         });
 </script>

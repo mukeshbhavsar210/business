@@ -24,7 +24,7 @@ use Carbon\Carbon;
 
 class ProductController extends Controller {
     public function index(Request $request){
-        $products = Product::latest('id')->with(['product_images','variant_images','brand','sizes','colors',]);
+        $products = Product::latest('id')->with(['product_images','variants.color','variant_images','brand','sizes','colors',]);
 
         if ($request->get('keyword') != ""){
             $products = $products->where('title', 'like', '%'.$request->keyword.'%');
@@ -33,6 +33,8 @@ class ProductController extends Controller {
         $products = $products->paginate();
 
         $data['products'] = $products;        
+
+       
 
         return view ('admin.products.list',$data);
     }
@@ -56,7 +58,7 @@ class ProductController extends Controller {
         $data['discount_percentages'] = $discount_percentages;
         $data['brands'] = $brands;
         $data['colors'] = $colors;
-        $data['sizes'] = $sizes;
+        $data['sizes'] = $sizes;        
 
         return view('admin.products.create', $data);
     }
@@ -66,7 +68,7 @@ class ProductController extends Controller {
             'title' => 'required',
             'slug' => 'required|unique:products',
             'price' => 'required|numeric',
-            'sku' => 'required|unique:products',
+            //'sku' => 'required|unique:products',
             'track_qty' => 'required|in:Yes,No',
             'category' => 'required|numeric',
             'is_featured' => 'required|in:Yes,No',
@@ -120,56 +122,77 @@ class ProductController extends Controller {
             }
 
             // 3️⃣ Save Variants
-            if ($request->variants) {
-                foreach ($request->variants as $key => $variant) {
+            if (!empty($request->variants)) {
+                foreach ($request->variants as $variant) {
 
-                    $variantImage = null;
+                    $temp_image_id = $variant['image_id'] ?? null;
+                    $color_id = $variant['color_id'] ?? null;
 
-                    if ($request->hasFile("variant_images.$key")) {
-                        $file = $request->file("variant_images.$key");
-                        $variantImage = time().'_'.$file->getClientOriginalName();
-                        $file->move(public_path('uploads/product/large'), $variantImage);
+                    if (!$temp_image_id || !$color_id) {
+                        continue;
                     }
 
-                    ProductVariant::create([
-                        'product_id' => $product->id,
-                        'color_id' => $variant['color_id'], 
-                        'image' => $variantImage,
-                    ]);
+                    $tempImageInfo = TempImage::find($temp_image_id);
+
+                    if (!$tempImageInfo) {
+                        continue;
+                    }
+
+                    $ext = pathinfo($tempImageInfo->name, PATHINFO_EXTENSION);
+
+                    // Create variant
+                    $productVariant = new ProductVariant();
+                    $productVariant->product_id = $product->id;
+                    $productVariant->color_id = $color_id;
+                    $productVariant->image = 'temp.jpg';
+                    $productVariant->save();
+
+                    $imageName = $product->slug . '_' . $product->id . '_' . $productVariant->id . '.' . $ext;
+
+                    $productVariant->image = $imageName;
+                    $productVariant->save();
+
+                    $sourcePath = public_path('/temp/' . $tempImageInfo->name);
+
+                    if (!file_exists($sourcePath)) {
+                        continue;
+                    }
+
+                    $manager = new ImageManager(new Driver());
+
+                    // Large
+                    $largePath = public_path('/uploads/product/large/' . $imageName);
+                    $image = $manager->read($sourcePath);
+                    $image->cover(540, 720);
+                    $image->save($largePath);
+
+                    // Small
+                    $smallPath = public_path('/uploads/product/small/' . $imageName);
+                    $image = $manager->read($sourcePath);
+                    $image->cover(300, 300);
+                    $image->save($smallPath);
+
+                    File::delete($sourcePath);
                 }
             }
 
-            // if ($request->variants) {
-            //     foreach ($request->variants as $key => $variant) {
-
-            //         $variantImage = null;
-
-            //         if ($request->hasFile("variant_images.$key")) {
-            //             $file = $request->file("variant_images.$key");
-            //             $variantImage = time().'_'.$file->getClientOriginalName();
-            //             $file->move(public_path('uploads/product/large'), $variantImage);
-            //         }
-
-            //         ProductVariant::create([
-            //             'product_id' => $product->id,                        
-            //             'image' => $variantImage,
-            //         ]);
-            //     }
-            // }
-
             if (!empty($request->image_array)) {
-                foreach ($request->image_array as $temp_image_id) {
+                $color_id = $request->color_id; 
+                foreach ($request->image_array as $temp_image_id) {  
                     $tempImageInfo = TempImage::find($temp_image_id);
-                    $extArray = explode('.',$tempImageInfo->name);
-                    $ext = last($extArray);
+                    if (!$tempImageInfo) {
+                        continue;
+                    }
+
+                    $ext = pathinfo($tempImageInfo->name, PATHINFO_EXTENSION);
 
                     $productImage = new ProductImage();
-                    $productImage->product_id = $product->id;                    
+                    $productImage->product_id = $product->id;
+                    $productImage->color_id = $color_id;               
                     $productImage->image = "NULL";
                     $productImage->save();
 
-                    //$imageName = $product->id. '-' .$product->title. '-' .$productImage->id.'.'.$ext;
-                    $imageName = $product->slug. '_' .$product->id. '_' .$productImage->id. '.' .$ext;
+                    $imageName = $product->id. '-' .$product->title. '-' .$productImage->id.'.'.$ext;                    
                     $productImage->image = $imageName;
                     $productImage->save();
 
@@ -179,9 +202,6 @@ class ProductController extends Controller {
                     $manager = new ImageManager(new Driver());
                     $image = $manager->read($sourcePath);
                     $image->cover(540,720);
-                    // $image->resize(300, null, function ($constraint) {
-                    //     $constraint->aspectRatio();
-                    // });
                     $image->save($destPath);
 
                     //Generate Thumnail

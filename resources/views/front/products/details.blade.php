@@ -84,7 +84,15 @@
                 
                 @if($product->variants->count() > 0)
                     <div class="part">
-                        <h3>More Colors</h3>
+                        <h3>Selected Color:
+                            @if($product->images->first())
+                                <span class="{{ request('variant') ? 'd-none' : 'selected-color' }}">{{ $product->images->first()->color->name ?? '' }}</span>
+                            @endif
+                            @foreach ($product->variants as $variant)                            
+                                <span class="{{ request('variant') == $variant->id ? 'selected-color ' : 'd-none' }}">{{ $variant->color->name ?? '' }}</span>                            
+                            @endforeach
+                        </h3>
+
                         <ul class="variant">
                             @if($product->images->first())
                                 <li>
@@ -95,7 +103,7 @@
                                             'slug' => $product->slug]) }}" 
                                             class="variant-btn {{ request('variant') ? '' : 'active' }}">
                                         <img src="{{ asset('uploads/product/small/'.$product->images->first()->image) }}" >
-                                        <span>{{ $product->images->first()->color->name ?? '' }}</span>
+                                        <span class="variant-color">{{ $product->images->first()->color->name ?? '' }}</span>
                                     </a>
                                 </li>
                             @endif
@@ -110,7 +118,6 @@
                                                     class="variant-btn {{ request('variant') == $variant->id ? 'active' : '' }}">
                                             <input type="hidden" name="existing_variant_images[]" value="{{ $variant->id }}">
                                             <img src="{{ asset('uploads/product/small/'.$variant->image) }}"  />
-
                                             <span class="variant-color">{{ $variant->color->name ?? '' }}</span>
                                         </a>   
                                     </li>
@@ -138,9 +145,9 @@
                         @endif                                    
                 
                 @if($product->sizes->isNotEmpty())
-                    <div class="part mb-3">
+                    <div class="part mt-4 mb-3">
                         <div class="flex">
-                            <h3 style="margin-top: 22px;">Size:</h3>
+                            <h3 style="margin-top: 22px;">Select Size:</h3>
                             <ul class="size-list">
                                 @foreach($product->sizes as $size)
                                     <li>

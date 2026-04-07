@@ -54,13 +54,11 @@
                     <thead class="table-light">
                         <tr>
                             <th class="border-top-0">Product</th>
-                            <th class="border-top-0" width="200">Variants</th>
-                            <th class="border-top-0" width="120">Colors</th>
-                            <th class="border-top-0" width="120">Sizes</th>
-                            <th class="border-top-0 text-end" width="80">Price</th>                            
-                            <th class="border-top-0 text-end" width="110">Returnable</th>
-                            <th class="border-top-0 text-end" width="70">Status</th>
-                            <th class="border-top-0 text-end" width="70">Action</th>
+                            <th class="border-top-0" width="150">Variants / Colors</th>
+                            <th class="border-top-0 text-end" width="120">Price</th>
+                            <th class="border-top-0 text-end" width="120">Returnable</th>
+                            <th class="border-top-0 text-end" width="80">Status</th>
+                            <th class="border-top-0 text-end" width="80">Action</th>
                         </tr>
                     </thead>                     
                     <tbody id="productAccordion">
@@ -74,9 +72,9 @@
                                         <div class="d-flex align-items-center">
                                             <a href="{{ route('products.edit', $product->id) }}" class="show-tooltip">
                                                 @if (!empty($productImage->image))
-                                                    <img src="{{ asset('uploads/product/small/'.$productImage->image) }}" height="90" class="me-3 align-self-center rounded" >
+                                                    <img src="{{ asset('uploads/product/small/'.$productImage->image) }}" height="100" class="me-3 align-self-center rounded" >
                                                 @else
-                                                    <img src="{{ asset('admin-assets/img/default-150x150.png') }}" alt="" height="90" class="me-3 align-self-center rounded" />
+                                                    <img src="{{ asset('admin-assets/img/default-150x150.png') }}" alt="" height="100" class="me-3 align-self-center rounded" />
                                                 @endif
                                                 <span class="tooltip" style="bottom: 0; left:90px;">{{ $product->category->category_name }} / {{ $product->subCategory->sub_category_title }} / {{ $product->subSubCategory->sub_sub_category_name }} / {{ $product->brand->name }}</span>
                                             </a>
@@ -84,23 +82,34 @@
                                                 <h5 class="product-title ">
                                                     <a href="{{ route('products.edit', $product->id) }}">
                                                         {{ Str::limit($product->title, 70, '...') }}
-                                                        @if($product->variants->count() > 0)                                                        
-                                                            - {{ $product->variants->count() }}
-                                                        @endif                                                         
+                                                                                                              
                                                     </a>                                                    
                                                 </h5>
                                                 <div class="small-fonts">                                                    
-                                                    <p class="mb-0">
-                                                        <span class="text-muted">{{ $product->id }} / </span>
+                                                    <p class="mb-0 text-muted">
+                                                        <span class=""><b>{{ $product->id }}</b> / </span>
+                                                        @if($product->variants->count() > 0)                                                        
+                                                            <span>Variants: 
+                                                                {{ $product->variants->count() }} /
+                                                            </span>
+                                                        @endif                                                           
+
                                                         @if($product->sku)
-                                                            <span class="mb-0 text-muted">{{ $product->sku }}</span>
+                                                            <span>{{ $product->sku }}</span> /
                                                         @endif          
-                                                    </p>                                                                                                       
+                                                    </p>
+                                                    <p class="mb-0 text-muted show-tooltip">
+                                                        @foreach($product->sizes as $size)                                                    
+                                                            <span class="tooltip">{{ $size->name }}</span>
+                                                            <span>{{ $size->code }}</span>,
+                                                        @endforeach
+                                                    </p>
                                                 
                                                     @if ($product->qty > 0)
-                                                        <span class="small-fonts text-muted">Stock: {{ $product->qty }}</span>
+                                                        <span class="text-muted">Stock:</span>
+                                                        <span class="text-success"><b>{{ $product->qty }}</b></span>
                                                     @else
-                                                        <span class="small-fonts">Out of Stock</span>
+                                                        <span class="text-danger">Out of Stock</span>
                                                     @endif                                                    
                                                 </div>
                                             </div>
@@ -111,50 +120,32 @@
                                             <div class="img-group color_code">
                                                 @if($product->variants->count())
                                                     @foreach($product->variants as $variant)                                        
-                                                        <p class="user-avatar position-relative d-inline-block ms-n3">
-                                                            <img src="{{ asset('uploads/product/small/'.$variant->image) }}" height="50" class="shadow-sm rounded-circle">                                                            
-                                                        </p>                                                    
+                                                        <a href="javascript:0" class="user-avatar ms-n2">
+                                                            <img src="{{ asset('uploads/product/small/'.$variant->image) }}" height="60" class="shadow-sm rounded-circle">                                                            
+                                                            {{-- @if($variant->color)                                                                
+                                                                <span>{{ $variant->color->name }}</span>
+                                                            @endif    --}}
+                                                        </a>
                                                     @endforeach
-                                                @else
-                                                    <div class="text-muted">No Variants</div>
+                                                @else                                                    
+                                                    @if($product->colors)
+                                                            @foreach($product->colors as $color)                                                    
+                                                            <p class="user-avatar position-relative d-inline-block ms-n1 show-tooltip" >                                                        
+                                                                <span class="color" style="background-color: {{ $color->code }};">                                                            
+                                                                    <span class="tooltip">{{ $color->name }}</span>
+                                                                </span>                                                        
+                                                            </p>                                                    
+                                                        @endforeach
+                                                    @endif
                                                 @endif
                                                 </div>                                            
                                             </div>
-                                        </td>
-                                    <td>
-                                        <div class="align-self-center">
-                                            <div class="img-group color_code">
-                                                @if($product->colors)
-                                                        @foreach($product->colors as $color)                                                    
-                                                        <p class="user-avatar position-relative d-inline-block ms-n1 show-tooltip" >                                                        
-                                                            <span class="color" style="background-color: {{ $color->code }};">                                                            
-                                                                <span class="tooltip">{{ $color->name }}</span>
-                                                            </span>                                                        
-                                                        </p>                                                    
-                                                    @endforeach
-                                                @else
-                                                    No Colors
-                                                @endif                                                
-                                            </div>                                            
-                                        </div>                                                                                                                    
-                                    </td>                                    
-                                    <td>
-                                        <div class="align-self-center">
-                                            <div class="img-group color_code">
-                                                @foreach($product->sizes as $size)                                                    
-                                                     <p class="user-avatar position-relative d-inline-block ms-n1 show-tooltip" >                                                        
-                                                        <span class="size">{{ $size->code }}</span>
-                                                        <span class="tooltip">{{ $size->name }}</span>
-                                                    </p>                                                    
-                                                @endforeach                                                                                           
-                                            </div>                                            
-                                        </div>
-                                    </td>
+                                        </td>                                                                                                          
                                     <td class="text-end"> 
-                                        <div class="price show-tooltip">                                   
+                                        <div class="price">
                                             @if($product->discount_percent > 0)
-                                                <h5 class="mb-0">₹{{ round($product->discount_price) }}</h5>
-                                                <p class="tooltip" style="bottom: 23px; left:15px;">
+                                                <h5 class="mb-1">₹{{ round($product->discount_price) }}</h5>
+                                                <p class="text-muted tiny-font">
                                                     MRP <del>₹{{ $product->price }}</del><br />
                                                     <span class="discount">{{ $product->discount_percent }}% OFF</span>                                                    
                                                 </p>

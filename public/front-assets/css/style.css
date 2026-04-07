@@ -663,12 +663,15 @@ header { position:relative; z-index:999; }
 .product-details-wrapper { display: inline-block; width: 100%; }
 .product-details-wrapper h1 { font-size: 40px; font-weight: bold; line-height: 50px;}
 .product-details-wrapper .part { margin: 10px 0; width: 100%;}
-.product-details-wrapper .part h3 { text-transform: uppercase; font-size: 14px; font-weight: bold; margin-bottom: 5px; }
+.product-details-wrapper .part h3 { font-size: 14px; font-weight: bold; margin-bottom: 15px; display: flex; column-gap: 7px; }
+.product-details-wrapper .part h3 .selected-color { display: block !important;}
 .product-details-wrapper .part .variant { display: flex; column-gap: 6px; }
-.product-details-wrapper .part .variant li a { border:1px solid transparent; display: block; height: 84px; color: var(--black); border-radius: 4px; padding: 1px;}
+.product-details-wrapper .part .variant li a { border:1px solid transparent; display: block; color: var(--black); border-radius: 4px; padding: 1px; position: relative;}
+.product-details-wrapper .part .variant li a .variant-color { background-color: var(--gray-light); color: var(--black); font-size: 11px; width: 100%; display: block; text-align: center; padding: 2px 0 3px 0; position: absolute; bottom: 0; left:0; border-radius: 0 0 3px 3px; }
 .product-details-wrapper .part .variant li a:hover { box-shadow: 0 4px 6px 0 #0000001f;  }
-.product-details-wrapper .part .variant li a.active { box-shadow: 0 4px 6px 0 #0000001f; }
-.product-details-wrapper .part .variant li a img { border-radius: 3px; width: 60px; }
+.product-details-wrapper .part .variant li a.active { box-shadow: 0 4px 6px 0 #0000001f; border-color: var(--gray); }
+.product-details-wrapper .part .variant li a.active .variant-color { font-weight: bold; }
+.product-details-wrapper .part .variant li a img { border-radius: 3px; width: 70px; }
 
 .product-details-wrapper .original-products { display: flex; column-gap: 7px; justify-content: space-around; margin-bottom: 30px;}
 .product-details-wrapper .original-products .details { text-align: center;}
