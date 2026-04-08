@@ -21,6 +21,14 @@ class Order extends Model {
         return $this->hasMany(ProductImage::class);
     }
 
+    public function variant() {
+        return $this->belongsTo(ProductVariant::class, 'product_variant_id');
+    }
+
+    public function variant_image(){
+        return $this->hasMany(ProductVariant::class);
+    }
+
     public function items(){
         return $this->hasMany(OrderItem::class);
     }

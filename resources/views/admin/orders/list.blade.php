@@ -43,43 +43,88 @@
                                         @foreach($order->items as $item)
                                             @php
                                                 $productImage = $item->product->images->first();
-                                            @endphp
+                                                $image = null;
+                                                if (!empty($item->product_variant_id)) {
+                                                    $image = $item->variant->variant_image ?? null;
+                                                }
+                                                if (!$image) {
+                                                    $image = $productImage ?? null;
+                                                }
+                                            @endphp                                            
 
                                             <a href="{{ route('front.product', [
                                                         $item->product->category->category_slug,
                                                         $item->product->subCategory->sub_category_slug,
                                                         $item->product->subSubCategory->sub_sub_category_slug,
                                                         'slug' => $item->product->slug
-                                                    ]) }}" target="_blank" class="user-avatar position-relative d-inline-block ms-n2">
-                                                @if($productImage && !empty($productImage->image))
-                                                    <img src="{{ asset('uploads/product/small/'.$productImage->image) }}" height="75" class="thumb-md shadow-sm rounded-circle" />
+                                                    ]) }}" target="_blank" class="user-avatar position-relative d-inline-block ms-n3">
+                                                    
+                                                @if($image && !empty($image->image))
+                                                    <img src="{{ asset('uploads/product/small/'.$image->image) }}" height="75" class="thumb-md shadow-sm rounded-circle" />
                                                 @else
                                                     <img src="{{ asset('admin-assets/img/default-150x150.png') }}" height="75" class="thumb-md shadow-sm rounded-circle" />
                                                 @endif
-                                            </a>       
+                                            </a>                                                   
+
                                             @if($order->items->count() > 1)
                                                 <span class="counts">{{ $order->items->count() }}</span>    
                                             @endif  
                                         @endforeach
                                     </div>                                                                            
                                 </td>       
-                                <td>
-                                    @foreach($order->items as $item)
-                                        <h5 class="mb-0">
-                                            <a href="{{ route('orders.detail',$order->id) }}" >                                            
-                                                {{ $item->product->title }}
-                                            </a>
-                                        </h5>          
-                                    @endforeach
+                                <td>       
+                                    @php
+                                        $items = $order->items;
+                                        $firstItem = $items->first();
+                                        $remainingCount = $items->count() - 1;
+                                    @endphp
+
+                                    @if($firstItem)
+                                        <h5 class="mb-0 mt-2">
+                                            <a href="{{ route('orders.detail',$order->id) }}">{{ $firstItem->product->title }}</a>
+                                        </h5>
+                                        @if($remainingCount > 0)
+                                            <span class="text-muted">
+                                                +{{ $remainingCount }} 
+                                            </span>
+                                        @endif
+                                    @endif
                                 </td>   
                                 
-                                @php $firstItem = $order->orderItems->first(); @endphp
-
                                 <td class="text-end">
-                                    <p class="mt-2">{{ $firstItem->size->name ?? '-' }}</p>
+                                    @php
+                                        $uniqueSizes = $order->items->pluck('size')->filter()->unique('id')->values();
+                                    @endphp
+
+                                    @if($uniqueSizes->count())
+                                        <p class="mt-2">{{ $uniqueSizes->first()->name }}</p>
+
+                                        @if($uniqueSizes->count() > 1)
+                                            <span class="text-muted">
+                                                +{{ $uniqueSizes->count() - 1 }}
+                                            </span>
+                                        @endif
+                                    @else
+                                        -
+                                    @endif
+                                    
                                 </td>
                                 <td class="text-end">
-                                    <p class="mt-2">{{ $firstItem->color->name ?? '-' }}</p>
+                                    @php
+                                        $uniqueColors = $order->items->pluck('color')->filter()->unique('id')->values();
+                                    @endphp
+
+                                    @if($uniqueColors->count())
+                                        <p class="mt-2">{{ $uniqueColors->first()->name }}</p>
+
+                                        @if($uniqueColors->count() > 1)
+                                            <span class="text-muted">
+                                                +{{ $uniqueColors->count() - 1 }}
+                                            </span>
+                                        @endif
+                                    @else
+                                        -
+                                    @endif                                    
                                 </td>
                                 <td class="text-end">
                                     <h5 class="mt-2">₹{{ round($order->grandtotal) }}</h5>                                    

@@ -98,12 +98,15 @@
                                                             <span>{{ $product->sku }}</span> /
                                                         @endif          
                                                     </p>
-                                                    <p class="mb-0 text-muted show-tooltip">
-                                                        @foreach($product->sizes as $size)                                                    
-                                                            <span class="tooltip">{{ $size->name }}</span>
+                                                    <span class="text-muted">Size:</span>
+                                                    @foreach($product->sizes as $size)                                                    
+                                                        <span class="mb-0 text-muted show-tooltip">
+                                                            <span class="tooltip" style="bottom:10px; left:0px;">{{ $size->name }}</span>
                                                             <span>{{ $size->code }}</span>,
-                                                        @endforeach
-                                                    </p>
+                                                        </span>
+                                                    @endforeach
+
+                                                    <br />
                                                 
                                                     @if ($product->qty > 0)
                                                         <span class="text-muted">Stock:</span>
@@ -120,12 +123,12 @@
                                             <div class="img-group color_code">
                                                 @if($product->variants->count())
                                                     @foreach($product->variants as $variant)                                        
-                                                        <a href="javascript:0" class="user-avatar ms-n2">
+                                                        <p class="user-avatar show-tooltip ms-n2">
                                                             <img src="{{ asset('uploads/product/small/'.$variant->image) }}" height="60" class="shadow-sm rounded-circle">                                                            
-                                                            {{-- @if($variant->color)                                                                
-                                                                <span>{{ $variant->color->name }}</span>
-                                                            @endif    --}}
-                                                        </a>
+                                                            @if($variant->color)                                                                
+                                                                <span class="tooltip" style="bottom:60px; left:10px;">{{ $variant->color->name }}</span>
+                                                            @endif   
+                                                        </p>
                                                     @endforeach
                                                 @else                                                    
                                                     @if($product->colors)

@@ -37,8 +37,24 @@ class OrderItem extends Model {
     //     return $this->belongsTo(ProductVariant::class, 'product_variant_id');
     // }
 
+    // public function variant() {
+    //     return $this->belongsTo(ProductVariant::class);
+    // }
+
     public function variant() {
-        return $this->belongsTo(ProductVariant::class);
+        return $this->belongsTo(ProductVariant::class, 'product_variant_id');
+    }
+
+    public function variant_image(){
+        return $this->hasMany(ProductVariant::class);
+    }
+
+    public function getDisplayImageAttribute() {
+        if ($this->product_variant_id && $this->variant && $this->variant->variant_image) {
+            return $this->variant->variant_image;
+        }
+
+        return $this->product->product_images->first() ?? null;
     }
 
     public function history() {
