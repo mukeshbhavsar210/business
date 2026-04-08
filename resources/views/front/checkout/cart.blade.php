@@ -108,12 +108,23 @@
                                             Size: <b>{{ $size->name ?? '' }}</b> <span class="caret"></span>
                                         </a>
                                     </div>
-                                    <div class="select">                                
-                                        <a href="javascript:void(0);" class="update-cart-modal" data-type="color_id" data-productid="{{ $item->id }}"
-                                            data-rowid="{{ $item->rowId }}" data-selected="{{ $item->options->color_id }}">
-                                            Color: <b>{{ $color->name ?? '' }}</b> <span class="caret"></span>
-                                        </a>
-                                    </div>
+
+                                    @if($item->options->variant_id)
+                                        <div class="select">                                
+                                            <p data-type="color_id" data-productid="{{ $item->id }}"
+                                                data-rowid="{{ $item->rowId }}" data-selected="{{ $item->options->color_id }}">
+                                                Color: <b>{{ $color->name ?? '' }}</b>
+                                            </p>
+                                        </div>
+                                    @else
+                                        <div class="select">                                
+                                            <a href="javascript:void(0);" class="update-cart-modal" data-type="color_id" data-productid="{{ $item->id }}"
+                                                data-rowid="{{ $item->rowId }}" data-selected="{{ $item->options->color_id }}">
+                                                Color: <b>{{ $color->name ?? '' }}</b> <span class="caret"></span>
+                                            </a>
+                                        </div>                                        
+                                    @endif
+                                    
                                     <div class="select">   
                                         <a href="javascript:void(0);" class="update-cart-modal" data-type="qty" data-rowid="{{ $item->rowId }}" data-selected="{{ $item->qty }}">
                                             Qty: <b>{{ $item->qty }}</b> <span class="caret"></span>

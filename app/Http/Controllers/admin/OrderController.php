@@ -12,7 +12,8 @@ use Illuminate\Support\Facades\DB;
 class OrderController extends Controller {
     public function index(Request $request) {
         $orders = Order::with(array_merge($this->orderRelations(), [
-                'latestStatus', 'items', 'items.product',
+                'latestStatus', 'items', 'items.product', 'items.size', 'items.color',
+                'variant.variant_image',
                 'items.product.category',
                 'items.product.subCategory',
                 'items.product.subSubCategory',                
@@ -21,8 +22,7 @@ class OrderController extends Controller {
             ->paginate(20);
 
         // Order counts
-        $totalOrders = Order::count();             
-            
+        $totalOrders = Order::count();                         
 
         return view('admin.orders.list', [
             'orders' => $orders,
@@ -35,14 +35,13 @@ class OrderController extends Controller {
         return [
             'user',
             'items',
-            'items.product',
+            'items.product',            
             'orderItems.product.images',
+            'variant.variant_image',
             'orderItems.size',
             'orderItems.color',
             'items.product.size',
-            'items.product.color',
-            'items.size',
-            'items.color',
+            'items.product.color',            
             'items.product.category',
             'items.product.subCategory',
             'items.product.subSubCategory'

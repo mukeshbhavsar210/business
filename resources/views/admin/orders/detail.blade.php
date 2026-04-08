@@ -92,8 +92,9 @@
                                 <thead class="table-light">  
                                     <tr>
                                         <th class="border-top-0">Products details</th>                                
-                                        <th class="border-top-0 text-end" width="150">Qty</th>                                                                                
-                                        <th class="border-top-0 text-end" width="150">Amount</th>
+                                        <th class="border-top-0 text-end" width="110">Qty</th>                                                                                
+                                        <th class="border-top-0 text-end" width="110">Price</th>
+                                        <th class="border-top-0 text-end" width="110">Amount</th>
                                     </tr>                                                    
                                 </thead>
                                 <tbody>
@@ -102,8 +103,15 @@
                                             <td>
                                                 <div class="d-flex align-items-center">        
                                                     @php
-                                                        $image = $item->product?->images->first();
-                                                    @endphp
+                                                        $productImage = $item->product->images->first();
+                                                        $image = null;
+                                                        if (!empty($item->product_variant_id)) {
+                                                            $image = $item->variant->variant_image ?? null;
+                                                        }
+                                                        if (!$image) {
+                                                            $image = $productImage ?? null;
+                                                        }
+                                                    @endphp  
 
                                                     <a href="{{ route('front.product', [
                                                             $item->product->category->category_slug,
@@ -116,7 +124,8 @@
                                                         @else
                                                             <img src="{{ asset('images/no-image.png') }}" width="60">
                                                         @endif
-                                                    </a>                                        
+                                                    </a>       
+                                                    
                                                     <div class="flex-grow-1 text-truncate">
                                                         <h5 class="product-title">
                                                             <a href="{{ route('front.product', [
@@ -127,30 +136,38 @@
                                                                     ]) }}" target="_blank">{{ Str::limit($item->product->title, 75, '...') }}</a>
                                                         </h5>
                                                         <p class="text-muted tiny-font">{{ Str::limit($item->product->short_description, 75, '...') }}</p>
-                                                        <div class="small-fonts">
-                                                             @php $firstItem = $order->orderItems->first(); @endphp
+                                                        
+                                                        @php
+                                                            $uniqueSizes = $order->items->pluck('size')->filter()->unique('id');
+                                                            $uniqueColors = $order->items->pluck('color')->filter()->unique('id');
+                                                        @endphp
 
-                                                            <p class="show-tooltip mb-0">
-                                                                Size: <b>{{ $firstItem->size->name ?? '-' }}</b>
-                                                                <span class="tooltip" style="bottom: 18px; left:55px;">
-                                                                    Size ID: {{ $firstItem->size->id }}
+                                                        <p class="mb-0 text-muted tiny-font show-tooltip">
+                                                            @if($item->size)
+                                                                Size: {{ $item->size->name ?? '-' }} 
+                                                                <span class="tooltip" style="bottom: 0; left:55px;">
+                                                                    ID: {{ $item->size->id }}
                                                                 </span>
-                                                            </p>
-                                                            <p class="show-tooltip mb-0">
-                                                                Color: <b>{{ $firstItem->color->name ?? '-' }}</b>
-                                                                <span class="tooltip" style="bottom: 18px; left:55px;">
-                                                                    Color ID: {{ $firstItem->color->id }}
+                                                            @endif
+                                                        </p>
+                                                        <p class="mb-0 text-muted tiny-font show-tooltip">
+                                                            @if($item->color)
+                                                                Color: {{ $item->color->name ?? '-' }}
+                                                                <span class="tooltip" style="bottom: 0; left:55px;">
+                                                                    ID: {{ $item->color->id }}
                                                                 </span>
-                                                            </p>
-                                                        </div>
+                                                            @endif
+                                                        </p>
                                                     </div>
                                                 </div>
                                             </td>                                                                                                            
                                             <td class="text-end"><p>{{ $item->qty }}</p></td>
                                             <td class="text-end">
+                                                <p class="mt-1">₹{{ round($item->price) }}</p>
+                                            </td>
+                                            <td class="text-end">
                                                 @if($item->discounted_price)
-                                                    <p class="mt-1">₹{{ round($item->qty*$item->discounted_price) }}</p>
-                                                    <p class="tiny-font text-muted">₹{{ $item->qty*$item->price }} (O. Price)</p>
+                                                    <p class="mt-1"><b>₹{{ round($item->qty*$item->discounted_price) }}</b></p>
                                                 @else
                                                     <p class="mt-1">₹{{ round($item->qty*$item->price) }}</p>
                                                 @endif                                                
@@ -159,20 +176,24 @@
                                     @endforeach
                                         <tr>                                            
                                             <td></td>
-                                            <td class="text-end">Subtotal:</td>
+                                            <td></td>
+                                            <td class="text-end">Total:</td>
                                             <td class="text-end"><b>₹{{ $item->subtotal }}</b></td>
                                         </tr>                                        
                                         <tr>                                            
+                                            <td></td>
                                             <td></td>
                                             <td class="text-end"><p style="color: green;">Discount <b>{{ (!empty($item->coupon_code)) ? '('.$item->coupon_code.')' : '' }}</b>:</p></td>
                                             <td class="text-end"><p style="color: green;">₹{{ round($item->discount) }}</p></td>
                                         </tr>
                                         <tr>                                            
                                             <td></td>
-                                            <td class="text-end">Platform Fees:</td>
+                                            <td></td>
+                                            <td class="text-end">Platform:</td>
                                             <td class="text-end">₹{{ round($item->shipping) }}</td>
                                         </tr>
                                         <tr>                                            
+                                            <td></td>
                                             <td></td>
                                             <td class="text-end"><b>Grand Total:</b></td>
                                             <td class="text-end"><b>₹{{ round($item->grandtotal) }}</b></td>

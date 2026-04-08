@@ -145,7 +145,7 @@
                         @endif                                    
                 
                 @if($product->sizes->isNotEmpty())
-                    <div class="part mt-4 mb-3">
+                    <div class="part mt-2 mb-3">
                         <div class="flex">
                             <h3 style="margin-top: 22px;">Select Size:</h3>
                             <ul class="size-list">
@@ -205,18 +205,13 @@
                             </button>
                         </div>
 
-                        <div id="collapseOne" 
-                            class="accordion-collapse collapse" 
-                            aria-labelledby="headingOne" 
-                            data-bs-parent="#accordionExample">
-
+                        <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                             <div class="accordion-body">                                
                                 @if ($product->discount_price > 0)
                                     <span class="mrp">
                                         Best Price: ₹{{ $product->discount_price }}
                                     </span>                        
-                                @endif  
-                                                                                            
+                                @endif                                                                                              
                                 {{ $coupon }}
                                 {!! $product->description !!}
                             </div>
@@ -225,13 +220,7 @@
                     
                     <div class="accordion-item">
                         <div class="accordion-header" id="headingTwo">
-                            <button class="accordion-button collapsed" 
-                                    type="button" 
-                                    data-bs-toggle="collapse" 
-                                    data-bs-target="#collapseTwo" 
-                                    aria-expanded="false" 
-                                    aria-controls="collapseTwo">
-
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
                                 <div class="icon-wrapper">
                                     <div class="icon-left">
                                         <span class="sprites exchange-icon"></span>
@@ -244,11 +233,7 @@
                             </button>
                         </div>
 
-                        <div id="collapseTwo" 
-                            class="accordion-collapse collapse" 
-                            aria-labelledby="headingTwo" 
-                            data-bs-parent="#accordionExample">
-
+                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
                             <div class="accordion-body">
                                 @if($product->is_returnable)
                                     <p>Easy {{ $product->return_days }} returns and exchanges</p>
@@ -280,102 +265,102 @@
                         <p>Easy Returns & <br /> Instant Refunds</p>
                     </div>
                 </div>
-                
-                <div class="part">
-                    @if($totalReviews > 0)
+
+                @if($totalReviews > 0)
+                    <hr />
+
+                    <div class="part">                    
                         <p class="flex">
                             <span class="sprites thumb-icon"></span>
                             <span class="text-muted"><b>{{ $percentage }}%</b> of verified buyers recommend this product</span>                            
                         </p>
-                    @else
-                        <p>No reviews yet</p>
-                    @endif
-                    
-                    <div class="rating-breakdown">
-                        <div class="total-numbers">
-                            <div class="title">
-                                <h4>{{ number_format($averageRating,1) }} </h4>
-                                <span class="sprites green-star-icon"></span>
-                            </div>                            
-                            <p>{{ $totalRatings >= 1000 ? round($totalRatings / 1000, 1).'k' : $totalRatings }} ratings</p>
-                        </div>
-                        <div class="breakdown">
-                        @foreach($ratings as $star => $count)
-                            @php
-                                $percentage = $totalRatings > 0 ? ($count / $totalRatings) * 100 : 0;
-                                if($star >= 4){
-                                    $color = 'green';
-                                } elseif($star == 3){
-                                    $color = 'yellow';
-                                } else {
-                                    $color = 'red';
-                                }
-                            @endphp
+                                        
+                        <div class="rating-breakdown">
+                            <div class="total-numbers">
+                                <div class="title">
+                                    <h4>{{ number_format($averageRating,1) }} </h4>
+                                    <span class="sprites green-star-icon"></span>
+                                </div>                            
+                                <p>{{ $totalRatings >= 1000 ? round($totalRatings / 1000, 1).'k' : $totalRatings }} ratings</p>
+                            </div>
+                            <div class="breakdown">
+                            @foreach($ratings as $star => $count)
+                                @php
+                                    $percentage = $totalRatings > 0 ? ($count / $totalRatings) * 100 : 0;
+                                    if($star >= 4){
+                                        $color = 'green';
+                                    } elseif($star == 3){
+                                        $color = 'yellow';
+                                    } else {
+                                        $color = 'red';
+                                    }
+                                @endphp
 
-                            <div class="rating-row">
-                                <div class="rating-label">{{ $star }} ★</div>
-                                <div class="rating-bar">
-                                    <div class="rating-fill {{ $color }}" style="width: {{ $percentage }}%"></div>
+                                <div class="rating-row">
+                                    <div class="rating-label">{{ $star }} ★</div>
+                                    <div class="rating-bar">
+                                        <div class="rating-fill {{ $color }}" style="width: {{ $percentage }}%"></div>
+                                    </div>
+                                    <div class="rating-count">({{ $count }})</div>
                                 </div>
-                                <div class="rating-count">({{ $count }})</div>
+                                @endforeach
                             </div>
-                            @endforeach
                         </div>
-                    </div>
-                    
-                    <div class="accordion details-accordion" id="accordionRatings">
-                        <div class="accordion-item">
-                            <div class="accordion-header" id="ratingsDetails">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
-                                        data-bs-target="#collapseRatings" aria-expanded="false" aria-controls="collapseRatings">
-                                    
-                                    <div class="icon-wrapper">
-                                        <div class="icon-left">
-                                            <span class="sprites reviews-icon"></span>
-                                        </div>
-                                        <div class="title-right">
-                                            <h5>Customer Reviews ({{ $totalReviews }})</h5>
-                                            <p>Product Code: {{ $product->id }}</p>                                              
-                                        </div>
-                                    </div>                                
-                                </button>
-                            </div>
-
-                            <div id="collapseRatings" class="accordion-collapse collapse" aria-labelledby="ratingsDetails" data-bs-parent="#accordionRatings">
-                                <div class="accordion-body">                                
-                                    <div class="rating-customers">                                        
-                                        @foreach($reviews as $review)
-                                            <div class="repeate">
-                                                <div class="left">
-                                                    @if($review->rating == 1)
-                                                        <span class="star-show one_two">{{ $review->rating }} ★</span>    
-                                                    @elseif($review->rating == 2)
-                                                        <span class="star-show one_two">{{ $review->rating }} ★</span>
-                                                    @elseif($review->rating == 3)
-                                                        <span class="star-show three">{{ $review->rating }} ★</span>
-                                                    @elseif($review->rating == 4 || $review->rating == 5)
-                                                        <span class="star-show four_five">{{ $review->rating }} ★</span>
-                                                    @endif                                                    
-                                                </div>
-                                                <div class="right">                            
-                                                    <p>{{ $review->review }}</p>
-                                                    <p class="customer">
-                                                        {{ $review->user->name ?? 'Guest' }}
-                                                        | {{ \Carbon\Carbon::parse($review->created_at)->format('d M Y')}}
-                                                    </p>
-                                                </div>
+                        
+                        <div class="accordion details-accordion" id="accordionRatings">
+                            <div class="accordion-item">
+                                <div class="accordion-header" id="ratingsDetails">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                            data-bs-target="#collapseRatings" aria-expanded="false" aria-controls="collapseRatings">
+                                        
+                                        <div class="icon-wrapper">
+                                            <div class="icon-left">
+                                                <span class="sprites reviews-icon"></span>
                                             </div>
-                                        @endforeach
-                                
-                                        @if($totalReviews > 2)
-                                            <a href="{{ route('product.reviews', $product->id) }}" class="link">View all {{ $count }} reviews </a>
-                                        @endif
+                                            <div class="title-right">
+                                                <h5>Customer Reviews ({{ $totalReviews }})</h5>
+                                                <p>Product Code: {{ $product->id }}</p>                                              
+                                            </div>
+                                        </div>                                
+                                    </button>
+                                </div>
+
+                                <div id="collapseRatings" class="accordion-collapse collapse" aria-labelledby="ratingsDetails" data-bs-parent="#accordionRatings">
+                                    <div class="accordion-body">                                
+                                        <div class="rating-customers">                                        
+                                            @foreach($reviews as $review)
+                                                <div class="repeate">
+                                                    <div class="left">
+                                                        @if($review->rating == 1)
+                                                            <span class="star-show one_two">{{ $review->rating }} ★</span>    
+                                                        @elseif($review->rating == 2)
+                                                            <span class="star-show one_two">{{ $review->rating }} ★</span>
+                                                        @elseif($review->rating == 3)
+                                                            <span class="star-show three">{{ $review->rating }} ★</span>
+                                                        @elseif($review->rating == 4 || $review->rating == 5)
+                                                            <span class="star-show four_five">{{ $review->rating }} ★</span>
+                                                        @endif                                                    
+                                                    </div>
+                                                    <div class="right">                            
+                                                        <p>{{ $review->review }}</p>
+                                                        <p class="customer">
+                                                            {{ $review->user->name ?? 'Guest' }}
+                                                            | {{ \Carbon\Carbon::parse($review->created_at)->format('d M Y')}}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                    
+                                            @if($totalReviews > 2)
+                                                <a href="{{ route('product.reviews', $product->id) }}" class="link">View all {{ $count }} reviews </a>
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>                    
-                </div>                
+                        </div> 
+                    </div>
+                @endif
             </div>
         </div> 
     </div>
