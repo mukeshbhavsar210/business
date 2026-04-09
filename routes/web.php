@@ -43,12 +43,6 @@ Route::controller(ShopController::class)->group(function() {
 
 Route::controller(CartController::class)->group(function() {
     //Bag
-
-    Route::post('/checkout/create-order', 'createOrder');
-    Route::post('/checkout/place-order', 'placeOrder')->name('checkout.place.order');
-    Route::post('/verify-payment', 'verifyPayment')->name('checkout.verify.payment');
-    Route::get('/order-success', 'success')->name('order.success');
-
     Route::get('/checkout/cart','cart')->name('front.cart');    
     Route::post('/checkout/update-cart','updateCart')->name('front.updateCart');
     Route::post('/checkout/add-to-cart','addToCart')->name('front.addToCart');
@@ -69,17 +63,20 @@ Route::controller(CartController::class)->group(function() {
     Route::get('/coupon/remove', 'removeCoupon')->name('coupon.remove');
     Route::post('/checkout/payment', 'payment')->name('checkout.payment');
     Route::get('/checkout/address','checkout')->name('front.checkout');
-    Route::post('/checkout/process','processCheckout')->name('front.processCheckout');
-    Route::get('/thanks/{orderId}','thankyou')->name('front.checkout.thankyou');
-    Route::post('/get-order-summary','getOrderSummary')->name('front.getOrderSummary');
-
     Route::post('/removecoupon','removeCoupon')->name('front.removeCoupon');
 
     //Payment routes
+    Route::post('/checkout/process','processCheckout')->name('front.processCheckout');
+    Route::post('/checkout/verify-payment', 'verifyPayment')->name('checkout.verify.payment'); 
+    Route::get('/thanks/{orderId}','thankyou')->name('front.checkout.thankyou');
+    Route::post('/get-order-summary','getOrderSummary')->name('front.getOrderSummary');
+
+    Route::post('/checkout/place-order', 'placeOrder')->name('checkout.place.order');        
+    Route::get('/order-success', 'success')->name('order.success');
     Route::post('checkout/razorpay', 'razorpayPayment')->name('checkout.razorpay');
     Route::get('checkout/payment-success','razorpaySuccess')->name('checkout.success');
     Route::get('checkout/payment-failed', 'razorpayFailed')->name('checkout.failed');  
-    Route::post('checkout/verify-payment', 'verifyPayment')->name('verify.payment');  
+     
     Route::get('checkout/payment-failed', 'failed')->name('order.failed');
     Route::post('checkout/get-order-summary','getOrderSummary')->name('front.getOrderSummary');
 });

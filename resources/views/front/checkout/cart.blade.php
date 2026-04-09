@@ -204,9 +204,7 @@
 
                 <div class="col-md-4 col-12">
                     <div class="cart-summery">
-                        {{-- <form name="orderForm" id="orderForm" method="POST"> --}}
-                        <form id="checkout-form" action="{{ route('checkout.place.order') }}" method="POST">
-    
+                        <form name="orderForm" id="orderForm" method="POST">                        
                             @csrf
 
                             @foreach($address as $value) 
@@ -377,7 +375,7 @@
 @endsection
 
 @section('customJs')
-
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script>
         let currentRowId = '';
         let currentType = '';       
@@ -488,105 +486,16 @@
                 $("#cod-form").addClass('d-none');
                 $("#razorpay-form").removeClass('d-none');
             }
-        });    
-
-        // $(document).on('click', '#razorpay-form', function(e) {
-        //     e.preventDefault();
-
-        //     var amount = $('.grand_total_button').text(); // make sure it's numeric
-        //     amount = parseFloat(amount.replace(/[^0-9.]/g, '')) * 100; // convert to paise
-
-        //     var options = {
-        //         "key": "{{ config('services.razorpay.key') }}", // your key
-        //         "amount": amount,
-        //         "currency": "INR",
-        //         "name": "Your Store Name",
-        //         "description": "Order Payment",
-        //         "handler": function (response) {
-        //             // success callback
-        //             console.log(response);
-
-        //             var form = $('form');
-
-        //             form.attr('action', "{{ route('checkout.place.order') }}");                    
-
-        //             // submit form with payment_id
-        //             $('<input>').attr({
-        //                 type: 'hidden',
-        //                 name: 'razorpay_payment_id',
-        //                 value: response.razorpay_payment_id
-        //             }).appendTo('form');
-
-        //             $('form').submit();
-        //         },
-        //         "prefill": {
-        //             "name": "{{ Auth::user()->name ?? '' }}",
-        //             "email": "{{ Auth::user()->email ?? '' }}"
-        //         },
-        //         "theme": {
-        //             "color": "#3399cc"
-        //         }
-        //     };
-
-        //     var rzp = new Razorpay(options);
-        //     rzp.open();
-        // });
-        
-
-        $(document).on('click', '#razorpay-form', function (e) {
-            e.preventDefault();
+        });              
+      
+        $("#orderForm").submit(function(event){
+            event.preventDefault();                     
 
             let amountText = $('.grand_total_button').text();
             let amount = amountText.replace(/[^0-9.]/g, '');
-            amount = parseFloat(amount) * 100;            
+            amount = parseFloat(amount) * 100;
 
-            var options = {
-                "key": "{{ config('services.razorpay.key') }}",
-                "amount": amount,
-                "currency": "INR",
-                "name": "Your Store",
-                "description": "Order Payment",
-
-                "handler": function (response) {
-                    $.ajax({
-                        url: "{{ route('checkout.verify.payment') }}",
-                        type: "POST",
-                        data: {
-                            _token: "{{ csrf_token() }}",
-                            razorpay_payment_id: response.razorpay_payment_id,
-                            razorpay_order_id: response.razorpay_order_id,
-                            razorpay_signature: response.razorpay_signature
-                        },
-                        success: function (res) {
-                            if (res.status === 'success') {
-                                window.location.href = "{{ route('order.success') }}";
-                            } else {
-                                alert('Payment verification failed');
-                            }
-                        }
-                    });
-                },
-
-                "prefill": {
-                    "name": "{{ Auth::user()->name ?? '' }}",
-                    "email": "{{ Auth::user()->email ?? '' }}"
-                },
-
-                "theme": {
-                    "color": "#3399cc"
-                }
-            };
-
-            var rzp = new Razorpay(options);
-            rzp.open();
-        });
-    
-
-
-        $("#orderForm").submit(function(event){
-            event.preventDefault();
             let paymentMethod = $('input[name="payment_method"]:checked').val();
-
             $('button[type="submit"]').prop('disabled', true);
 
             $.ajax({
@@ -596,30 +505,51 @@
                 dataType: 'json',
 
                 success:function(response){
-                    $('button[type="submit"]').prop('disabled', false);
+                    $('button[type="submit"]').prop('disabled', false);                    
+
                     if(response.status == false){
                         console.log(response.errors);
                         return;
                     }
 
-                    // COD PAYMENT
+                    // ✅ COD
                     if(paymentMethod === 'cod'){
                         window.location.href = "{{ url('thanks') }}/"+response.orderId;
                     }
 
-                    // RAZORPAY PAYMENT
+                    // ✅ Razorpay
                     if(paymentMethod === 'razorpay'){
+                        console.log(response);
                         var options = {
                             "key": response.key,
-                            "amount": response.amount,                            
+                            "amount": response.amount,
                             "currency": "INR",
                             "name": "Your Store",
                             "description": "Order Payment",
-                            "order_id": response.razorpay_order_id,
-
-                            "handler": function (paymentResponse){
-                                window.location.href = "{{ url('thanks') }}/"+response.orderId;
+                            "order_id": response.razorpay_order_id, 
+                                                        
+                            "handler": function (paymentResponse){                                
+                                $.ajax({
+                                    url: "{{ route('checkout.verify.payment') }}",
+                                    type: "POST",
+                                    data: {
+                                        _token: "{{ csrf_token() }}",
+                                        razorpay_payment_id: paymentResponse.razorpay_payment_id,
+                                        razorpay_order_id: paymentResponse.razorpay_order_id,
+                                        razorpay_signature: paymentResponse.razorpay_signature,
+                                        order_id: response.orderId
+                                    },
+                                    
+                                    success: function(res){
+                                        if(res.status === 'success'){
+                                            window.location.href = "{{ url('thanks') }}/"+response.orderId;
+                                        } else {
+                                            alert(res.message || "Payment verification failed");
+                                        }
+                                    }
+                                });
                             },
+
                             "theme": {
                                 "color": "#0d6efd"
                             }
@@ -636,6 +566,7 @@
                 }
             });
         });
+
                         
         function deleteItem(rowId){            
             $.ajax({
@@ -691,110 +622,7 @@
         $(document).on('change', 'input[name="coupon_id"]', function() {    
             $('.coupon-box').removeClass('active');
             $(this).closest('.coupon-box').addClass('active');
-        });
-
-        // $(document).ready(function () {          
-        //     function updateSelectedCount() {
-        //         let count = $('.item-checkbox:checked').length;
-        //         $('#selectedCount').text(count);
-
-        //         let total = $('.item-checkbox').length;
-        //         let checked = $('.item-checkbox:checked').length;
-
-        //         $('#selectedCount').text(checked);
-
-        //         if(checked === 0){
-        //             $('.price-details').hide();
-        //         } else {
-        //             $('.price-details').show();
-        //         }
-        //     }                   
-
-        //     $('.item-checkbox').on('change', function() {
-        //         $('#selectAll').prop(
-        //             'checked',
-        //             $('.item-checkbox:checked').length === $('.item-checkbox').length
-        //         );
-        //         updateSelectedCount();
-        //     });
-
-        //     updateSelectedCount();
-
-        //     function updateSelectedCount() {
-        //         let count = $('.item-checkbox:checked').length;
-        //         $('#selectedCount').text(count);
-        //     }           
-
-        //     $('.bulk-action').on('click', function(e) {
-        //         e.preventDefault();
-
-        //         let selected = $('.item-checkbox:checked');
-
-        //         if (selected.length === 0) {
-        //             alert('Select any item to remove from bag.');
-        //             return;
-        //         }
-
-        //         $.ajax({
-        //             url: "{{ route('cart.bulk.action') }}",
-        //             type: "POST",
-        //             data: $('#cartForm').serialize(),
-        //             headers: {
-        //                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        //             },
-        //             success: function(response) {
-        //                 selected.each(function(){
-        //                     let rowId = $(this).data('rowid');
-        //                     $("#cart-item-" + rowId).fadeOut(300, function(){
-        //                         $(this).remove();
-        //                     });
-        //                     location.reload();
-        //                 });
-
-        //                 $('#cartCount').text(response.cartCount);
-        //                 showAlert(response.message, 'success');
-        //             }
-        //         });
-        //     });
-
-        //     function updateMainCheckbox() {
-        //         let total = $('.item-checkbox').length;
-        //         let checked = $('.item-checkbox:checked').length;
-
-        //         if (checked === 0) {
-        //             $('#selectAll')
-        //                 .prop('checked', false)
-        //                 .prop('indeterminate', false);
-
-        //         } else if (checked === total) {
-        //             $('#selectAll')
-        //                 .prop('checked', true)
-        //                 .prop('indeterminate', false);
-
-        //         } else {
-        //             $('#selectAll')
-        //                 .prop('checked', false)
-        //                 .prop('indeterminate', true);
-        //         }
-        //     }
-           
-        //     $('.item-checkbox').on('change', function() {
-        //         updateMainCheckbox();
-        //     });
-
-        //     updateMainCheckbox();            
-
-        //     $('input[name="coupon_id"]').on('change', function () {
-        //         let code = $(this).data('code');
-        //         $('#discount_code').val(code);
-        //     });
-
-        //     @if(session('success'))
-        //         var toast = new bootstrap.Toast(document.getElementById('liveToast'));
-        //         toast.show();
-        //     @endif           
-        // });
-
+        });       
 
         $(document).ready(function () {          
             function updateSelectedCount() {
@@ -897,7 +725,6 @@
                 toast.show();
             @endif           
         });
-
 
         $(document).ready(function(){
             function updateCartSummary(){

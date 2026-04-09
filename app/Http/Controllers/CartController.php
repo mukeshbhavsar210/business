@@ -14,7 +14,6 @@ use Gloudemans\Shoppingcart\Facades\Cart;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
-use App\Models\Payment;
 use App\Models\ProductVariant;
 use App\Models\State;
 use App\Models\Wishlist;
@@ -119,7 +118,6 @@ class CartController extends Controller {
             "cartCount" => Cart::count(),
         ]);
     }
-
 
      public function cart() {
         $cartContent = Cart::content();
@@ -304,6 +302,14 @@ class CartController extends Controller {
     }
 
     public function processCheckout(Request $request) {
+        // ✅ Ensure user logged in
+        if (!auth()->check()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'User not logged in'
+            ]);
+        }
+
         // Step 1: Validate selected shipping address
         $validator = Validator::make($request->all(), [
             'customer_address_id' => 'required|exists:customer_addresses,id',
@@ -332,8 +338,7 @@ class CartController extends Controller {
             ]);
         }
 
-        // Step 3: Calculate Subtotal
-        //$subTotal = Cart::subtotal(2, '.', '');
+        // Step 3: Calculate Subtotal        
         $subTotal = 0;
         foreach (Cart::content() as $item) {
             $price = $item->options->discount_price ?? $item->price;
@@ -370,19 +375,23 @@ class CartController extends Controller {
             $restState = ShippingCharge::where('state_id', 'rest_of_state')->first();
             $shipping = $qty * ($restState->amount ?? 0);
         }
-
+            
+        // ✅ Prepare amounts
+        $total = ($subTotal - $discount) + $shipping;
         $grandTotal = ($subTotal - $discount) + $shipping;
 
-        // Step 6: Create Order
-        $order = new Order;
-        $order->user_id = $user->id;
-        $order->product_id = $item->id;
-        $order->product_variant_id = $item->options->variant_id ?? null;
-        $order->customer_address_id = $request->customer_address_id;
-        $order->payment_method = $request->payment_method;
-        $order->subtotal = $subTotal;
-        $order->grandtotal = $grandTotal;
-        $order->save();
+        // ✅ Create order first
+        $order = Order::create([
+            'user_id' => auth()->id(),
+            'product_id' => $item->id,
+            'product_variant_id' => $item->options->variant_id ?? null,
+            'customer_address_id' => $request->customer_address_id,
+            'payment_method' => $request->payment_method,
+            'payment_status' => 'pending',
+            'subtotal' => $subTotal,
+            'grandtotal' => $total,
+            'status' => 'Placed'
+        ]);
 
         //Step 7: Get entried Order Status in OrderStatusHistory
         OrderStatusHistory::create([
@@ -410,9 +419,7 @@ class CartController extends Controller {
             $orderItem->coupon_code_id = $discountCodeId;    
             $orderItem->shipping = $shipping;        
             $orderItem->subTotal = $subTotal;
-            $orderItem->grandtotal = $grandTotal;            
-            $orderItem->payment_status = 'not paid';
-            $orderItem->payment_method = $request->payment_method;
+            $orderItem->grandtotal = $grandTotal;                        
             $orderItem->return_days = $item->options->return_days ?? null;
             $orderItem->delivery_min_days = $item->options->delivery_min_days ?? null;
             $orderItem->delivery_max_days = $item->options->delivery_max_days ?? null;
@@ -445,11 +452,42 @@ class CartController extends Controller {
         session()->forget('coupon_discount');
 
         // Step 11: Handle COD
+        // ✅ COD FLOW
         if($request->payment_method == 'cod'){
             return response()->json([
                 'status' => true,
                 'orderId' => $order->id,
                 'payment_method' => 'cod'
+            ]);
+        }
+
+         // ✅ RAZORPAY FLOW
+        if ($request->payment_method == 'razorpay') {
+            $api = new Api(
+                config('services.razorpay.key'),
+                config('services.razorpay.secret')
+            );
+
+            $amount = (int) ($total * 100); // paise
+            if ($amount < 100) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Minimum amount should be ₹1'
+                ]);
+            }
+
+            $razorpayOrder = $api->order->create([
+                'receipt' => (string) $order->id, // ✅ string required
+                'amount' => $amount,
+                'currency' => 'INR'
+            ]);
+
+            return response()->json([
+                'status' => true,
+                'orderId' => $order->id,
+                'razorpay_order_id' => $razorpayOrder['id'],
+                'amount' => $amount,
+                'key' => config('services.razorpay.key')
             ]);
         }
 
@@ -467,42 +505,53 @@ class CartController extends Controller {
         $razorpayOrder = $api->order->create($orderData);
 
         return response()->json([
-            'status' => true,
-            'orderId' => $order->id,
-            'razorpay_order_id' => $razorpayOrder['id'],
-            'amount' => $orderData['amount'],
-            'key' => config('razorpay.key')
-        ]);
-       
-        return response()->json([
             'message' => 'Order placed successfully.',
             'orderId' => $order->id,
             'payment_method' => $request->payment_method,
             'status'  => true,
         ]);
-    }
 
-     // Generate Razorpay Order
-    public function processCheckout_latest(Request $request) {
-        $api = new Api(config('services.razorpay.key'), config('services.razorpay.secret'));
-        $amount = floatval($request->amount) * 100; // Convert to paise   
-
-        $order = $api->order->create([
-            'receipt' => 'order_'.rand(1000, 9999),
-            'amount'  => $amount, // Amount in paise (₹100)
-            'currency' => 'INR',
-            'payment_capture' => 1 // Auto capture payment
-        ]);
-        //Cart::destroy();
-
+        // fallback
         return response()->json([
-            'order_id' => $order['id'],
-            'key' => config('services.razorpay.key'),
-            'amount' => $order['amount'],
+            'status' => false,
+            'message' => 'Invalid payment method'
         ]);
     }
 
-       
+
+
+    public function verifyPayment(Request $request) {
+        $api = new Api(
+            config('services.razorpay.key'),
+            config('services.razorpay.secret')
+        );
+
+        try {
+            $attributes = [
+                'razorpay_order_id' => $request->razorpay_order_id,
+                'razorpay_payment_id' => $request->razorpay_payment_id,
+                'razorpay_signature' => $request->razorpay_signature
+            ];
+
+            $api->utility->verifyPaymentSignature($attributes);
+
+            $order = Order::find($request->order_id);
+            $order->payment_method = 'Razorpay';
+            $order->payment_status = 'paid';
+            $order->transaction_id = $request->razorpay_payment_id;
+            $order->razorpay_signature = $request->razorpay_signature;
+            $order->save();
+          
+            // ✅ SUCCESS
+            return response()->json(['status' => 'success']);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
+        }
+    }    
 
     public function thankyou($id){
         $order = Order::where('id', $id)
@@ -624,7 +673,6 @@ class CartController extends Controller {
             'message' => 'Invalid action'
         ]);
     }
-
 
     public function payment(Request $request) {
         $selectedIds = $request->cart_ids ?? [];
@@ -1084,31 +1132,31 @@ class CartController extends Controller {
     // }
 
     //Razorpay
-    public function razorpayPayment(Request $request){
-        if(isset($request->razorpay_payment_id) && $request->razorpay_payment_id != ''){
+    // public function razorpayPayment(Request $request){
+    //     if(isset($request->razorpay_payment_id) && $request->razorpay_payment_id != ''){
 
-            $api = new Api(env('RAZORPAY_KEY_ID'), env('RAZORPAY_KEY_SECRET'));
-            $payment = $api->payment->fetch($request->razorpay_payment_id);
-            $response = $payment->capture(array('amount'=>$payment->amount));
+    //         $api = new Api(env('RAZORPAY_KEY_ID'), env('RAZORPAY_KEY_SECRET'));
+    //         $payment = $api->payment->fetch($request->razorpay_payment_id);
+    //         $response = $payment->capture(array('amount'=>$payment->amount));
 
-            $payment = new Payment();
-            $payment->payment_id = $response['id'];
-            $payment->product_name = $response['notes']['product_name'];
-            $payment->quantity = $response['notes']['quantity'];
-            $payment->amount = $response['amount']/1000;
-            $payment->currency = $response['currency'];
-            $payment->customer_name = $response['notes']['customer_name'];
-            $payment->customer_email = $response['notes']['customer_email'];
-            $payment->payment_status = $response['status'];
-            $payment->payment_method = 'Razorpay';
-            $payment->save();
+    //         $payment = new Payment();
+    //         $payment->payment_id = $response['id'];
+    //         $payment->product_name = $response['notes']['product_name'];
+    //         $payment->quantity = $response['notes']['quantity'];
+    //         $payment->amount = $response['amount']/1000;
+    //         $payment->currency = $response['currency'];
+    //         $payment->customer_name = $response['notes']['customer_name'];
+    //         $payment->customer_email = $response['notes']['customer_email'];
+    //         $payment->payment_status = $response['status'];
+    //         $payment->payment_method = 'Razorpay';
+    //         $payment->save();
 
-            return redirect()->route('checkout.success');
+    //         return redirect()->route('checkout.success');
 
-        } else {
-            return redirect()->route('checkout.failed');
-        }
-    }
+    //     } else {
+    //         return redirect()->route('checkout.failed');
+    //     }
+    // }
 
     public function razorpaySuccess(){
         return view("front.checkout.success");
@@ -1122,7 +1170,7 @@ class CartController extends Controller {
         return view("front.checkout.failed");
     }   
 
-     public function getOrderSummary2(Request $request){
+    public function getOrderSummary2(Request $request){
         $subTotal = Cart::subtotal(2,'.','');
         $discount = 0;
         $discountString = '';
@@ -1218,7 +1266,6 @@ class CartController extends Controller {
         ]);
     }
 
-
     public function removeCoupon(Request $request) {
         // Remove coupon data from session
         session()->forget('coupon');
@@ -1231,64 +1278,6 @@ class CartController extends Controller {
     }
 
 
-    public function placeOrder(Request $request) {
-        if ($request->payment_method == 'cod') {
-
-            // ✅ Save order
-            $order = Order::create([
-                'user_id' => auth()->id(),
-                'payment_method' => 'cod',
-                'payment_status' => 'pending',
-                'total' => Cart::total()
-            ]);
-
-            // save items...
-
-            return redirect()->route('order.success');
-        }
-
-        return back()->with('error', 'Invalid payment method');
-    }
-
-
-   public function verifyPayment(Request $request) {
-        try {
-            $api = new Api(
-                config('services.razorpay.key'),
-                config('services.razorpay.secret')
-            );
-
-            $payment = $api->payment->fetch($request->razorpay_payment_id);
-
-            if ($payment->status == 'captured') {
-
-                // ✅ Save order
-                $order = Order::create([
-                    'user_id' => auth()->id(),
-                    'payment_method' => 'razorpay',
-                    'payment_status' => 'paid',
-                    'transaction_id' => $request->razorpay_payment_id,
-                    'total' => Cart::total()
-                ]);
-
-                // save items...
-
-                return response()->json(['status' => 'success']);
-            }
-
-            return response()->json(['status' => 'failed']);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ]);
-        }
-    }
-    
-
-    public function success() {
-        return view('frontend.order-success');
-    }
+   
 
 }

@@ -10,8 +10,7 @@ class OrderItem extends Model {
 
     protected $fillable = [ 'order_id', 'product_id', 'product_variant_id', 'size_id', 'color_id', 'discount', 'coupon_code', 
                             'coupon_code_id', 'qty', 'shipping', 'price', 'discount_percent', 'discounted_price', 'subtotal', 
-                            'grandtotal', 'shipping', 'discountCodeId', 'payment_status', 
-                            'payment_method', 'return_days','delivery_min_days', 'delivery_max_days', ];
+                            'grandtotal', 'shipping', 'discountCodeId', 'return_days','delivery_min_days', 'delivery_max_days', ];
 
     public function order() {
         return $this->belongsTo(Order::class);
