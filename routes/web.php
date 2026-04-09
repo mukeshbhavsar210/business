@@ -43,7 +43,13 @@ Route::controller(ShopController::class)->group(function() {
 
 Route::controller(CartController::class)->group(function() {
     //Bag
-    Route::get('/checkout/cart','cart')->name('front.cart');
+
+    Route::post('/checkout/create-order', 'createOrder');
+    Route::post('/checkout/place-order', 'placeOrder')->name('checkout.place.order');
+    Route::post('/verify-payment', 'verifyPayment')->name('checkout.verify.payment');
+    Route::get('/order-success', 'success')->name('order.success');
+
+    Route::get('/checkout/cart','cart')->name('front.cart');    
     Route::post('/checkout/update-cart','updateCart')->name('front.updateCart');
     Route::post('/checkout/add-to-cart','addToCart')->name('front.addToCart');
     Route::post('/checkout/wishlist-to-cart','wishlistToCart')->name('front.wishlistToCart');
@@ -87,7 +93,7 @@ Route::controller(CartController::class)->group(function() {
 Route::group(['prefix' => 'account'], function(){
     Route::group(['middleware' => 'guest'], function(){
         Route::controller(AuthController::class)->group(function() {
-            //Route::get('/login','login')->name('account.login');
+            Route::get('/login','login')->name('account.login');
             Route::post('/login','authenticate')->name('account.authenticate');
             Route::get('/register','register')->name('account.register');
             Route::post('/process-register','processRegister')->name('account.processRegister');

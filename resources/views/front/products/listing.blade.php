@@ -218,7 +218,6 @@
     </div>
   </div>
 </div>
-
 @endsection
 
 @section('customJs')
@@ -227,7 +226,6 @@
             $('.dropdown').click(function (e) {
                 e.stopPropagation();
                 $(this).find('i').toggleClass('rotate');
-
                 $('.custom-dropdown-select').removeClass('active'); // close others
                 $(this).parent().toggleClass('active');
             });
@@ -239,8 +237,7 @@
 
             $('.form-check-input:checked').each(function () {
                 $(this).parent().addClass('active');                
-            });
-            
+            });            
         });
 
         $(document).on('change', '.form-check-input', function () {            
@@ -254,11 +251,8 @@
         $('.form-check-input').on('change', function () {
             let url = new URL(window.location.href);
             let params = url.searchParams;
-
             let type = $(this).data('type');
             let value = $(this).val();
-
-            // Get existing values
             let existing = params.get(type);
             let values = existing ? existing.split(',') : [];
 
@@ -275,11 +269,9 @@
             } else {
                 params.delete(type);
             }
-
             window.location.href = url.toString();
         });
 
-        // $(".item-label").on('change', apply_category_filters);
         $(".category-label").on('change', apply_category_filters);
         $(".brand-label").on('change', apply_brand_filters);
         $(".size-label").on('change', apply_size_filters);
@@ -333,7 +325,6 @@
             window.location.href = '{{ url()->current() }}?' + params.toString();
         }
 
-
         function apply_discount_filters(){
             var discount = [];
             $(".discount-label:checked").each(function(){
@@ -349,7 +340,6 @@
             }
             window.location.href = '{{ url()->current() }}?' + params.toString();
         }
-
         
         function apply_size_filters(){
             var sizes = [];
@@ -379,7 +369,6 @@
             window.location.href = '{{ url()->current() }}?' + params.toString();
         }
 
-
         $(document).ready(function () {
             initPriceSlider(
                 ".js-range-slider-desktop",
@@ -399,10 +388,10 @@
             $(selector).ionRangeSlider({
                 type: "double",
                 min: 0,
-                max: 5000,
+                max: 10000,
                 from: minVal,
                 to: maxVal,
-                step: 20,
+                step: 10,
                 skin: "round",
                 prefix: "₹",
 

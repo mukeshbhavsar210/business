@@ -292,8 +292,13 @@ class ShopController extends Controller {
         $percentage = $totalReviews > 0 
             ? round(($recommendedCount / $totalReviews) * 100)
             : 0;
+
+        $userReviewOut = Review::where('user_id', auth()->id())
+            ->where('product_id', $product->id)
+            ->first();
        
         $data['product'] = $product;
+        $data['userReviewOut'] = $userReviewOut;
         $data['coupon'] = $coupon;
         $data['selectedVariant'] = $selectedVariant;
         $data['ratings'] = $ratings;
@@ -305,7 +310,7 @@ class ShopController extends Controller {
         $data['percentage'] = $percentage;
         $data['colors'] = $colors;        
         $data['sizes'] = $sizes;
-        $data['relatedProducts'] = $relatedProducts; 
+        $data['relatedProducts'] = $relatedProducts;              
             
         return view('front.products.details',$data);
     }

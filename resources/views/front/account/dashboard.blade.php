@@ -27,7 +27,7 @@
                     <div class="photo-email">
                         <div class="flex">
                             <div class="photo">
-                                <img src="{{ $user->image }}" />                                
+                                <img src="{{ asset('uploads/profile/' . Auth::user()->image) }}" class="profile-pic">                                
                             </div>
                             <div class="email">
                                 <h6>{{ $user->name }}</h6>

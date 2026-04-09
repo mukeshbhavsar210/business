@@ -46,7 +46,7 @@
                                 <p>Login to get delivery at your place.</p>
                             </div>
                             <div class="btn-right">
-                                <a href="#" class="btn btn-primary float-end checkoutBtn" >Login</a>
+                                <a href="{{ route('account.login') }}?redirect={{ url()->current() }}" class="btn btn-outline-primary retirectBack float-end">Login</a>                                
                             </div> 
                         </div>
                     @endif
@@ -204,7 +204,9 @@
 
                 <div class="col-md-4 col-12">
                     <div class="cart-summery">
-                        <form name="orderForm" id="orderForm" method="POST">
+                        {{-- <form name="orderForm" id="orderForm" method="POST"> --}}
+                        <form id="checkout-form" action="{{ route('checkout.place.order') }}" method="POST">
+    
                             @csrf
 
                             @foreach($address as $value) 
@@ -328,7 +330,6 @@
                             </div>
 
                             <input type="hidden" name="grand_total" id="grand_total_input">
-
                                 @if($item->options->cod == 1)
                                     <div class="order-btn mt-3">                                            
                                         <div class="btn-group w-100 mb-3" role="group">
@@ -340,12 +341,12 @@
                                         </div>
 
                                         <div class="mt-2">
-                                            <button id="cod-form" class="btn-primary btn btn-block w-100 {{ Auth::check() ? '' : 'checkoutBtn' }}" type="submit">Pay on COD</button>
-                                            <button id="razorpay-form" class="btn-primary btn btn-block w-100 d-none {{ Auth::check() ? 'placeOrderBtn' : 'checkoutBtn' }}" type="submit">Pay <span class="grand_total_button"></span></button>
+                                            <button id="cod-form" class="btn-primary btn btn-block w-100 {{ Auth::check() ? '' : 'retirectBack' }}" type="submit">Pay on COD</button>
+                                            <button id="razorpay-form" class="btn-primary btn btn-block w-100 d-none {{ Auth::check() ? 'placeOrderBtn' : 'retirectBack' }}" type="submit">Pay <span class="grand_total_button"></span></button>
                                         </div>  
                                     </div>  
                                 @else                                    
-                                    <button id="razorpay-form" class="btn-primary btn btn-block w-100  {{ Auth::check() ? 'placeOrderBtn' : 'checkoutBtn' }}" type="submit">Pay <span class="grand_total_button"></span></button>
+                                    <button id="razorpay-form" class="btn-primary btn btn-block w-100  {{ Auth::check() ? 'placeOrderBtn' : 'retirectBack' }}" type="submit">Pay <span class="grand_total_button"></span></button>
                                 @endif                                                       
                         </form>                  
                     </div>
@@ -376,6 +377,7 @@
 @endsection
 
 @section('customJs')
+
     <script>
         let currentRowId = '';
         let currentType = '';       
@@ -454,7 +456,6 @@
             $('#cartModalTitle').text(title);
         });
 
-
         $(document).on('click', '.select-option', function(e){
             e.preventDefault();
             let value = $(this).data('value');
@@ -475,7 +476,6 @@
             });
         });  
 
-
         $("#payment_cod").click(function(){
             if ($(this).is(":checked") == true){
                 $("#cod-form").removeClass('d-none');
@@ -489,7 +489,100 @@
                 $("#razorpay-form").removeClass('d-none');
             }
         });    
+
+        // $(document).on('click', '#razorpay-form', function(e) {
+        //     e.preventDefault();
+
+        //     var amount = $('.grand_total_button').text(); // make sure it's numeric
+        //     amount = parseFloat(amount.replace(/[^0-9.]/g, '')) * 100; // convert to paise
+
+        //     var options = {
+        //         "key": "{{ config('services.razorpay.key') }}", // your key
+        //         "amount": amount,
+        //         "currency": "INR",
+        //         "name": "Your Store Name",
+        //         "description": "Order Payment",
+        //         "handler": function (response) {
+        //             // success callback
+        //             console.log(response);
+
+        //             var form = $('form');
+
+        //             form.attr('action', "{{ route('checkout.place.order') }}");                    
+
+        //             // submit form with payment_id
+        //             $('<input>').attr({
+        //                 type: 'hidden',
+        //                 name: 'razorpay_payment_id',
+        //                 value: response.razorpay_payment_id
+        //             }).appendTo('form');
+
+        //             $('form').submit();
+        //         },
+        //         "prefill": {
+        //             "name": "{{ Auth::user()->name ?? '' }}",
+        //             "email": "{{ Auth::user()->email ?? '' }}"
+        //         },
+        //         "theme": {
+        //             "color": "#3399cc"
+        //         }
+        //     };
+
+        //     var rzp = new Razorpay(options);
+        //     rzp.open();
+        // });
+        
+
+        $(document).on('click', '#razorpay-form', function (e) {
+            e.preventDefault();
+
+            let amountText = $('.grand_total_button').text();
+            let amount = amountText.replace(/[^0-9.]/g, '');
+            amount = parseFloat(amount) * 100;            
+
+            var options = {
+                "key": "{{ config('services.razorpay.key') }}",
+                "amount": amount,
+                "currency": "INR",
+                "name": "Your Store",
+                "description": "Order Payment",
+
+                "handler": function (response) {
+                    $.ajax({
+                        url: "{{ route('checkout.verify.payment') }}",
+                        type: "POST",
+                        data: {
+                            _token: "{{ csrf_token() }}",
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_signature: response.razorpay_signature
+                        },
+                        success: function (res) {
+                            if (res.status === 'success') {
+                                window.location.href = "{{ route('order.success') }}";
+                            } else {
+                                alert('Payment verification failed');
+                            }
+                        }
+                    });
+                },
+
+                "prefill": {
+                    "name": "{{ Auth::user()->name ?? '' }}",
+                    "email": "{{ Auth::user()->email ?? '' }}"
+                },
+
+                "theme": {
+                    "color": "#3399cc"
+                }
+            };
+
+            var rzp = new Razorpay(options);
+            rzp.open();
+        });
     
+
+
         $("#orderForm").submit(function(event){
             event.preventDefault();
             let paymentMethod = $('input[name="payment_method"]:checked').val();
@@ -543,8 +636,7 @@
                 }
             });
         });
-                 
-       
+                        
         function deleteItem(rowId){            
             $.ajax({
                 url: '{{ route("front.deleteItem.cart") }}',

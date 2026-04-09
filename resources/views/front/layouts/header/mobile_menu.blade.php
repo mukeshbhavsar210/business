@@ -3,7 +3,7 @@
         <a href="javascript:0" class="navbar-toggler mobile-menu-icon" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu">
             <span class="sprites"></span>
         </a>
-    </div>    
+    </div>
 @else
     <a href="{{ url()->previous() }}" class="navbar-toggler mobile-back-icon">
         <span class="sprites"></span>
@@ -65,22 +65,32 @@
                 @endforeach
             @endif
         </ul>
+    </div>
+</div>
 
-        <hr />
-
+<div class="offcanvas offcanvas-start d-md-none" tabindex="-1" id="accountDetails">   
+    <div class="offcanvas-body">                                    
         @if (Auth::check())
             <p><b>Hello {{ Auth::user()->name }}</b></p>
             {{ Auth::user()->phone }}            
         @else
             <p><b>Welcome</b></p>
             <p class="text-muted tiny-font">To access account and manage orders</p>
-            <a class="btn btn-primary mt-2 checkoutBtn" href="#" >Login / Signup</a>
+            <a class="btn btn-primary mt-2 retirectBack" href="#" >Login / Signup</a>
         @endif
+
+        <hr />
 
         <ul class="navbar-listings">
             @if (Auth::check())  
-                <li><a href="{{ route('account.dashboard') }}" class="{{ request()->routeIs(['account.dashboard', 'account.orderDetail', 'account.order.view', 'account.orders.cancelled']) ? 'active' : '' }}">Account</a></li>
-                <li><a href="{{ route('account.orders') }}" class="{{ request()->routeIs(['account.orders', 'account.orderDetail', 'account.order.view', 'account.orders.cancelled']) ? 'active' : '' }}">Orders</a></li>                 
+                <li><a href="{{ route('account.dashboard') }}" class="{{ request()->routeIs(['account.dashboard', 'account.orderDetail', 'account.order.view', 'account.orders.cancelled']) ? 'active' : '' }}">Dashboard</a></li>
+                <li><a href="{{ route('account.orders') }}" class="{{ request()->routeIs(['account.orders', 'account.orderDetail', 'account.order.view', 'account.orders.cancelled']) ? 'active' : '' }}">Orders</a></li>
+                <li><a href="{{ route('account.wishlist') }}" class="{{ request()->routeIs(['account.wishlist']) ? 'active' : '' }}">Wishlist</a></li>
+                <li><a href="{{ route('account.wishlist') }}" class="{{ request()->routeIs(['account.wishlist']) ? 'active' : '' }}">Coupons</a></li>
+                <li><a href="{{ route('account.cards') }}" class="{{ request()->routeIs(['account.cards']) ? 'active' : '' }}">Saved Cards</a></li>
+                <li><a href="{{ route('account.address') }}" class="{{ request()->routeIs(['account.address']) ? 'active' : '' }}">Saved Address</a></li>
+
+                <hr />
                 <li><a href="{{ route('account.profile') }}" class="{{ request()->routeIs(['account.profile', 'account.profile.edit', 'account.changePassword']) ? 'active' : '' }}">Edit Profile</a></li>
                 <li><a href="{{ route('account.logout') }}">Logout</a></li>
             @endif
