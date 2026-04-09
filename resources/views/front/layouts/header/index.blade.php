@@ -1,14 +1,14 @@
 <header class="header">    
     <div class="row row-hide">
         <nav class="navbar navbar-expand-lg">							
-            <div class="col-md-7 col-8">
+            <div class="col-md-6 col-7">
                 <div class="logo-controls">                
                     @include('front/layouts/header/mobile_menu')
                     @include('front/layouts/header/default_menu')
                 </div>
             </div>        
-            <div class="col-md-5 col-4">
-                <div class="search-controls">                                      
+            <div class="col-md-6 col-5">
+                <div class="search-controls">
                     <form class="search-form desktop-form d-none d-md-block" action="{{ route('front.shop') }}">
                         <div class="search-control">
                             <span class="sprites search-icon"></span> 
@@ -16,50 +16,75 @@
                         </div>
                     </form>
                     
-                    <ul class="icon-controls">
+                    <ul class="icon-controls">                        
+                        <li class="item d-block d-md-none">
+                            @if (Auth::check())                                                                               
+                                <a href="javascript:0" type="button" data-bs-toggle="offcanvas" data-bs-target="#accountDetails">                                                                  
+                                    @if (!empty(Auth::user()->image))                        
+                                        <img src="{{ asset('uploads/profile/' . Auth::user()->image) }}" class="profile-pic">
+                                    @else                            
+                                        @php
+                                            $name = Auth::user()->name;
+                                            $words = explode(' ', $name);
+                                            $initials = '';
+                                            foreach ($words as $word) {
+                                                $initials .= strtoupper(substr($word, 0, 1));
+                                            }
+                                        @endphp
+                                        <div class="avatar" style="background-color: {{ Auth::user()->avatar_color ?? '#777' }};">
+                                            {{ $initials }}
+                                        </div>                                            
+                                    @endif                                                                              
+                                </a>    
+                            @else
+                                <a href="{{ route('account.login') }}" class="link">
+                                    <span class="sprites user-icon"></span>                                        
+                                </a>                        
+                            @endif
+                        </li>
                         <li class="item d-block d-md-none">
                             <a href="javascript:0" class="search-btn"><span class="sprites search-icon"></span></a>
                         </li>
-                        <li class="item d-none d-md-block">
-                            <div class="hover-parent">
-                                <a href="{{ route('account.profile') }}" class="link">
-                                    <span class="sprites user-icon"></span>     
-                                    @if (Auth::check())
-                                        <span class="d-none d-md-block">Account</span>
-                                    @else
-                                        <span class="d-none d-md-block">Profile</span>
-                                    @endif
-                                </a>
+                        <li class="item d-none d-md-block">                                
+                            <div class="hover-parent">                                
+                                @if (Auth::check())
+                                    <a href="{{ route('account.profile') }}" class="link user-link">
+                                        @if (!empty(Auth::user()->image))                        
+                                            <img src="{{ asset('uploads/profile/' . Auth::user()->image) }}" class="profile-pic">
+                                        @else                            
+                                            @php
+                                                $name = Auth::user()->name;
+                                                $words = explode(' ', $name);
+                                                $initials = '';
+                                                foreach ($words as $word) {
+                                                    $initials .= strtoupper(substr($word, 0, 1));
+                                                }
+                                            @endphp
+                                            <div class="avatar" style="background-color: {{ Auth::user()->avatar_color ?? '#777' }};">
+                                                {{ $initials }}
+                                            </div>                                            
+                                        @endif                                                                              
+                                    </a>                                    
+                                @else
+                                    <a href="{{ route('account.login') }}" class="link">
+                                        <span class="sprites user-icon"></span>                                        
+                                    </a>
+                                @endif
 
                                 <div class="hover-content">
                                     @if (Auth::check())
-                                        <p><b>Hello {{ Auth::user()->name }}</b></p>
-                                        {{ Auth::user()->phone }}
+                                        <p><b>Hello {{ Auth::user()->name }}</b><br />
+                                            {{ Auth::user()->phone }}
+                                        </p>
+                                        <a href="{{ route('account.profile')}}" class="btn btn-outline-primary btn-sm mt-2">My Account</a>
                                         <hr />
                                     @else
                                         <p><b>Welcome</b></p>
                                         <p class="text-muted tiny-font">To access account and manage orders</p>
-                                        <a class="btn btn-primary mt-2 checkoutBtn" href="#" >Login / Signup</a>                                                
+                                        <a href="{{ route('account.login')}}" class="btn btn-primary mt-2">Login/Register</a>
+                                        {{-- <a class="btn btn-primary mt-2 retirectBack" href="#" >Login / Signup</a> --}}
                                         <hr />
                                     @endif
-
-                                    {{-- <div class="social-btns">                            
-                                        <h5>Login with your accounts</h5>
-                                        <div class="groups">
-                                            <div>
-                                                <a href="{{ url('auth/google') }}" class="google-btn account-btn">
-                                                    <span class="sprites"></span>
-                                                    Login with Google
-                                                </a>
-                                            </div>
-                                            <div>
-                                                <a href="{{ url('auth/facebook') }}" class="facebook-btn account-btn">
-                                                    <span class="sprites"></span>
-                                                    Log in with Facebook
-                                                </a>
-                                            </div>                  
-                                        </div>          
-                                    </div> --}}
 
                                     @php
                                         $guestAttr = 'data-bs-toggle=modal data-bs-target=#login href=javascript:void(0)';
@@ -134,15 +159,19 @@
                             </div>
                         </li>
                         <li class="item">
-                            <a href="{{ route('account.wishlist') }}" class="link">
-                                <span class="sprites wishlist-icon"></span>
-                                <span class="label d-none d-md-block">Wishlist</span>	                                        
-                            </a>
+                             @if (Auth::check())
+                                <a href="{{ route('account.wishlist') }}" class="link">
+                                    <span class="sprites wishlist-icon"></span>                                                                            
+                                </a>                                                                   
+                            @else
+                                <a href="{{ route('account.login') }}" class="link">
+                                    <span class="sprites wishlist-icon"></span>                                    
+                                </a>
+                            @endif                            
                         </li>
                         <li class="item">
                             <a href="{{ route('front.cart') }}" class="link">
-                                <span class="sprites bag-icon"></span> 
-                                <span class="label d-none d-md-block">Bag</span>
+                                <span class="sprites bag-icon"></span>                                 
 
                                 <span id="cartCount" class="card-count">
                                     {{ Cart::count() }}

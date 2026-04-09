@@ -126,7 +126,7 @@
         $(target).toggleClass('show');
     });
 
-    $('.checkoutBtn').click(function () {            
+    $('.retirectBack').click(function () {            
         $.ajax({
             url: "/set-intended-url",
             method: "POST",
@@ -135,7 +135,7 @@
                 url: window.location.href
             }
         });
-        $('#login').modal('show');
+        //$('#login').modal('show');
     });
 
     function showAlert(message, type = 'success'){

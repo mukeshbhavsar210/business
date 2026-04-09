@@ -34,7 +34,7 @@
                         <a href="#" data-bs-toggle="modal" data-bs-target="#register" class="btn btn-outline-dark btn-sm">Register</a>
                     </div>
                     <div>
-                        <input type="submit" class="btn btn-primary caps-btn checkoutBtn" value="Login">
+                        <input type="submit" class="btn btn-primary caps-btn retirectBack" value="Login">
                     </div>                    
                 </div> 
             </form>            
@@ -91,7 +91,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <a href="#" data-bs-toggle="modal" data-bs-target="#login"  class="checkoutBtn btn btn-outline-dark btn-sm">Bak to Login</a>
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#login"  class="retirectBack btn btn-outline-dark btn-sm">Bak to Login</a>
                     <input type="submit" class="btn btn-primary" value="Register Account">
                 </div> 
             </form>    
@@ -116,7 +116,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <a href="#" data-bs-toggle="modal" data-bs-target="#login"  class="btn btn-outline-dark btn-sm checkoutBtn">Bak to Login</a>
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#login"  class="btn btn-outline-dark btn-sm retirectBack">Bak to Login</a>
                     <input type="submit" class="btn btn-primary" value="Send Reset Link">
                 </div> 
             </form>    

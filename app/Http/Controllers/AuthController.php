@@ -16,7 +16,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\UserRegisteredMail;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 use SebastianBergmann\Environment\Console;
 
 class AuthController extends Controller {
@@ -36,19 +39,26 @@ class AuthController extends Controller {
         ]);
 
         if($validator->passes()) {
+            $plainPassword = $request->password;
 
             $user = new User;
             $user->name = $request->name;
             $user->email = $request->email;
             $user->phone = $request->phone;
-            $user->password = Hash::make($request->password);
+            $user->password = Hash::make($plainPassword);
+            $user->image = asset('images/default-avatar.png');
+            $colors = ['#FF5733', '#33B5E5', '#2ECC71', '#9B59B6', '#F39C12', '#E74C3C', '#1ABC9C', '#34495E'];
+            $user->avatar_color = $colors[array_rand($colors)];
             $user->save();
 
-            session()->flash('success','You have beed registered successfully');
+            // ✅ Send confirmation email
+            Mail::to($user->email)->send(new UserRegisteredMail($user, $plainPassword));
+
+            session()->flash('success', 'You have registered successfully. Check your email for login details.');
 
             return response()->json([
-
                 'status' => true,
+                'errors' => []
             ]);
         } else {
             return response()->json([
@@ -57,12 +67,18 @@ class AuthController extends Controller {
             ]);
         }
     }
+    
 
     public function authenticate(Request $request) {
+        // ✅ Store intended URL first
+        if ($request->has('redirect')) {
+            session(['url.intended' => $request->redirect]);
+        }
+
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required',
-        ]);       
+        ]);
 
         if ($validator->passes()) {
             if (Auth::attempt([
@@ -70,14 +86,19 @@ class AuthController extends Controller {
                 'password' => $request->password,
                 'is_active' => 1
             ], $request->get('remember'))) {
-                $request->session()->regenerate();                
-                return redirect()->intended(route('account.profile'))
-                ->with('toast_success','Welcome back, '.Auth::user()->name.'!'); 
+
+                $request->session()->regenerate();
+
+                // ✅ This will now redirect to previous page
+                return redirect()->intended(route('account.dashboard'))
+                    ->with('toast_success', 'Welcome back, ' . Auth::user()->name . '!');
+
             } else {
                 return redirect()->route('front.home')
                     ->withInput($request->only('email'))
                     ->with('error','Either email/password is incorrect.');
             }
+
         } else {
             return redirect()->route('front.home')
                 ->withErrors($validator)

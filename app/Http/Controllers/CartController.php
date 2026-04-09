@@ -303,8 +303,6 @@ class CartController extends Controller {
         ]);
     }
 
-     
-
     public function processCheckout(Request $request) {
         // Step 1: Validate selected shipping address
         $validator = Validator::make($request->all(), [
@@ -504,214 +502,7 @@ class CartController extends Controller {
         ]);
     }
 
-    // Verify Payment
-     public function verifyPayment(Request $request) {
-        $amount = $request->amount ?? 0;
-        $order_notes = $request->order_notes;                
-        $country = $request->country;
-        $address_type = $request->address_type; 
-
-        try {
-            $api = new Api(config('services.razorpay.key'), config('services.razorpay.secret'));
-
-            $attributes = [
-                'razorpay_payment_id' => $request->razorpay_payment_id,
-                'razorpay_order_id' => $request->razorpay_order_id,
-                'razorpay_signature' => $request->razorpay_signature
-            ];
-
-            $api->utility->verifyPaymentSignature($attributes);
-
-            //Step 1: apply validations while make orders
-            $validator = Validator::make($request->all(),[
-               
-            ]);
-
-            if ($validator->fails()){
-                return response()->json([
-                    'message' => 'Please fix the errors',
-                    'status' => false,
-                    'errors' => $validator->errors()
-                ]);
-            }
-
-            $user = Auth::user();
-
-            if ($address_type === 'home') {
-                CustomerAddress::where('user_id', $user->id)
-                                ->whereNotNull('delivery_at')
-                                ->update(['delivery_at' => null]);
-
-                $homeAddress = CustomerAddress::updateOrCreate(
-                    [
-                        'user_id' => $user->id,
-                        'type' => 'home'
-                    ],
-                    [
-                        'country_id' => $country,
-                        'notes' => $order_notes,
-                        'delivery_at' => 'home',
-                    ]
-                );
-            } elseif ($address_type === 'office') {
-                $officeAddress = CustomerAddress::updateOrCreate(
-                    [
-                        'user_id' => $user->id,
-                        'type' => 'office'
-                    ],
-                    [
-                        'country_id' => $country,
-                        'notes' => $order_notes,
-                        'delivery_at' => 'office',
-                    ]
-                );
-            }
-            
-            //Step 3: Store data in orders table
-            $discountCodeId = NULL;
-            $promoCode = '';
-            $shipping = 0;
-            $discount = 0;
-            $subTotal = Cart::subtotal(2,'.','');
-
-            // Apply Discount
-            if (session()->has('coupon_discount')) {
-                $code = session()->get('coupon_discount');
-                if($code->type == 'percent'){
-                    $discount = ($code->discount_amount/100)*$subTotal;
-                } else {
-                    $discount = $code->discount_amount;
-                }
-                $discountCodeId = $code->id;
-                $promoCode = $code->code;
-            }
-
-            // Calculate shipping
-            $shippingInfo = ShippingCharge::where('state_id', $request->state)->first();
-
-            $totalQty = 0;
-            foreach (Cart::content() as $item){
-                $totalQty += $item->qty;
-            }
-
-            if ($shippingInfo != null) {
-                $shipping = $totalQty*$shippingInfo->amount;
-                $grandTotal = ($subTotal-$discount)+$shipping;
-            } else {
-                $shippingInfo = ShippingCharge::where('state_id','rest_of_world')->first();
-                $shipping = $totalQty*$shippingInfo->amount;
-                $grandTotal = ($subTotal - $discount)+$shipping;
-            }
-
-            //Update product stock
-            $productData = Product::find($item->id);
-            if($productData->track_qty == 'Yes'){
-                $currentQty = $productData->qty;
-                $updatedQty = $currentQty-$item->qty;
-                $productData->qty = $updatedQty;
-                $productData->save();
-            }   
-
-            $order = Order::create([
-                'user_id' => $user->id,
-                'product_id' => $item->id,
-                'customer_address_id' => $item->customer_address_id,                
-                'subtotal' => $subTotal,
-                'coupon_code' => $promoCode,
-                'coupon_code_id' => $discountCodeId,
-                'discount' => $discount,
-                'grandtotal' => $grandTotal,
-                'status' => 'pending',
-            ]);        
-            
-            foreach (Cart::content() as $item) {
-                OrderItem::create([
-                    'order_id' => $order->id,
-                    'product_id' => $item->id,                    
-                    'product_variant_id' => $item->options->variant_id,
-                    'name' => $item->name,                    
-                    'color_id' => $item->options->color_id,
-                    'size_id' => $item->options->size_id,
-                    'qty' => $item->qty,
-                    'price' => $item->price,
-                    'total' => $item->price * $item->qty,                    
-                ]);
-            }
-
-            Payment::create([
-                'order_id' => $order->id,
-                'product_id' => $item->id,
-                'variant_id' => $item->variant_id,
-                'razorpay_payment_id' => $request->razorpay_payment_id,
-                'razorpay_order_id' => $request->razorpay_order_id,
-                'payment_mode' => $request->payment_mode ?? 'Online',
-                'amount' => $item->price * $item->qty,
-                'status' => 'Paid',
-                'currency' => $request->currency ?? 'INR',
-                'payment_data' => json_encode($request->all()),               
-            ]);
-
-            //SHIPROCKET ORDER
-            if ($request->payment_status === 'success') {
-                $payment = $order->payment;
-                $payment->status = 'Paid';
-                $payment->save();
-        
-                // Create shipping order in Shiprocket
-                //$response = ShiprocketService::createOrder($order);
-        
-                if (isset($response['order_id'])) {
-                    $order->shiprocket_order_id = $response['order_id'];
-                    $order->awb_code = $response['awb_code'] ?? null;
-                    $order->courier_name = $response['courier_company_id'] ?? null;
-                    $order->shipment_status = 'Shipped';
-                    $order->save();
-                }
-        
-                return redirect()->route('thankyou')->with('success', 'Order placed & shipped.');
-            }
-
-            //Send confirmed order email
-            //orderEmail($order->id, 'customer');
-
-             // ✅ 1. Send email to Customer
-            $customerMailData = [
-                'order' => $order,
-                'userType' => 'customer',
-            ];
-
-            Mail::send('email.order', ['mailData' => $customerMailData], function ($message) use ($customerMailData) {
-                $message->to($customerMailData['order']->user->email)
-                        ->subject('Thank You for Your Order! Keep shopping');
-            });
-
-            // ✅ 2. Send email to Admin
-            $adminMailData = [
-                'order' => $order,
-                'userType' => 'admin',
-            ];
-
-            Mail::send('email.order', ['mailData' => $adminMailData], function ($message) use ($adminMailData) {
-                $message->to('info@heavenprints.in') // Replace with actual admin email or config value
-                        ->subject('New Order Received');
-            });
-
-            Cart::destroy();
-
-            session()->forget(['grand_total']);
-
-            return response()->json([
-                'status' => 'success', 
-                'orderId' => $order->id,
-                'message' => 'Payment verified successfully'
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Payment Verification Failed: ' . $e->getMessage());
-            return response()->json(['status' => 'failed', 'message' => 'Payment verification failed'], 500);
-        }
-    }
-
-    
+       
 
     public function thankyou($id){
         $order = Order::where('id', $id)
@@ -1437,6 +1228,67 @@ class CartController extends Controller {
             'status' => true,
             'message' => 'Coupon removed successfully'
         ]);
+    }
+
+
+    public function placeOrder(Request $request) {
+        if ($request->payment_method == 'cod') {
+
+            // ✅ Save order
+            $order = Order::create([
+                'user_id' => auth()->id(),
+                'payment_method' => 'cod',
+                'payment_status' => 'pending',
+                'total' => Cart::total()
+            ]);
+
+            // save items...
+
+            return redirect()->route('order.success');
+        }
+
+        return back()->with('error', 'Invalid payment method');
+    }
+
+
+   public function verifyPayment(Request $request) {
+        try {
+            $api = new Api(
+                config('services.razorpay.key'),
+                config('services.razorpay.secret')
+            );
+
+            $payment = $api->payment->fetch($request->razorpay_payment_id);
+
+            if ($payment->status == 'captured') {
+
+                // ✅ Save order
+                $order = Order::create([
+                    'user_id' => auth()->id(),
+                    'payment_method' => 'razorpay',
+                    'payment_status' => 'paid',
+                    'transaction_id' => $request->razorpay_payment_id,
+                    'total' => Cart::total()
+                ]);
+
+                // save items...
+
+                return response()->json(['status' => 'success']);
+            }
+
+            return response()->json(['status' => 'failed']);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+    
+
+    public function success() {
+        return view('frontend.order-success');
     }
 
 }
