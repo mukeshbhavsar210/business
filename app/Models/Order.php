@@ -8,9 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model {
     use HasFactory;
 
-    protected $fillable = [ 'user_id', 'product_id', 'product_variant_id', 'customer_address_id', 
-                            'subtotal', 'shipping', 'grandtotal',  
-                            
+    protected $fillable = [ 'user_id', 'product_id', 'product_variant_id', 'customer_address_id', 'subtotal', 
+                            'shipping', 'grandtotal', 'razorpay_order_id', 'transaction_id', 'razorpay_signature', 'payment_status'                              
     ];
 
     public function products(){
