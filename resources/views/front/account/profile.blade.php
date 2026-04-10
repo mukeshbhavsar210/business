@@ -5,7 +5,7 @@
 @section('content')
 
 <div class="container">
-    <div class="small-title">
+    <div class="small-title d-none d-md-block">
         <h4>Account</h4>
         <p>{{ currentUserName() }}</p>
     </div>
@@ -33,32 +33,32 @@
                 <div class="order-history">
                     <div class="individual">
                         <div class="row mb-2">
-                            <div class="col-3 text-muted">Name</div>
-                            <div class="col-9">{{ $user->name }}</div>
+                            <div class="col-md-3 col-12 text-muted">Name</div>
+                            <div class="col-md-9 col-12">{{ $user->name }}</div>
                         </div>
                         <div class="row mb-2">
-                            <div class="col-3 text-muted">Mobile Number</div>
-                            <div class="col-9">{{ $user->phone }}</div>
+                            <div class="col-md-3 col-12 text-muted">Mobile Number</div>
+                            <div class="col-md-9 col-12">{{ $user->phone }}</div>
                         </div>
                         <div class="row mb-2">
-                            <div class="col-3 text-muted">Email ID</div>
-                            <div class="col-9">{{ $user->email }}</div>
+                            <div class="col-md-3 col-12 text-muted">Email ID</div>
+                            <div class="col-md-9 col-12">{{ $user->email }}</div>
                         </div>
                         <div class="row mb-2">
-                            <div class="col-3 text-muted">Alternate Mobile</div>
-                            <div class="col-9">{{ $user->mobile }}</div>
+                            <div class="col-md-3 col-12 text-muted">Alternate Mobile</div>
+                            <div class="col-md-9 col-12">{{ $user->mobile }}</div>
                         </div>
                         <div class="row mb-2">
-                            <div class="col-3 text-muted">Gender</div>
-                            <div class="col-9">{{ $user->gender }}</div>
+                            <div class="col-md-3 col-12 text-muted">Gender</div>
+                            <div class="col-md-9 col-12">{{ $user->gender }}</div>
                         </div>   
                         <div class="row mb-2">
-                            <div class="col-3 text-muted">Date of Birth</div>
-                            <div class="col-9">{{ $user->birthdate }}</div>
+                            <div class="col-md-3 col-12 text-muted">Date of Birth</div>
+                            <div class="col-md-9 col-12">{{ $user->birthdate }}</div>
                         </div>           
                         <div class="row mt-4">
-                            <div class="col-3"></div>
-                            <div class="col-9">
+                            <div class="col-md-3 col-12"></div>
+                            <div class="col-md-9 col-12">
                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editProfileModal">
                                     Edit Profile
                                 </button>

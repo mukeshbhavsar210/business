@@ -42,7 +42,7 @@
 
                                     <div class="flex-details">
                                         <p class="label">Payment Mode</p>
-                                        <p class="right">: {{ $order->payment_method }}</p>
+                                        <p class="right">: {{ $order->payment_method == 'cod' ? 'COD' : 'Razorpay' }}</p>
                                     </div>
 
                                     <div class="flex-details">
@@ -60,7 +60,6 @@
                                             @endif                                        
                                         </p>                           
                                     </div>
-
                                     <div class="flex-details">
                                         <p class="label">Status</p>                                        
                                         <p class="right">:
@@ -92,9 +91,9 @@
                                 <thead class="table-light">  
                                     <tr>
                                         <th class="border-top-0">Products details</th>                                
-                                        <th class="border-top-0 text-end" width="110">Qty</th>                                                                                
-                                        <th class="border-top-0 text-end" width="110">Price</th>
-                                        <th class="border-top-0 text-end" width="110">Amount</th>
+                                        <th class="border-top-0 text-end" width="50">Price</th>
+                                        <th class="border-top-0 text-end" width="100">Qty</th>
+                                        <th class="border-top-0 text-end" width="100">Amount</th>
                                     </tr>                                                    
                                 </thead>
                                 <tbody>
@@ -160,14 +159,19 @@
                                                         </p>
                                                     </div>
                                                 </div>
-                                            </td>                                                                                                            
-                                            <td class="text-end"><p>{{ $item->qty }}</p></td>
-                                            <td class="text-end">
-                                                <p class="mt-1">₹{{ round($item->price) }}</p>
                                             </td>
                                             <td class="text-end">
                                                 @if($item->discounted_price)
-                                                    <p class="mt-1"><b>₹{{ round($item->qty*$item->discounted_price) }}</b></p>
+                                                    <p class="mt-1">₹{{ round($item->discounted_price) }}</p>
+                                                    <p class="text-muted"><del>₹{{ round($item->price) }}</del></p>
+                                                @else
+                                                    <p>₹{{ round($item->price) }}</p>
+                                                @endif
+                                            </td>
+                                            <td class="text-end">x {{ $item->qty }}</td>
+                                            <td class="text-end">                                                
+                                                @if($item->discounted_price)
+                                                    <p class="mt-1">₹{{ round($item->qty*$item->discounted_price) }}</p>
                                                 @else
                                                     <p class="mt-1">₹{{ round($item->qty*$item->price) }}</p>
                                                 @endif                                                
