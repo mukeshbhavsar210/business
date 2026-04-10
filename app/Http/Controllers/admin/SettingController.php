@@ -128,7 +128,6 @@ class SettingController extends Controller {
         return view('admin.settings.brands', $data);
     }
     
-
     public function brand_store(Request $request){
         $validator = Validator::make($request->all(), [
             'name' => 'required',
@@ -735,8 +734,6 @@ class SettingController extends Controller {
             'status' => true,
         ]);
     }
-
-   
 
     //User
     public function users_index(Request $request){

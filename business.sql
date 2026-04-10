@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 09, 2026 at 04:04 PM
+-- Generation Time: Apr 10, 2026 at 10:20 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -171,7 +171,7 @@ CREATE TABLE `discounts` (
 --
 
 INSERT INTO `discounts` (`id`, `product_id`, `discount_percentages_id`, `start_date`, `end_date`, `status`, `created_at`, `updated_at`) VALUES
-(9, 64, 5, '2026-04-08', '2026-05-08', 1, '2026-03-23 02:46:20', '2026-04-08 01:20:43'),
+(9, 64, 5, '2026-04-10', '2026-05-10', 1, '2026-03-23 02:46:20', '2026-04-10 00:27:59'),
 (10, 59, 3, '2026-03-28', '2026-04-27', 1, '2026-03-23 09:24:04', '2026-03-28 07:51:36'),
 (12, 67, 5, '2026-03-24', '2026-04-23', 1, '2026-03-24 01:34:37', '2026-03-24 01:34:37'),
 (13, 68, 1, '2026-03-24', '2026-04-23', 1, '2026-03-24 06:47:47', '2026-03-24 06:47:47');
@@ -348,10 +348,8 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 CREATE TABLE `orders` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `user_id` bigint(20) UNSIGNED NOT NULL,
-  `product_id` bigint(20) UNSIGNED DEFAULT NULL,
-  `product_variant_id` bigint(20) UNSIGNED DEFAULT NULL,
   `customer_address_id` bigint(20) UNSIGNED DEFAULT NULL,
-  `subtotal` double(10,2) NOT NULL,
+  `subtotal` double(10,2) NOT NULL DEFAULT 0.00,
   `grandtotal` double(10,2) NOT NULL,
   `razorpay_order_id` varchar(20) DEFAULT NULL,
   `transaction_id` varchar(20) DEFAULT NULL,
@@ -367,8 +365,8 @@ CREATE TABLE `orders` (
 -- Dumping data for table `orders`
 --
 
-INSERT INTO `orders` (`id`, `user_id`, `product_id`, `product_variant_id`, `customer_address_id`, `subtotal`, `grandtotal`, `razorpay_order_id`, `transaction_id`, `razorpay_signature`, `payment_status`, `payment_method`, `status`, `created_at`, `updated_at`) VALUES
-(293, 7, 59, NULL, 1, 1119.00, 1169.00, NULL, 'pay_SbQ31UbVMB88B6', '48e083d87b5de9534187acc76d87c5b3c37d0a603ddc56a3320b9fc9b56c02b4', 'paid', 'Razorpay', NULL, '2026-04-09 08:28:55', '2026-04-09 08:29:14');
+INSERT INTO `orders` (`id`, `user_id`, `customer_address_id`, `subtotal`, `grandtotal`, `razorpay_order_id`, `transaction_id`, `razorpay_signature`, `payment_status`, `payment_method`, `status`, `created_at`, `updated_at`) VALUES
+(329, 7, 1, 5176.00, 4227.00, 'order_SbiFimoPDvWIZr', 'pay_SbiFmTOTKicNb3', '098d259e87affa2f431855bd8a9c119016a7130907401c6b1052b70882dca1ad', 'paid', 'razorpay', 'Delivered', '2026-04-10 02:17:48', '2026-04-10 02:34:04');
 
 -- --------------------------------------------------------
 
@@ -385,13 +383,13 @@ CREATE TABLE `order_items` (
   `color_id` bigint(20) UNSIGNED DEFAULT NULL,
   `discount` double(10,2) DEFAULT NULL,
   `coupon_code` varchar(30) DEFAULT NULL,
-  `coupon_code_id` int(10) DEFAULT NULL,
+  `coupon_id` int(10) DEFAULT NULL,
   `qty` int(11) NOT NULL,
   `price` double(10,2) NOT NULL,
   `discount_percent` int(10) DEFAULT NULL,
   `discounted_price` double(10,2) DEFAULT NULL,
   `shipping` double(10,2) DEFAULT NULL,
-  `subtotal` double(10,2) NOT NULL,
+  `subtotal` double(10,2) NOT NULL DEFAULT 0.00,
   `grandtotal` double(10,2) NOT NULL,
   `return_days` varchar(10) DEFAULT NULL,
   `delivery_min_days` date DEFAULT NULL,
@@ -404,8 +402,9 @@ CREATE TABLE `order_items` (
 -- Dumping data for table `order_items`
 --
 
-INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `product_variant_id`, `size_id`, `color_id`, `discount`, `coupon_code`, `coupon_code_id`, `qty`, `price`, `discount_percent`, `discounted_price`, `shipping`, `subtotal`, `grandtotal`, `return_days`, `delivery_min_days`, `delivery_max_days`, `created_at`, `updated_at`) VALUES
-(83, 293, 59, NULL, 1, 4, 0.00, '', NULL, 1, 1599.00, 30, 1119.00, 50.00, 1119.00, 1169.00, '7 days', '2026-03-28', '2026-04-04', '2026-04-09 08:28:55', '2026-04-09 08:28:55');
+INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `product_variant_id`, `size_id`, `color_id`, `discount`, `coupon_code`, `coupon_id`, `qty`, `price`, `discount_percent`, `discounted_price`, `shipping`, `subtotal`, `grandtotal`, `return_days`, `delivery_min_days`, `delivery_max_days`, `created_at`, `updated_at`) VALUES
+(113, 329, 64, 28, 3, 8, 999.00, 'IND999', 13, 2, 700.00, 50, 350.00, 50.00, 5176.00, 4227.00, '7 days', '2026-04-10', '2026-04-17', '2026-04-10 02:17:48', '2026-04-10 02:17:48'),
+(114, 329, 59, NULL, 3, 4, 999.00, 'IND999', 13, 4, 1599.00, 30, 1119.00, 50.00, 5176.00, 4227.00, '7 days', '2026-03-28', '2026-04-04', '2026-04-10 02:17:48', '2026-04-10 02:17:48');
 
 -- --------------------------------------------------------
 
@@ -432,7 +431,10 @@ CREATE TABLE `order_status_histories` (
 --
 
 INSERT INTO `order_status_histories` (`id`, `order_id`, `tracking_number`, `courier`, `note`, `cancel_reason`, `cancel_comments`, `status`, `date`, `created_at`, `updated_at`) VALUES
-(240, 293, NULL, 'Shadofox', 'note', NULL, NULL, 'Confirmed', '2026-04-09 08:28:55', '2026-04-09 08:28:55', '2026-04-09 08:28:55');
+(261, 329, NULL, 'Shadofox', 'note', NULL, NULL, 'Confirmed', '2026-04-10 02:17:49', '2026-04-10 02:17:49', '2026-04-10 02:17:49'),
+(262, 329, NULL, 'Shadofax', 'note', NULL, NULL, 'Shipped', NULL, '2026-04-10 02:33:22', '2026-04-10 02:33:22'),
+(263, 329, NULL, 'Shadofax', 'note', NULL, NULL, 'Out for Delivery', NULL, '2026-04-10 02:33:51', '2026-04-10 02:33:51'),
+(264, 329, NULL, 'Shadofax', 'note', NULL, NULL, 'Delivered', NULL, '2026-04-10 02:34:04', '2026-04-10 02:34:04');
 
 -- --------------------------------------------------------
 
@@ -551,8 +553,8 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`id`, `title`, `slug`, `description`, `short_description`, `shipping_returns`, `related_products`, `price`, `category_id`, `sub_category_id`, `sub_sub_category_id`, `brand_id`, `discount_percentage_id`, `is_featured`, `sku`, `barcode`, `track_qty`, `qty`, `recommended`, `views`, `discount_percentage`, `average_rating`, `cod`, `is_returnable`, `return_days`, `delivery_min_days`, `delivery_max_days`, `status`, `created_at`, `updated_at`) VALUES
-(59, 'Park Avenue', 'park-avenue', 'test', 'Printed Polo Collar Slim Fit T-shirt', 'test', '', 1599.00, 82, 42, 1, 45, 3, 'Yes', 'tshirt_02', 'tshirt_000002', 'Yes', 56, NULL, NULL, NULL, NULL, 1, 1, '7 days', '2026-03-28', '2026-04-04', 1, '2026-03-20 02:52:28', '2026-04-09 08:28:56'),
-(64, 'Lux Cozi', 'lux-cozi', 'test', 'Polo Collar Lounge Tshirts', 'test', '', 700.00, 82, 42, 1, 46, 5, 'Yes', 'tshirt_011', 'tshirt_11', 'Yes', 66, NULL, NULL, NULL, NULL, 1, 1, '7 days', '2026-04-08', '2026-04-15', 1, '2026-03-20 09:48:06', '2026-04-09 08:24:42'),
+(59, 'Park Avenue', 'park-avenue', 'test', 'Printed Polo Collar Slim Fit T-shirt', 'test', '', 1599.00, 82, 42, 1, 45, 3, 'Yes', 'tshirt_02', 'tshirt_000002', 'Yes', 44, NULL, NULL, NULL, NULL, 1, 1, '7 days', '2026-03-28', '2026-04-04', 1, '2026-03-20 02:52:28', '2026-04-10 02:17:49'),
+(64, 'Lux Cozi', 'lux-cozi', 'test', 'Polo Collar Lounge Tshirts', 'test', '', 700.00, 82, 42, 1, 46, 5, 'Yes', 'tshirt_011', 'tshirt_11', 'Yes', 51, NULL, NULL, NULL, NULL, 1, 1, '7 days', '2026-04-10', '2026-04-17', 1, '2026-03-20 09:48:06', '2026-04-10 02:14:01'),
 (67, 'Kurtas', 'kurtas', 'test', 'Polo Collar Lounge Tshirts', 'test', '', 500.00, 83, 50, 26, 46, 5, 'Yes', 'tshirt_011', 'tshirt_11', 'Yes', 99, NULL, NULL, NULL, NULL, 1, 1, '7 days', '2026-03-24', '2026-03-31', 1, '2026-03-20 09:48:06', '2026-03-24 01:34:37'),
 (68, 'Boat Nirvana', 'boat-nirvana', 'test', 'Polo Collar Lounge Tshirts', 'test', '', 2500.00, 170, 53, 27, 47, 1, 'Yes', 'tshirt_011', 'tshirt_11', 'Yes', 94, NULL, NULL, NULL, NULL, 1, 1, '7 days', '2026-03-24', '2026-03-31', 1, '2026-03-20 09:48:06', '2026-04-01 00:36:42');
 
@@ -600,9 +602,9 @@ CREATE TABLE `product_images` (
 --
 
 INSERT INTO `product_images` (`id`, `product_id`, `color_id`, `image`, `created_at`, `updated_at`) VALUES
-(51, 64, 1, '64-Lux Cozi-51-1774094908.jpg', '2026-03-21 06:38:28', '2026-04-08 01:20:43'),
-(52, 64, 1, '64-Lux Cozi-52-1774094908.jpg', '2026-03-21 06:38:28', '2026-04-08 01:20:43'),
-(53, 64, NULL, '64-Lux Cozi-53-1774094908.jpg', '2026-03-21 06:38:28', '2026-04-08 01:20:43'),
+(51, 64, 1, '64-Lux Cozi-51-1774094908.jpg', '2026-03-21 06:38:28', '2026-04-10 00:28:00'),
+(52, 64, 1, '64-Lux Cozi-52-1774094908.jpg', '2026-03-21 06:38:28', '2026-04-10 00:28:00'),
+(53, 64, NULL, '64-Lux Cozi-53-1774094908.jpg', '2026-03-21 06:38:28', '2026-04-10 00:28:00'),
 (54, 59, NULL, '59-Park Avenue-54.jpg', '2026-03-21 06:41:28', '2026-03-21 06:41:28'),
 (55, 59, NULL, '59-Park Avenue-55.jpg', '2026-03-21 06:41:28', '2026-03-21 06:41:28'),
 (56, 67, NULL, '67-Kurtas-56.jpg', '2026-03-24 01:34:38', '2026-03-24 01:34:38'),
@@ -678,11 +680,11 @@ CREATE TABLE `product_variants` (
 --
 
 INSERT INTO `product_variants` (`id`, `product_id`, `color_id`, `image`, `created_at`, `updated_at`) VALUES
-(28, 64, 8, '64-28-1774078887.jpg', '2026-03-21 02:11:27', '2026-04-08 01:20:43'),
-(29, 64, 4, '64-29-1774093826.jpg', '2026-03-21 06:20:26', '2026-04-08 01:20:43'),
-(30, 64, 7, '64-30-1774093827.jpg', '2026-03-21 06:20:27', '2026-04-08 01:20:43'),
-(35, 64, 12, '64-Lux Cozi-35.jpg', '2026-03-24 00:10:35', '2026-04-08 01:20:43'),
-(36, 64, 9, 'lux-cozi_64_36.jpg', '2026-03-24 00:12:38', '2026-04-08 01:20:43'),
+(28, 64, 8, '64-28-1774078887.jpg', '2026-03-21 02:11:27', '2026-04-10 00:27:59'),
+(29, 64, 4, '64-29-1774093826.jpg', '2026-03-21 06:20:26', '2026-04-10 00:28:00'),
+(30, 64, 7, '64-30-1774093827.jpg', '2026-03-21 06:20:27', '2026-04-10 00:28:00'),
+(35, 64, 12, '64-Lux Cozi-35.jpg', '2026-03-24 00:10:35', '2026-04-10 00:28:00'),
+(36, 64, 9, 'lux-cozi_64_36.jpg', '2026-03-24 00:12:38', '2026-04-10 00:28:00'),
 (37, 67, NULL, 'kurtas_67_37.jpg', '2026-03-24 01:34:37', '2026-03-24 01:34:37');
 
 -- --------------------------------------------------------
@@ -1124,9 +1126,7 @@ ALTER TABLE `migrations`
 ALTER TABLE `orders`
   ADD PRIMARY KEY (`id`),
   ADD KEY `orders_user_id_foreign` (`user_id`),
-  ADD KEY `orders_customer_address_id_foreign` (`customer_address_id`),
-  ADD KEY `orders_product_id_foreign` (`product_id`),
-  ADD KEY `orders_product_variant_id_foreign` (`product_variant_id`);
+  ADD KEY `orders_customer_address_id_foreign` (`customer_address_id`);
 
 --
 -- Indexes for table `order_items`
@@ -1371,19 +1371,19 @@ ALTER TABLE `migrations`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=294;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=330;
 
 --
 -- AUTO_INCREMENT for table `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=84;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=115;
 
 --
 -- AUTO_INCREMENT for table `order_status_histories`
 --
 ALTER TABLE `order_status_histories`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=241;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=265;
 
 --
 -- AUTO_INCREMENT for table `pages`
@@ -1529,8 +1529,6 @@ ALTER TABLE `discounts`
 --
 ALTER TABLE `orders`
   ADD CONSTRAINT `orders_customer_address_id_foreign` FOREIGN KEY (`customer_address_id`) REFERENCES `customer_addresses` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
-  ADD CONSTRAINT `orders_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
-  ADD CONSTRAINT `orders_product_variant_id_foreign` FOREIGN KEY (`product_variant_id`) REFERENCES `product_variants` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   ADD CONSTRAINT `orders_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --

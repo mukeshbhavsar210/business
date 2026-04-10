@@ -135,7 +135,6 @@
                                 <label><input type="radio" checked disabled>Office</label>
                             @endif
                             
-                        
                             <div class="form-check mt-3">                                   
                                 @php
                                     $defaultAddress = old('default_address', auth()->user()?->address?->default_address);

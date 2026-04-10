@@ -5,7 +5,7 @@
 @section('content')
     
 <div class="container">    
-    <h4>Category: {{ ucfirst($selected_category) }}</h4>
+    <h4>{{ ucfirst($selected_category) }}</h4>
 
     <div class="row mt-3">
         @foreach($categories as $category)         

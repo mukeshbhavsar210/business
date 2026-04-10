@@ -97,7 +97,7 @@
                                     @endphp
 
                                     @if($uniqueSizes->count())
-                                        <p class="mt-2">{{ $uniqueSizes->first()->name }}</p>
+                                        <p class="mt-1">{{ $uniqueSizes->first()->name }}</p>
 
                                         @if($uniqueSizes->count() > 1)
                                             <span class="text-muted">
@@ -106,16 +106,16 @@
                                         @endif
                                     @else
                                         -
-                                    @endif
-                                    
+                                    @endif                                    
                                 </td>
+
                                 <td class="text-end">
                                     @php
                                         $uniqueColors = $order->items->pluck('color')->filter()->unique('id')->values();
                                     @endphp
 
                                     @if($uniqueColors->count())
-                                        <p class="mt-2">{{ $uniqueColors->first()->name }}</p>
+                                        <p class="mt-1">{{ $uniqueColors->first()->name }}</p>
 
                                         @if($uniqueColors->count() > 1)
                                             <span class="text-muted">
@@ -126,15 +126,18 @@
                                         -
                                     @endif                                    
                                 </td>
+
                                 <td class="text-end">
-                                    <h5 class="mt-2">₹{{ round($order->grandtotal) }}</h5>                                    
+                                    <h5 class="mt-1 mb-0">₹{{ round($order->grandtotal) }}</h5>     
+                                    <p class="tiny-font text-muted mt-0">
+                                        {{ optional($order->items->first())->payment_method == 'cod' ? 'COD' : 'Razorpay' }}
+                                    </p>
                                 </td> 
                                 <td class="text-end">
-                                    <p class="mt-2">{{ \Carbon\Carbon::parse(optional($order->items->first())->created_at)->format('d M, Y') }}<br /></p>
-                                    {{-- {{ optional($order->items->first())->payment_method == 'cod' ? 'COD' : 'Razorpay' }} --}}
+                                    <p class="mt-1">{{ \Carbon\Carbon::parse(optional($order->items->first())->created_at)->format('d M, Y') }}</p>
                                 </td>                                                               
                                 <td class="text-end">
-                                    <h5 class="mt-2">{{ $order->latestStatus->courier ?? '-' }}</h5>
+                                    <p class="mt-1">{{ $order->latestStatus->courier ?? '-' }}</p>
                                     {{-- <p class="m-0 text-muted tiny-font">{{ $order->latestStatus->tracking_number ?? 'No Tracking' }}</p> --}}
                                 </td>                                                                
                                 <td class="text-end">                                                               

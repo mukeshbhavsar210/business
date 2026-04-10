@@ -32,7 +32,7 @@
 </head>
 <body data-instant-intensity="mousedown" class="{{ request()->routeIs(['front.cart']) ? 'cart-wrapper' : 'default' }}" >
 
-<div class="container">    
+<div class="container">
     @include('front.layouts.toast')
 </div>
 
@@ -86,7 +86,6 @@
             });
         });
     });
-
 
     $(document).on('click', '.search-btn', function () {
         $('.search-form').toggleClass('d-none');
@@ -231,7 +230,6 @@
         })
     } 
 
-
     $(document).on('click', '.move-to-cart', function(){
         let wishlistId = $(this).data('wishlist-id');
         let productId  = $(this).data('product-id');
@@ -268,7 +266,6 @@
             }
         });
     }
-
 
     $("#registrationForm").submit(function(event){
         event.preventDefault();

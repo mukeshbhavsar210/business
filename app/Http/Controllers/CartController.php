@@ -301,91 +301,234 @@ class CartController extends Controller {
         ]);
     }
 
-    public function processCheckout(Request $request) {
-        // ✅ Ensure user logged in
-        if (!auth()->check()) {
-            return response()->json([
-                'status' => false,
-                'message' => 'User not logged in'
-            ]);
-        }
+    // public function processCheckout(Request $request) {
+    //     // ✅ Ensure user logged in
+    //     if (!auth()->check()) {
+    //         return response()->json([
+    //             'status' => false,
+    //             'message' => 'User not logged in'
+    //         ]);
+    //     }
 
-        // Step 1: Validate selected shipping address
-        $validator = Validator::make($request->all(), [
-            'customer_address_id' => 'required|exists:customer_addresses,id',
-            'payment_method' => 'required|in:cod,razorpay'
-        ]);
+    //     // Step 1: Validate selected shipping address
+    //     $validator = Validator::make($request->all(), [
+    //         'customer_address_id' => 'required|exists:customer_addresses,id',
+    //         'payment_method' => 'required|in:cod,razorpay'
+    //     ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Please fix the errors',
-                'status'  => false,
-                'errors'  => $validator->errors()
-            ]);
-        }
+    //     if ($validator->fails()) {
+    //         return response()->json([
+    //             'message' => 'Please fix the errors',
+    //             'status'  => false,
+    //             'errors'  => $validator->errors()
+    //         ]);
+    //     }
 
-        $user = Auth::user();
+    //     $user = Auth::user();
 
-        // Step 2: Get Selected Address (Security Check: must belong to user)
-        $selectedAddress = CustomerAddress::where('id', $request->customer_address_id)
-            ->where('user_id', $user->id)
-            ->first();
+    //     // Step 2: Get Selected Address (Security Check: must belong to user)
+    //     $selectedAddress = CustomerAddress::where('id', $request->customer_address_id)
+    //         ->where('user_id', $user->id)
+    //         ->first();
 
-        if (!$selectedAddress) {
-            return response()->json([
-                'message' => 'Invalid shipping address selected.',
-                'status'  => false
-            ]);
-        }
+    //     if (!$selectedAddress) {
+    //         return response()->json([
+    //             'message' => 'Invalid shipping address selected.',
+    //             'status'  => false
+    //         ]);
+    //     }
 
-        // Step 3: Calculate Subtotal        
-        $subTotal = 0;
-        foreach (Cart::content() as $item) {
-            $price = $item->options->discount_price ?? $item->price;
-            $subTotal += $price * $item->qty;
-        }
+    //     // Step 3: Calculate Subtotal        
+    //     $subTotal = 0;
+    //     foreach (Cart::content() as $item) {
+    //         $price = $item->options->discount_price ?? $item->price;
+    //         $subTotal += $price * $item->qty;
+    //     }
 
-        $discount = 0;
-        $shipping = 0;
-        $discountCodeId = null;
-        $promoCode = '';
+    //     $discount = 0;
+    //     $shipping = 0;
+    //     $discountCodeId = null;
+    //     $promoCode = '';
 
         // Step 4: Apply Coupon (if exists)
-        if(session()->has('coupon_discount')){
-            $coupon = session('coupon_discount');
+        // if(session()->has('coupon_discount')){
+        //     $coupon = session('coupon_discount');
 
-            if($coupon['type'] == 'percent'){
-                $discount = ($coupon['value'] / 100) * $subTotal;
-            }else{
-                $discount = $coupon['value'];
-            }
+        //     if($coupon['type'] == 'percent'){
+        //         $discount = ($coupon['value'] / 100) * $subTotal;
+        //     }else{
+        //         $discount = $coupon['value'];
+        //     }
 
-            $discountCodeId = $coupon['id'];
-            $promoCode = $coupon['code'];
-        }
+        //     $discountCodeId = $coupon['id'];
+        //     $promoCode = $coupon['code'];
+        // }
 
-        // Step 5: Calculate Shipping Based On Selected Address State
-        $qty = Cart::content()->sum('qty');
+    //     // Step 5: Calculate Shipping Based On Selected Address State
+    //     $qty = Cart::content()->sum('qty');
 
-        $shippingInfo = ShippingCharge::where('state_id', $selectedAddress->state_id)->first();
+    //     $shippingInfo = ShippingCharge::where('state_id', $selectedAddress->state_id)->first();
 
-        if ($shippingInfo) {
-            $shipping = $shippingInfo->amount ?? 0;
-        } else {
-            $restState = ShippingCharge::where('state_id', 'rest_of_state')->first();
-            $shipping = $qty * ($restState->amount ?? 0);
-        }
+    //     if ($shippingInfo) {
+    //         $shipping = $shippingInfo->amount ?? 0;
+    //     } else {
+    //         $restState = ShippingCharge::where('state_id', 'rest_of_state')->first();
+    //         $shipping = $qty * ($restState->amount ?? 0);
+    //     }
             
+    //     // ✅ Prepare amounts
+    //     $total = ($subTotal - $discount) + $shipping;
+    //     $grandTotal = ($subTotal - $discount) + $shipping;
+
+    //     // ✅ Create order first
+    //     $order = Order::create([
+    //         'user_id' => auth()->id(),
+    //         'product_id' => $item->id,
+    //         'product_variant_id' => $item->options->variant_id ?? null,
+    //         'customer_address_id' => $request->customer_address_id,
+    //         'payment_method' => $request->payment_method,
+    //         'payment_status' => 'pending',
+    //         'subtotal' => $subTotal,
+    //         'grandtotal' => $total,
+    //         'status' => 'Placed'
+    //     ]);
+
+    //     //Step 7: Get entried Order Status in OrderStatusHistory
+    //     OrderStatusHistory::create([
+    //         'order_id' => $order->id,
+    //         'courier' => 'Shadofox',
+    //         'note' => 'note',
+    //         'status' => 'confirmed',
+    //         'date' => now()
+    //     ]);
+
+    //     //Step 8: Store Order Items + Update Stock
+    //     foreach (Cart::content() as $item) {
+    //         $orderItem = new OrderItem;
+    //         $orderItem->order_id = $order->id;
+    //         $orderItem->product_id = $item->id;
+    //         $orderItem->product_variant_id = $item->options->variant_id ?? null;
+    //         $orderItem->size_id = $item->options->size_id;
+    //         $orderItem->color_id = $item->options->color_id;
+    //         $orderItem->discounted_price = $item->options->discount_price ?? null;
+    //         $orderItem->discount_percent = $item->options->discount_percent ?? null;            
+    //         $orderItem->qty = $item->qty;
+    //         $orderItem->price = $item->price;                                               
+    //         $orderItem->discount = $discount;            
+    //         $orderItem->coupon_code = $promoCode;
+    //         $orderItem->coupon_code_id = $discountCodeId;    
+    //         $orderItem->shipping = $shipping;        
+    //         $orderItem->subTotal = $subTotal;
+    //         $orderItem->grandtotal = $grandTotal;                        
+    //         $orderItem->return_days = $item->options->return_days ?? null;
+    //         $orderItem->delivery_min_days = $item->options->delivery_min_days ?? null;
+    //         $orderItem->delivery_max_days = $item->options->delivery_max_days ?? null;
+    //         $orderItem->save();
+
+    //         // Update Variant Stock
+    //         $variant = ProductVariant::find($item->id);
+    //         if ($variant) {
+    //             $variant->qty -= $item->qty;
+    //             $variant->save();
+    //         }
+
+    //         // Update Stock
+    //         $product = Product::find($item->id);
+    //         if ($product && $product->track_qty == 'Yes') {
+    //             $product->qty -= $item->qty;
+    //             $product->save();
+    //         }
+    //     }
+
+    //     if($order->coupon_id){
+    //         DiscountCoupon::where('id',$order->coupon_id)->increment('used_count');
+    //     }
+
+    //     // Step 9: Send Order Confirmation Email
+    //     orderEmail($order->id, 'customer');
+
+    //     // Step 10: Clear Cart & Coupon
+    //     Cart::destroy();
+    //     session()->forget('coupon_discount');
+
+    //     // Step 11: Handle COD
+    //     // ✅ COD FLOW
+    //     if($request->payment_method == 'cod'){
+    //         return response()->json([
+    //             'status' => true,
+    //             'orderId' => $order->id,
+    //             'payment_method' => 'cod'
+    //         ]);
+    //     }
+
+    //      // ✅ RAZORPAY FLOW
+    //     if ($request->payment_method == 'razorpay') {
+    //         $api = new Api(
+    //             config('services.razorpay.key'),
+    //             config('services.razorpay.secret')
+    //         );
+
+    //         $amount = (int) ($total * 100); // paise
+    //         if ($amount < 100) {
+    //             return response()->json([
+    //                 'status' => false,
+    //                 'message' => 'Minimum amount should be ₹1'
+    //             ]);
+    //         }
+
+    //         $razorpayOrder = $api->order->create([
+    //             'receipt' => (string) $order->id, // ✅ string required
+    //             'amount' => $amount,
+    //             'currency' => 'INR'
+    //         ]);
+
+    //         return response()->json([
+    //             'status' => true,
+    //             'orderId' => $order->id,
+    //             'razorpay_order_id' => $razorpayOrder['id'],
+    //             'amount' => $amount,
+    //             'key' => config('services.razorpay.key')
+    //         ]);
+    //     }
+
+    //     // Setp 12: Razorpay payment
+    //     $grandTotal = $request->grand_total;
+        
+    //     $api = new Api(config('razorpay.key'),config('razorpay.secret'));        
+
+    //     $orderData = [
+    //         'receipt'         => 'order_'.$order->id,
+    //         'amount'          => $grandTotal * 100, // Razorpay uses paise
+    //         'currency'        => 'INR',            
+    //     ];
+
+    //     $razorpayOrder = $api->order->create($orderData);
+
+    //     return response()->json([
+    //         'message' => 'Order placed successfully.',
+    //         'orderId' => $order->id,
+    //         'payment_method' => $request->payment_method,
+    //         'status'  => true,
+    //     ]);
+
+    //     // fallback
+    //     return response()->json([
+    //         'status' => false,
+    //         'message' => 'Invalid payment method'
+    //     ]);
+    // }
+
+
+    private function createOrder($request, $selectedAddress, $total, $subTotal, $discount, $promoCode, $shipping, $discountCodeId) {
+                
+
         // ✅ Prepare amounts
         $total = ($subTotal - $discount) + $shipping;
         $grandTotal = ($subTotal - $discount) + $shipping;
 
-        // ✅ Create order first
         $order = Order::create([
             'user_id' => auth()->id(),
-            'product_id' => $item->id,
-            'product_variant_id' => $item->options->variant_id ?? null,
-            'customer_address_id' => $request->customer_address_id,
+            'customer_address_id' => $selectedAddress->id,
             'payment_method' => $request->payment_method,
             'payment_status' => 'pending',
             'subtotal' => $subTotal,
@@ -393,7 +536,29 @@ class CartController extends Controller {
             'status' => 'Placed'
         ]);
 
-        //Step 7: Get entried Order Status in OrderStatusHistory
+        foreach (Cart::content() as $item) {
+            OrderItem::create([
+                'order_id' => $order->id,
+                'product_id' => $item->id,
+                'product_variant_id' => $item->options->variant_id ?? null,
+                'size_id' => $item->options->size_id ?? null,
+                'color_id' => $item->options->color_id ?? null,
+                'discount' => $discount,
+                'coupon_code' => $promoCode,
+                'coupon_id' => $discountCodeId,
+                'qty' => $item->qty,
+                'price' => $item->price,
+                'discount_percent' => $item->options->discount_percent ?? null,
+                'discounted_price' => $item->options->discount_price ?? null,                
+                'shipping' => $shipping,
+                'subtotal' => $subTotal,
+                'grandtotal' => $total,
+                'return_days' => $item->options->return_days ?? null,
+                'delivery_min_days' => $item->options->delivery_min_days ?? null,
+                'delivery_max_days' => $item->options->delivery_max_days ?? null,
+            ]);
+        }
+
         OrderStatusHistory::create([
             'order_id' => $order->id,
             'courier' => 'Shadofox',
@@ -402,156 +567,166 @@ class CartController extends Controller {
             'date' => now()
         ]);
 
-        //Step 8: Store Order Items + Update Stock
-        foreach (Cart::content() as $item) {
-            $orderItem = new OrderItem;
-            $orderItem->order_id = $order->id;
-            $orderItem->product_id = $item->id;
-            $orderItem->product_variant_id = $item->options->variant_id ?? null;
-            $orderItem->size_id = $item->options->size_id;
-            $orderItem->color_id = $item->options->color_id;
-            $orderItem->discounted_price = $item->options->discount_price ?? null;
-            $orderItem->discount_percent = $item->options->discount_percent ?? null;            
-            $orderItem->qty = $item->qty;
-            $orderItem->price = $item->price;                                               
-            $orderItem->discount = $discount;            
-            $orderItem->coupon_code = $promoCode;
-            $orderItem->coupon_code_id = $discountCodeId;    
-            $orderItem->shipping = $shipping;        
-            $orderItem->subTotal = $subTotal;
-            $orderItem->grandtotal = $grandTotal;                        
-            $orderItem->return_days = $item->options->return_days ?? null;
-            $orderItem->delivery_min_days = $item->options->delivery_min_days ?? null;
-            $orderItem->delivery_max_days = $item->options->delivery_max_days ?? null;
-            $orderItem->save();
-
-            // Update Variant Stock
-            $variant = ProductVariant::find($item->id);
-            if ($variant) {
-                $variant->qty -= $item->qty;
-                $variant->save();
-            }
-
-            // Update Stock
-            $product = Product::find($item->id);
-            if ($product && $product->track_qty == 'Yes') {
-                $product->qty -= $item->qty;
-                $product->save();
-            }
+        // Update Variant Stock
+        $variant = ProductVariant::find($item->id);
+        if ($variant) {
+            $variant->qty -= $item->qty;
+            $variant->save();
         }
 
-        if($order->coupon_id){
-            DiscountCoupon::where('id',$order->coupon_id)->increment('used_count');
+        // Update Stock
+        $product = Product::find($item->id);
+        if ($product && $product->track_qty == 'Yes') {
+            $product->qty -= $item->qty;
+            $product->save();
         }
 
         // Step 9: Send Order Confirmation Email
         orderEmail($order->id, 'customer');
 
-        // Step 10: Clear Cart & Coupon
+       // Step 10: Clear Cart & Coupon
         Cart::destroy();
-        session()->forget('coupon_discount');
+        session()->forget('coupon_discount');        
 
-        // Step 11: Handle COD
-        // ✅ COD FLOW
+        return $order;
+    }
+
+
+    public function processCheckout(Request $request){
+        if (!auth()->check()) {
+            return response()->json(['status' => false]);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'customer_address_id' => 'required|exists:customer_addresses,id',
+            'payment_method' => 'required|in:cod,razorpay'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['status' => false, 'errors' => $validator->errors()]);
+        }
+
+        $user = Auth::user();
+
+        $selectedAddress = CustomerAddress::where('id', $request->customer_address_id)
+            ->where('user_id', $user->id)
+            ->first();
+
+        // ✅ totals
+        $subTotal = 0;
+        foreach (Cart::content() as $item) {
+            $price = $item->options->discount_price ?? $item->price;
+            $subTotal += $price * $item->qty;
+        }
+
+        $discount = 0;
+        $promoCode = null;
+        $discountCodeId = null;
+
+        if(session()->has('coupon_discount')){
+            $coupon = session('coupon_discount');
+
+            $discount = $coupon['type'] == 'percent'
+                ? ($coupon['value'] / 100) * $subTotal
+                : $coupon['value'];
+
+            $promoCode = $coupon['code'];
+            $discountCodeId = $coupon['id'];
+        }
+
+        $shipping = ShippingCharge::where('state_id', $selectedAddress->state_id)->value('amount') ?? 0;
+
+        $total = ($subTotal - $discount) + $shipping;
+
+        // ============================
+        // ✅ COD
+        // ============================
         if($request->payment_method == 'cod'){
+
+            $order = $this->createOrder($request, $selectedAddress, $total, $subTotal, $discount, $promoCode, $shipping, $discountCodeId);
+
+            session()->forget(['coupon_discount']);
+
             return response()->json([
                 'status' => true,
-                'orderId' => $order->id,
-                'payment_method' => 'cod'
+                'orderId' => $order->id
             ]);
         }
 
-         // ✅ RAZORPAY FLOW
+        // ============================
+        // ✅ Razorpay (NO ORDER)
+        // ============================
         if ($request->payment_method == 'razorpay') {
-            $api = new Api(
-                config('services.razorpay.key'),
-                config('services.razorpay.secret')
-            );
 
-            $amount = (int) ($total * 100); // paise
-            if ($amount < 100) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Minimum amount should be ₹1'
-                ]);
-            }
+            $api = new Api(config('services.razorpay.key'), config('services.razorpay.secret'));
+
+            $amount = (int) ($total * 100);
 
             $razorpayOrder = $api->order->create([
-                'receipt' => (string) $order->id, // ✅ string required
+                'receipt' => uniqid(),
                 'amount' => $amount,
                 'currency' => 'INR'
             ]);
 
+            // ✅ store everything needed
+            session([
+                'checkout_data' => [
+                    'address_id' => $selectedAddress->id,
+                    'total' => $total,
+                    'subtotal' => $subTotal,
+                    'discount' => $discount,
+                    'shipping' => $shipping,
+                    'coupon_code' => $promoCode,
+                    'coupon_id' => $discountCodeId
+                ]
+            ]);
+
             return response()->json([
                 'status' => true,
-                'orderId' => $order->id,
                 'razorpay_order_id' => $razorpayOrder['id'],
                 'amount' => $amount,
                 'key' => config('services.razorpay.key')
             ]);
         }
 
-        // Setp 12: Razorpay payment
-        $grandTotal = $request->grand_total;
-        
-        $api = new Api(config('razorpay.key'),config('razorpay.secret'));        
-
-        $orderData = [
-            'receipt'         => 'order_'.$order->id,
-            'amount'          => $grandTotal * 100, // Razorpay uses paise
-            'currency'        => 'INR',            
-        ];
-
-        $razorpayOrder = $api->order->create($orderData);
-
-        return response()->json([
-            'message' => 'Order placed successfully.',
-            'orderId' => $order->id,
-            'payment_method' => $request->payment_method,
-            'status'  => true,
-        ]);
-
-        // fallback
-        return response()->json([
-            'status' => false,
-            'message' => 'Invalid payment method'
-        ]);
+        return response()->json(['status' => false]);
     }
 
 
-
     public function verifyPayment(Request $request) {
-        $api = new Api(
-            config('services.razorpay.key'),
-            config('services.razorpay.secret')
+        $data = session('checkout_data');
+
+        if(!$data){
+            return response()->json(['status' => false]);
+        }
+
+        $selectedAddress = CustomerAddress::find($data['address_id']);
+
+        $order = $this->createOrder(
+            new Request(['payment_method' => 'razorpay']),
+            $selectedAddress,
+            $data['total'],
+            $data['subtotal'],
+            $data['discount'],
+            $data['coupon_code'],
+            $data['shipping'],
+            $data['coupon_id']
         );
 
-        try {
-            $attributes = [
-                'razorpay_order_id' => $request->razorpay_order_id,
-                'razorpay_payment_id' => $request->razorpay_payment_id,
-                'razorpay_signature' => $request->razorpay_signature
-            ];
+        $order->update([
+            'transaction_id' => $request->razorpay_payment_id,
+            'razorpay_order_id' => $request->razorpay_order_id,
+            'razorpay_signature' => $request->razorpay_signature,
+            'payment_status' => 'paid'
+        ]);
 
-            $api->utility->verifyPaymentSignature($attributes);
+        session()->forget(['coupon_discount','checkout_data']);
 
-            $order = Order::find($request->order_id);
-            $order->payment_method = 'Razorpay';
-            $order->payment_status = 'paid';
-            $order->transaction_id = $request->razorpay_payment_id;
-            $order->razorpay_signature = $request->razorpay_signature;
-            $order->save();
-          
-            // ✅ SUCCESS
-            return response()->json(['status' => 'success']);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ]);
-        }
-    }    
+        return response()->json([
+            'status' => 'success',
+            'orderId' => $order->id
+        ]);
+    }
 
     public function thankyou($id){
         $order = Order::where('id', $id)

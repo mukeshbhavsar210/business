@@ -46,7 +46,7 @@
                                 <p>Login to get delivery at your place.</p>
                             </div>
                             <div class="btn-right">
-                                <a href="{{ route('account.login') }}?redirect={{ url()->current() }}" class="btn btn-outline-primary retirectBack float-end">Login</a>                                
+                                <a href="{{ route('account.login') }}?redirect={{ url()->current() }}" class="btn btn-outline-primary retirectBack float-end">Login</a>
                             </div> 
                         </div>
                     @endif
@@ -328,24 +328,27 @@
                             </div>
 
                             <input type="hidden" name="grand_total" id="grand_total_input">
-                                @if($item->options->cod == 1)
-                                    <div class="order-btn mt-3">                                            
-                                        <div class="btn-group w-100 mb-3" role="group">
-                                            <input type="radio" class="btn-check" name="payment_method" id="payment_cod" value="cod" autocomplete="off" checked>
-                                            <label class="btn btn-outline-primary" for="payment_cod">COD</label>
+                            @if($item->options->cod == 1)
+                                <div class="order-btn mt-3">                                            
+                                    <div class="btn-group w-100 mb-3" role="group">
+                                        <input type="radio" class="btn-check" name="payment_method" id="payment_cod" value="cod" autocomplete="off" checked>
+                                        <label class="btn btn-outline-secondary" for="payment_cod">COD</label>
 
-                                            <input type="radio" class="btn-check" name="payment_method" id="payment_razorpay" value="razorpay" autocomplete="off">
-                                            <label class="btn btn-outline-primary" for="payment_razorpay">RazorPay</label>
-                                        </div>
-
-                                        <div class="mt-2">
-                                            <button id="cod-form" class="btn-primary btn btn-block w-100 {{ Auth::check() ? '' : 'retirectBack' }}" type="submit">Pay on COD</button>
-                                            <button id="razorpay-form" class="btn-primary btn btn-block w-100 d-none {{ Auth::check() ? 'placeOrderBtn' : 'retirectBack' }}" type="submit">Pay <span class="grand_total_button"></span></button>
-                                        </div>  
-                                    </div>  
-                                @else                                    
-                                    <button id="razorpay-form" class="btn-primary btn btn-block w-100  {{ Auth::check() ? 'placeOrderBtn' : 'retirectBack' }}" type="submit">Pay <span class="grand_total_button"></span></button>
-                                @endif                                                       
+                                        <input type="radio" class="btn-check" name="payment_method" id="payment_razorpay" value="razorpay" autocomplete="off">
+                                        <label class="btn btn-outline-secondary" for="payment_razorpay">RazorPay</label>
+                                    </div>
+                                    
+                                    @if (Auth::check())
+                                        <button id="cod-form" class="btn-primary btn btn-block w-100 {{ Auth::check() ? '' : 'retirectBack' }}" type="submit">Pay on COD</button>
+                                        <button id="razorpay-form" class="btn-primary btn btn-block w-100 d-none {{ Auth::check() ? 'placeOrderBtn' : 'retirectBack' }}" type="submit">Pay <span class="grand_total_button"></span></button>
+                                    @else
+                                        <a id="cod-form" href="{{ route('account.login') }}?redirect={{ url()->current() }}" class="btn btn-primary btn-block retirectBack w-100">Pay on COD</a>
+                                        <a id="razorpay-form" href="{{ route('account.login') }}?redirect={{ url()->current() }}" class="btn btn-primary btn-block retirectBack w-100 d-none">Pay <span class="grand_total_button"></span></a>
+                                    @endif
+                                </div>  
+                            @else                                    
+                                <button id="razorpay-form" class="btn-primary btn btn-block w-100  {{ Auth::check() ? 'placeOrderBtn' : 'retirectBack' }}" type="submit">Pay <span class="grand_total_button"></span></button>
+                            @endif                                                       
                         </form>                  
                     </div>
                 </div>
@@ -487,13 +490,9 @@
                 $("#razorpay-form").removeClass('d-none');
             }
         });              
-      
+
         $("#orderForm").submit(function(event){
             event.preventDefault();                     
-
-            let amountText = $('.grand_total_button').text();
-            let amount = amountText.replace(/[^0-9.]/g, '');
-            amount = parseFloat(amount) * 100;
 
             let paymentMethod = $('input[name="payment_method"]:checked').val();
             $('button[type="submit"]').prop('disabled', true);
@@ -512,14 +511,17 @@
                         return;
                     }
 
-                    // ✅ COD
+                    // ✅ COD → create order immediately
                     if(paymentMethod === 'cod'){
-                        window.location.href = "{{ url('thanks') }}/"+response.orderId;
+                        if(response.orderId){
+                            window.location.href = "{{ url('thanks') }}/" + response.orderId;
+                        } else {
+                            alert('Order ID missing');
+                        }
                     }
 
-                    // ✅ Razorpay
+                    // ✅ Razorpay → DO NOT use orderId yet
                     if(paymentMethod === 'razorpay'){
-                        console.log(response);
                         var options = {
                             "key": response.key,
                             "amount": response.amount,
@@ -527,8 +529,10 @@
                             "name": "Your Store",
                             "description": "Order Payment",
                             "order_id": response.razorpay_order_id, 
-                                                        
+
+                            // ✅ Only here create order
                             "handler": function (paymentResponse){                                
+
                                 $.ajax({
                                     url: "{{ route('checkout.verify.payment') }}",
                                     type: "POST",
@@ -536,18 +540,26 @@
                                         _token: "{{ csrf_token() }}",
                                         razorpay_payment_id: paymentResponse.razorpay_payment_id,
                                         razorpay_order_id: paymentResponse.razorpay_order_id,
-                                        razorpay_signature: paymentResponse.razorpay_signature,
-                                        order_id: response.orderId
+                                        razorpay_signature: paymentResponse.razorpay_signature
+                                        // ❌ removed order_id (important)
                                     },
-                                    
+
                                     success: function(res){
                                         if(res.status === 'success'){
-                                            window.location.href = "{{ url('thanks') }}/"+response.orderId;
+                                            // ✅ Backend should return orderId AFTER creation
+                                            window.location.href = "{{ url('thanks') }}/"+res.orderId;
                                         } else {
                                             alert(res.message || "Payment verification failed");
                                         }
                                     }
                                 });
+                            },
+
+                            // ✅ Prevent order on modal close / refresh
+                            "modal": {
+                                "ondismiss": function () {
+                                    console.log('Payment cancelled');
+                                }
                             },
 
                             "theme": {
@@ -566,6 +578,85 @@
                 }
             });
         });
+      
+        // $("#orderForm").submit(function(event){
+        //     event.preventDefault();                     
+
+        //     let amountText = $('.grand_total_button').text();
+        //     let amount = amountText.replace(/[^0-9.]/g, '');
+        //     amount = parseFloat(amount) * 100;
+
+        //     let paymentMethod = $('input[name="payment_method"]:checked').val();
+        //     $('button[type="submit"]').prop('disabled', true);
+
+        //     $.ajax({
+        //         url: '{{ route("front.processCheckout") }}',
+        //         type: 'POST',
+        //         data: $(this).serialize(),
+        //         dataType: 'json',
+
+        //         success:function(response){
+        //             $('button[type="submit"]').prop('disabled', false);                    
+
+        //             if(response.status == false){
+        //                 console.log(response.errors);
+        //                 return;
+        //             }
+
+        //             // ✅ COD
+        //             if(paymentMethod === 'cod'){
+        //                 window.location.href = "{{ url('thanks') }}/"+response.orderId;
+        //             }
+
+        //             // ✅ Razorpay
+        //             if(paymentMethod === 'razorpay'){
+        //                 console.log(response);
+        //                 var options = {
+        //                     "key": response.key,
+        //                     "amount": response.amount,
+        //                     "currency": "INR",
+        //                     "name": "Your Store",
+        //                     "description": "Order Payment",
+        //                     "order_id": response.razorpay_order_id, 
+                                                        
+        //                     "handler": function (paymentResponse){                                
+        //                         $.ajax({
+        //                             url: "{{ route('checkout.verify.payment') }}",
+        //                             type: "POST",
+        //                             data: {
+        //                                 _token: "{{ csrf_token() }}",
+        //                                 razorpay_payment_id: paymentResponse.razorpay_payment_id,
+        //                                 razorpay_order_id: paymentResponse.razorpay_order_id,
+        //                                 razorpay_signature: paymentResponse.razorpay_signature,
+        //                                 order_id: response.orderId
+        //                             },
+                                    
+        //                             success: function(res){
+        //                                 if(res.status === 'success'){
+        //                                     window.location.href = "{{ url('thanks') }}/"+response.orderId;
+        //                                 } else {
+        //                                     alert(res.message || "Payment verification failed");
+        //                                 }
+        //                             }
+        //                         });
+        //                     },
+
+        //                     "theme": {
+        //                         "color": "#0d6efd"
+        //                     }
+        //                 };
+
+        //                 var rzp = new Razorpay(options);
+        //                 rzp.open();
+        //             }
+        //         },
+
+        //         error:function(xhr){
+        //             console.log(xhr.responseText);
+        //             $('button[type="submit"]').prop('disabled', false);
+        //         }
+        //     });
+        // });
 
                         
         function deleteItem(rowId){            

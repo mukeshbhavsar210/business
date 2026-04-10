@@ -104,8 +104,8 @@ a:hover { text-decoration: none; color: var(--primary); }
 .small-font { font-size: 13px !important;}
 
 textarea { font-family: var(--body-font); font-size: 12px !important;}
-.form-control::placeholder { font-size: 12px !important; padding: 10px !important;}
-.home-title { text-transform: uppercase; margin-bottom: 20px; letter-spacing: 2px; word-spacing: 3px;}
+.form-control::placeholder { font-size: 12px !important; }
+.home-title { text-transform: uppercase; margin-bottom: 20px; letter-spacing:1px; word-spacing: 3px; font-size: 20px;}
 
 .brand-wrapper { }
 .brand-slider { width: 100%; text-align: center;}
@@ -146,9 +146,15 @@ textarea { font-family: var(--body-font); font-size: 12px !important;}
 
 
 .sprites{background:url(../images/sprites.svg) no-repeat; display: block;}
-.user-icon { background-position: -277px -126px; height: 34px; width: 28px; }
-.wishlist-icon { background-position:-195px -127px; height: 33px; width: 25px; }
-.bag-icon { background-position:-224px -126px; height: 33px; width: 25px; }
+.user-icon span { background-position: -277px -126px; height: 34px; width: 28px; }
+.user-icon:hover span { background-position: -277px -160px; }
+.wishlist-icon span { background-position:-195px -127px; height: 33px; width: 25px; }
+.wishlist-icon:hover span { background-position:-195px -160px; }
+.bag-icon span { background-position:-224px -126px; height: 33px; width: 25px; }
+.bag-icon:hover span { background-position:-224px -160px;}
+.search-icon { background-position:-251px -126px; height: 33px; width: 24px; }
+.search-icon span { background-position:-251px -126px; height: 33px; width: 24px; }
+.search-icon:hover span { background-position:-251px -160px;}
 
 .wishlist-ico-btn { background-position:-89px 2px; height: 20px; width: 20px;}
 .star-ico { background-position:-110px 0; height: 18px; width: 12px;}
@@ -179,7 +185,7 @@ textarea { font-family: var(--body-font); font-size: 12px !important;}
 .exchange-icon { background-position:-113px -62px; height: 21px; width: 21px; margin: 5px auto; }
 .reviews-icon { background-position:-157px -60px; height: 25px; width: 25px; margin: 5px auto; }
 .green-star-icon { background-position:-379px 0; height: 21px; width: 21px; margin-top: 21px; }
-.search-icon { background-position:-251px -126px; height: 33px; width: 24px; }
+
 
 .empty-order { background-position:-6px -127px; height: 66px; width: 67px; margin: 0 auto;}
 .delete-icon span { background-position:-228px -29px; height: 17px; width: 17px; }
@@ -208,7 +214,7 @@ textarea { font-family: var(--body-font); font-size: 12px !important;}
 .text-secondary { color: var(--secondary) !important; }
 
 header { padding:0 4%; position:relative; transition: all 0.3s ease; background-color: var(--white); box-shadow: 0 2px 4px 0 #0000001f; }
-header .logo { margin-top: 14px; display: block; margin-right: 20px;}
+header .logo { margin-top: 14px; display: block; margin-right: 30px;}
 header .logo img { width: 60px;}
 header.sticky { position:fixed; top:0; left:0; width:100%; animation: slideDown 0.4s ease; z-index:999; }
 
@@ -267,26 +273,29 @@ header { position:relative; z-index:999; }
 
 .remove_coupon { background:none; cursor: pointer; }
 
-.navbar-nav { gap: 15px;}
+.navbar-nav { gap: 25px;}
 .navbar { padding:0; margin: 0;}
-.navbar .nav-link { padding:23px 0 23px 0; text-transform: uppercase; color: var(--black); font-size: 15px; font-weight: bold; border-bottom: 3px transparent solid; letter-spacing: 1px; word-spacing: 1px;  }
-.navbar .nav-link:hover { color: var(--primary); border-color:var(--primary);}
+.navbar .nav-link { padding:23px 0 23px 0 !important; text-transform: uppercase; color: var(--black); font-size: 14px; font-weight: bold; border-bottom: 3px transparent solid; letter-spacing: 1px; word-spacing: 1px; }
+.menu-active { color: var(--primary) !important; border-bottom:3px solid var(--primary) !important; }
+.sub-menu-active { font-weight: bold !important; color: var(--black) !important; }
+/* .navbar .nav-link:hover { color: var(--primary); border-color:var(--primary);} */
 .navbar .nav-link::after { display: none;}
 
-.active_menu a.nav-link { border-bottom: 3px var(--primary) solid;}
+.active_menu a.nav-link { color: var(--primary); border-bottom: 3px var(--primary) solid;}
 .sticky .navbar .nav-link { padding-top: 20px; padding-bottom: 20px;}
 
 .dropdown-menu[data-bs-popper] { left: 0; width: 100%; top:98%; border-radius: 0 0 5px 5px; padding:15px 20px 20px 20px; border:none; box-shadow: 0 4px 6px 0 #0000005f;}
 .dropdown-header { padding: 0; margin-bottom: 10px; color: var(--primary); font-weight: bold;}
-.dropdown-item { padding: 0; font-size: 13px; margin: 3px 0;}
+.dropdown-header > a { color: var(--gray); font-weight: normal;}
+.dropdown-item { padding: 0; font-size: 13px; margin: 3px 0; color: var(--gray); font-weight: normal; }
 .dropdown-item:hover { background: none; font-weight: bold;}
 
 .logo-controls { display: flex;}
 
-.search-controls { display: flex; column-gap: 15px; width: 100%; margin-top: 10px;}
-.search-controls .search-form { width:65%; margin-top: 4px;}
+.search-controls { display: flex; column-gap: 15px; width: 100%; top: 5px; position: relative; }
+.search-controls .search-form { width:72%; margin-top: 4px;}
 .search-control { position: relative;}
-.search-control .search-icon { position:absolute; top:5px; left:13px; }
+.search-control .search-icon { position:absolute; top:2px; left:13px; }
 .search-control .form-control { background-color: rgb(238, 238, 238); padding:10px 5px 10px 38px; width: 100%; border: 1px transparent solid; }
 .search-control .form-control:focus { background-color: var(--white); border-color: var(--black);  }
 
@@ -299,7 +308,7 @@ header { position:relative; z-index:999; }
 .search-controls .icon-controls li.item a.link:hover { color: var(--black);  }
 .search-controls .icon-controls li.item a.link .label { position: relative; top:-5px; }
 .search-controls .icon-controls li.item a.link .sprites { margin: 0 auto 5px auto; }
-.search-controls .icon-controls li.item a .avatar { padding: 5px; border-radius: 100px; color: var(--white); font-size: 12px; height: 30px; width: 30px; font-weight: bold; margin-top: 5px;}
+.search-controls .icon-controls li.item a .avatar { padding: 6px 0; border-radius: 100px; color: var(--white); font-size: 13px; height: 35px; width: 35px; font-weight: bold; margin-top: 3px;}
 
 .user-link { height: 50px; display: block; position: relative; }
 
@@ -1145,14 +1154,14 @@ footer .original-banner .text h6 span { font-size: 14px; font-weight: bold;  }
     body { overflow-x: hidden;}
     body .navbar-listings li { margin: 10px 0; }
     body .navbar .nav-item { padding: 0 0 15px 0; border-bottom: 1px #ccc solid !important; }
-    body .navbar .nav-link { text-transform: capitalize; padding: 0; font-size: 14px; font-weight: normal; border: none !important;}
+    body .navbar .nav-link { text-transform: capitalize; padding: 0 !important; font-size: 14px; font-weight: normal; border: none !important;}
     body .navbar .nav-link:hover { border: none; color: var(--black);}
     body .toggle-category.active, body .toggle-subcategory.active { font-weight: bold;}
     body .dropdown-item.active, .dropdown-item:active { color: var(--black); background: none;}
     body .dropdown-item { margin: 8px 0;}
     body .mobile-ad { height: 80px; width: 100%; background-color: var(--primary); padding: 10px; color: var(--white);}
     body .details-accounts, body .orders-details { width: 100%; margin-top: 0; padding: 0;}
-    body header { padding: 8px 10px;}
+    body header { padding: 8px 0;}
     body header .logo { margin-top: 5px; margin-left: 15px;}
     body header .logo img { width: 50px;}
     body .offcanvas-start { width: 75%;}    
@@ -1165,7 +1174,7 @@ footer .original-banner .text h6 span { font-size: 14px; font-weight: bold;  }
     body .default main { margin-top: 0;}
     body .pagination { width: 100%; margin-top: 10px;}
     body .login-form { padding: 0;}
-    body .search-controls { margin-top: 0;}
+    body .search-controls { margin-top: 0; top:0;}
     body .search-control { padding: 4px 4px 3px 4px;}
 
     .bottom-modal1 .modal-body { padding: 10px 18px 0 0;}
