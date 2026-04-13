@@ -12,6 +12,7 @@
         "intervention/image": "^3.11",
         "laravel/framework": "^9.19",
         "laravel/sanctum": "^3.0",
+        "laravel/socialite": "^5.26",
         "laravel/tinker": "^2.7",
         "razorpay/razorpay": "^2.9"
     },

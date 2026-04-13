@@ -312,7 +312,7 @@
                     $("#password").siblings("p").removeClass('invalid-feedback').html();
                     $("#password").removeClass('is-invalid');
 
-                    window.location.href="{{ route('front.home') }}"
+                    window.location.href="{{ route('account.login') }}"
                 }
             },
             error: function(JQXHR, exception){

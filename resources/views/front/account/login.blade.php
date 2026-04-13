@@ -3,19 +3,10 @@
 @section('title', 'Login Account')
 
 @section('content')
-    <div class="container">
-        @if (Session::has('success'))
-            <div class="alert alert-success">
-                {{ Session::get('success') }}
-            </div>
-        @endif
 
-        @if (Session::has('error'))
-            <div class="alert alert-danger">
-                {{ Session::get('error') }}
-            </div>
-        @endif
-        
+    @include('front/layouts/message')
+
+    <div class="container">
         <div class="row">
             <div class="col-md-6">1</div>
             <div class="col-md-6">
@@ -26,13 +17,15 @@
                     <form action="{{ route('account.authenticate') }}" method="post" class="mt-4" >
                         @csrf                        
                         <div class="form-group">
-                            <input type="text" class="form-control @error('email') is-invalid @enderror" placeholder="Email" name="email" value="{{ old('email') }}">
+                            <input type="text" class="form-control floating-input @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}">
+                            <label class="floating-label">Email</label>
                             @error('email')
                                 <p class="invalid-feedback">{{ $message }}</p>
                             @enderror
                         </div>
                         <div class="form-group">
-                            <input type="password" class="form-control @error('password') is-invalid @enderror" placeholder="Password" name="password" >
+                            <input type="password" class="form-control floating-input @error('password') is-invalid @enderror" name="password" >
+                            <label class="floating-label">Password</label>
                             @error('password')
                                 <p class="invalid-feedback">{{ $message }}</p>
                             @enderror

@@ -122,7 +122,6 @@ class ShopController extends Controller {
         if ($request->filled('price_min') && $request->filled('price_max')) {
             $min = intval($request->price_min);
             $max = intval($request->price_max);
-
             $products = $products->whereBetween('price', [$min, $max]);
         }        
 
@@ -212,7 +211,7 @@ class ShopController extends Controller {
 
         $data = array_merge($data, [
             'priceMin' => $request->get('price_min', 0),
-            'priceMax' => $request->get('price_max', 5000),            
+            'priceMax' => $request->get('price_max', 10000),            
             'sort'     => $request->get('sort'),
         ]);                    
 

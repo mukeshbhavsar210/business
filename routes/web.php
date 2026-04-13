@@ -14,8 +14,10 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\FrontController;
 use App\Http\Controllers\ShopController;
+use App\Http\Controllers\Auth\SocialController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
 
 //Front pages routes
 Route::controller(FrontController::class)->group(function() {
@@ -40,6 +42,15 @@ Route::controller(ShopController::class)->group(function() {
     Route::post('/rate-product', 'rating_store')->name('rate.product');
 });
 
+
+// Route::get('/mail', function () {
+//     Mail::raw('Test Email Working', function ($message) {
+//         $message->to('contact@amdavadproperty.in')
+//                 ->subject('Test Mail');
+//     });
+
+//     return 'Mail Sent';
+// });
 
 Route::controller(CartController::class)->group(function() {
     //Bag
@@ -84,6 +95,13 @@ Route::controller(CartController::class)->group(function() {
 Route::controller(CartController::class)->group(function() {
     Route::get('/razorpay','index');
     Route::post('/payment','payment')->name('payment');
+});
+
+Route::controller(SocialController::class)->group(function() {
+    Route::get('auth/google', 'redirectToGoogle');
+    Route::get('auth/google/callback', 'handleGoogleCallback');
+    Route::get('auth/facebook', 'redirectToFacebook');
+    Route::get('auth/facebook/callback', 'handleFacebookCallback');
 });
 
 //User realted
