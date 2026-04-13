@@ -5,20 +5,18 @@
 @section('content')
 
 <div class="container">
-    <div class="small-title">
-        <h4>Account</h4>
-        <p>{{ currentUserName() }}</p>
-    </div>
-
     <div class="row">
-        <div class="col-md-3 col-12">
-            @include('front.account.common.sidebar')  
+        <div class="col-md-10 col-12 mx-auto">
+            <div class="row">
+                @include('front.account.common.sidebar')              
+                <div class="col-md-9 col-12 px-md-0">
+                    @include('front.account.common.message')        
+                    <div class="orders-details">
+                        <h3>Saved Cards</h3>                
+                    </div>
+                </div>            
+            </div>
         </div>
-        <div class="col-md-9 col-12">
-            @include('front.account.common.message')        
-            <h3>Saved Cards</h3>                
-            </div>            
-        </div>            
     </div>
 </div>
 

@@ -856,8 +856,8 @@ class SettingController extends Controller {
             $user = new User;
             $user->name = $request->name;
             $user->email = $request->email;
-            $user->phone = $request->phone;
             $user->mobile = $request->mobile;
+            $user->alternate_mobile = $request->alternate_mobile;
             $user->birthdate = $request->birthdate;
             $user->gender = $request->gender;
             $user->role = $request->role;
@@ -911,13 +911,14 @@ class SettingController extends Controller {
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'email' => 'required|email|unique:users,email,'.$id.',id',
-            'phone' => 'required',
+            'mobile' => 'required',
         ]);
 
         if($validator->passes()){
             $user->name = $request->name;
             $user->email = $request->email;
-            $user->phone = $request->phone;
+            $user->mobile = $request->mobile;
+            $user->alternate_mobile = $request->alternate_mobile;
             $user->status = $request->status;
             if($request->password != ''){
                 $user->password = Hash::make($request->password);

@@ -24,7 +24,7 @@
                 @endif
 
                 <div class="modal-body customer-address"> 
-                    <h4 class="mb-2">Contact Details</h4>
+                    <h4 class="mb-1">Contact Details</h4>
                     <div class="row">                    
                         <div class="col-6">
                             <div class="form-group">
@@ -42,7 +42,7 @@
                         </div>
                     </div>
 
-                    <h4 class="mb-3">Address</h4>
+                    <h4 class="mb-1">Address</h4>
                     <div class="row">                        
                         <div class="col-md-12">
                             <div class="form-group">
@@ -59,17 +59,17 @@
                                 <label class="floating-label">Locality, Building, Street</label>
                             </div>
                         </div>
-                        <div class="col-5">
+                        <div class="col-md-5 col-12">
                             <div class="form-group">
                                 <input type="text" name="city" id="city" class="form-control" value={{ (!empty($address)) ? $address->city : '' }}>
                                 <label class="floating-label">City</label>
                                 <p></p>
                             </div>
                         </div>                                                                                                                      
-                        <div class="col-4">
+                        <div class="col-md-4 col-12">
                             <div class="form-group">                                
                                 <select name="state_id" required class="form-select">
-                                    <option value="">Select State</option>
+                                    <option value="">State</option>
 
                                     @foreach($states as $state)
                                         <option value="{{ $state->id }}"
@@ -86,10 +86,10 @@
                                 <p></p>
                             </div>
                         </div>  
-                        <div class="col-3">
+                        <div class="col-md-3 col-12">
                             <div class="form-group">                                
                                 <input type="text" name="zip" id="zip" class="form-control" value={{ (!empty($address)) ? $address->zip : '' }}>
-                                <label class="floating-label">Pin Code</label>
+                                <label class="floating-label">Pincode</label>
                                 <p></p>
                             </div>
                         </div> 
@@ -106,8 +106,8 @@
 
                                     <label for="City">Types of address <span class="required">*</span></label><br /> 
                                     <label for="home">
-                                        <input type="radio" name="address_type" id="home" value="Home"
-                                        {{ $addressType == 'Home' ? 'checked' : '' }}>
+                                        <input type="radio" name="address_type" id="home" value="Home" checked
+                                            {{ old('address_type', $addressType ?? 'Home') == 'Home' ? 'checked' : '' }}>
                                         Home
                                     </label>
 
@@ -116,19 +116,6 @@
                                         {{ $addressType == 'Office' ? 'checked' : '' }}>
                                         Office
                                     </label>
-                                        
-                                                                       
-                                    {{-- <label for="home">
-                                        <input type="radio" name="address_type" id="home" value="Home"
-                                        {{ old('address_type', optional(auth()->user()->address)->address_type) == 'Home' ? 'checked' : '' }}>
-                                        Home
-                                    </label>
-
-                                    <label for="office">
-                                        <input type="radio" name="address_type" id="office" value="Office"                                                            
-                                        {{ old('address_type', optional(auth()->user()->address)->address_type) == 'Office' ? 'checked' : '' }} >
-                                        Office
-                                    </label> --}}
                                 </div>
                             @else
                                 <input type="hidden" name="address_type" value="Office">
@@ -149,8 +136,7 @@
                     </div>                
                                     
                     <div class="flex mt-3">
-                        <button type="button" class="btn btn-secondary w-50" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary w-50">{{ $buttonText }}</button> 
+                        <button type="submit" class="btn btn-primary w-100">{{ $buttonText }}</button> 
                     </div>
                </div>
             </form>

@@ -1,5 +1,6 @@
 @props([
     'item' => null,    
+    'category' => null,
     'subcategory' => null,
     'class' => null,
     "section" => null,
@@ -67,8 +68,8 @@
                     class="img-fluid rounded" alt="{{ $product->title }}" />
             </a>
 
-        @elseif($gallery == 'category')
-             <a href="{{ route('front.subcategory', [$subcategory->sub_category_slug]) }}" >
+        @elseif($gallery == 'category')  
+            <a href="{{ route('front.shop', [$category->category_slug, $subcategory->sub_category_slug]) }}" >
                 @if ($subcategory->image != "")
                     <img src="{{ asset('uploads/category/subcategory/'.$subcategory->image) }} " alt="" class="product-img rounded">
                 @endif

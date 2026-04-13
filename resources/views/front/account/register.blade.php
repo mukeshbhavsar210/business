@@ -14,27 +14,32 @@
 
                 <form action="" method="post" name="registrationForm" id="registrationForm" class="mt-3">                    
                     <div class="form-group">
-                        <input type="text" class="form-control" placeholder="Name" id="name" name="name">
+                        <input type="text" class="form-control floating-input" id="name" name="name">
+                        <label class="floating-label">Name</label>
                         <p></p>
                     </div>
                     <div class="form-group">
-                        <input type="text" class="form-control" placeholder="Email" id="email" name="email">
+                        <input type="text" class="form-control floating-input" id="email" name="email">
+                        <label class="floating-label">Email</label>
                         <p></p>
                     </div>
                     <div class="form-group">
-                        <input type="text" class="form-control" placeholder="Phone" id="phone" name="phone">
+                        <input type="text" class="form-control floating-input" id="mobile" name="mobile">
+                        <label class="floating-label">Mobile</label>
                         <p></p>
                     </div>
                     <div class="row">
                         <div class="col-6">
                             <div class="form-group">
-                                <input type="password" class="form-control" placeholder="Password" id="password" name="password">
+                                <input type="password" class="form-control floating-input" id="password" name="password">
+                                <label class="floating-label">Password</label>
                                 <p></p>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="form-group">
-                                <input type="password" class="form-control" placeholder="Confirm Password" id="password_confirmation" name="password_confirmation">
+                                <input type="password" class="form-control floating-input" id="password_confirmation" name="password_confirmation">
+                                <label class="floating-label">Confirm Password</label>
                                 <p></p>
                             </div>
                         </div>

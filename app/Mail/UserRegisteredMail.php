@@ -21,8 +21,8 @@ class UserRegisteredMail extends Mailable {
     }
 
     public function build() {
-        $profileUrl = url('https://domain/account/profile');
-        $yourOrder = url('https://domain/account/order');
+        $profileUrl = url('https://testing.amdavadproperty.in/account/profile');
+        $yourOrder = url('https://testing.amdavadproperty.in/account/orders');
 
         return $this->subject('Welcome to  - Your Account Details')
                     ->view('emails.user_registered')

@@ -15,23 +15,30 @@
 
     <h2 class="home-title mt-5">Shop By Category</h2>                
     <div class="row">
-        @foreach(getCategories() as $category)
-            @foreach($category->subcategories->whereNotNull('image')->where('image','!=','') as $subcategory)
-                <div class="col-md-2 col-6">
-                    <x-products 
-                        :item="$category"
-                        :subcategory="$subcategory" 
-                        section="show_subcategory" gallery="category" class="home"
-                        :hover="false" 
-                        :producttitle="false" 
-                        :description="false" 
-                        :amount="false" 
-                        :title_limit="20" 
-                        :short_limit="7" 
-                    />
-                </div>                    
-            @endforeach                
-        @endforeach
+        @if (getCategories()->isNotEmpty())
+            @foreach (getCategories() as $category)
+                @if ($category->subCategories->isNotEmpty())														                       
+                    @foreach ($category->subCategories->whereNotNull('image')->where('image','!=','') as $subcategory)
+                        @if ($subcategory->subSubCategories->isNotEmpty())
+                            <div class="col-md-2 col-6">
+                                <x-products 
+                                    :item="$category"
+                                    :category="$category"
+                                    :subcategory="$subcategory"
+                                    section="show_subcategory" gallery="category" class="home"
+                                    :hover="false" 
+                                    :producttitle="false" 
+                                    :description="false" 
+                                    :amount="false" 
+                                    :title_limit="20" 
+                                    :short_limit="7" 
+                                />
+                            </div>                                  
+                        @endif
+                    @endforeach
+                @endif
+            @endforeach
+        @endif           
     </div> 
     </div>      
 @endsection

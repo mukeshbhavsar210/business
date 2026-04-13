@@ -16,8 +16,8 @@
                 <li class="breadcrumb-item active">{{ $selected_item2->sub_category_title ?? '' }} / {{ $selected_item3->sub_sub_category_name ?? '' }}</li>                    
             </ol>
         </div>
-        <p>                                                
-            <b>{{ $selected_item1->category_name ?? '' }} / {{ $selected_item2->sub_category_title ?? '' }} / {{ $selected_item3->sub_sub_category_name ?? '' }}</b>
+        <p class="tiny-font">                                                
+            {{ $selected_item1->category_name ?? '' }} / {{ $selected_item2->sub_category_title ?? '' }} / {{ $selected_item3->sub_sub_category_name ?? '' }}
             <span class="text-muted">- {{ $products->total() }} items</span>
         </p> 
     
@@ -430,22 +430,5 @@
         //     window.location.href = url;
         // }
 
-        // $(window).on('scroll', function () {
-        //     var footerTop = $('footer').offset().top;
-        //     var scrollTop = $(window).scrollTop();
-        //     var windowHeight = $(window).height();
-
-        //     if (scrollTop + windowHeight >= footerTop) {
-        //         $('.mobile-filter-control').css({
-        //             position: 'absolute',
-        //             bottom: '0px'
-        //         });
-        //     } else {
-        //         $('.mobile-filter-control').css({
-        //             position: 'fixed',
-        //             bottom: '100px'
-        //         });
-        //     }
-        // });
     </script>
 @endsection

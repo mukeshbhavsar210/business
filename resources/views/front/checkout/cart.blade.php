@@ -27,9 +27,9 @@
 
                     @if (Auth::check())
                         <div class="delivery-time">
-                            <div class="address">
-                                @foreach($address as $value) 
-                                    @if($value->default_address == 1)                                        
+                            <div class="address">                                
+                                @foreach($address as $value)
+                                    @if($value->default_address == 1)
                                         <p>Delivery to: <b>{{ $value->name }}, {{ $value->zip }}</b></p>
                                         <p class="tiny-font mt-1">{{ $value->address }},</p>
                                         <p class="tiny-font">{{ $value->locality }}, {{ $value->city }}, {{ $value->state->name }}</p>    
@@ -37,7 +37,15 @@
                                 @endforeach
                             </div>
                             <div class="btn-right">
-                                <a href="#" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#deliveryAddress">Change Address</a>
+                                @if($address->count() > 0)
+                                    <a href="#" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#deliveryAddress">
+                                        Change Shipping Address
+                                    </a>
+                                @else
+                                    <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#deliveryAddress">
+                                        Add Shipping Address
+                                    </a>
+                                @endif
                             </div>                                
                         </div>
                     @else
@@ -366,7 +374,7 @@
                             Add Items from Wishlist
                         </a>
                     @else
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#login" class="btn btn-outline-primary mt-4 caps-btn">
+                        <a href="{{ route('account.login') }}" class="btn btn-outline-primary mt-4 caps-btn">
                             Add Items from Wishlist
                         </a>
                     @endif

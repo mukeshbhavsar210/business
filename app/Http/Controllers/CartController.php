@@ -138,7 +138,9 @@ class CartController extends Controller {
         }
         $addressTypes = CustomerAddress::pluck('address_type')->toArray();        
         $states = State::orderBy('name', 'ASC')->get(); 
-        $delivery_address = CustomerAddress::with('state')->get();
+        $delivery_address = CustomerAddress::where('user_id', auth()->id())
+                    ->orderByDesc('default_address')
+                    ->get();
         $homeExists = CustomerAddress::where('user_id', auth()->id())
             ->where('address_type', 'Home')
             ->exists();        

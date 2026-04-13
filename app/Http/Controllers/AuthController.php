@@ -44,15 +44,14 @@ class AuthController extends Controller {
             $user = new User;
             $user->name = $request->name;
             $user->email = $request->email;
-            $user->phone = $request->phone;
-            $user->password = Hash::make($plainPassword);
-            $user->image = asset('images/default-avatar.png');
+            $user->mobile = $request->mobile;
+            $user->password = Hash::make($plainPassword);            
             $colors = ['#FF5733', '#33B5E5', '#2ECC71', '#9B59B6', '#F39C12', '#E74C3C', '#1ABC9C', '#34495E'];
             $user->avatar_color = $colors[array_rand($colors)];
             $user->save();
 
             // ✅ Send confirmation email
-            Mail::to($user->email)->send(new UserRegisteredMail($user, $plainPassword));
+            //Mail::to($user->email)->send(new UserRegisteredMail($user, $plainPassword));
 
             session()->flash('success', 'You have registered successfully. Check your email for login details.');
 
@@ -70,7 +69,6 @@ class AuthController extends Controller {
     
 
     public function authenticate(Request $request) {
-        // ✅ Store intended URL first
         if ($request->has('redirect')) {
             session(['url.intended' => $request->redirect]);
         }
@@ -81,6 +79,7 @@ class AuthController extends Controller {
         ]);
 
         if ($validator->passes()) {
+
             if (Auth::attempt([
                 'email' => $request->email,
                 'password' => $request->password,
@@ -89,20 +88,18 @@ class AuthController extends Controller {
 
                 $request->session()->regenerate();
 
-                // ✅ This will now redirect to previous page
                 return redirect()->intended(route('account.dashboard'))
                     ->with('toast_success', 'Welcome back, ' . Auth::user()->name . '!');
-
             } else {
-                return redirect()->route('front.home')
+                return redirect()->back()
                     ->withInput($request->only('email'))
-                    ->with('error','Either email/password is incorrect.');
+                    ->with('error', 'Either email/password is incorrect.');
             }
 
         } else {
-            return redirect()->route('front.home')
+            return redirect()->back()
                 ->withErrors($validator)
-                ->withInput($request->only('email'));
+                ->withInput();
         }
     }
 
@@ -140,8 +137,8 @@ class AuthController extends Controller {
                     ],
                     [
                         'type' => 'text',
-                        'name' => 'phone',
-                        'label' => 'Phone',                        
+                        'name' => 'mobile',
+                        'label' => 'mobile',                        
                         'animate_label' => 'floating-input',
                         'col' => 'col-6 mt-2'
                     ],
@@ -154,8 +151,8 @@ class AuthController extends Controller {
                     ],                    
                     [
                         'type' => 'text',
-                        'name' => 'mobile',
-                        'label' => 'Mobile',                        
+                        'name' => 'alternate_mobile',
+                        'label' => 'Alternate Mobile',                        
                         'animate_label' => 'floating-input',
                         'col' => 'col-6 mt-2'
                     ],                                   
@@ -402,41 +399,41 @@ class AuthController extends Controller {
                         'name' => 'name',
                         'label' => 'Name',                        
                         'animate_label' => 'floating-input',
-                        'col' => 'col-6 mt-2'
+                        'col' => 'col-md-6 col-12 mt-2'
                     ],
                     [
                         'type' => 'text',
-                        'name' => 'phone',
-                        'label' => 'Phone',                        
+                        'name' => 'mobile',
+                        'label' => 'Mobile',                        
                         'animate_label' => 'floating-input',
-                        'col' => 'col-6 mt-2'
+                        'col' => 'col-md-6 col-12 mt-2'
                     ],
                     [
                         'type' => 'email',
                         'name' => 'email',
                         'label' => 'Email',                        
                         'animate_label' => 'floating-input',
-                        'col' => 'col-12 mt-2'
+                        'col' => 'col-md-12 col-12 mt-2'
                     ],                    
                     [
                         'type' => 'text',
-                        'name' => 'mobile',
-                        'label' => 'Mobile',                        
+                        'name' => 'alternate_mobile',
+                        'label' => 'Alternate Mobile',                        
                         'animate_label' => 'floating-input',
-                        'col' => 'col-6 mt-2'
+                        'col' => 'col-md-6 col-12'
                     ],                                   
                     [
                         'type' => 'date',
                         'name' => 'birthdate',
                         'label' => 'Birthdate',                        
                         'animate_label' => 'floating-input',
-                        'col' => 'col-6 mt-2'
+                        'col' => 'col-md-6 col-12'
                     ],
                     [
                         'type' => 'file',
                         'name' => 'image',
                         'label' => 'User Photo',
-                        'col' => 'col-6 mt-2'
+                        'col' => 'col-md-6 col-12'
                     ],
                     [
                         'type' => 'radio',
@@ -446,9 +443,8 @@ class AuthController extends Controller {
                             'male' => 'Male',
                             'female' => 'Female',
                         ],
-                        'col' => 'col-6'
-                    ],     
-                    
+                        'col' => 'col-md-6 col-12'
+                    ],                         
                 ]
             ],        
 
@@ -492,15 +488,15 @@ class AuthController extends Controller {
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'email' => 'required|email|unique:users,email,'.$userId.',id',
-            'phone' => 'required',
+            'mobile' => 'required',
         ]);
 
         if($validator->passes()){
             $user = User::find($userId);
             $user->name = $request->name;
             $user->email = $request->email;
-            $user->phone = $request->phone;
             $user->mobile = $request->mobile;
+            $user->alternate_mobile = $request->alternate_mobile;
             $user->birthdate = $request->birthdate;
             $user->gender = $request->gender;
             $user->save();

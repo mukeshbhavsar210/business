@@ -5,73 +5,73 @@
 @section('content')
 
 <div class="container">
-    <div class="small-title d-none d-md-block">
-        <h4>Account</h4>
-        <p>{{ currentUserName() }}</p>
-    </div>
-
     <div class="row">
-        <div class="col-md-3 col-12">
-            @include('front.account.common.sidebar')
-        </div>
-        <div class="col-md-9 col-12">
-            <div class="details-accounts">
-                @include('front.account.common.message')
+        <div class="col-md-10 col-12 mx-auto">
+            <div class="row">
+                @include('front.account.common.sidebar')        
 
-                @include('front.account.common.modal', [
-                    'form' => $profileFormConfig,
-                    'model' => $user
-                ])
+                <div class="col-md-9 col-12 px-md-0">
+                    <div class="details-accounts">
+                        @include('front.account.common.message')
 
-                @include('front.account.common.modal', [
-                    'form' => $passwordFormConfig,
-                    'model' => null
-                ])
+                        @include('front.account.common.modal', [
+                            'form' => $profileFormConfig,
+                            'model' => $user
+                        ])
 
-                <h3>Profile Details</h3> 
+                        @include('front.account.common.modal', [
+                            'form' => $passwordFormConfig,
+                            'model' => null
+                        ])
 
-                <div class="order-history">
-                    <div class="individual">
-                        <div class="row mb-2">
-                            <div class="col-md-3 col-12 text-muted">Name</div>
-                            <div class="col-md-9 col-12">{{ $user->name }}</div>
-                        </div>
-                        <div class="row mb-2">
-                            <div class="col-md-3 col-12 text-muted">Mobile Number</div>
-                            <div class="col-md-9 col-12">{{ $user->phone }}</div>
-                        </div>
-                        <div class="row mb-2">
-                            <div class="col-md-3 col-12 text-muted">Email ID</div>
-                            <div class="col-md-9 col-12">{{ $user->email }}</div>
-                        </div>
-                        <div class="row mb-2">
-                            <div class="col-md-3 col-12 text-muted">Alternate Mobile</div>
-                            <div class="col-md-9 col-12">{{ $user->mobile }}</div>
-                        </div>
-                        <div class="row mb-2">
-                            <div class="col-md-3 col-12 text-muted">Gender</div>
-                            <div class="col-md-9 col-12">{{ $user->gender }}</div>
-                        </div>   
-                        <div class="row mb-2">
-                            <div class="col-md-3 col-12 text-muted">Date of Birth</div>
-                            <div class="col-md-9 col-12">{{ $user->birthdate }}</div>
-                        </div>           
-                        <div class="row mt-4">
-                            <div class="col-md-3 col-12"></div>
-                            <div class="col-md-9 col-12">
-                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editProfileModal">
-                                    Edit Profile
-                                </button>
+                        <h3>Profile Details</h3> 
 
-                                <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#editPasswordModal">
-                                    Edit Password
-                                </button>
+                        <div class="order-history">
+                            <div class="individual">
+                                <div class="row mb-2">
+                                    <div class="col-md-3 col-12 text-muted">Name</div>
+                                    <div class="col-md-9 col-12">{{ $user->name }}</div>
+                                </div>                                
+                                <div class="row mb-2">
+                                    <div class="col-md-3 col-12 text-muted">Email ID</div>
+                                    <div class="col-md-9 col-12">{{ $user->email }}</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-md-3 col-12 text-muted">Mobile Number</div>
+                                    <div class="col-md-9 col-12">{{ $user->mobile }}</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-md-3 col-12 text-muted">Alternate Mobile</div>
+                                    <div class="col-md-9 col-12">{{ $user->alternate_mobile }}</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-md-3 col-12 text-muted">Gender</div>
+                                    <div class="col-md-9 col-12">{{ $user->gender == 'male' ? 'Male' : 'Female' }}</div>
+                                </div>   
+                                <div class="row mb-2">
+                                    <div class="col-md-3 col-12 text-muted">Date of Birth</div>
+                                    <div class="col-md-9 col-12">
+                                        {{ \Carbon\Carbon::parse($user->birthdate)->format('d M, Y') }}
+                                    </div>
+                                </div>           
+                                <div class="row mt-4">
+                                    <div class="col-md-3 col-12"></div>
+                                    <div class="col-md-9 col-12">
+                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                                            Edit Profile
+                                        </button>
+
+                                        <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#editPasswordModal">
+                                            Edit Password
+                                        </button>
+                                    </div>
+                                </div>                                                 
                             </div>
-                        </div>                                                 
-                    </div>
-                </div>
-            </div>                  
-        </div>            
+                        </div>
+                    </div>                  
+                </div>  
+            </div>
+        </div>
     </div>
 </div>
 @endsection

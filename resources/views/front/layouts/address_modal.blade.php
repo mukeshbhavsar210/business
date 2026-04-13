@@ -5,15 +5,7 @@
                 <h5 class="modal-title" id="deliveryAddressLabel">Select Delivery address</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="saved-address-grey">
-                <h5>Saved Address</h5>
-                @if(!in_array('Home', $addressTypes) || !in_array('Office', $addressTypes))
-                    <a href="#" class="btn btn-outline-dark float-end" data-bs-toggle="modal" data-bs-target="#createAddressModal">
-                        + Add New Address
-                    </a>
-                @endif                      
-            </div>
-
+            
             <div class="modal-body">
                 <form method="POST" action="{{ route('address.default') }}">
                     @csrf
@@ -26,7 +18,7 @@
                     @endphp
 
                     @foreach($delivery_address as $value)
-                        <div class="default-card {{ $value->default_address == 1 ? 'delivery-address' : '' }}">
+                        <div class="default-card {{ $value->default_address == 1 ? 'delivery-address' : '' }}">                            
                             <label class="delivery-address-card">
                                 <div class="card-body">           
                                     <label class="custom-radio">                                                                                                                    
@@ -36,21 +28,19 @@
 
                                     <div class="address-content">
                                         <div class="left">                                                    
-                                            <h6>{{ $value->name }}
-                                                <span class="text-muted">{{ $value->default_address ? '(Default)' : '(Other)' }}</span>
-                                            </h6>                                                                                                            
-                                            <p class="text-muted mt-1 mb-0">{{ Str::limit($value->address, 50, '...') }}</p>
+                                            <p>{{ $value->default_address ? 'Default' : 'Other' }} Address</p>
+                                            <h6>{{ $value->name }} - {{ $value->mobile }}</h6>
+                                            <p class="text-muted mb-0">{{ Str::limit($value->address, 50, '...') }}</p>
 
                                             <div class="d-none control-btn">
                                                 <p class="text-muted mb-0">{{ $value->locality }}, {{ $value->city }} - {{ $value->zip }}, 
                                                     {{ $value->state->name ?? '' }}.
-                                                </p>
-                                                <p class="text-muted mt-1">Mobile: <b>{{ $value->mobile }}</b></p>
+                                                </p>                                                
                                                 
                                                 <div class="flex-end">
                                                     <ul class="flex mt-3">
                                                         <li><button type="submit" name="action" value="default" class="btn btn-primary btn-sm caps-btn">Deliver Here</button></li>                                                                        
-                                                        <li><button type="submit" name="action" value="delete" class="btn btn-outline-danger caps-btn btn-sm">Delete</button></li>
+                                                        <li><button type="submit" name="action" value="delete" class="btn-noback"><span class="sprites delete-icon"></span></button></li>
                                                         {{-- <li>
                                                             <button type="submit"
                                                                 class="btn btn-outline-dark caps-btn btn-sm"
@@ -75,6 +65,16 @@
                         </div>
                     @endforeach
                 </form>
+
+                @php
+                    $types = $delivery_address->pluck('address_type')->toArray();
+                @endphp
+
+                @if(!(in_array('Home', $types) && in_array('Office', $types)))
+                    <a href="#" class="btn btn-outline-dark" style="margin-left: 35px" data-bs-toggle="modal" data-bs-target="#createAddressModal">
+                        + Add New Address
+                    </a>
+                @endif
             </div>
         </div>
     </div>
@@ -144,9 +144,9 @@
                 <div class="modal-footer-extra">                                
                     <div class="max-savings">
                         <p>Maximum savings:</p> 
-                        @if($store_discount)
+                        {{-- @if($store_discount)
                             <p class="discount-text">₹{{ round($coupon_discount) }}</p> 
-                        @endif
+                        @endif --}}
                     </div>
                     <div>
                         <button class="btn btn-primary btn-big" type="submit" data-bs-dismiss="modal">Apply</button>
