@@ -6,6 +6,7 @@ use App\Http\Controllers\admin\HomeController;
 use App\Http\Controllers\admin\CategoryController;
 use App\Http\Controllers\admin\OrderController;
 use App\Http\Controllers\admin\ProductController;
+use App\Http\Controllers\admin\AffiliateProductController;
 use App\Http\Controllers\admin\ProductImageController;
 use App\Http\Controllers\admin\ProductSubCategoryController;
 use App\Http\Controllers\admin\SettingController;
@@ -15,6 +16,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\FrontController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\Auth\SocialController;
+use App\Models\AffiliateProduct;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
@@ -25,6 +27,27 @@ Route::controller(FrontController::class)->group(function() {
     Route::post('/add-to-wishlist', 'addToWishlist')->name('front.addToWishlist');
     Route::get('/page/{slug}', 'page')->name('front.page');
     Route::post('/send-contact-email', 'sendContactEmail')->name('front.sendContactEmail');
+
+    Route::get('/faqs/', 'faqs')->name('front.faqs');
+    Route::get('/deals/', 'deals')->name('front.deals');
+    Route::post('/add-to-affiliate', 'addToAffiliate')->name('front.addToAffiliate');
+
+    Route::post('/notify', 'addToNotify')->name('front.notify');
+    Route::post('/affiliate_notify', 'addToAffiliateNotify')->name('front.affiliate.notify');
+
+    Route::post('/affiliate-product/{id}/like', 'like');
+    Route::post('/affiliate-product/{id}/view', 'view');
+
+    //Chat support
+    Route::post('/chat-order-status', 'orderStatus')->name('chat.order.status');
+});
+
+
+
+Route::get('/go/{id}', function($id){
+    $product = AffiliateProduct::findOrFail($id);
+    $product->increment('views');
+    return redirect($product->url);
 });
 
 Route::post('/set-intended-url', function (Request $request) {session(['url.intended' => $request->url]);});
@@ -118,6 +141,8 @@ Route::group(['prefix' => 'account'], function(){
     Route::group(['middleware' => 'auth'], function(){
         Route::controller(AuthController::class)->group(function() {
             Route::get('/dashboard','dashboard')->name('account.dashboard');
+            Route::get('/notifications','notifications')->name('account.notifications');
+
             Route::get('/profile','profile')->name('account.profile');
             Route::get('/profile/edit','profileEdit')->name('account.profile.edit');
             Route::post('/update-profile','updateProfile')->name('account.updateProfile');
@@ -145,6 +170,9 @@ Route::group(['prefix' => 'account'], function(){
 
             Route::get('/wishlist','wishlist')->name('account.wishlist');
             Route::post('/remove-product-from-wishlist','removeProductFromWishlist')->name('account.removeProductFromWishlist');
+            
+            Route::get('/deals','dealsWishlist')->name('account.deals');
+            Route::post('/remove-product-from-deals-wishlist','removeProductFromDealsWishlist')->name('account.remove.deals');
             
             Route::get('/logout','logout')->name('account.logout');
         });
@@ -223,16 +251,22 @@ Route::group(['prefix' => 'admin'], function(){
             Route::post('/order/tracking/{id}', 'changeTrackStatus')->name('order.changeTrackStatus');            
             Route::post('/order/send-email/{id}', 'sendInvoiceEmail')->name('orders.sendInvoiceEmail');
             Route::get('/order_tracking/{id}', 'tracking')->name('orders.order.tracking');
-        });          
+        });                 
 
         //Temp image controller
         Route::post('/upload-temp-image', [TempImagesController::class, 'create'])->name('temp-images.create');
 
-        //Settings
-        
+        //Settings        
         Route::controller(SettingController::class)->group(function() {
             Route::get('/password', 'showChangePasswordForm')->name('admin.showChangePasswordForm');
             Route::post('/process-change-password', 'processChangePassword')->name('admin.processChangePassword');        
+
+            //Affiliate Product
+            Route::get('/settings/affiliates', 'affiliate_index')->name('affiliate_products.index');            
+            Route::post('/settings/affiliates', 'affiliate_store')->name('affiliate_products.store');
+            Route::get('/settings/affiliates/{affiliate}/edit', 'affiliate_edit')->name('affiliate_products.edit');
+            Route::put('/settings/affiliates/{affiliate}', 'affiliate_update')->name('affiliate_products.update');
+            Route::delete('/settings/affiliates/{affiliate}', 'affiliate_destroy')->name('affiliate_products.delete');
 
             //Brands
             Route::get('/settings/brands', 'brand_index')->name('brands.index');

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -41,16 +41,7 @@
                                 <input type="search" name="search" class="form-control top-search mb-0" placeholder="Search here...">
                                 <button type="submit"><i class="iconoir-search"></i></button>
                             </form>
-                        </li>     
-                        <li class="dropdown">
-                            <a class="nav-link dropdown-toggle arrow-none nav-icon" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
-                            <img src="{{ asset('admin-assets/img/us_flag.jpg') }}" alt="" class="thumb-sm rounded-circle">
-                            </a>
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item" href="#"><img src="{{ asset('admin-assets/img/us_flag.jpg') }}" alt="" height="15" class="me-2">English</a>
-                                <a class="dropdown-item" href="#"><img src="{{ asset('admin-assets/img/spain_flag.jpg') }}" alt="" height="15" class="me-2">Spanish</a>                                
-                            </div>
-                        </li>
+                        </li>                             
                         <li class="topbar-item">
                             <a class="nav-link nav-icon" href="javascript:void(0);" id="light-dark-mode">
                                 <i class="icofont-moon dark-mode"></i>
@@ -100,14 +91,7 @@
                                 <div class="simplebar-content-wrapper" tabindex="0" role="region" aria-label="scrollable content" style="height: 100%; overflow: hidden scroll;">
                                     <div class="simplebar-content" style="padding: 0px 16px 16px;">
                                         <div class="d-flex align-items-start flex-column w-100">
-                                            @include('admin/layouts/sidebar')
-
-                                            <div class="update-msg text-center"> 
-                                                <div class="d-flex justify-content-center align-items-center thumb-lg update-icon-box  rounded-circle mx-auto">
-                                                    <i class="iconoir-peace-hand h3 align-self-center mb-0 text-primary"></i>
-                                                </div>                   
-                                                <h5 class="mt-3">Online Shopping</h5>                            
-                                            </div>
+                                            @include('admin/layouts/sidebar')                                            
                                         </div>
                                     </div>
                                 </div>
@@ -254,6 +238,34 @@
                 }
             }
         });
+    });
+
+    $(document).on('click', '.delete-product', function () {        
+        let id = $(this).data('id');
+        let url = '{{ route("affiliate_products.delete", ":id") }}';
+        url = url.replace(':id', id);
+
+        if (confirm("Are you sure you want to delete?")) {
+            $.ajax({
+                url: url,
+                type: 'DELETE',
+                dataType: 'json',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function (response) {
+                    if (response.status) {
+                        alert(response.message);
+                        location.reload(); // better UX than redirect
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function () {
+                    alert('Something went wrong. Please try again.');
+                }
+            });
+        }
     });
 </script>
 

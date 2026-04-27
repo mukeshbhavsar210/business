@@ -18,6 +18,9 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\UserRegisteredMail;
+use App\Models\AffiliateWishlist;
+use App\Models\DealStockNotification;
+use App\Models\StockNotification;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use SebastianBergmann\Environment\Console;
@@ -114,10 +117,14 @@ class AuthController extends Controller {
 
     public function dashboard(){
         $userId = Auth::user()->id;        
-        $user = User::where('id',$userId)->first();        
+        $user = User::where('id',$userId)->first();   
+        
+        $notifications = StockNotification::where('user_id', Auth::id())
+            ->with('product')->latest()->get();
 
         $data = [
             'user' => $user,                    
+            'notifications' => $notifications, 
             'profileFormConfig' => [
                 'title' => 'Edit Profile',
                 'modal_id' => 'editProfileModal',                
@@ -133,41 +140,41 @@ class AuthController extends Controller {
                         'name' => 'name',
                         'label' => 'Name',                        
                         'animate_label' => 'floating-input',
-                        'col' => 'col-6 mt-2'
+                        'col' => 'col-md-6 col-12 mt-2'
                     ],
                     [
                         'type' => 'text',
                         'name' => 'mobile',
-                        'label' => 'mobile',                        
+                        'label' => 'Mobile',                        
                         'animate_label' => 'floating-input',
-                        'col' => 'col-6 mt-2'
+                        'col' => 'col-md-6 col-12 mt-2'
                     ],
                     [
                         'type' => 'email',
                         'name' => 'email',
                         'label' => 'Email',                        
                         'animate_label' => 'floating-input',
-                        'col' => 'col-12 mt-2'
+                        'col' => 'col-md-6 col-12 mt-2'
                     ],                    
                     [
                         'type' => 'text',
                         'name' => 'alternate_mobile',
                         'label' => 'Alternate Mobile',                        
                         'animate_label' => 'floating-input',
-                        'col' => 'col-6 mt-2'
+                        'col' => 'col-md-6 col-12 mt-2'
                     ],                                   
                     [
                         'type' => 'date',
                         'name' => 'birthdate',
                         'label' => 'Birthdate',                        
                         'animate_label' => 'floating-input',
-                        'col' => 'col-6 mt-2'
+                        'col' => 'col-md-6 col-12 mt-2'
                     ],
                     [
                         'type' => 'file',
                         'name' => 'image',
                         'label' => 'User Photo',
-                        'col' => 'col-6 mt-2'
+                        'col' => 'col-md-6 col-12'
                     ],
                     [
                         'type' => 'radio',
@@ -177,13 +184,33 @@ class AuthController extends Controller {
                             'male' => 'Male',
                             'female' => 'Female',
                         ],
-                        'col' => 'col-6'
+                        'col' => 'col-md-6 col-12'
                     ],                         
                 ]
             ],        
         ];  
 
         return view('front.account.dashboard', $data);
+    }
+
+    
+    public function notifications(){
+        $userId = Auth::user()->id;        
+        $user = User::where('id',$userId)->first();   
+        
+        $notifications = StockNotification::where('user_id', Auth::id())
+            ->with('product')->latest()->get();
+
+        $affiliate_notifications = DealStockNotification::where('user_id', Auth::id())
+            ->with('product')->latest()->get();
+
+        $data = [
+            'user' => $user,                    
+            'notifications' => $notifications,
+            'affiliate_notifications' => $affiliate_notifications,
+        ];  
+
+        return view('front.account.notification', $data);
     }
 
     public function address(){
@@ -690,6 +717,15 @@ class AuthController extends Controller {
     }
 
 
+    public function dealsWishlist(){
+        $deals = AffiliateWishlist::where('user_id', Auth::id())->with('affiliate_product')->get();
+
+        $data['deals'] = $deals;
+
+        return view('front.account.deals', $data);
+    }
+
+
     public function tracking($id) {
         $statuses = OrderStatusHistory::where('order_id', $id)
             ->orderBy('date','asc')
@@ -731,6 +767,35 @@ class AuthController extends Controller {
         return response()->json([
             'status' => false,
             'message' => 'Item removed from wishlist'
+        ]);
+    }
+
+
+    public function removeProductFromDealsWishlist(Request $request) {
+        if (!Auth::check()) {
+            return response()->json(['status' => false, 'message' => 'Unauthorized']);
+        }
+
+        AffiliateWishlist::firstOrCreate([
+            'user_id' => Auth::id(),
+            'affiliate_product_id' => $request->id
+        ]);
+
+        $deleted = AffiliateWishlist::where('user_id', Auth::id())
+            ->where('affiliate_product_id', $request->id)
+            ->delete();
+
+        if ($deleted) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Item removed from deals',
+                'dealCount' => AffiliateWishlist::where('user_id', Auth::id())->count()
+            ]);
+        }
+
+        return response()->json([
+            'status' => false,
+            'message' => 'Item not found in deals'
         ]);
     }
 
@@ -915,5 +980,4 @@ class AuthController extends Controller {
         //return view('front.account.orders.index', compact('orderItems'))->render();
         return view('front.account.orders.ratings_modal', compact('orderItems'))->render();
     }
-  
 }

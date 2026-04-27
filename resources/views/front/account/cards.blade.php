@@ -4,10 +4,7 @@
 
 @section('content')
 
-<div class="container">
-    <div class="row">
-        <div class="col-md-10 col-12 mx-auto">
-            <div class="row">
+<div class="container">    
                 @include('front.account.common.sidebar')              
                 <div class="col-md-9 col-12 px-md-0">
                     @include('front.account.common.message')        

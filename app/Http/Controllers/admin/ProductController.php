@@ -12,6 +12,7 @@ use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\ProductVariant;
 use App\Models\Size;
+use App\Models\StockNotification;
 use App\Models\SubCategory;
 use App\Models\SubSubCategory;
 use App\Models\TempImage;
@@ -33,8 +34,6 @@ class ProductController extends Controller {
         $products = $products->paginate();
 
         $data['products'] = $products;        
-
-       
 
         return view ('admin.products.list',$data);
     }
@@ -479,6 +478,18 @@ class ProductController extends Controller {
                     File::delete($sourcePath);
                 }
             }
+
+
+        $users = StockNotification::where('product_id', $product->id)
+        ->where('notified', 0)
+        ->get();
+
+        foreach ($users as $notify) {
+            // send email / notification
+            // Mail::to($notify->user->email)->send(...);
+
+            $notify->update(['notified' => 1]);
+        }
         
         $request->session()->flash('success','Product updated successfully');
 
@@ -486,18 +497,6 @@ class ProductController extends Controller {
             ->route('products.index')
             ->with('success', 'Product updated successfully');
          }
-
-        // return response()->json([
-        //     'status' => true,
-        //     'message' => 'Product updated successfully'
-        // ]);
-
-        // } else {
-        //     return response()->json([
-        //         'status' => false,
-        //         'errors' => $validator->errors()
-        //     ]);
-        // }
     }
 
     public function destroy($id, Request $request){

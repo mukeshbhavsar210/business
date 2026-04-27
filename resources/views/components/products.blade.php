@@ -2,6 +2,7 @@
     'item' => null,    
     'category' => null,
     'subcategory' => null,
+    'wishlistProductIds' => null,
     'class' => null,
     "section" => null,
     "variable" => null,    
@@ -9,6 +10,7 @@
     'producttitle' => null,
     'description' => null,    
     'amount' => null,
+    "notifyData" => null,
     'gallery' => null,
     'class' => null,      
     'title_limit' => null
@@ -25,6 +27,8 @@
     $images = $product->images ?? collect();
     $single = $product->product_images ? $product->product_images->first() : null;
     $url = $product->url ?? null;
+    $affiliate_product_image = $product->image ?? null;
+    $affiliate_url = $product->affiliate_url ?? null;
     $rating = $product->average_rating ?? 0;
     $count  = $product->rating_count ?? 0;
 @endphp
@@ -61,11 +65,20 @@
                     <img src="{{ asset('admin-assets/img/default-150x150.png') }}" class="rounded">
                 @endif
             </div>
-
+            
         @elseif($gallery == 'no')
             <a href="{{ $url }}" class="product-img" target="_blank">
                 <img src="{{ $single ? asset('uploads/product/small/'.$single->image) : asset('admin-assets/img/default-150x150.png') }}" 
                     class="img-fluid rounded" alt="{{ $product->title }}" />
+            </a>
+
+        @elseif($gallery == 'affiliate_image')
+            <a href="{{ $affiliate_url }}" class="product-img" target="_blank">
+                @if(!empty($affiliate_product_image))
+                    <img src="{{ asset('uploads/affiliate_products/'.$affiliate_product_image) }}" class="rounded">
+                @else
+                    <img src="{{ asset('admin-assets/img/default-150x150.png') }}" class="rounded">
+                @endif
             </a>
 
         @elseif($gallery == 'category')  
@@ -76,7 +89,7 @@
             </a>
 
             <div class="product-info">
-                <h2>{{ Str::limit($subcategory->sub_category_title, 27, '...') }}</h2>                
+                <h2>{{ Str::limit($subcategory->sub_category_title, 27, '...') }}</h2>                                
                 <p class="text-muted tiny-font"><b>{{ $item->products_count }} Products</b></p>
             </div>      
 
@@ -99,6 +112,29 @@
                 @if($description)
                     <p class="short">{{ isset($short_limit) ? Str::limit($short, $short_limit, '...') : $short }}</p>
                 @endif
+                
+                @if($section == 'show_notify')
+                    <p>                 
+                        @if($product->qty > 0)
+                            <span class="badge bg-success">Back in Stock</span>
+                        @else
+                            <span class="badge bg-warning">Waiting</span>
+                        @endif
+                        
+                        {{-- @if($notifyData && $notifyData->notified == 1)
+                            <div class="text-success small">✔ You were notified</div>
+                        @endif --}}
+                    </p>
+                    
+                @elseif($section == 'show_affiliate')
+                    <p>                 
+                        @if($product->qty > 0)
+                            <span class="badge bg-success">Back in Stock</span>
+                        @else
+                            <span class="badge bg-warning">Waiting</span>
+                        @endif
+                    </p> 
+                @endif                
             </div>
         @endif
 
@@ -110,28 +146,54 @@
                     <span class="discount">({{ $discount_percent }}% OFF)</span>
                 @else
                     <span class="dark">₹{{ $price }}</span>
-                @endif        
+                @endif                  
             </div>
-        @endif 
-        
+        @endif               
+            
         @if($hover)
             <div class="hover-product">
-                @if($section == 'show_products')                        
+                @if($section == 'show_products')
+                    @php
+                        $isInWishlist = in_array(${$variable}->id, $wishlistProductIds);
+                    @endphp                    
+
                     @if (Auth::check())
-                        <a onclick="addToWishlist({{ ${$variable}->id }})" class="btn btn-outline" href="javascript:void(0)">
-                            <span class="sprites wishlist-ico-btn"></span>
-                            Wishlist
+                        <a onclick="addToWishlist({{ ${$variable}->id }})" class="btn {{ $isInWishlist ? 'btn-primary' : 'btn-outline' }}" href="javascript:void(0)">
+                            <span class="sprites {{ $isInWishlist ? 'added-wishlist-ico-btn' : 'wishlist-ico-btn' }} "></span>
+                            {{ $isInWishlist ? 'Added' : 'Wishlist' }}
                         </a>
+
+                        <p class="show-size">
+                            @if(optional($product->sizes->first())->code)
+                                Size: {{ optional($product->sizes->first())->code ?? 'N/A' }} 
+                            @endif
+
+                            @if(optional($product->colors->first())->name)
+                                | Color: {{ optional($product->colors->first())->name ?? 'N/A' }}   
+                            @endif
+                        </p>    
                     @else
-                        <a class="btn btn-outline" href="#" data-bs-toggle="modal" data-bs-target="#login">
+                        <a href="{{ route('account.login') }}" class="btn btn-outline-dark retirectBack" data-product-id="{{ ${$variable}->id }}">
                             <span class="sprites wishlist-ico-btn"></span>
                             Wishlist
-                        </a>
+                        </a>                          
                     @endif
 
-                @elseif($section == 'show_wishlist')        
+                @elseif($section == 'show_notify')
+                    <a href="{{ $url }}" class="btn btn-outline-primary" target="_blank">
+                        Buy Now
+                    </a> 
+                    
+                @elseif($section == 'show_affiliate')
+                    <a href="{{ $affiliate_url }}" class="btn btn-outline-primary" target="_blank">
+                        Buy Now
+                    </a> 
+
+                @elseif($section == 'show_wishlist')
                     @if ($qty < 1)
-                        <div class="out-stock"><span>Out of Stock</span></div>
+                        <button onclick="notifyMe({{ $item->product->id }})" class="btn btn-outline-primary">
+                            Notify Me
+                        </button>
                     @else
                         <button 
                             class="btn btn-outline-danger btn-sm move-to-cart"
@@ -143,11 +205,11 @@
                     @endif
                         <p class="show-size">
                             @if(optional($product->sizes->first())->code)
-                                Size: {{ optional($product->sizes->first())->code ?? 'N/A' }} |    
+                                Size: {{ optional($product->sizes->first())->code ?? 'N/A' }}  
                             @endif
 
                             @if(optional($product->colors->first())->name)
-                                Color: {{ optional($product->colors->first())->name ?? 'N/A' }}   
+                                | Color: {{ optional($product->colors->first())->name ?? 'N/A' }}   
                             @endif
                         </p>            
                     @endif

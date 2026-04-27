@@ -65,7 +65,7 @@ class CartController extends Controller {
                 $item->id == $product->id &&
                 $item->options->variant_id == $variantId &&
                 $item->options->size_id == $size_id &&
-                $item->options->color_id == $color_id // ✅ fixed
+                $item->options->color_id == $color_id 
             ) {
                 $alreadyExists = true;
                 break;

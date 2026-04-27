@@ -41,11 +41,8 @@
                     </div>
                 </div>                        
             </div>
-        </div>
-    </div>
-    <div class="card">
-        <div class="card-body pt-1">
-            <div class="table-responsive">
+        
+            <div class="table-responsive mt-1">
                 @php
                     use Illuminate\Support\Str;
                 @endphp
@@ -54,11 +51,11 @@
                     <thead class="table-light">
                         <tr>
                             <th class="border-top-0">Product</th>
-                            <th class="border-top-0" width="150">Variants / Colors</th>
-                            <th class="border-top-0 text-end" width="120">Price</th>
-                            <th class="border-top-0 text-end" width="120">Returnable</th>
-                            <th class="border-top-0 text-end" width="80">Status</th>
-                            <th class="border-top-0 text-end" width="80">Action</th>
+                            <th class="border-top-0" width="250">Variants / Colors</th>
+                            <th class="border-top-0 text-end" width="150">Price</th>
+                            <th class="border-top-0 text-end" width="150">Returnable</th>
+                            <th class="border-top-0 text-end" width="100">Status</th>
+                            <th class="border-top-0 text-end" width="100">Action</th>
                         </tr>
                     </thead>                     
                     <tbody id="productAccordion">
@@ -69,43 +66,40 @@
                                 @endphp
                                 <tr>
                                     <td>
-                                        <div class="d-flex align-items-center">
+                                        <div class="product-row">
                                             <a href="{{ route('products.edit', $product->id) }}" class="show-tooltip">
                                                 @if (!empty($productImage->image))
-                                                    <img src="{{ asset('uploads/product/small/'.$productImage->image) }}" height="100" class="me-3 align-self-center rounded" >
+                                                    <img src="{{ asset('uploads/product/small/'.$productImage->image) }}" height="110" class="me-3 align-self-center rounded" >
                                                 @else
-                                                    <img src="{{ asset('admin-assets/img/default-150x150.png') }}" alt="" height="100" class="me-3 align-self-center rounded" />
+                                                    <img src="{{ asset('admin-assets/img/default-150x150.png') }}" alt="" height="110" class="me-3 align-self-center rounded" />
                                                 @endif
-                                                <span class="tooltip" style="bottom: 0; left:90px;">{{ $product->category->category_name }} / {{ $product->subCategory->sub_category_title }} / {{ $product->subSubCategory->sub_sub_category_name }} / {{ $product->brand->name }}</span>
+
+                                                @if($product->variants->count() > 0)                                                        
+                                                    <p class="variant-counts">{{ $product->variants->count() }}</p>
+                                                @endif
+                                                <span class="tooltip" style="bottom: 0; left:100px;">{{ $product->category->category_name }} / {{ $product->subCategory->sub_category_title }} / {{ $product->subSubCategory->sub_sub_category_name }} / {{ $product->brand->name }}</span>
                                             </a>
                                             <div class="flex-grow-1 text-truncate">
-                                                <h5 class="product-title ">
+                                                <h5 class="product-title">
                                                     <a href="{{ route('products.edit', $product->id) }}">
-                                                        {{ Str::limit($product->title, 70, '...') }}
-                                                                                                              
+                                                        {{ Str::limit($product->title, 70, '...') }}                                                                                                              
                                                     </a>                                                    
                                                 </h5>
                                                 <div class="small-fonts">                                                    
                                                     <p class="mb-0 text-muted">
                                                         <span class=""><b>{{ $product->id }}</b> / </span>
-                                                        @if($product->variants->count() > 0)                                                        
-                                                            <span>Variants: 
-                                                                {{ $product->variants->count() }} /
-                                                            </span>
-                                                        @endif                                                           
-
+                                                        
                                                         @if($product->sku)
                                                             <span>{{ $product->sku }}</span> /
-                                                        @endif          
-                                                    </p>
-                                                    <span class="text-muted">Size:</span>
+                                                        @endif
+                                                    </p>                                                    
+                                                    <span class="text-muted">Size:</span>    
                                                     @foreach($product->sizes as $size)                                                    
                                                         <span class="mb-0 text-muted show-tooltip">
                                                             <span class="tooltip" style="bottom:10px; left:0px;">{{ $size->name }}</span>
                                                             <span>{{ $size->code }}</span>,
                                                         </span>
                                                     @endforeach
-
                                                     <br />
                                                 
                                                     @if ($product->qty > 0)
@@ -160,11 +154,12 @@
                                     <td class="text-end">
                                         <div class="show-tooltip">
                                             <p>{{ $product->is_returnable == 1 ? 'Yes' : 'No' }}</p>                                        
-                                            <p class="tooltip" style="bottom: 23px; left:10px;">
-                                                COD: {{ $product->cod == 1 ? 'Yes' : 'No' }}<br />
+                                            <p class="tiny-font text-muted">                                                
                                                 @if($product->is_returnable == 1)
                                                     {{ $product->return_days }}
-                                                @endif                                                
+                                                @endif<br />
+
+                                                {{ $product->cod == 1 ? 'COD' : '' }}
                                             </p>
                                         </div>
                                     </td>             

@@ -152,9 +152,14 @@
         toast.show();
     }
 
+    var scrollSpy = new bootstrap.ScrollSpy(document.querySelector('.scrollspy-example'), {
+        target: '#faq-nav'
+    });
+
+    
     setTimeout(function(){
         $('.toast').fadeOut('slow');
-    },3000);	
+    },4000);	
 
     $.ajaxSetup({
         headers: {
@@ -209,7 +214,7 @@
 
     function addToWishlist(id){        
         $.ajax({
-            url: '{{ route("front.addToWishlist") }}',
+            url: '{{ route("front.addToAffiliate") }}',
             type: 'POST',
             data: {
                 id: id,
@@ -222,6 +227,87 @@
                     showAlert(response.message,'success');                   
                 } else {
                     window.location.href= "{{ route('front.home') }}";
+                }
+            },
+            error: function(xhr){
+                console.log(xhr.responseText); 
+            }
+        })
+    } 
+
+    function addToAffiliate(id){    
+        $.ajax({
+            url: '{{ route("front.addToAffiliate") }}',
+            type: 'POST',
+            data: {
+                id: id,
+                _token: '{{ csrf_token() }}' 
+            },
+            dataType: 'json',
+            success: function(response){
+                if(response.status == true){
+                    $("#wishlistToastBody").html(response.message);
+                    showAlert(response.message,'success');                   
+                } else {
+                    window.location.href= "{{ route('front.deals') }}";
+                }
+            },
+            error: function(xhr){
+                console.log(xhr.responseText); 
+            }
+        })
+    } 
+
+
+    function notifyMe(id){            
+        $.ajax({
+            url: '{{ route("front.notify") }}',
+            type: 'POST',
+            data: {
+                product_id: id,
+                _token: '{{ csrf_token() }}' 
+            },
+            dataType: 'json',
+            success: function(response){
+                if(response.status == true){
+                    $("#wishlistToastBody").html(response.message);
+                    showAlert(response.message,'success');                   
+                } else {
+                    window.location.href= "{{ route('front.addToWishlist') }}";
+                }
+            },
+            error: function(xhr){
+                console.log(xhr.responseText); 
+            }
+        })
+    } 
+
+    function affiliateNotify(id){        
+        $.ajax({
+            url: '{{ route("front.affiliate.notify") }}',
+            type: 'POST',
+            data: {
+                affiliate_product_id: id,
+                _token: '{{ csrf_token() }}' 
+            },
+            dataType: 'json',
+            success: function(response){
+                if(response.status){
+                    let btn = $("a[onclick='affiliateNotify("+id+")']");
+                    btn.text("Requested")
+                    .addClass("disabled")
+                    .removeAttr("onclick");
+
+                    showAlert(response.message,'success');
+                } else {
+                    showAlert(response.message,'error');
+                }
+
+                if(response.status == true){
+                    $("#wishlistToastBody").html(response.message);
+                    showAlert(response.message,'success');                   
+                } else {
+                    window.location.href= "{{ route('front.addToWishlist') }}";
                 }
             },
             error: function(xhr){
@@ -266,6 +352,34 @@
             }
         });
     }
+
+    function toggleChat() {
+        $("#chat-box").toggleClass("d-none");
+    }
+
+    function sendMessage() {
+        let msg = $("#chatInput").val();
+
+        if(msg.trim() == '') return;
+
+        $("#messages").append("<div><b>You:</b> " + msg + "</div>");
+
+        $.ajax({
+            url: "{{ route('chat.order.status') }}",
+            type: "POST",
+            data: {
+                message: msg,
+                _token: "{{ csrf_token() }}"
+            },
+            success: function(res) {
+                $("#messages").append("<div><b>Bot:</b> " + res.reply + "</div>");
+                $("#messages").scrollTop($("#messages")[0].scrollHeight);
+            }
+        });
+
+        $("#chatInput").val('');
+    }
+
 
     $("#registrationForm").submit(function(event){
         event.preventDefault();

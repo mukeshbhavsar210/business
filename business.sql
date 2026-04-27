@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 10, 2026 at 10:20 AM
+-- Generation Time: Apr 27, 2026 at 09:53 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -20,6 +20,59 @@ SET time_zone = "+00:00";
 --
 -- Database: `business`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `affiliate_products`
+--
+
+CREATE TABLE `affiliate_products` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `image` varchar(255) DEFAULT NULL,
+  `affiliate_platform` enum('Amazon','Flipkart','Meesho') NOT NULL DEFAULT 'Amazon',
+  `affiliate_url` varchar(255) NOT NULL,
+  `price` decimal(10,2) DEFAULT NULL,
+  `discounted_percentage` int(11) NOT NULL,
+  `views` bigint(20) UNSIGNED NOT NULL DEFAULT 0,
+  `likes` bigint(20) UNSIGNED NOT NULL DEFAULT 0,
+  `in_stock` tinyint(1) DEFAULT 1,
+  `status` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `affiliate_products`
+--
+
+INSERT INTO `affiliate_products` (`id`, `title`, `image`, `affiliate_platform`, `affiliate_url`, `price`, `discounted_percentage`, `views`, `likes`, `in_stock`, `status`, `created_at`, `updated_at`) VALUES
+(4, 'test 1', '4_test-1_image.JPG', 'Amazon', 'amazon.in link', 1000.00, 10, 1, 1, 0, 1, '2026-04-16 01:46:24', '2026-04-24 00:26:19'),
+(5, 'test 2', '5_test-2.JPG', 'Flipkart', 'flipkart.com', 1000.00, 20, 3, 0, 1, 1, '2026-04-16 01:47:40', '2026-04-24 00:19:42'),
+(6, 'test 33', NULL, 'Meesho', 'meesho.com/test', 3141.00, 30, 1, 0, 1, 1, '2026-04-16 01:48:54', '2026-04-24 00:27:53');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `affiliate_wishlists`
+--
+
+CREATE TABLE `affiliate_wishlists` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `affiliate_product_id` bigint(20) UNSIGNED NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `affiliate_wishlists`
+--
+
+INSERT INTO `affiliate_wishlists` (`id`, `user_id`, `affiliate_product_id`, `created_at`, `updated_at`) VALUES
+(16, 7, 5, '2026-04-24 02:13:31', '2026-04-24 02:13:31'),
+(17, 7, 4, '2026-04-24 06:43:48', '2026-04-24 06:43:48');
 
 -- --------------------------------------------------------
 
@@ -152,6 +205,28 @@ INSERT INTO `customer_addresses` (`id`, `user_id`, `address_type`, `default_addr
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `deal_stock_notifications`
+--
+
+CREATE TABLE `deal_stock_notifications` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `affiliate_product_id` bigint(20) UNSIGNED NOT NULL,
+  `notified` tinyint(1) NOT NULL DEFAULT 0,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `deal_stock_notifications`
+--
+
+INSERT INTO `deal_stock_notifications` (`id`, `user_id`, `affiliate_product_id`, `notified`, `created_at`, `updated_at`) VALUES
+(5, 7, 4, 0, '2026-04-24 06:43:16', '2026-04-24 06:43:16');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `discounts`
 --
 
@@ -171,10 +246,9 @@ CREATE TABLE `discounts` (
 --
 
 INSERT INTO `discounts` (`id`, `product_id`, `discount_percentages_id`, `start_date`, `end_date`, `status`, `created_at`, `updated_at`) VALUES
-(9, 64, 5, '2026-04-10', '2026-05-10', 1, '2026-03-23 02:46:20', '2026-04-10 00:27:59'),
+(9, 64, 5, '2026-04-24', '2026-05-24', 1, '2026-03-23 02:46:20', '2026-04-24 03:00:37'),
 (10, 59, 3, '2026-03-28', '2026-04-27', 1, '2026-03-23 09:24:04', '2026-03-28 07:51:36'),
-(12, 67, 5, '2026-03-24', '2026-04-23', 1, '2026-03-24 01:34:37', '2026-03-24 01:34:37'),
-(13, 68, 1, '2026-03-24', '2026-04-23', 1, '2026-03-24 06:47:47', '2026-03-24 06:47:47');
+(12, 67, 5, '2026-04-24', '2026-05-24', 1, '2026-03-24 01:34:37', '2026-04-24 03:15:25');
 
 -- --------------------------------------------------------
 
@@ -337,7 +411,14 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (64, '2026_03_30_140655_add_size_id_to_order_items_table', 55),
 (65, '2026_03_30_142417_add_size_id_to_order_items_table', 56),
 (66, '2026_04_07_070039_add_color_id_to_properties_table', 57),
-(67, '2026_04_07_071111_add_color_id_to_properties_table', 58);
+(67, '2026_04_07_071111_add_color_id_to_properties_table', 58),
+(68, '2026_04_16_053849_create_affiliate_products_table', 59),
+(69, '2026_04_18_114206_add_affiliate_product_id_to_affiliate_wishlist_table', 60),
+(70, '2026_04_18_114611_create_affiliate_wishlists_table', 61),
+(71, '2026_04_24_074106_create_stock_notifications_table', 62),
+(72, '2026_04_24_081651_create_stock_notifications_table', 63),
+(73, '2026_04_24_112458_create_deal_stock_notifications_table', 64),
+(74, '2026_04_24_112731_create_deal_stock_notifications_table', 65);
 
 -- --------------------------------------------------------
 
@@ -366,7 +447,8 @@ CREATE TABLE `orders` (
 --
 
 INSERT INTO `orders` (`id`, `user_id`, `customer_address_id`, `subtotal`, `grandtotal`, `razorpay_order_id`, `transaction_id`, `razorpay_signature`, `payment_status`, `payment_method`, `status`, `created_at`, `updated_at`) VALUES
-(329, 7, 1, 5176.00, 4227.00, 'order_SbiFimoPDvWIZr', 'pay_SbiFmTOTKicNb3', '098d259e87affa2f431855bd8a9c119016a7130907401c6b1052b70882dca1ad', 'paid', 'razorpay', 'Delivered', '2026-04-10 02:17:48', '2026-04-10 02:34:04');
+(329, 7, 1, 5176.00, 4227.00, 'order_SbiFimoPDvWIZr', 'pay_SbiFmTOTKicNb3', '098d259e87affa2f431855bd8a9c119016a7130907401c6b1052b70882dca1ad', 'paid', 'razorpay', 'Delivered', '2026-04-10 02:17:48', '2026-04-10 02:34:04'),
+(330, 7, 1, 5176.00, 4227.00, 'order_SbiFimoPDvWIZr', 'pay_SbiFmTOTKicNb3', '098d259e87affa2f431855bd8a9c119016a7130907401c6b1052b70882dca1ad', 'paid', 'razorpay', 'Cancelled', '2026-04-10 02:17:48', '2026-04-10 02:34:04');
 
 -- --------------------------------------------------------
 
@@ -458,7 +540,7 @@ CREATE TABLE `pages` (
 
 INSERT INTO `pages` (`id`, `name`, `slug`, `content`, `menu_order`, `created_at`, `updated_at`) VALUES
 (2, 'About us', 'about-us', '<p><strong style=\"margin: 0px; padding: 0px; color: rgb(0, 0, 0); font-family: &quot;Open Sans&quot;, Arial, sans-serif; font-size: 14px; text-align: justify;\">Lorem Ipsum</strong><span style=\"color: rgb(0, 0, 0); font-family: &quot;Open Sans&quot;, Arial, sans-serif; font-size: 14px; text-align: justify;\">&nbsp;is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</span></p><p><strong style=\"margin: 0px; padding: 0px; color: rgb(0, 0, 0); font-family: &quot;Open Sans&quot;, Arial, sans-serif; font-size: 14px; text-align: justify;\">Lorem Ipsum</strong><span style=\"color: rgb(0, 0, 0); font-family: &quot;Open Sans&quot;, Arial, sans-serif; font-size: 14px; text-align: justify;\">&nbsp;is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</span><span style=\"color: rgb(0, 0, 0); font-family: &quot;Open Sans&quot;, Arial, sans-serif; font-size: 14px; text-align: justify;\"><br></span><br></p>', 2, '2023-12-01 03:33:50', '2023-12-01 03:33:50'),
-(3, 'Contact', 'contact-us', '<p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using Content.</p>\r\n                    <address>\r\n                    Cecilia Chapman <br>\r\n                    711-2880 Nulla St.<br>\r\n                    Mankato Mississippi 96522<br>\r\n                    <a href=\"tel:+xxxxxxxx\">(XXX) 555-2368</a><br>\r\n                    <a href=\"mailto:jim@rock.com\">jim@rock.com</a>\r\n                    </address>', 1, '2023-12-01 03:44:47', '2023-12-01 06:07:41'),
+(3, 'Contact', 'contact-us', '<p>Corporate Address</p>', 1, '2023-12-01 03:44:47', '2026-04-27 01:20:19'),
 (5, 'FAQ', 'faq', '<p>test</p>', 3, '2026-02-26 23:16:46', '2026-02-26 23:22:54');
 
 -- --------------------------------------------------------
@@ -554,9 +636,8 @@ CREATE TABLE `products` (
 
 INSERT INTO `products` (`id`, `title`, `slug`, `description`, `short_description`, `shipping_returns`, `related_products`, `price`, `category_id`, `sub_category_id`, `sub_sub_category_id`, `brand_id`, `discount_percentage_id`, `is_featured`, `sku`, `barcode`, `track_qty`, `qty`, `recommended`, `views`, `discount_percentage`, `average_rating`, `cod`, `is_returnable`, `return_days`, `delivery_min_days`, `delivery_max_days`, `status`, `created_at`, `updated_at`) VALUES
 (59, 'Park Avenue', 'park-avenue', 'test', 'Printed Polo Collar Slim Fit T-shirt', 'test', '', 1599.00, 82, 42, 1, 45, 3, 'Yes', 'tshirt_02', 'tshirt_000002', 'Yes', 44, NULL, NULL, NULL, NULL, 1, 1, '7 days', '2026-03-28', '2026-04-04', 1, '2026-03-20 02:52:28', '2026-04-10 02:17:49'),
-(64, 'Lux Cozi', 'lux-cozi', 'test', 'Polo Collar Lounge Tshirts', 'test', '', 700.00, 82, 42, 1, 46, 5, 'Yes', 'tshirt_011', 'tshirt_11', 'Yes', 51, NULL, NULL, NULL, NULL, 1, 1, '7 days', '2026-04-10', '2026-04-17', 1, '2026-03-20 09:48:06', '2026-04-10 02:14:01'),
-(67, 'Kurtas', 'kurtas', 'test', 'Polo Collar Lounge Tshirts', 'test', '', 500.00, 83, 50, 26, 46, 5, 'Yes', 'tshirt_011', 'tshirt_11', 'Yes', 99, NULL, NULL, NULL, NULL, 1, 1, '7 days', '2026-03-24', '2026-03-31', 1, '2026-03-20 09:48:06', '2026-03-24 01:34:37'),
-(68, 'Boat Nirvana', 'boat-nirvana', 'test', 'Polo Collar Lounge Tshirts', 'test', '', 2500.00, 170, 53, 27, 47, 1, 'Yes', 'tshirt_011', 'tshirt_11', 'Yes', 94, NULL, NULL, NULL, NULL, 1, 1, '7 days', '2026-03-24', '2026-03-31', 1, '2026-03-20 09:48:06', '2026-04-01 00:36:42');
+(64, 'Lux Cozi', 'lux-cozi', 'test', 'Polo Collar Lounge Tshirts', 'test', '', 700.00, 82, 42, 1, 46, 5, 'Yes', 'tshirt_011', 'tshirt_11', 'Yes', 100, NULL, NULL, NULL, NULL, 1, 1, '7 days', '2026-04-24', '2026-05-01', 1, '2026-03-20 09:48:06', '2026-04-24 03:00:37'),
+(67, 'Kurtas', 'kurtas', 'test', 'Polo Collar Lounge Tshirts', 'test', '', 500.00, 83, 46, 26, 46, 5, 'Yes', 'tshirt_011', 'tshirt_11', 'Yes', 0, NULL, NULL, NULL, NULL, 1, 1, '7 days', '2026-04-24', '2026-05-01', 1, '2026-03-20 09:48:06', '2026-04-24 03:15:25');
 
 -- --------------------------------------------------------
 
@@ -602,16 +683,12 @@ CREATE TABLE `product_images` (
 --
 
 INSERT INTO `product_images` (`id`, `product_id`, `color_id`, `image`, `created_at`, `updated_at`) VALUES
-(51, 64, 1, '64-Lux Cozi-51-1774094908.jpg', '2026-03-21 06:38:28', '2026-04-10 00:28:00'),
-(52, 64, 1, '64-Lux Cozi-52-1774094908.jpg', '2026-03-21 06:38:28', '2026-04-10 00:28:00'),
-(53, 64, NULL, '64-Lux Cozi-53-1774094908.jpg', '2026-03-21 06:38:28', '2026-04-10 00:28:00'),
+(51, 64, 1, '64-Lux Cozi-51-1774094908.jpg', '2026-03-21 06:38:28', '2026-04-24 03:00:38'),
+(52, 64, 1, '64-Lux Cozi-52-1774094908.jpg', '2026-03-21 06:38:28', '2026-04-24 03:00:38'),
+(53, 64, NULL, '64-Lux Cozi-53-1774094908.jpg', '2026-03-21 06:38:28', '2026-04-24 03:00:38'),
 (54, 59, NULL, '59-Park Avenue-54.jpg', '2026-03-21 06:41:28', '2026-03-21 06:41:28'),
 (55, 59, NULL, '59-Park Avenue-55.jpg', '2026-03-21 06:41:28', '2026-03-21 06:41:28'),
-(56, 67, NULL, '67-Kurtas-56.jpg', '2026-03-24 01:34:38', '2026-03-24 01:34:38'),
-(57, 68, NULL, '68-Boat Nirvana-57.jpg', '2026-03-24 06:47:47', '2026-03-24 06:47:47'),
-(58, 68, NULL, '68-Boat Nirvana-58.jpg', '2026-03-24 06:47:48', '2026-03-24 06:47:48'),
-(59, 68, NULL, '68-Boat Nirvana-59.jpg', '2026-03-24 06:47:48', '2026-03-24 06:47:48'),
-(60, 68, NULL, '68-Boat Nirvana-60.jpg', '2026-03-24 06:47:48', '2026-03-24 06:47:48'),
+(56, 67, NULL, '67-Kurtas-56.jpg', '2026-03-24 01:34:38', '2026-04-24 03:15:25'),
 (64, 59, NULL, '68-Boat Nirvana-60.jpg', '2026-03-24 06:47:48', '2026-03-24 06:47:48'),
 (65, 59, NULL, '64-Lux Cozi-51-1774094908.jpg', '2026-03-21 06:38:28', '2026-03-21 06:38:28'),
 (66, 59, NULL, '64-Lux Cozi-53-1774094908.jpg', '2026-03-21 06:38:28', '2026-03-21 06:38:28');
@@ -680,12 +757,12 @@ CREATE TABLE `product_variants` (
 --
 
 INSERT INTO `product_variants` (`id`, `product_id`, `color_id`, `image`, `created_at`, `updated_at`) VALUES
-(28, 64, 8, '64-28-1774078887.jpg', '2026-03-21 02:11:27', '2026-04-10 00:27:59'),
-(29, 64, 4, '64-29-1774093826.jpg', '2026-03-21 06:20:26', '2026-04-10 00:28:00'),
-(30, 64, 7, '64-30-1774093827.jpg', '2026-03-21 06:20:27', '2026-04-10 00:28:00'),
-(35, 64, 12, '64-Lux Cozi-35.jpg', '2026-03-24 00:10:35', '2026-04-10 00:28:00'),
-(36, 64, 9, 'lux-cozi_64_36.jpg', '2026-03-24 00:12:38', '2026-04-10 00:28:00'),
-(37, 67, NULL, 'kurtas_67_37.jpg', '2026-03-24 01:34:37', '2026-03-24 01:34:37');
+(28, 64, 8, '64-28-1774078887.jpg', '2026-03-21 02:11:27', '2026-04-24 03:00:38'),
+(29, 64, 4, '64-29-1774093826.jpg', '2026-03-21 06:20:26', '2026-04-24 03:00:38'),
+(30, 64, 7, '64-30-1774093827.jpg', '2026-03-21 06:20:27', '2026-04-24 03:00:38'),
+(35, 64, 12, '64-Lux Cozi-35.jpg', '2026-03-24 00:10:35', '2026-04-24 03:00:38'),
+(36, 64, 9, 'lux-cozi_64_36.jpg', '2026-03-24 00:12:38', '2026-04-24 03:00:38'),
+(37, 67, NULL, 'kurtas_67_37.jpg', '2026-03-24 01:34:37', '2026-04-24 03:15:25');
 
 -- --------------------------------------------------------
 
@@ -725,7 +802,6 @@ CREATE TABLE `reviews` (
 --
 
 INSERT INTO `reviews` (`id`, `user_id`, `product_id`, `rating`, `review`, `status`, `created_at`, `updated_at`) VALUES
-(9, 3, 68, 5, 'Awesome Product 33', 1, NULL, '2026-03-27 02:22:42'),
 (20, 3, 64, 5, 'Awesome Product', 1, NULL, '2026-03-27 02:22:42'),
 (23, 7, 64, 3, 'ok', 1, '2026-04-08 06:55:05', '2026-04-08 06:55:05');
 
@@ -848,6 +924,28 @@ INSERT INTO `states` (`id`, `name`, `code`, `created_at`, `updated_at`) VALUES
 (35, 'Lakshadweep', 'LD', NULL, NULL),
 (36, 'Puducherry', 'PY', NULL, NULL),
 (37, 'Rest of the state', 'RS', NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `stock_notifications`
+--
+
+CREATE TABLE `stock_notifications` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `product_id` bigint(20) UNSIGNED NOT NULL,
+  `notified` tinyint(1) NOT NULL DEFAULT 0,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `stock_notifications`
+--
+
+INSERT INTO `stock_notifications` (`id`, `user_id`, `product_id`, `notified`, `created_at`, `updated_at`) VALUES
+(4, 7, 64, 1, '2026-04-24 02:52:53', '2026-04-24 03:00:38');
 
 -- --------------------------------------------------------
 
@@ -1050,8 +1148,30 @@ CREATE TABLE `wishlists` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
+-- Dumping data for table `wishlists`
+--
+
+INSERT INTO `wishlists` (`id`, `user_id`, `product_id`, `created_at`, `updated_at`) VALUES
+(128, 7, 64, '2026-04-24 00:12:56', '2026-04-24 00:12:56'),
+(129, 7, 59, '2026-04-24 00:14:51', '2026-04-24 00:14:51');
+
+--
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `affiliate_products`
+--
+ALTER TABLE `affiliate_products`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `affiliate_wishlists`
+--
+ALTER TABLE `affiliate_wishlists`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `affiliate_wishlists_user_id_affiliate_product_id_unique` (`user_id`,`affiliate_product_id`),
+  ADD KEY `affiliate_wishlists_affiliate_product_id_foreign` (`affiliate_product_id`);
 
 --
 -- Indexes for table `brands`
@@ -1086,6 +1206,14 @@ ALTER TABLE `customer_addresses`
   ADD PRIMARY KEY (`id`),
   ADD KEY `customer_addresses_user_id_foreign` (`user_id`),
   ADD KEY `customer_addresses_state_id_foreign` (`state_id`);
+
+--
+-- Indexes for table `deal_stock_notifications`
+--
+ALTER TABLE `deal_stock_notifications`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `deal_stock_notifications_user_id_foreign` (`user_id`),
+  ADD KEY `deal_stock_notifications_affiliate_product_id_foreign` (`affiliate_product_id`);
 
 --
 -- Indexes for table `discounts`
@@ -1267,6 +1395,14 @@ ALTER TABLE `states`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `stock_notifications`
+--
+ALTER TABLE `stock_notifications`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `stock_notifications_user_id_foreign` (`user_id`),
+  ADD KEY `stock_notifications_product_id_foreign` (`product_id`);
+
+--
 -- Indexes for table `sub_categories`
 --
 ALTER TABLE `sub_categories`
@@ -1308,6 +1444,18 @@ ALTER TABLE `wishlists`
 --
 
 --
+-- AUTO_INCREMENT for table `affiliate_products`
+--
+ALTER TABLE `affiliate_products`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `affiliate_wishlists`
+--
+ALTER TABLE `affiliate_wishlists`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+
+--
 -- AUTO_INCREMENT for table `brands`
 --
 ALTER TABLE `brands`
@@ -1338,6 +1486,12 @@ ALTER TABLE `customer_addresses`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
+-- AUTO_INCREMENT for table `deal_stock_notifications`
+--
+ALTER TABLE `deal_stock_notifications`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
 -- AUTO_INCREMENT for table `discounts`
 --
 ALTER TABLE `discounts`
@@ -1365,13 +1519,13 @@ ALTER TABLE `failed_jobs`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=75;
 
 --
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=330;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=331;
 
 --
 -- AUTO_INCREMENT for table `order_items`
@@ -1470,6 +1624,12 @@ ALTER TABLE `states`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
+-- AUTO_INCREMENT for table `stock_notifications`
+--
+ALTER TABLE `stock_notifications`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
 -- AUTO_INCREMENT for table `sub_categories`
 --
 ALTER TABLE `sub_categories`
@@ -1497,11 +1657,18 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `wishlists`
 --
 ALTER TABLE `wishlists`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=128;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=130;
 
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `affiliate_wishlists`
+--
+ALTER TABLE `affiliate_wishlists`
+  ADD CONSTRAINT `affiliate_wishlists_affiliate_product_id_foreign` FOREIGN KEY (`affiliate_product_id`) REFERENCES `affiliate_products` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `affiliate_wishlists_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `coupon_product`
@@ -1516,6 +1683,13 @@ ALTER TABLE `coupon_product`
 ALTER TABLE `customer_addresses`
   ADD CONSTRAINT `customer_addresses_state_id_foreign` FOREIGN KEY (`state_id`) REFERENCES `states` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
   ADD CONSTRAINT `customer_addresses_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `deal_stock_notifications`
+--
+ALTER TABLE `deal_stock_notifications`
+  ADD CONSTRAINT `deal_stock_notifications_affiliate_product_id_foreign` FOREIGN KEY (`affiliate_product_id`) REFERENCES `affiliate_products` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `deal_stock_notifications_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `discounts`
@@ -1616,6 +1790,13 @@ ALTER TABLE `reviews`
 --
 ALTER TABLE `shipping_charges`
   ADD CONSTRAINT `shipping_charges_state_id_foreign` FOREIGN KEY (`state_id`) REFERENCES `states` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+
+--
+-- Constraints for table `stock_notifications`
+--
+ALTER TABLE `stock_notifications`
+  ADD CONSTRAINT `stock_notifications_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `stock_notifications_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `sub_categories`

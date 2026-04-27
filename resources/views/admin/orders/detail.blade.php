@@ -36,18 +36,13 @@
                             <div class="card border mb-2">
                                 <div class="card-body">
                                     <div class="flex-details">
-                                        <p class="label">Order ID</p>
-                                        <p class="right">: {{ $order->id }}</p>
-                                    </div>
-
-                                    <div class="flex-details">
                                         <p class="label">Payment Mode</p>
                                         <p class="right">: {{ $order->payment_method == 'cod' ? 'COD' : 'Razorpay' }}</p>
                                     </div>
 
                                     <div class="flex-details">
                                         <p class="label">Total</p>
-                                        <p class="right">: ₹{{ number_format($order->grandtotal,2) }}</p>
+                                        <p class="right">: <b>₹{{ number_format($order->grandtotal,2) }}</b></p>
                                     </div>
 
                                     <div class="flex-details">
@@ -59,6 +54,10 @@
                                                 Pending
                                             @endif                                        
                                         </p>                           
+                                    </div>
+                                    <div class="flex-details">
+                                        <p class="label">Courier</p>                                        
+                                        <p class="right">: {{ $order->latestStatus->courier ?? '-' }}</p>
                                     </div>
                                     <div class="flex-details">
                                         <p class="label">Status</p>                                        
