@@ -122,6 +122,16 @@
                                                 </a>
                                             </li>
                                             <li>
+                                                <a class="{{ request()->routeIs(['account.deals']) ? 'active' : '' }}"
+                                                    @if(Auth::check()) 
+                                                    href="{{ route('account.deals') }}" 
+                                                    @else 
+                                                    {!! $guestAttr !!} 
+                                                    @endif
+                                                    >Deals
+                                                </a>
+                                            </li>
+                                            <li>
                                                 <a 
                                                     @if(Auth::check()) 
                                                     href="" 

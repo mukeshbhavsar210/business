@@ -40,7 +40,9 @@
                                                 <div class="flex-end">
                                                     <ul class="flex mt-3">
                                                         <li><button type="submit" name="action" value="default" class="btn btn-primary btn-sm caps-btn">Deliver Here</button></li>                                                                        
-                                                        <li><button type="submit" name="action" value="delete" class="btn-noback"><span class="sprites delete-icon"></span></button></li>
+                                                        <li><button type="submit" name="action" value="delete" class="btn-noback delete-icon-new">
+                                                            <span class="sprites"></span>
+                                                        </button></li>
                                                         {{-- <li>
                                                             <button type="submit"
                                                                 class="btn btn-outline-dark caps-btn btn-sm"

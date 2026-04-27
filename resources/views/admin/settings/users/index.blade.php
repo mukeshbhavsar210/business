@@ -57,8 +57,8 @@
                 <thead class="table-light">
                     <tr>
                         <th class="border-top-0">Name</th>
-                        <th class="border-top-0" width="150">Phone</th>
                         <th class="border-top-0" width="150">Mobile</th>
+                        <th class="border-top-0" width="150">Alternate Mobile</th>
                         <th class="border-top-0" width="120">Gender</th>
                         <th class="border-top-0" width="150">Birthdate</th>
                         <th class="border-top-0" width="120">Action</th>
@@ -84,14 +84,14 @@
                                             </h5>
                                             <div class="small-fonts">                                                    
                                                 <p class="mb-0 text-muted">{{ $user->email }}</p>
-                                                <p class="mb-0 text-muted">User ID: #{{ $user->id }} | {{ $user->role == 2 ? 'Admin' : 'User' }}</p>
+                                                <p class="mb-0 text-muted">{{ $user->id }}</p>
                                             </div>                  
                                         </div>
                                     </div>
                                 </td>  
                                 
-                                <td>{{ $user->phone }}</td>
                                 <td>{{ $user->mobile }}</td>
+                                <td>{{ $user->alternate_mobile }}</td>
                                 <td>{{ $user->gender == 'male' ? 'Male' : 'Female' }}</td>
                                 <td>{{ \Carbon\Carbon::parse($user->birthdate)->format('d, M Y')  }}</td>
                                 <td>

@@ -27,26 +27,22 @@
                 <a href="{{ route('products.index') }}" class="btn btn-primary float-end">Back</a>
             </div>
         </div>
-    </div>
-</div> 
+     
+        <form action="{{ $route }}" method="POST" name="{{ $formname }}" id="{{ $formname }}" enctype="multipart/form-data" >
+            @csrf
 
-<form action="{{ $route }}" method="POST" name="{{ $formname }}" id="{{ $formname }}" enctype="multipart/form-data" >
-    @csrf
-
-    @if($method !== 'POST')
-        @method($method)
-    @endif
-    
-    <div class="row gx-1">
-        <div class="col-md-9 col-12">
-            <div class="card mb-1">
-                <div class="card-body">
+            @if($method !== 'POST')
+                @method($method)
+            @endif
+            
+            <div class="row mt-2">
+                <div class="col-md-9 col-12">
                     <div class="row">
                         <div class="col-md-12 col-12">
                             <div class="form-group">
                                 <label for="title" class="form-label">Product Title</label>
                                 <input type="text" name="title" class="form-control slug-source" value="{{ old('title', $product->title ?? '') }}" data-target="#slug">
-                                <input type="hidden" readonly name="slug" id="slug" class="form-control" placeholder="Slug" value="{{ old('title', $product->slug ?? '') }}">                                
+                                <input type="hidden" readonly name="slug" id="slug" class="form-control" placeholder="Slug" value="{{ old('title', $product->slug ?? '') }}">
                             </div>
                         
                             <div class="form-group">
@@ -60,16 +56,49 @@
                                     {{ old('description', $product->description ?? '') }}
                                 </textarea>
                             </div>
-                        
-                            
-                        </div>                                           
+                        </div>
                     </div>
-                </div>
-            </div>
+                                     
+                    <div class="row">
+                        <div class="col-md-10 col-12">
+                            <div class="form-group">
+                                <label for="shipping_returns" class="form-label">Shipping & Returns</label>
+                                <input type="text" name="shipping_returns" id="shipping_returns" class="form-control" value="{{ old('title', $product->shipping_returns ?? '') }}" >
+                            </div>
+                        </div>
 
-            <div class="card mb-1">
-                <div class="card-body">
-                    <h5 class="mb-3">Product Category</h5>
+                        <div class="col-md-2 col-6">
+                            <div class="flex-2">
+                                <div class="form-group">                                
+                                    <label class="form-label">Is Returnable?</label><br />
+                                    <div class="flex"> 
+                                        <div class="mt-2">                                        
+                                            <input type="hidden" name="is_returnable" value="0">
+                                            <input class="form-check-input" type="checkbox" name="is_returnable" value="1"
+                                            {{ old('is_returnable', $product->is_returnable ?? 0) == 1 ? 'checked' : '' }} >                                        
+                                        </div>
+                                        <div>
+                                            <select name="return_days" id="return_days" class="form-select d-none" style="width: 90px;">
+                                                <option value="7 days"
+                                                    {{ old('return_days', $product->return_days ?? '7 days') == '7 days' ? 'selected' : '' }}>
+                                                    7 days
+                                                </option>
+
+                                                <option value="14 days"
+                                                    {{ old('return_days', $product->return_days ?? '') == '14 days' ? 'selected' : '' }}>
+                                                    14 days
+                                                </option>
+                                            </select>
+                                        </div>                                    
+                                    </div>
+                                </div>
+                            </div> 
+                        </div>                                                                                                                        
+                    </div>
+
+                    <hr />
+
+                    <h5 class="mb-3 ">Product Category</h5>
                     <div class="row">
                         <div class="col-md-3 col-6">
                             <div class="form-group">
@@ -137,7 +166,7 @@
                             </div>
                         </div>                                              
                     </div>
-                    
+                            
                     <div class="row mt-1">
                         <div class="col-md-3 col-6">
                             <div class="form-group">
@@ -219,48 +248,7 @@
                     <p class="text-muted">To show a reduced price, move the product’s original price into Compare at price. Enter a lower value into Price.</p>
 
                     <hr />
-
-                    <div class="row mt-1">
-                        <div class="col-md-10 col-12">
-                            <div class="form-group">
-                                <label for="shipping_returns" class="form-label">Shipping & Returns</label>
-                                <input type="text" name="shipping_returns" id="shipping_returns" class="form-control" value="{{ old('title', $product->shipping_returns ?? '') }}" >
-                            </div>
-                        </div>
-
-                        <div class="col-md-2 col-6">
-                            <div class="flex-2">
-                                <div class="form-group">                                
-                                    <label class="form-label">Is Returnable?</label><br />
-                                    <div class="flex"> 
-                                        <div class="mt-2">                                        
-                                            <input type="hidden" name="is_returnable" value="0">
-                                            <input class="form-check-input" type="checkbox" name="is_returnable" value="1"
-                                            {{ old('is_returnable', $product->is_returnable ?? 0) == 1 ? 'checked' : '' }} >                                        
-                                        </div>
-                                        <div>
-                                            <select name="return_days" id="return_days" class="form-select d-none" style="width: 90px;">
-                                                <option value="7 days"
-                                                    {{ old('return_days', $product->return_days ?? '7 days') == '7 days' ? 'selected' : '' }}>
-                                                    7 days
-                                                </option>
-
-                                                <option value="14 days"
-                                                    {{ old('return_days', $product->return_days ?? '') == '14 days' ? 'selected' : '' }}>
-                                                    14 days
-                                                </option>
-                                            </select>
-                                        </div>                                    
-                                    </div>
-                                </div>
-                            </div> 
-                        </div>
-                    </div>                    
-                </div>
-            </div>
-
-            <div class="card mb-1">
-                <div class="card-body">
+                        
                     <div class="row">
                         <div class="col-md-9 col-8">
                             <h5 class="mt-2">Product Photos</h5>
@@ -302,14 +290,14 @@
                         @endif
                                                 
                         <div class="row" id="product-gallery"></div>         
-                    </div> 
-
-                    <hr />
+                    </div>                     
                     
-                    <h5 class="mb-2">Uploaded Variant</h5> 
+                    <h5 class="mb-2 mt-2">Uploaded Variant</h5> 
                     <div id="variant_image" class="dropzone dz-clickable">
                         <div class="dz-message needsclick">Drop Variant images</div>
                     </div> 
+
+                    <hr />
                     
                     <div class="row mt-2">
                         @if(isset($product) && $product->variants->isNotEmpty())                                                        
@@ -344,13 +332,9 @@
                             @endforeach                                
                         @endif   
                         
-                        <div class="row" id="variant-gallery"></div>
-                    </div>
+                    <div class="row" id="variant-gallery"></div>
                 </div>
-            </div>
-
-            <div class="card">
-                <div class="card-body">
+                                            
                 <h5 class="mb-2">Related products</h5>
                 <select multiple class="related-product " name="related_products[]" id="related_products">
                     @if (!empty($relatedProducts))
@@ -360,48 +344,39 @@
                     @endif
                 </select>
 
-                <div class="col-md-3 col-12 mt-3">
-                    <button type="submit" class="btn btn-primary"> {{ $buttonText }}</button>
-                    <a href="{{ route('products.index') }}" class="btn btn-outline-dark ml-3">Cancel</a>
+                    <div class="mt-3 mb-3">
+                        <button type="submit" class="btn btn-primary"> {{ $buttonText }}</button>
+                        <a href="{{ route('products.index') }}" class="btn btn-outline-dark ml-3">Cancel</a>
+                    </div>                   
                 </div>
-            </div>
-            </div>
-        </div>
 
-        <div class="col-md-3 col-12 pl-0">
-            <div class="card mb-1 p-0">
-                <div class="card-body">
+                <div class="col-md-3 col-12 pl-0">                    
                     <h4 class="mb-2">Inventory</h4>
                     <div class="form-group">
                         <label for="sku" class="form-label">SKU (Stock Keeping Unit)</label>
                         <input type="text" name="sku" id="sku" class="form-control" placeholder="sku" value="{{ old('sku', $product->sku ?? '') }}">
                         <p class="error"></p>
-                    </div>                    
+                    </div>    
+
                     <div class="form-group">
                         <label for="barcode" class="form-label">Barcode</label>
                         <input type="text" name="barcode" id="barcode" class="form-control" placeholder="Barcode" value="{{ old('barcode', $product->barcode ?? '') }}">
                     </div>                                        
                     
-                        <div class="custom-control custom-checkbox">
-                            <div class="form-group mb-0">
-                                <label for="track_qty" class="custom-control-label">Track Qty.</label>
-                                <input type="hidden" name="track_qty" value="No" >
-                                <div class="flex-2">
-                                    <input class="form-check-input mt-2" type="checkbox" id="track_qty" name="track_qty" value="Yes"
-                                    {{ old('track_qty', $product->track_qty ?? '') == 'Yes' ? 'checked' : '' }} >                                
-                                    <input type="number" min="0" name="qty" id="qty" class="form-control" placeholder="Qty" value="{{ old('qty', $product->qty ?? '') }}">
-                                    <p class="error"></p>
-                                </div>
-                            </div>                    
-                        </div>
-                    </div>
-                    <div>
-                </div>
-            </div>
-
-            <div class="card mb-1 p-0">
-                <div class="card-body">
-                    <div class="row">
+                    <div class="custom-control custom-checkbox">
+                        <div class="form-group mb-0">
+                            <label for="track_qty" class="custom-control-label">Track Qty.</label>
+                            <input type="hidden" name="track_qty" value="No" >
+                            <div class="flex-2">
+                                <input class="form-check-input mt-2" type="checkbox" id="track_qty" name="track_qty" value="Yes"
+                                {{ old('track_qty', $product->track_qty ?? '') == 'Yes' ? 'checked' : '' }} >                                
+                                <input type="number" min="0" name="qty" id="qty" class="form-control" placeholder="Qty" value="{{ old('qty', $product->qty ?? '') }}">
+                                <p class="error"></p>
+                            </div>
+                        </div>                    
+                    </div>                                      
+                        
+                    <div class="row mt-3">
                         <div class="col-6">
                             <h6 class="mb-1">Featured</h6>
                             <input type="hidden" name="is_featured" value="Yes">
@@ -417,13 +392,13 @@
                                 <input class="form-check-input" type="checkbox" name="status" value="1"
                                     {{ old('status', $product->status ?? 1) == 1 ? 'checked' : '' }} >                        
                             </div>                                              
-                        </div>
+                        </div>                           
                     </div>
-                </div>
+                </div>        
             </div>
-        </div>        
+        </form>
     </div>
-</form>
+</div>
    
 @section('customJs')
 <script>

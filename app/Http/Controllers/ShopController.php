@@ -14,6 +14,8 @@ use App\Models\Review;
 use App\Models\Size;
 use App\Models\SubCategory;
 use App\Models\SubSubCategory;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Wishlist;
 use Illuminate\Http\Request;
 
 class ShopController extends Controller {
@@ -202,10 +204,18 @@ class ShopController extends Controller {
         //     }
         // }
 
-        $products = $products->paginate(10);                        
+        $products = $products->paginate(10); 
+        
+        $wishlistProductIds = [];
+
+        if (Auth::check()) {
+            $wishlistProductIds = Wishlist::where('user_id', Auth::id())
+                ->pluck('product_id')
+                ->toArray();
+        }     
 
         $data = compact(
-            'products', 'productCount', 'categories', 'sizes', 'categoryArray', 'brands', 'brandsArray', 'colors', 'colorsArray', 'sizes', 'sizesArray', 
+            'products', 'wishlistProductIds', 'productCount', 'categories', 'sizes', 'categoryArray', 'brands', 'brandsArray', 'colors', 'colorsArray', 'sizes', 'sizesArray', 
             'discounts', 'discountArray', 'selected_item1', 'selected_item2', 'selected_item3', 'item1', 'item2', 'item3', 'filtersApplied', 'totalProducts'
         );
 
@@ -213,10 +223,12 @@ class ShopController extends Controller {
             'priceMin' => $request->get('price_min', 0),
             'priceMax' => $request->get('price_max', 10000),            
             'sort'     => $request->get('sort'),
-        ]);                    
-
+        ]);      
+        
         return view('front.products.listing', $data);
     }
+
+
 
     public function product($item2=null, $item3=null, $slug, Request $request) {
         $product = Product::where('slug',$slug)->with(['variants.color', 'colors', 'sizes', 'product_images', 'variants', 'subSubCategory.subCategory.category'])->first();

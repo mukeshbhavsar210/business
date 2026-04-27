@@ -1,6 +1,6 @@
 @extends('front.layouts.app')
 
-@section('title', 'SHOPPING BAG' . (Cart::count() > 0 ? ' (' . Cart::count() . ')' : ''))
+@section('title', 'Shopping Bag' . (Cart::count() > 0 ? ' (' . Cart::count() . ')' : ''))
 
 @section('content')    
     <div class="container">                
@@ -27,35 +27,41 @@
 
                     @if (Auth::check())
                         <div class="delivery-time">
-                            <div class="address">                                
-                                @foreach($address as $value)
-                                    @if($value->default_address == 1)
-                                        <p>Delivery to: <b>{{ $value->name }}, {{ $value->zip }}</b></p>
-                                        <p class="tiny-font mt-1">{{ $value->address }},</p>
-                                        <p class="tiny-font">{{ $value->locality }}, {{ $value->city }}, {{ $value->state->name }}</p>    
-                                    @endif                                        
-                                @endforeach
+                            <div class="row">
+                                <div class="col-md-9 col-12">                                    
+                                    @foreach($address as $value)
+                                        @if($value->default_address == 1)
+                                            <p>Delivery to: <b>{{ $value->name }} - M. {{ $value->mobile }}</b></p>                                                
+                                            <p class="mt-1 font-13">
+                                                {{ $value->address }}, {{ $value->locality }},<br />
+                                                {{ $value->city }}-{{ $value->zip }}, {{ $value->state->name }}
+                                            </p>
+                                        @endif                                        
+                                    @endforeach                                    
+                                </div>
+                                <div class="col-md-3 col-12">
+                                    @if($address->count() > 0)
+                                        <a href="#" class="btn btn-outline-primary mt-3" data-bs-toggle="modal" data-bs-target="#deliveryAddress">
+                                            Change Address
+                                        </a>
+                                    @else
+                                        <a href="#" class="btn btn-primary float-end" data-bs-toggle="modal" data-bs-target="#deliveryAddress">
+                                            Add Shipping Address
+                                        </a>
+                                    @endif
+                                </div>
                             </div>
-                            <div class="btn-right">
-                                @if($address->count() > 0)
-                                    <a href="#" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#deliveryAddress">
-                                        Change Shipping Address
-                                    </a>
-                                @else
-                                    <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#deliveryAddress">
-                                        Add Shipping Address
-                                    </a>
-                                @endif
-                            </div>                                
                         </div>
                     @else
                         <div class="delivery-time">
-                            <div class="address">
-                                <p>Login to get delivery at your place.</p>
+                            <div class="row">
+                                <div class="col-md-10 col-9">                                    
+                                    <p class="mt-2">Login to get delivery at your place.</p>                                    
+                                </div>
+                                <div class="col-md-2 col-3">
+                                    <a href="{{ route('account.login') }}?redirect={{ url()->current() }}" class="btn btn-outline-primary retirectBack ">Login</a>
+                                </div> 
                             </div>
-                            <div class="btn-right">
-                                <a href="{{ route('account.login') }}?redirect={{ url()->current() }}" class="btn btn-outline-primary retirectBack float-end">Login</a>
-                            </div> 
                         </div>
                     @endif
 
@@ -68,8 +74,8 @@
                             </label>                                
                         </div>
 
-                        <div class="btn-group priceDetailsBox">
-                            <button type="submit" name="action" value="remove" class="btn bulk-action">Remove All</button>                            
+                        <div class="priceDetailsBox">
+                            <button type="submit" name="action" value="remove" class="btn p-0 caps-btn text-muted bulk-action">Remove All</button>                            
                             {{-- @auth                                
                                 <button type="submit" name="action" value="wishlist" class="btn bulk-action">Move to Wishlist</button>                               
                             @else
@@ -109,13 +115,15 @@
                                         $size = \App\Models\Size::find($item->options->size_id);
                                         $color = \App\Models\Color::find($item->options->color_id);
                                     @endphp
-
-                                    <div class="select">
-                                        <a href="javascript:void(0);" class="update-cart-modal" data-type="size_id" data-productid="{{ $item->id }}"
-                                        data-rowid="{{ $item->rowId }}" data-selected="{{ $item->options->size_id }}">
-                                            Size: <b>{{ $size->name ?? '' }}</b> <span class="caret"></span>
-                                        </a>
-                                    </div>
+                                    
+                                    @if($item->options->size_id)
+                                        <div class="select">
+                                            <a href="javascript:void(0);" class="update-cart-modal" data-type="size_id" data-productid="{{ $item->id }}"
+                                            data-rowid="{{ $item->rowId }}" data-selected="{{ $item->options->size_id }}">
+                                                Size: <b>{{ $size->name ?? '' }}</b> <span class="caret"></span>
+                                            </a>
+                                        </div>    
+                                    @endif                                    
 
                                     @if($item->options->variant_id)
                                         <div class="select">                                
@@ -124,13 +132,15 @@
                                                 Color: <b>{{ $color->name ?? '' }}</b>
                                             </p>
                                         </div>
-                                    @else
-                                        <div class="select">                                
-                                            <a href="javascript:void(0);" class="update-cart-modal" data-type="color_id" data-productid="{{ $item->id }}"
-                                                data-rowid="{{ $item->rowId }}" data-selected="{{ $item->options->color_id }}">
-                                                Color: <b>{{ $color->name ?? '' }}</b> <span class="caret"></span>
-                                            </a>
-                                        </div>                                        
+                                        @else
+                                            @if($item->options->color_id)
+                                                <div class="select">                                
+                                                    <a href="javascript:void(0);" class="update-cart-modal" data-type="color_id" data-productid="{{ $item->id }}"
+                                                        data-rowid="{{ $item->rowId }}" data-selected="{{ $item->options->color_id }}">
+                                                        Color: <b>{{ $color->name ?? '' }}</b> <span class="caret"></span>
+                                                    </a>
+                                                </div>
+                                            @endif
                                     @endif
                                     
                                     <div class="select">   
@@ -164,7 +174,7 @@
                             <div class="remove">                                
                                 <a href="#" data-bs-toggle="modal" data-bs-target="#removeItemModal_{{ $item->id }}" class="delete-icon">
                                     <span class="sprites"></span>                                    
-                                </a>                                    
+                                </a>
                             </div>
 
                             <div class="modal fade" id="removeItemModal_{{ $item->id }}" tabindex="-1" aria-labelledby="removeItemModalLabel" aria-hidden="true">
@@ -253,7 +263,7 @@
                                             </div>
                                         </div>
                                         <div class="right">
-                                            <a href="#" data-bs-toggle="modal" data-bs-target="#discount" class="btn btn-outline-danger btn-sm">Edit</a>                                            
+                                            <a href="#" data-bs-toggle="modal" data-bs-target="#discount" class="btn btn-outline-danger btn-sm">Edit</a>
                                         </div>
                                     </div>
                                 </div>
@@ -265,9 +275,9 @@
                                     <p class="tiny-font">Delivery in-between</p>
                                 </div>
                                 @foreach (Cart::content() as $item)
-                                    <div class="repeate-row show-tooltip strike">
-                                        <p>{{ $item->name }}</p>
-                                        <span class="tiny-font mt-1">{{ \Carbon\Carbon::parse($minDate)->format('d M')}} - {{ \Carbon\Carbon::parse($maxDate)->format('d M')}}</span> 
+                                    <div class="repeate-row tiny-font strike">
+                                        <p class="show-tooltip">{{ $item->name }} - {{ $item->qty }} <span class="tooltip" style="bottom:20px; left:55px;">{{ $item->options->return_days }} returns available</span></p>
+                                        <span class="tiny-font">{{ \Carbon\Carbon::parse($item->options->delivery_min_days)->format('d M')}} - {{ \Carbon\Carbon::parse($item->options->delivery_max_days)->format('d M')}}</span> 
                                     </div>                        
                                 @endforeach        
                             </div>
@@ -293,8 +303,11 @@
                                             <div class="left">
                                                 <div class="flex">
                                                     Coupon Discount
-                                                    <a href="javascript:0" class="remove_coupon delete-discount" onclick="removeCoupon()">
-                                                        <span class="sprites"></span>                                                        
+                                                    <a href="#" data-bs-toggle="modal" data-bs-target="#discount" class="show-discount">
+                                                        <span class="sprites"></span>
+                                                    </a>
+                                                    <a href="javascript:0" class="remove_coupon delete-icon-new" onclick="removeCoupon()">
+                                                        <span class="sprites"></span>
                                                     </a>
                                                 </div>
                                             </div>                                             
@@ -374,7 +387,7 @@
                             Add Items from Wishlist
                         </a>
                     @else
-                        <a href="{{ route('account.login') }}" class="btn btn-outline-primary mt-4 caps-btn">
+                        <a href="{{ route('account.login') }}" class="btn btn-outline-primary retirectBack mt-4 caps-btn">
                             Add Items from Wishlist
                         </a>
                     @endif

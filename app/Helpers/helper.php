@@ -7,6 +7,7 @@ use App\Models\Brand;
 use App\Models\Order;
 use App\Models\Page;
 use App\Models\ProductImage;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;  
 
@@ -39,6 +40,17 @@ use Illuminate\Support\Facades\Mail;
             return Wishlist::where('user_id', Auth::id())->count();
         }
         return 0;
+    }
+
+    function timeAgo($date) {
+        $diff = Carbon::now()->diffInSeconds($date);
+
+        if ($diff < 60) return $diff . ' sec';
+        if ($diff < 3600) return floor($diff / 60) . ' min';
+        if ($diff < 86400) return floor($diff / 3600) . ' hr';
+        if ($diff < 2592000) return floor($diff / 86400) . ' day';
+
+        return $date->format('d M Y');
     }
 
     function orderEmail($orderId, $userType="customer"){

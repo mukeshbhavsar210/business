@@ -151,9 +151,10 @@
                             <ul class="size-list">
                                 @foreach($product->sizes as $size)
                                     <li>
-                                        <a href="javascript:void(0);" class="size-option show-tooltip" data-size="{{ $size->id }}">
+                                        <span class="validation-size">Select</span>
+                                        <a href="javascript:void(0);" class="size-option show-tooltip" data-size="{{ $size->id }}">                                            
                                             {{ $size->code }}
-                                            <span class="tooltip" style="bottom: 47px;">{{ $size->name }}</span>
+                                            <span class="tooltip" style="bottom: 47px;">{{ $size->name }}</span>                                            
                                         </a>
                                     </li>
                                 @endforeach
@@ -166,7 +167,9 @@
                     <div class="call-action">
                         @if ($product->track_qty == 'Yes')
                             @if ($product->qty > 0)
-                                <a class="btn btn-primary add-to-cart-btn" id="addToCart" href="javascript:void(0);" onclick="addToCart({{ $product->id }}, this)" data-has-sizes="{{ $product->sizes->isNotEmpty() ? 1 : 0 }}">
+                                <a class="btn btn-primary add-to-cart-btn" onclick="addToCart({{ $product->id }}, this)"
+                                    data-has-sizes="{{ $product->sizes->count() > 0 ? 1 : 0 }}"
+                                    data-has-colors="{{ $product->colors->count() > 0 ? 1 : 0 }}">
                                     <span class="sprites cart-small-ico"></span>
                                     &nbsp;ADD TO BAG
                                 </a>
@@ -176,10 +179,17 @@
                                     &nbsp;OUT OF STOCK
                                 </a>
                             @endif                        
-                        @endif   
-                        <a class="btn btn-outline-dark" onclick="addToWishlist({{ $product->id }})" href="javascript:void(0)">
-                            <span class="sprites wishlist-ico-btn"></span>                            
-                        </a>   
+                        @endif
+
+                        @if (Auth::check())
+                            <a class="btn btn-outline-dark" onclick="addToWishlist({{ $product->id }})" href="javascript:void(0)">
+                                <span class="sprites wishlist-ico-btn"></span>
+                            </a>
+                        @else
+                            <a href="{{ route('account.login') }}" class="btn btn-outline-dark retirectBack">
+                                <span class="sprites wishlist-ico-btn"></span>                       
+                            </a>
+                        @endif 
                     </div>
                 </div>
 
@@ -212,30 +222,28 @@
                         </div>
                     </div>
                     
-                    <div class="accordion-item">
-                        <div class="accordion-header" id="headingTwo">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                                <div class="icon-wrapper">
-                                    <div class="icon-left">
-                                        <span class="sprites exchange-icon"></span>
-                                    </div>
-                                    <div class="title-right">
-                                        <h5>{{ $product->return_days }} Returns</h5>
-                                        <p>Know about return & exchange policy</p>
-                                    </div>
-                                </div>                                
-                            </button>
-                        </div>
-
-                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
-                            <div class="accordion-body">
-                                @if($product->is_returnable)
-                                    <p>Easy returns upto {{ $product->return_days }} of delivery.</p>
-                                @else
-                                    <p>Non-returnable product</p>
-                                @endif                                                                                                                            
+                    @if($product->return_days)
+                        <div class="accordion-item">
+                            <div class="accordion-header" id="headingTwo">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                    <div class="icon-wrapper">
+                                        <div class="icon-left">
+                                            <span class="sprites exchange-icon"></span>
+                                        </div>
+                                        <div class="title-right">
+                                            <h5>{{ $product->return_days }} Returns</h5>
+                                            <p>Know about return & exchange policy</p>
+                                        </div>
+                                    </div>                                
+                                </button>
                             </div>
-                        </div>
+
+                            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    <p>Easy returns upto {{ $product->return_days }} of delivery.</p>                                    
+                                </div>
+                            </div>
+                        @endif                    
                     </div>
                 </div>
 

@@ -26,7 +26,7 @@
                 </div>
 
                 <div class="modal-body py-3">
-                    <input type="text" name="_method" id="{{ $method_id }}" value="POST" class="form-control">
+                    <input type="hidden" name="_method" id="{{ $method_id }}" value="POST" class="form-control">
                     
                     <div class="row">
                         @foreach($formConfig['fields'] as $field)                        

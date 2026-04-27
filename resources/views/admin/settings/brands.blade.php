@@ -58,12 +58,9 @@
                 <table class="table mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th class="border-top-0" width="20%">Brand</th>
-                            <th class="border-top-0" width="20%">Brand Name</th>
-                            <th class="border-top-0" width="15%">Description</th>
-                            <th class="border-top-0" width="15%">Discount</th>
-                            <th class="border-top-0" width="5%">Status</th>
-                            <th class="border-top-0" width="5%">Action</th>
+                            <th class="border-top-0">Brand</th>
+                            <th class="border-top-0">Description</th>
+                            <th class="border-top-0" width="10%">Action</th>
                         </tr>
                     </thead>                     
                     <tbody>
@@ -72,42 +69,42 @@
                                 <tr>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            @if (!empty($brand->model))
-                                                <img src="{{ asset('uploads/brands/'.$brand->model) }}" height="85" class="me-3 align-self-center rounded" >
-                                            @else
-                                                <img src="{{ asset('admin-assets/img/default-150x150.png') }}" alt="" height="120" class="me-3 align-self-center rounded" />
-                                            @endif                                            
+                                            <div>
+                                                @if (!empty($brand->model))
+                                                    <img src="{{ asset('uploads/brands/'.$brand->model) }}" height="85" class="me-3 align-self-center rounded" >
+                                                @else
+                                                    <img src="{{ asset('admin-assets/img/default-150x150.png') }}" alt="" height="120" class="me-3 align-self-center rounded" />
+                                                @endif
+                                            </div>
                                             
-                                            @if (!empty($brand->logo))
-                                                <img src="{{ asset('uploads/brands/'.$brand->logo) }}" height="30" class="me-3 align-self-center rounded" >
+                                            <div>
+                                                @if (!empty($brand->logo))
+                                                    <img src="{{ asset('uploads/brands/'.$brand->logo) }}" height="30" class="me-3 align-self-center rounded" >
+                                                @else
+                                                    <img src="{{ asset('admin-assets/img/default-150x150.png') }}" alt="" height="25" class="me-3 align-self-center rounded" />
+                                                @endif  
+                                                <h5 class="mb-0">{{ $brand->name }}</h5>
+                                                <div class="small-fonts">                                                    
+                                                    <span class="text-muted">{{ $brand->id }}</span>                                                    
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>                                      
+                                    <td>
+                                        <h5 class="mb-1">{{ $brand->description }}</h5>
+                                        <p class="text-muted">{{ $brand->discount }}</p>
+                                    </td>
+                                    <td>   
+                                        <div class="flex">
+                                            @if ($brand->status == 1)  
+                                                <span class="sprites green-tick-icon"></span>
                                             @else
-                                                <img src="{{ asset('admin-assets/img/default-150x150.png') }}" alt="" height="25" class="me-3 align-self-center rounded" />
-                                            @endif                                                                                            
+                                                <span class="sprites red-tick-icon"></span>
+                                            @endif                                      
+                                            <a href="#" onclick="deleteBrand({{ $brand->id }})" class="delete-icon">
+                                            <span class="sprites"></span>
+                                            </a>
                                         </div>
-                                    </td>  
-                                    <td>
-                                        <p>{{ $brand->name }}</p>
-                                        <div class="small-fonts">                                                    
-                                            <span class="text-muted">{{ $brand->id }}</span>                                                    
-                                        </div>
-                                    </td>    
-                                    <td>
-                                        <p>{{ $brand->description }}</p>
-                                    </td>
-                                    <td>
-                                        <p>{{ $brand->discount }}</p>
-                                    </td>
-                                    <td>
-                                        @if ($brand->status == 1)  
-                                            <span class="sprites green-tick-icon"></span>
-                                        @else
-                                            <span class="sprites red-tick-icon"></span>
-                                        @endif                                        
-                                    </td>
-                                    <td>                                        
-                                        <a href="#" onclick="deleteBrand({{ $brand->id }})" class="delete-icon">
-                                           <span class="sprites"></span>
-                                        </a>
                                     </td>
                                 </tr>
                             @endforeach

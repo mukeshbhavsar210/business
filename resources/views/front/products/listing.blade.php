@@ -93,7 +93,7 @@
                 <div class="row">
                     @foreach($products as $product) 
                         <div class="col-md-3 col-6">
-                            <x-products :item="$product" section="show_products" gallery="yes" variable="product" class="product" :producttitle="true" :hover="true" :description="true" :amount="true" :title_limit="27" :short_limit="30" />
+                            <x-products :item="$product" :wishlistProductIds="$wishlistProductIds" section="show_products" gallery="yes" variable="product" class="product" :producttitle="true" :hover="true" :description="true" :amount="true" :title_limit="27" :short_limit="30" />
                         </div>
                     @endforeach
                 </div>

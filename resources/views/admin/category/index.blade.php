@@ -54,12 +54,8 @@
                 </div>
             </div>
         </div>                        
-    </div>
-</div>
-
-<div class="card mt-0">                                       
-    <div class="card-body">
-        <div class="accordion" id="categoryAccordion">
+    
+        <div class="accordion mt-1" id="categoryAccordion">
             @foreach ($categories as $category)                                                     
                 <div class="accordion-item">                                
                     <div class="accordion-header" id="cat{{ $category->id }}">

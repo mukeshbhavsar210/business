@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\AffiliateProduct;
 use App\Models\Brand;
 use App\Models\Color;
 use App\Models\DiscountCoupon;
@@ -961,6 +962,225 @@ class SettingController extends Controller {
                 'message' => $message
             ]);
     }
+
+
+    //Affliate Product
+    public function affiliate_index(Request $request){
+        $affiliates = AffiliateProduct::latest('id');
+
+        if(!empty($request->get('keyword'))){
+            $affiliates = $affiliates->where('name','like','%'.$request->get('keyword').'%');
+            $affiliates = $affiliates->orWhere('email','like','%'.$request->get('keyword').'%');
+        }
+        
+        $affiliatesProductsTotal = AffiliateProduct::count();
+        $affiliates = $affiliates->paginate(10);
+
+        $data = [
+            'title'         => 'Create Affiliate Product',
+            'button_name'   => 'Create Product',
+            'form_id'       => 'Affiliate',
+            'modal_id'      => 'createAffiliateProductModal',
+            'method_id'     => '',
+            'refresh'       => route('affiliate_products.index'),
+            'button_route'  => null,
+            'affiliates'    => $affiliates,
+            'total'         => $affiliatesProductsTotal,
+
+            'formConfig' => [
+                'action' => route('affiliate_products.store'),
+                'modal_size' => 'modal-lg',
+                'method' => 'POST',
+                'button' => 'Create Affiliate Product',
+                'fields' => [
+                    [
+                        'type' => 'text',
+                        'name' => 'title',
+                        'label' => 'Product Name',                        
+                        'col' => 'col-md-8 col-12'
+                    ],  
+                    [
+                        'type' => 'file',
+                        'name' => 'image',
+                        'label' => 'Product Photo',
+                        'col' => 'col-md-4 col-6'
+                    ],                       
+                    [
+                        'type' => 'text',
+                        'name' => 'affiliate_url',
+                        'label' => 'Affiliate Url',
+                        'col' => 'col-md-8 col-12'
+                    ], 
+                    [
+                        'type' => 'select',
+                        'name' => 'affiliate_platform',
+                        'label' => 'Platform',
+                        'options' => [
+                            'Amazon' => 'Amazon',
+                            'Flipkart' => 'Flipkart',
+                            'Meesho' => 'Meesho',
+                        ],
+                        'col' => 'col-md-4 col-12'
+                    ],                       
+                    [
+                        'type' => 'text',
+                        'name' => 'price',
+                        'label' => 'Price',                        
+                        'col' => 'col-md-4 col-6'
+                    ],
+                    [
+                        'type' => 'text',
+                        'name' => 'discounted_percentage',
+                        'label' => 'Discount',
+                        'col' => 'col-md-4 col-6'
+                    ],
+                    [
+                        'type' => 'select',
+                        'name' => 'status',
+                        'label' => 'Status',
+                        'options' => [
+                            1 => 'Active',
+                            0 => 'Block',
+                        ],
+                        'col' => 'col-md-4 col-6'
+                    ]
+                ]
+            ]
+        ];       
+
+        return view('admin.settings.affiliate.index', $data);
+    }   
+    
+    public function affiliate_store(Request $request){
+        $validator = Validator::make($request->all(), [
+            'title' => 'required',                        
+        ]);
+
+        if($validator->passes()){
+            $affiliate = new AffiliateProduct;
+            $affiliate->title = $request->title;            
+            $affiliate->image = $request->image;
+            $affiliate->affiliate_platform = $request->affiliate_platform;
+            $affiliate->affiliate_url = $request->affiliate_url;
+            $affiliate->price = $request->price;            
+            $affiliate->discounted_percentage = $request->discounted_percentage;
+            $affiliate->status = $request->status;
+            $affiliate->save();
+
+            $affiliateId = $affiliate->id;
+            $affiliateTitle = Str::slug($affiliate->title);
+
+            // Init Image Manager
+            $manager = new ImageManager(new Driver());
+
+            // Create directory if not exists
+            $path = public_path('uploads/affiliate_products/');
+            if (!File::exists($path)) {
+                File::makeDirectory($path, 0755, true);
+            }            
+
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $imageName = $affiliateId.'_'.$affiliateTitle.'.'.$image->getClientOriginalExtension();
+                $img = $manager->read($image->getRealPath());
+                $img->cover(400, 400);
+                $img->save($path.$imageName);
+                $affiliate->image = $imageName;
+            }           
+
+            $affiliate->save();
+
+            $message = 'Affiliate Product added successfully';
+
+            return response()->json([
+                'status' => true,
+                'message' => $message
+            ]);
+
+        } else {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ]);
+        }
+    }
+
+    public function affiliate_edit(Request $request, $id){
+        $affiliate = AffiliateProduct::find($id);
+
+        if($affiliate == null){
+            $message = 'Affilicate Product not found';
+            session()->flash('error',$message);
+            return redirect()->route('affiliate_products.index');
+        }        
+
+        return view('admin.settings.affiliate.edit', [
+            'affiliate' => $affiliate
+        ]);
+    }
+
+    public function affiliate_update(Request $request, $id){
+        $affiliate = AffiliateProduct::find($id);
+
+        if($affiliate == null){
+            $message = 'affiliate not found';
+            session()->flash('error',$message);
+
+            return response()->json([
+                'status' => true,
+                'message' => $message
+            ]);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'title' => 'required',            
+        ]);
+
+        if($validator->passes()){
+            $affiliate->title = $request->title;            
+            $affiliate->image = $request->image;
+            $affiliate->affiliate_platform = $request->affiliate_platform;
+            $affiliate->affiliate_url = $request->affiliate_url;
+            $affiliate->price = $request->price;
+            $affiliate->discount_price = $request->discount_price;
+            $affiliate->discounted_percentage = $request->discounted_percentage;
+            $affiliate->status = $request->status;            
+            $affiliate->save();
+
+            $message = 'Affiliate Product updated successfully';
+            session()->flash('success',$message);
+
+            return response()->json([
+                'status' => true,
+                'message' => $message
+            ]);
+
+        } else {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ]);
+        }
+    }
+
+    public function affiliate_destroy($id) {
+        $affiliate = AffiliateProduct::find($id);
+
+        if (!$affiliate) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Affiliate product not found'
+            ]);
+        }
+
+        $affiliate->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Affiliate product deleted successfully'
+        ]);
+    }
+
 
     //Pages
     public function page_index(Request $request){
